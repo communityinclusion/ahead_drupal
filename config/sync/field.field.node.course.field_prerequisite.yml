@@ -1,0 +1,21 @@
+uuid: 2f3b60ea-1424-471d-8de9-6d56f35734ee
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prerequisite
+    - node.type.course
+id: node.course.field_prerequisite
+field_name: field_prerequisite
+entity_type: node
+bundle: course
+label: Prerequisites
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings: {  }
+field_type: entity_reference

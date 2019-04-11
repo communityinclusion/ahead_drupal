@@ -1,0 +1,30 @@
+uuid: 9f53eb12-eded-4879-968c-b33c8b0df078
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - profile
+id: profile.field_prof_dir_cert
+field_name: field_prof_dir_cert
+entity_type: profile
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: ACVREP-COMS
+      label: ACVREP-COMS
+    -
+      value: ACVREP-VRT
+      label: ACVREP-VRT
+    -
+      value: ACVREP-CLVT
+      label: ACVREP-CLVT
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

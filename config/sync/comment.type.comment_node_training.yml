@@ -1,0 +1,8 @@
+uuid: b968b9d7-668c-4199-867b-f8e331cac22a
+langcode: en
+status: true
+dependencies: {  }
+id: comment_node_training
+label: 'Training Event comment'
+target_entity_type_id: node
+description: null

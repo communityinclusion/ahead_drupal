@@ -1,0 +1,11 @@
+uuid: cad01658-c9a4-46a4-9fc1-47035ab2d1e9
+langcode: en
+status: true
+dependencies: {  }
+name: Course
+type: course
+description: 'Course Descriptions'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

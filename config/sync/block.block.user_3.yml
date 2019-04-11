@@ -1,0 +1,27 @@
+uuid: 7578f9b8-a944-4948-800a-85dea806f026
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+    - user
+  theme:
+    - adminimal_theme
+_core:
+  default_config_hash: 862sIulDdHmF0vBU1s2j2_a_CwkxursrL0pIrMDzzOg
+id: user_3
+theme: adminimal_theme
+region: content
+weight: -13
+provider: null
+plugin: user_login_block
+settings:
+  id: user_login_block
+  label: 'Register to comment and subscribe to comments'
+  provider: user
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/forum\n/forum/*"

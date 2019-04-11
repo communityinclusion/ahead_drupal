@@ -1,0 +1,8 @@
+uuid: 8db27de3-33dd-4575-9a03-201bde0df908
+langcode: en
+status: true
+dependencies: {  }
+id: comment_node_date
+label: 'Date comment'
+target_entity_type_id: node
+description: null

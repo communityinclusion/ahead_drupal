@@ -1,0 +1,25 @@
+uuid: 077c08ca-21af-402c-98b7-5d6f4e350384
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+    - user
+  theme:
+    - zen
+id: user_5
+theme: zen
+region: ''
+weight: -9
+provider: null
+plugin: user_login_block
+settings:
+  id: user_login_block
+  label: 'Register to comment and subscribe to comments'
+  provider: user
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/forum\n/forum/*"

@@ -1,0 +1,93 @@
+uuid: 6b18afc7-6f7a-4308-9f4b-14a48aa03868
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_user
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldWidgetMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'User accounts'
+source:
+  plugin: d6_user
+process:
+  uid:
+    -
+      plugin: get
+      source: uid
+  name:
+    -
+      plugin: get
+      source: name
+  pass:
+    -
+      plugin: get
+      source: pass
+  mail:
+    -
+      plugin: get
+      source: mail
+  created:
+    -
+      plugin: get
+      source: created
+  access:
+    -
+      plugin: get
+      source: access
+  login:
+    -
+      plugin: get
+      source: login
+  status:
+    -
+      plugin: get
+      source: status
+  timezone:
+    -
+      plugin: user_update_7002
+      source: timezone
+  langcode:
+    -
+      plugin: user_langcode
+      source: language
+      fallback_to_site_default: false
+  preferred_langcode:
+    -
+      plugin: user_langcode
+      source: language
+      fallback_to_site_default: true
+  preferred_admin_langcode:
+    -
+      plugin: user_langcode
+      source: language
+      fallback_to_site_default: true
+  init:
+    -
+      plugin: get
+      source: init
+  roles:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_user_role
+      source: roles
+  user_picture:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_user_picture_file
+      source: uid
+      no_stub: true
+destination:
+  plugin: 'entity:user'
+  md5_passwords: true
+migration_dependencies:
+  required:
+    - upgrade_d6_user_role
+  optional:
+    - upgrade_d6_user_picture_file
+    - upgrade_user_picture_entity_display
+    - upgrade_user_picture_entity_form_display
+    - upgrade_d6_user_role

@@ -1,0 +1,21 @@
+uuid: 4763e112-6007-47c3-9134-0953855285b3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_course_order_vrt
+    - node.type.course
+  module:
+    - options
+id: node.course.field_course_order_vrt
+field_name: field_course_order_vrt
+entity_type: node
+bundle: course
+label: 'Ordering on VRT course descriptions page'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_integer

@@ -1,0 +1,20 @@
+uuid: ccdbac63-f01f-4ca5-a096-426736d96fe6
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_course_number
+field_name: field_course_number
+entity_type: node
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

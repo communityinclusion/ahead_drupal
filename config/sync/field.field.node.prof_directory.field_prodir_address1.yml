@@ -1,0 +1,19 @@
+uuid: d9b3ac53-87ed-4e89-b24c-17f34dedfc8d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_address1
+    - node.type.prof_directory
+id: node.prof_directory.field_prodir_address1
+field_name: field_prodir_address1
+entity_type: node
+bundle: prof_directory
+label: Address
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

@@ -1,0 +1,22 @@
+uuid: 5147218c-b98f-4691-8ea3-6986ce6c6cee
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.date
+id: node.date.status
+field_name: status
+entity_type: node
+bundle: date
+label: 'Publishing status'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

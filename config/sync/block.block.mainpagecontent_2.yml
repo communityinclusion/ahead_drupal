@@ -1,0 +1,20 @@
+uuid: 16aa62ff-76f2-48e2-ad4d-27a5e1dc7362
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - nercve_boot4
+id: mainpagecontent_2
+theme: nercve_boot4
+region: content
+weight: -3
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  provider: system
+  label_display: visible
+visibility: {  }

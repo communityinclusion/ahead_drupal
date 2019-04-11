@@ -1,0 +1,21 @@
+uuid: 9114195d-d8e8-4f96-be45-09d53b8c052e
+langcode: en
+status: true
+dependencies:
+  module:
+    - profile
+id: profile.field_prof_dir_zip_code
+field_name: field_prof_dir_zip_code
+entity_type: profile
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

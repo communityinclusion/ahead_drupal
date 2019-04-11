@@ -1,0 +1,29 @@
+uuid: e6f976c5-7adb-47f3-b1bc-cc4d0b9ee110
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_prof_dir_state
+    - profile.type.professional_directory
+    - taxonomy.vocabulary.states
+id: profile.professional_directory.field_prof_dir_state
+field_name: field_prof_dir_state
+entity_type: profile
+bundle: professional_directory
+label: State
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      states: states
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

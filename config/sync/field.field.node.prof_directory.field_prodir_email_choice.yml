@@ -1,0 +1,21 @@
+uuid: 44dafc86-ce90-4cc7-b14e-51418df26fdd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_email_choice
+    - node.type.prof_directory
+id: node.prof_directory.field_prodir_email_choice
+field_name: field_prodir_email_choice
+entity_type: node
+bundle: prof_directory
+label: 'Show my e-mail address on the site? (Check for yes)'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

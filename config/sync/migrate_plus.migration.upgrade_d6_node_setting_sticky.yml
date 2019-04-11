@@ -1,0 +1,45 @@
+uuid: d6dc74d7-3830-4745-8fc6-b2d798c8b6f4
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_node_setting_sticky
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Node type ''sticky'' setting'
+source:
+  plugin: d6_node_type
+  constants:
+    entity_type: node
+    field_name: sticky
+process:
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  bundle:
+    -
+      plugin: get
+      source: type
+  field_name:
+    -
+      plugin: get
+      source: constants/field_name
+  label:
+    -
+      plugin: default_value
+      default_value: 'Sticky at the top of lists'
+  default_value/0/value:
+    -
+      plugin: get
+      source: options/sticky
+destination:
+  plugin: 'entity:base_field_override'
+migration_dependencies:
+  required:
+    - upgrade_d6_node_type
+  optional: {  }

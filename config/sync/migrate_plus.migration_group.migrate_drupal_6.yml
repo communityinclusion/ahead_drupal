@@ -1,0 +1,20 @@
+uuid: d8bf07d0-2b9b-49a3-b353-2bbfbd0d3bb2
+langcode: en
+status: true
+dependencies: {  }
+id: migrate_drupal_6
+label: 'Import from Drupal 6'
+description: 'Migrations originally generated from drush migrate-upgrade --configure-only'
+source_type: 'Drupal 6'
+module: null
+shared_configuration:
+  source:
+    key: drupal_6
+    database:
+      driver: mysql
+      username: nercve
+      password: icinercve99
+      host: localhost
+      port: ''
+      database: nercve
+      prefix: beta_

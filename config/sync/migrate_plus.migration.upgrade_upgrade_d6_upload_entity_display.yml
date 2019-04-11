@@ -1,0 +1,72 @@
+uuid: b3422379-dfe9-4e3b-ab68-7dae564fd71e
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_upload_entity_display
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Upload display configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_upload_instance
+  constants:
+    entity_type: node
+    view_mode: default
+    name: upload
+    type: file_default
+    options:
+      label: hidden
+      settings: {  }
+process:
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  bundle:
+    -
+      plugin: migration_lookup
+      migration: upgrade_upgrade_d6_node_type
+      source: node_type
+    -
+      plugin: skip_on_empty
+      method: row
+  view_mode:
+    -
+      plugin: get
+      source: constants/view_mode
+  field_name:
+    -
+      plugin: get
+      source: constants/name
+  type:
+    -
+      plugin: get
+      source: constants/type
+  options:
+    -
+      plugin: get
+      source: constants/options
+  options/type:
+    -
+      plugin: get
+      source: '@type'
+destination:
+  plugin: component_entity_display
+migration_dependencies:
+  required:
+    - upgrade_upgrade_d6_upload_field_instance
+  optional:
+    - upgrade_upgrade_d6_node_type

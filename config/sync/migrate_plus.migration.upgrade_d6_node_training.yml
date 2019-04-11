@@ -1,0 +1,299 @@
+uuid: 2245d02a-8f6c-40c2-98e8-140aa0b5cabe
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_node_training
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'Nodes (training)'
+source:
+  plugin: d6_node
+  node_type: training
+process:
+  nid:
+    -
+      plugin: get
+      source: tnid
+  vid:
+    -
+      plugin: get
+      source: vid
+  langcode:
+    -
+      plugin: default_value
+      source: language
+      default_value: und
+  title:
+    -
+      plugin: get
+      source: title
+  uid:
+    -
+      plugin: get
+      source: node_uid
+  status:
+    -
+      plugin: get
+      source: status
+  created:
+    -
+      plugin: get
+      source: created
+  changed:
+    -
+      plugin: get
+      source: changed
+  promote:
+    -
+      plugin: get
+      source: promote
+  sticky:
+    -
+      plugin: get
+      source: sticky
+  body/format:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_filter_format
+      source: format
+  body/value:
+    -
+      plugin: get
+      source: body
+  body/summary:
+    -
+      plugin: get
+      source: teaser
+  revision_uid:
+    -
+      plugin: get
+      source: revision_uid
+  revision_log:
+    -
+      plugin: get
+      source: log
+  revision_timestamp:
+    -
+      plugin: get
+      source: timestamp
+  field_training_state:
+    -
+      plugin: sub_process
+      source: field_training_state
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field_training_date:
+    -
+      plugin: sub_process
+      source: field_training_date
+      process:
+        value:
+          plugin: format_date
+          from_format: 'Y-m-d\TH:i:s'
+          to_format: 'Y-m-d\TH:i:s'
+          source: value
+  field_training_ongoing:
+    -
+      plugin: get
+      source: field_training_ongoing
+  field_training_address1:
+    -
+      plugin: sub_process
+      source: field_training_address1
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field_training_address2:
+    -
+      plugin: sub_process
+      source: field_training_address2
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field_training_city:
+    -
+      plugin: sub_process
+      source: field_training_city
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field_training_fee:
+    -
+      plugin: sub_process
+      source: field_training_fee
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field__training_contact:
+    -
+      plugin: sub_process
+      source: field__training_contact
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field_training_phone:
+    -
+      plugin: sub_process
+      source: field_training_phone
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field_training_email:
+    -
+      plugin: sub_process
+      source: field_training_email
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field_training_fee_info:
+    -
+      plugin: sub_process
+      source: field_training_fee_info
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_d6_filter_format
+            source: format
+  field_training_fee_compute:
+    -
+      plugin: get
+      source: field_training_fee_compute
+  field_training_date_compute:
+    -
+      plugin: get
+      source: field_training_date_compute
+destination:
+  plugin: 'entity:node'
+  default_bundle: training
+migration_dependencies:
+  required:
+    - upgrade_d6_user
+    - upgrade_d6_node_type
+    - upgrade_d6_node_settings
+    - upgrade_d6_filter_format
+  optional:
+    - upgrade_d6_field_instance_widget_settings
+    - upgrade_d6_field_formatter_settings
+    - upgrade_d6_upload_field_instance
+    - upgrade_d6_filter_format

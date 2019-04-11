@@ -1,0 +1,48 @@
+uuid: 0be75e8b-c818-458d-bd5e-06d9423cc970
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_category
+field_name: field_category
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: OM
+      label: 'Orientation and Mobility Specialist'
+    -
+      value: TVI
+      label: 'Teacher of the Visually Impaired'
+    -
+      value: VRT
+      label: 'Vision Rehabilitation Therapist'
+    -
+      value: DB
+      label: 'Deaf Blind Specialist'
+    -
+      value: CLVT
+      label: 'Certified Low Vision Therapist'
+    -
+      value: BT
+      label: 'Braille Transcriptionist'
+    -
+      value: AT
+      label: 'Assistive Technology Specialist'
+    -
+      value: VRC
+      label: 'Vocational Rehabilitation Counselor (Vision)'
+    -
+      value: RS
+      label: 'Research Specialist (Vision)'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

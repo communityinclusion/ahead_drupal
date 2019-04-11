@@ -1,0 +1,22 @@
+uuid: 6bb9a0c0-a471-4947-b3bf-0a33b0b2ac91
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.course
+id: node.course.status
+field_name: status
+entity_type: node
+bundle: course
+label: 'Publishing status'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

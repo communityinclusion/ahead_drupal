@@ -1,0 +1,33 @@
+uuid: 45deac75-ad09-42fc-b8da-ffcefc6385f9
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_program
+field_name: field_program
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: tvi
+      label: TVI
+    -
+      value: om
+      label: 'O&M'
+    -
+      value: vrt
+      label: VRT
+    -
+      value: guam
+      label: 'Guam Project'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 3
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

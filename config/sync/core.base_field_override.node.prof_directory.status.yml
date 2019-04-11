@@ -1,0 +1,22 @@
+uuid: ab1adde8-c294-4563-8215-20cf194abb22
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.prof_directory
+id: node.prof_directory.status
+field_name: status
+entity_type: node
+bundle: prof_directory
+label: 'Publishing status'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

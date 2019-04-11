@@ -1,0 +1,89 @@
+uuid: 4b079c0d-2d7c-4a2c-993e-058356869009
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_node_type
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Node type configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_node_type
+  constants:
+    preview: 1
+    create_body: false
+process:
+  type:
+    -
+      plugin: get
+      source: type
+  name:
+    -
+      plugin: get
+      source: name
+  module:
+    -
+      plugin: get
+      source: module
+  description:
+    -
+      plugin: get
+      source: description
+  help:
+    -
+      plugin: get
+      source: help
+  title_label:
+    -
+      plugin: get
+      source: title_label
+  preview_mode:
+    -
+      plugin: get
+      source: constants/preview
+  display_submitted:
+    -
+      plugin: get
+      source: display_submitted
+  new_revision:
+    -
+      plugin: get
+      source: options/revision
+  settings/node/options:
+    -
+      plugin: get
+      source: options
+  create_body:
+    -
+      plugin: get
+      source: has_body
+  create_body_label:
+    -
+      plugin: get
+      source: body_label
+  third_party_settings/menu_ui/available_menus:
+    -
+      plugin: get
+      source: available_menus
+  third_party_settings/menu_ui/parent:
+    -
+      plugin: get
+      source: parent
+destination:
+  plugin: 'entity:node_type'
+migration_dependencies:
+  required: {  }
+  optional: {  }

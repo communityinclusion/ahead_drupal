@@ -1,0 +1,21 @@
+uuid: c4957dd4-c385-4af4-94ea-63c9d4272409
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_happening
+    - node.type.page
+id: node.page.field_happening
+field_name: field_happening
+entity_type: node
+bundle: page
+label: Happening
+description: 'Add to Spotlight section on homepage.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

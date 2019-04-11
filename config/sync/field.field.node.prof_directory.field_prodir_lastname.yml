@@ -1,0 +1,19 @@
+uuid: f9835638-7fde-441f-9953-fa2053902974
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_lastname
+    - node.type.prof_directory
+id: node.prof_directory.field_prodir_lastname
+field_name: field_prodir_lastname
+entity_type: node
+bundle: prof_directory
+label: 'Last Name'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

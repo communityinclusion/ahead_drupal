@@ -1,0 +1,21 @@
+uuid: 2b367c99-6617-4691-8c68-a512e06adc36
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_currently_offered
+    - node.type.course
+id: node.course.field_currently_offered
+field_name: field_currently_offered
+entity_type: node
+bundle: course
+label: 'Currently Offered'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

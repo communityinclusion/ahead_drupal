@@ -1,0 +1,39 @@
+uuid: b41a9b38-1e4c-4e9d-af7f-463437e42cbc
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_text_settings
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - 'Drupal 7'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Drupal teaser length configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: variable
+  variables:
+    - teaser_length
+  source_module: text
+process:
+  default_summary_length:
+    -
+      plugin: get
+      source: teaser_length
+destination:
+  plugin: config
+  config_name: text.settings
+migration_dependencies:
+  required: {  }
+  optional: {  }

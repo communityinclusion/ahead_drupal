@@ -1,0 +1,91 @@
+uuid: a56a0473-d27f-498d-a366-9c1625ace392
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_node_revision_panel
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'Node revisions (panel)'
+source:
+  plugin: d6_node_revision
+  node_type: panel
+process:
+  nid:
+    -
+      plugin: get
+      source: nid
+  vid:
+    -
+      plugin: get
+      source: vid
+  langcode:
+    -
+      plugin: default_value
+      source: language
+      default_value: und
+  title:
+    -
+      plugin: get
+      source: title
+  uid:
+    -
+      plugin: get
+      source: node_uid
+  status:
+    -
+      plugin: get
+      source: status
+  created:
+    -
+      plugin: get
+      source: created
+  changed:
+    -
+      plugin: get
+      source: changed
+  promote:
+    -
+      plugin: get
+      source: promote
+  sticky:
+    -
+      plugin: get
+      source: sticky
+  body/format:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_filter_format
+      source: format
+  body/value:
+    -
+      plugin: get
+      source: body
+  body/summary:
+    -
+      plugin: get
+      source: teaser
+  revision_uid:
+    -
+      plugin: get
+      source: revision_uid
+  revision_log:
+    -
+      plugin: get
+      source: log
+  revision_timestamp:
+    -
+      plugin: get
+      source: timestamp
+destination:
+  plugin: 'entity_revision:node'
+  default_bundle: panel
+migration_dependencies:
+  required:
+    - upgrade_d6_node_panel
+  optional:
+    - upgrade_d6_filter_format

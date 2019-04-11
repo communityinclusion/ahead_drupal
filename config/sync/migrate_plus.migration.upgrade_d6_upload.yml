@@ -1,0 +1,65 @@
+uuid: 73b9f32a-ccba-4a02-b1aa-e2deae147f18
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_upload
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'File uploads'
+source:
+  plugin: d6_upload
+process:
+  nid:
+    -
+      plugin: get
+      source: nid
+  vid:
+    -
+      plugin: get
+      source: vid
+  langcode:
+    -
+      plugin: user_langcode
+      source: language
+      fallback_to_site_default: true
+  type:
+    -
+      plugin: get
+      source: type
+  upload:
+    -
+      plugin: sub_process
+      source: upload
+      process:
+        target_id:
+          plugin: migration_lookup
+          migration: upgrade_d6_file
+          source: fid
+        display: list
+        description: description
+destination:
+  plugin: 'entity:node'
+migration_dependencies:
+  required:
+    - upgrade_d6_file
+    - upgrade_d6_node_book
+    - upgrade_d6_node_course
+    - upgrade_d6_node_date
+    - upgrade_d6_node_forum
+    - upgrade_d6_node_image
+    - upgrade_d6_node_job
+    - upgrade_d6_node_page
+    - upgrade_d6_node_panel
+    - upgrade_d6_node_profile
+    - upgrade_d6_node_prof_directory
+    - upgrade_d6_node_story
+    - upgrade_d6_node_training
+    - upgrade_d6_node_webform
+    - upgrade_d6_upload_field_instance
+  optional:
+    - upgrade_d6_file

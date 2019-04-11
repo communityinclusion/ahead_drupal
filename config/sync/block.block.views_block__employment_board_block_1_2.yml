@@ -1,0 +1,30 @@
+uuid: a0ff58a9-1d3a-4068-95ad-7912c6e78284
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.employment_board
+  module:
+    - system
+    - views
+  theme:
+    - nercve_boot4
+id: views_block__employment_board_block_1_2
+theme: nercve_boot4
+region: sidebar_second
+weight: -5
+provider: null
+plugin: 'views_block:employment_board-block_1'
+settings:
+  id: 'views_block:employment_board-block_1'
+  label: ''
+  provider: views
+  label_display: visible
+  views_label: ''
+  items_per_page: none
+visibility:
+  request_path:
+    id: request_path
+    pages: '<front>'
+    negate: false
+    context_mapping: {  }

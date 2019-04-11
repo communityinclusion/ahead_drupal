@@ -1,0 +1,37 @@
+uuid: bbb836d5-8ab8-4c4a-85e5-c13755a2fe90
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_system_file
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'File system configuration'
+source:
+  plugin: variable
+  variables:
+    - file_directory_temp
+    - allow_insecure_uploads
+  source_module: system
+process:
+  path/temporary:
+    -
+      plugin: get
+      source: file_directory_temp
+  allow_insecure_uploads:
+    -
+      plugin: static_map
+      source: allow_insecure_uploads
+      map:
+        - false
+        - true
+destination:
+  plugin: config
+  config_name: system.file
+migration_dependencies:
+  required: {  }
+  optional: {  }

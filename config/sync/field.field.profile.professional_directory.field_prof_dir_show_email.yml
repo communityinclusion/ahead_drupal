@@ -1,0 +1,23 @@
+uuid: 99350b0a-a949-4b04-9430-f16b89a673e4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_prof_dir_show_email
+    - profile.type.professional_directory
+id: profile.professional_directory.field_prof_dir_show_email
+field_name: field_prof_dir_show_email
+entity_type: profile
+bundle: professional_directory
+label: 'Show my e-mail address on the site? (Check for yes)'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

@@ -1,0 +1,30 @@
+uuid: 4f7047be-6364-4697-8a1a-efa11f9af694
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_prodir_cert
+field_name: field_prodir_cert
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: ACVREP-COMS
+      label: ACVREP-COMS
+    -
+      value: ACVREP-VRT
+      label: ACVREP-VRT
+    -
+      value: ACVREP-CLVT
+      label: ACVREP-CLVT
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

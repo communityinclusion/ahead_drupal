@@ -1,0 +1,9 @@
+uuid: 7f453461-c35e-4927-9973-1fc8f7b88ee6
+langcode: en
+status: true
+dependencies: {  }
+name: 'Course Semester'
+vid: course_semester
+description: 'The semester the course is offered'
+hierarchy: 1
+weight: 0

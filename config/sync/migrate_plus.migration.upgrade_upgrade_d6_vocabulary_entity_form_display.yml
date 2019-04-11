@@ -1,0 +1,86 @@
+uuid: 3929dccd-d461-460f-b664-da345772bb8e
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_vocabulary_entity_form_display
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Vocabulary form display configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_taxonomy_vocabulary_per_type
+  constants:
+    entity_type: node
+    form_mode: default
+    options:
+      weight: 20
+    field_prefix: field_
+process:
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  form_mode:
+    -
+      plugin: get
+      source: constants/form_mode
+  options/type:
+    -
+      plugin: static_map
+      source: tags
+      map:
+        - options_select
+        - entity_reference_autocomplete_tags
+  options/weight:
+    -
+      plugin: get
+      source: constants/options/weight
+  bundle:
+    -
+      plugin: migration_lookup
+      migration: upgrade_upgrade_d6_node_type
+      source: type
+    -
+      plugin: skip_on_empty
+      method: row
+  raw_field_name:
+    -
+      plugin: migration_lookup
+      migration: upgrade_upgrade_d6_taxonomy_vocabulary
+      source: vid
+    -
+      plugin: skip_on_empty
+      method: row
+  field_name:
+    -
+      plugin: concat
+      source:
+        - constants/field_prefix
+        - '@raw_field_name'
+    -
+      plugin: substr
+      length: 32
+    -
+      plugin: forum_vocabulary
+      machine_name: taxonomy_forums
+destination:
+  plugin: component_entity_form_display
+migration_dependencies:
+  required:
+    - upgrade_upgrade_d6_vocabulary_field_instance
+  optional:
+    - upgrade_upgrade_d6_node_type
+    - upgrade_upgrade_d6_taxonomy_vocabulary

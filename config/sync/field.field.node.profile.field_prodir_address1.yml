@@ -1,0 +1,19 @@
+uuid: 72a80113-05c3-4997-bb87-2ff01abbfd8f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_address1
+    - node.type.profile
+id: node.profile.field_prodir_address1
+field_name: field_prodir_address1
+entity_type: node
+bundle: profile
+label: Address
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

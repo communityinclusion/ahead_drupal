@@ -1,0 +1,50 @@
+uuid: 56938be8-85f8-47f4-b6b0-86d1d033c13b
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_google_analytics_user_settings
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+migration_group: migrate_drupal_6
+label: 'Google Analytics user settings'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_user
+  constants:
+    key: user_account_users
+    module: google_analytics
+process:
+  uid:
+    -
+      plugin: get
+      source: uid
+  key:
+    -
+      plugin: get
+      source: constants/key
+  module:
+    -
+      plugin: get
+      source: constants/module
+  settings:
+    -
+      plugin: skip_row_if_not_set
+      index: custom
+      source: data/googleanalytics
+destination:
+  plugin: user_data
+migration_dependencies:
+  required:
+    - upgrade_upgrade_d6_user
+  optional: {  }

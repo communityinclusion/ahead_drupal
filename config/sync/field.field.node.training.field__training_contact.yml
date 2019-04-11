@@ -1,0 +1,19 @@
+uuid: a059e24b-9eca-4767-b2f8-6645863bde72
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field__training_contact
+    - node.type.training
+id: node.training.field__training_contact
+field_name: field__training_contact
+entity_type: node
+bundle: training
+label: 'Contact Name'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

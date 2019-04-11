@@ -1,0 +1,9 @@
+uuid: cbad07db-7748-41c2-bd95-499cb8a4fde2
+langcode: en
+status: true
+dependencies: {  }
+name: Specialization
+vid: specialization
+description: ''
+hierarchy: 0
+weight: 0

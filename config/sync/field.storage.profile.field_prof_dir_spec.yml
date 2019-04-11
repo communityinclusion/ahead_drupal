@@ -1,0 +1,42 @@
+uuid: 342500b4-8e34-421e-8b31-47b29c963532
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - profile
+id: profile.field_prof_dir_spec
+field_name: field_prof_dir_spec
+entity_type: profile
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: 'Orientation and Mobility Specialist'
+      label: 'Orientation and Mobility Specialist'
+    -
+      value: 'Teacher of the Visually Impaired'
+      label: 'Teacher of the Visually Impaired'
+    -
+      value: 'Vision Rehabilitation Therapist'
+      label: 'Vision Rehabilitation Therapist'
+    -
+      value: 'Certified Low Vision Therapist'
+      label: 'Certified Low Vision Therapist'
+    -
+      value: 'Deaf Blind Specialist'
+      label: 'Deaf Blind Specialist'
+    -
+      value: 'Braille Transcriptionist'
+      label: 'Braille Transcriptionist'
+    -
+      value: 'Assistive Technology Specialist'
+      label: 'Assistive Technology Specialist'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

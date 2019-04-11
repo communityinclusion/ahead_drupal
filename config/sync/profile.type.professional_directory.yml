@@ -1,0 +1,13 @@
+uuid: 91ff0a83-b45c-43ab-afcb-6b04a8973b24
+langcode: en
+status: true
+dependencies: {  }
+id: professional_directory
+label: 'Professional Directory'
+registration: true
+multiple: false
+roles:
+  authenticated: authenticated
+weight: 0
+use_revisions: true
+description: ''

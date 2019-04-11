@@ -1,0 +1,64 @@
+uuid: ff1c9242-2b4c-42f4-9726-b82eb8cc98bc
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_upload_entity_form_display
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Upload form display configuration'
+source:
+  plugin: d6_upload_instance
+  constants:
+    empty: {  }
+    entity_type: node
+    form_mode: default
+    name: upload
+    type: file_generic
+    options:
+      settings:
+        progress_indicator: throbber
+process:
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  bundle:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_node_type
+      source: node_type
+    -
+      plugin: skip_on_empty
+      method: row
+  field_name:
+    -
+      plugin: get
+      source: constants/name
+  form_mode:
+    -
+      plugin: get
+      source: constants/form_mode
+  type:
+    -
+      plugin: get
+      source: constants/type
+  options:
+    -
+      plugin: get
+      source: constants/options
+  options/type:
+    -
+      plugin: get
+      source: '@type'
+destination:
+  plugin: component_entity_form_display
+migration_dependencies:
+  required:
+    - upgrade_d6_upload_field_instance
+  optional:
+    - upgrade_d6_node_type

@@ -1,0 +1,19 @@
+uuid: 18ee0b0a-234c-473d-83a0-0e0502888a45
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_prodir_cert_other
+field_name: field_prodir_cert_other
+entity_type: node
+type: string_long
+settings:
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

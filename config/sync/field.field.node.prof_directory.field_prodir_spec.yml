@@ -1,0 +1,21 @@
+uuid: e9a9a4de-9b93-4513-96ea-cd7995f72795
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_spec
+    - node.type.prof_directory
+  module:
+    - options
+id: node.prof_directory.field_prodir_spec
+field_name: field_prodir_spec
+entity_type: node
+bundle: prof_directory
+label: Specialization
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

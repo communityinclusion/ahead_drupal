@@ -1,0 +1,22 @@
+uuid: 744a0949-c50f-4437-8230-eb96b0036a01
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.panel
+id: node.panel.status
+field_name: status
+entity_type: node
+bundle: panel
+label: 'Publishing status'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

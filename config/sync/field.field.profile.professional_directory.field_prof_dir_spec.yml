@@ -1,0 +1,21 @@
+uuid: 04d2ac14-52f7-4127-996a-6ff8c207d90a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_prof_dir_spec
+    - profile.type.professional_directory
+  module:
+    - options
+id: profile.professional_directory.field_prof_dir_spec
+field_name: field_prof_dir_spec
+entity_type: profile
+bundle: professional_directory
+label: Specialization
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

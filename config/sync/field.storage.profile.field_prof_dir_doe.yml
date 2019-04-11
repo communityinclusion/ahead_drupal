@@ -1,0 +1,20 @@
+uuid: ad6df908-a570-4334-9e8e-4c0f64607e72
+langcode: en
+status: true
+dependencies:
+  module:
+    - profile
+    - taxonomy
+id: profile.field_prof_dir_doe
+field_name: field_prof_dir_doe
+entity_type: profile
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

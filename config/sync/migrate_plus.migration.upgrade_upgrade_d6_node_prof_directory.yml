@@ -1,0 +1,374 @@
+uuid: bea842aa-7316-46dd-9bc7-85e78554f46c
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_node_prof_directory
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'Nodes (prof_directory)'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_node
+  node_type: prof_directory
+process:
+  nid:
+    -
+      plugin: get
+      source: tnid
+  vid:
+    -
+      plugin: get
+      source: vid
+  langcode:
+    -
+      plugin: default_value
+      source: language
+      default_value: und
+  title:
+    -
+      plugin: get
+      source: title
+  uid:
+    -
+      plugin: get
+      source: node_uid
+  status:
+    -
+      plugin: get
+      source: status
+  created:
+    -
+      plugin: get
+      source: created
+  changed:
+    -
+      plugin: get
+      source: changed
+  promote:
+    -
+      plugin: get
+      source: promote
+  sticky:
+    -
+      plugin: get
+      source: sticky
+  body/format:
+    -
+      plugin: migration_lookup
+      migration: upgrade_upgrade_d6_filter_format
+      source: format
+  body/value:
+    -
+      plugin: get
+      source: body
+  body/summary:
+    -
+      plugin: get
+      source: teaser
+  revision_uid:
+    -
+      plugin: get
+      source: revision_uid
+  revision_log:
+    -
+      plugin: get
+      source: log
+  revision_timestamp:
+    -
+      plugin: get
+      source: timestamp
+  field_prodir_firstname:
+    -
+      plugin: sub_process
+      source: field_prodir_firstname
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_lastname:
+    -
+      plugin: sub_process
+      source: field_prodir_lastname
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_state:
+    -
+      plugin: sub_process
+      source: field_prodir_state
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_phone:
+    -
+      plugin: sub_process
+      source: field_prodir_phone
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_address1:
+    -
+      plugin: sub_process
+      source: field_prodir_address1
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_address2:
+    -
+      plugin: sub_process
+      source: field_prodir_address2
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_city:
+    -
+      plugin: sub_process
+      source: field_prodir_city
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_zipcode:
+    -
+      plugin: sub_process
+      source: field_prodir_zipcode
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_spec:
+    -
+      plugin: sub_process
+      source: field_prodir_spec
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_spec_other:
+    -
+      plugin: sub_process
+      source: field_prodir_spec_other
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_cert:
+    -
+      plugin: sub_process
+      source: field_prodir_cert
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_cert_other:
+    -
+      plugin: sub_process
+      source: field_prodir_cert_other
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_doe:
+    -
+      plugin: sub_process
+      source: field_prodir_doe
+      process:
+        value: value
+        format:
+          -
+            plugin: static_map
+            bypass: true
+            source: format
+            map:
+              - null
+          -
+            plugin: skip_on_empty
+            method: process
+          -
+            plugin: migration
+            migration: upgrade_upgrade_d6_filter_format
+            source: format
+  field_prodir_contract:
+    -
+      plugin: get
+      source: field_prodir_contract
+  field_prodir_email_choice:
+    -
+      plugin: get
+      source: field_prodir_email_choice
+destination:
+  plugin: 'entity:node'
+  default_bundle: prof_directory
+migration_dependencies:
+  required:
+    - upgrade_upgrade_d6_user
+    - upgrade_upgrade_d6_node_type
+    - upgrade_upgrade_d6_node_settings
+    - upgrade_upgrade_d6_filter_format
+  optional:
+    - upgrade_upgrade_d6_field_instance_widget_settings
+    - upgrade_upgrade_d6_field_formatter_settings
+    - upgrade_upgrade_d6_upload_field_instance
+    - upgrade_upgrade_d6_filter_format

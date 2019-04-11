@@ -1,0 +1,21 @@
+uuid: b6767d58-b5ff-40d8-8c83-7e0a7eb1408e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_required_texts
+    - node.type.course
+id: node.course.field_required_texts
+field_name: field_required_texts
+entity_type: node
+bundle: course
+label: 'Required Texts'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings: {  }
+field_type: entity_reference

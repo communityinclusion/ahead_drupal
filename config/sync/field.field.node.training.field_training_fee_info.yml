@@ -1,0 +1,21 @@
+uuid: ab07efa3-f7f2-4f96-a213-f503a7b896da
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_training_fee_info
+    - node.type.training
+  module:
+    - options
+id: node.training.field_training_fee_info
+field_name: field_training_fee_info
+entity_type: node
+bundle: training
+label: 'Fee Information'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

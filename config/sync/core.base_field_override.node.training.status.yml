@@ -1,0 +1,22 @@
+uuid: 0e60a46e-008f-416a-a3a8-d4e6c846b5f1
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.training
+id: node.training.status
+field_name: status
+entity_type: node
+bundle: training
+label: 'Publishing status'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

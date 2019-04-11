@@ -1,0 +1,19 @@
+uuid: 47a60f20-271a-44b1-9dc5-5e16a476521c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_training_phone
+    - node.type.training
+id: node.training.field_training_phone
+field_name: field_training_phone
+entity_type: node
+bundle: training
+label: 'Contact Phone'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

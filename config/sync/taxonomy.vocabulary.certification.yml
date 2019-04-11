@@ -1,0 +1,9 @@
+uuid: 96d96d4c-5bd7-4c19-94d8-e5911d24a8ca
+langcode: en
+status: true
+dependencies: {  }
+name: Certification
+vid: certification
+description: ''
+hierarchy: 0
+weight: 0

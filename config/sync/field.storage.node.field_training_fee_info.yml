@@ -1,0 +1,27 @@
+uuid: 26f8ebfc-3574-42fb-af41-47b1a04b5e17
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_training_fee_info
+field_name: field_training_fee_info
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: 'No Fee'
+      label: 'No Fee'
+    -
+      value: 'See description for fee information'
+      label: 'See description for fee information'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

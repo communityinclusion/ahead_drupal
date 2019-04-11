@@ -1,0 +1,33 @@
+uuid: 7b76d4a5-20d4-4067-b670-2f18f0bbefc5
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.search_index
+    - field.field.node.date.body
+    - field.field.node.date.field_date
+    - node.type.date
+  module:
+    - datetime
+    - user
+id: node.date.search_index
+targetEntityType: node
+bundle: date
+mode: search_index
+content:
+  field_date:
+    label: above
+    weight: -4
+    type: datetime_default
+    settings:
+      format_type: fallback
+      timezone_override: ''
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  body: true

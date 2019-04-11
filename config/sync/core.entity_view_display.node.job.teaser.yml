@@ -1,0 +1,79 @@
+uuid: fc12249a-3b3a-4a5d-ad72-8f4d6df211b2
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.job.body
+    - field.field.node.job.comment_node_job
+    - field.field.node.job.field_category
+    - field.field.node.job.field_city
+    - field.field.node.job.field_email
+    - field.field.node.job.field_job_archived
+    - field.field.node.job.field_job_created
+    - field.field.node.job.field_job_state
+    - field.field.node.job.field_name
+    - field.field.node.job.field_org
+    - field.field.node.job.field_other
+    - field.field.node.job.field_phone
+    - field.field.node.job.field_qualifications
+    - field.field.node.job.field_resume_maailto
+    - field.field.node.job.upload
+    - node.type.job
+  module:
+    - datetime
+    - text
+    - user
+id: node.job.teaser
+targetEntityType: node
+bundle: job
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  field_category:
+    label: inline
+    weight: 7
+    type: basic_string
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_city:
+    label: inline
+    weight: 5
+    type: basic_string
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_job_created:
+    label: above
+    weight: 5
+    type: datetime_default
+    settings:
+      format_type: fallback
+      timezone_override: ''
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  comment_node_job: true
+  field_email: true
+  field_job_archived: true
+  field_job_state: true
+  field_name: true
+  field_org: true
+  field_other: true
+  field_phone: true
+  field_qualifications: true
+  field_resume_maailto: true
+  upload: true

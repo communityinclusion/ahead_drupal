@@ -1,0 +1,28 @@
+uuid: 0b4e77d1-9105-411b-abda-847c1c4d56c0
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+    - user
+  theme:
+    - nercve_boot4
+_core:
+  default_config_hash: 4QlSnWBcxxKMIFRM8sbu_MjSkcp3NjGgnVrc-lynQHI
+id: nercve_boot4_login
+theme: nercve_boot4
+region: sidebar_first
+weight: -5
+provider: null
+plugin: user_login_block
+settings:
+  id: user_login_block
+  label: 'User login'
+  provider: user
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    pages: '<front>'
+    negate: true
+    context_mapping: {  }

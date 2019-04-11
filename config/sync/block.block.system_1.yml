@@ -1,0 +1,20 @@
+uuid: 94d7b322-483d-4e3c-ac79-2c8b6091b945
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - adminimal_theme
+id: system_1
+theme: adminimal_theme
+region: content
+weight: -12
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: ''
+  provider: system
+  label_display: '0'
+visibility: {  }

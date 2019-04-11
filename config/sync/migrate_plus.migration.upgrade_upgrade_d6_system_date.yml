@@ -1,0 +1,48 @@
+uuid: d81cdcf2-53df-44aa-bd87-da9f395fccd7
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_system_date
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'System date configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: variable
+  variables:
+    - configurable_timezones
+    - date_first_day
+    - date_default_timezone
+  source_module: system
+process:
+  timezone/user/configurable:
+    -
+      plugin: get
+      source: configurable_timezones
+  first_day:
+    -
+      plugin: get
+      source: date_first_day
+  timezone/default:
+    -
+      plugin: timezone
+      source: date_default_timezone
+destination:
+  plugin: config
+  config_name: system.date
+migration_dependencies:
+  required: {  }
+  optional: {  }

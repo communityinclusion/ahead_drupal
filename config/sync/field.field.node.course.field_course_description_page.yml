@@ -1,0 +1,21 @@
+uuid: 8c7af07b-789d-4452-8ecf-d49640783568
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_course_description_page
+    - node.type.course
+id: node.course.field_course_description_page
+field_name: field_course_description_page
+entity_type: node
+bundle: course
+label: 'On course description page'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

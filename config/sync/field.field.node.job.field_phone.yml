@@ -1,0 +1,19 @@
+uuid: becf2e11-037b-4394-81d6-aae96950c440
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_phone
+    - node.type.job
+id: node.job.field_phone
+field_name: field_phone
+entity_type: node
+bundle: job
+label: Phone
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

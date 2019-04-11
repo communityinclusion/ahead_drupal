@@ -1,0 +1,33 @@
+uuid: a75628bf-3396-4560-b236-dd0a49047d40
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment_node_book.default
+    - field.field.node.book.comment_node_book
+    - field.field.node.book.upload
+    - node.type.book
+  module:
+    - comment
+    - user
+id: node.book.default
+targetEntityType: node
+bundle: book
+mode: default
+content:
+  comment_node_book:
+    label: hidden
+    type: comment_default
+    weight: 20
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  upload: true

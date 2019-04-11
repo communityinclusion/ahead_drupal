@@ -1,0 +1,21 @@
+uuid: 35df7bf5-a161-45e1-8dbd-123c2f8c5f3a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_date
+    - node.type.date
+  module:
+    - datetime
+id: node.date.field_date
+field_name: field_date
+entity_type: node
+bundle: date
+label: Date
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

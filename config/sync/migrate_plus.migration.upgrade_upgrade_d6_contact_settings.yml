@@ -1,0 +1,49 @@
+uuid: 6e99852c-2e1a-4960-a854-0c1585c9ea50
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_contact_settings
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Contact configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: contact_settings
+  variables:
+    - contact_default_status
+    - contact_hourly_threshold
+process:
+  user_default_enabled:
+    -
+      plugin: get
+      source: contact_default_status
+  flood/limit:
+    -
+      plugin: get
+      source: contact_hourly_threshold
+  default_form:
+    -
+      plugin: migration_lookup
+      migration: upgrade_upgrade_contact_category
+      source: default_category
+destination:
+  plugin: config
+  config_name: contact.settings
+migration_dependencies:
+  required:
+    - upgrade_upgrade_contact_category
+  optional:
+    - upgrade_upgrade_contact_category

@@ -1,0 +1,21 @@
+uuid: 01419b43-2027-43da-a40f-bfcd430758b7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_state
+    - node.type.prof_directory
+  module:
+    - options
+id: node.prof_directory.field_prodir_state
+field_name: field_prodir_state
+entity_type: node
+bundle: prof_directory
+label: State
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

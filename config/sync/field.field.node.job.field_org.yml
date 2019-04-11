@@ -1,0 +1,19 @@
+uuid: 05d3bc19-9d2c-44aa-8c87-afbb5a646133
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_org
+    - node.type.job
+id: node.job.field_org
+field_name: field_org
+entity_type: node
+bundle: job
+label: Organization
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

@@ -1,0 +1,19 @@
+uuid: 01cac22f-fb0c-430a-a76a-f3dfaf148178
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_phone
+    - profile.type.professional_directory
+id: profile.professional_directory.field_phone
+field_name: field_phone
+entity_type: profile
+bundle: professional_directory
+label: Phone
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

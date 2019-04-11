@@ -1,0 +1,19 @@
+uuid: 34a16b47-6f57-46e8-ad04-b8be7fa0e2a4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_training_address2
+    - node.type.training
+id: node.training.field_training_address2
+field_name: field_training_address2
+entity_type: node
+bundle: training
+label: 'Address line 2'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

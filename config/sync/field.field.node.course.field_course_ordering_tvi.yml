@@ -1,0 +1,21 @@
+uuid: 05c4cd81-ba3a-46db-9284-e6f247d39b41
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_course_ordering_tvi
+    - node.type.course
+  module:
+    - options
+id: node.course.field_course_ordering_tvi
+field_name: field_course_ordering_tvi
+entity_type: node
+bundle: course
+label: 'Ordering on TVI course descriptions page'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_integer

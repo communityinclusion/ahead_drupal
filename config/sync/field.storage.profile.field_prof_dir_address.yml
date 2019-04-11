@@ -1,0 +1,21 @@
+uuid: 2a4b3055-d9ce-41c0-a672-e18a3d19dbe4
+langcode: en
+status: true
+dependencies:
+  module:
+    - profile
+id: profile.field_prof_dir_address
+field_name: field_prof_dir_address
+entity_type: profile
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

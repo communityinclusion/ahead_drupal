@@ -1,0 +1,14 @@
+uuid: 589f1a9c-4a54-4653-9a6a-7dd0a26b9900
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: job_alias
+label: 'job alias'
+type: 'canonical_entities:node'
+pattern: 'job/[node:title]'
+selection_criteria: {  }
+selection_logic: and
+weight: 0
+relationships: {  }

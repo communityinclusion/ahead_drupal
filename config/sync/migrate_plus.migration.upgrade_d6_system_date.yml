@@ -1,0 +1,39 @@
+uuid: c2656a33-20f6-4119-8cd1-312fea5f223a
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_system_date
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'System date configuration'
+source:
+  plugin: variable
+  variables:
+    - configurable_timezones
+    - date_first_day
+    - date_default_timezone
+  source_module: system
+process:
+  timezone/user/configurable:
+    -
+      plugin: get
+      source: configurable_timezones
+  first_day:
+    -
+      plugin: get
+      source: date_first_day
+  timezone/default:
+    -
+      plugin: timezone
+      source: date_default_timezone
+destination:
+  plugin: config
+  config_name: system.date
+migration_dependencies:
+  required: {  }
+  optional: {  }

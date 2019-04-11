@@ -1,0 +1,63 @@
+uuid: bb7be333-cb18-41e2-b64e-b4fee2c58c05
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_taxonomy_vocabulary
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Taxonomy vocabularies'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_taxonomy_vocabulary
+process:
+  vid:
+    -
+      plugin: machine_name
+      source: name
+    -
+      plugin: make_unique_entity_field
+      entity_type: taxonomy_vocabulary
+      field: vid
+      length: 32
+      migrated: true
+    -
+      plugin: forum_vocabulary
+      machine_name: forums
+  label:
+    -
+      plugin: get
+      source: name
+  name:
+    -
+      plugin: get
+      source: name
+  description:
+    -
+      plugin: get
+      source: description
+  hierarchy:
+    -
+      plugin: get
+      source: hierarchy
+  weight:
+    -
+      plugin: get
+      source: weight
+destination:
+  plugin: 'entity:taxonomy_vocabulary'
+migration_dependencies:
+  required: {  }
+  optional: {  }

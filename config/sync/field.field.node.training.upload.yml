@@ -1,0 +1,27 @@
+uuid: 41619b61-a301-42ef-89ce-0408346f3081
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.upload
+    - node.type.training
+  module:
+    - file
+id: node.training.upload
+field_name: upload
+entity_type: node
+bundle: training
+label: upload
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  description_field: true
+  file_extensions: 'jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp docx'
+  max_filesize: 1MB
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file

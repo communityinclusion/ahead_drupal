@@ -1,0 +1,31 @@
+uuid: 7124d07c-2c01-417d-ab9b-fb44f934f1e2
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.search_index
+    - field.field.node.profile.body
+    - field.field.node.profile.field_user_reference
+    - node.type.profile
+  module:
+    - user
+id: node.profile.search_index
+targetEntityType: node
+bundle: profile
+mode: search_index
+content:
+  field_user_reference:
+    label: above
+    weight: 31
+    type: entity_reference_label
+    settings:
+      link: true
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  body: true

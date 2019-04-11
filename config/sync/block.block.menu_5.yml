@@ -1,0 +1,18 @@
+uuid: 5ec42cda-c0eb-456a-a4f3-fc97d7a836de
+langcode: en
+status: false
+dependencies:
+  theme:
+    - nercve11
+id: menu_5
+theme: nercve11
+region: ''
+weight: -10
+provider: null
+plugin: 'system_menu_block:secondary-links'
+settings:
+  id: broken
+  label: ''
+  provider: core
+  label_display: '0'
+visibility: {  }

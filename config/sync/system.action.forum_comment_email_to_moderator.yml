@@ -1,0 +1,14 @@
+uuid: 0a3f9d64-9236-4980-9e6c-102b636bc99f
+langcode: en
+status: true
+dependencies:
+  module:
+    - action
+id: forum_comment_email_to_moderator
+label: 'Forum comment: email to moderator'
+type: system
+plugin: action_send_email_action
+configuration:
+  recipient: robert.mcculley@umb.edu
+  subject: 'New comment on Nercve Forum'
+  message: 'A new comment was received and needs your approval Log in at www.nercve.org/user'

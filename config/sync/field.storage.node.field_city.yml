@@ -1,0 +1,21 @@
+uuid: c7ba257b-c830-4aff-8c5b-f55c11c77ade
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_city
+field_name: field_city
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,21 @@
+uuid: 95af52f2-27d7-4a28-88cd-aff35c960820
+langcode: en
+status: true
+dependencies:
+  module:
+    - profile
+id: profile.field_prof_dir_city
+field_name: field_prof_dir_city
+entity_type: profile
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

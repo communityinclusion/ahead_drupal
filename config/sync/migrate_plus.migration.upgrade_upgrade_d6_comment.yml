@@ -1,0 +1,165 @@
+uuid: 7db3db42-8ca5-4838-9d27-e16686261ffd
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_comment
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: Comments
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_comment
+  constants:
+    entity_type: node
+process:
+  cid:
+    -
+      plugin: get
+      source: cid
+  pid:
+    -
+      plugin: migration_lookup
+      migration: upgrade_upgrade_d6_comment
+      source: pid
+  entity_id:
+    -
+      plugin: migration_lookup
+      migration:
+        - upgrade_upgrade_d6_node_book
+        - upgrade_upgrade_d6_node_course
+        - upgrade_upgrade_d6_node_date
+        - upgrade_upgrade_d6_node_forum
+        - upgrade_upgrade_d6_node_image
+        - upgrade_upgrade_d6_node_job
+        - upgrade_upgrade_d6_node_page
+        - upgrade_upgrade_d6_node_panel
+        - upgrade_upgrade_d6_node_profile
+        - upgrade_upgrade_d6_node_prof_directory
+        - upgrade_upgrade_d6_node_story
+        - upgrade_upgrade_d6_node_training
+        - upgrade_upgrade_d6_node_webform
+      source: nid
+    -
+      plugin: skip_on_empty
+      method: row
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  comment_type:
+    -
+      plugin: migration_lookup
+      source: type
+      migration: upgrade_upgrade_d6_comment_type
+    -
+      plugin: skip_on_empty
+      method: row
+  langcode:
+    -
+      plugin: get
+      source: language
+  field_name:
+    -
+      plugin: get
+      source: '@comment_type'
+  subject:
+    -
+      plugin: get
+      source: subject
+  uid:
+    -
+      plugin: get
+      source: uid
+  name:
+    -
+      plugin: get
+      source: name
+  mail:
+    -
+      plugin: get
+      source: mail
+  homepage:
+    -
+      plugin: get
+      source: homepage
+  hostname:
+    -
+      plugin: get
+      source: hostname
+  created:
+    -
+      plugin: get
+      source: timestamp
+  changed:
+    -
+      plugin: get
+      source: timestamp
+  status:
+    -
+      plugin: get
+      source: status
+  thread:
+    -
+      plugin: get
+      source: thread
+  comment_body/value:
+    -
+      plugin: get
+      source: comment
+  comment_body/format:
+    -
+      plugin: migration_lookup
+      migration: upgrade_upgrade_d6_filter_format
+      source: format
+destination:
+  plugin: 'entity:comment'
+migration_dependencies:
+  required:
+    - upgrade_upgrade_d6_node_book
+    - upgrade_upgrade_d6_node_course
+    - upgrade_upgrade_d6_node_date
+    - upgrade_upgrade_d6_node_forum
+    - upgrade_upgrade_d6_node_image
+    - upgrade_upgrade_d6_node_job
+    - upgrade_upgrade_d6_node_page
+    - upgrade_upgrade_d6_node_panel
+    - upgrade_upgrade_d6_node_profile
+    - upgrade_upgrade_d6_node_prof_directory
+    - upgrade_upgrade_d6_node_story
+    - upgrade_upgrade_d6_node_training
+    - upgrade_upgrade_d6_node_webform
+    - upgrade_upgrade_d6_comment_type
+    - upgrade_upgrade_d6_comment_entity_display
+    - upgrade_upgrade_d6_comment_entity_form_display
+    - upgrade_upgrade_d6_user
+    - upgrade_upgrade_d6_filter_format
+  optional:
+    - upgrade_upgrade_d6_comment
+    - upgrade_upgrade_d6_node_book
+    - upgrade_upgrade_d6_node_course
+    - upgrade_upgrade_d6_node_date
+    - upgrade_upgrade_d6_node_forum
+    - upgrade_upgrade_d6_node_image
+    - upgrade_upgrade_d6_node_job
+    - upgrade_upgrade_d6_node_page
+    - upgrade_upgrade_d6_node_panel
+    - upgrade_upgrade_d6_node_profile
+    - upgrade_upgrade_d6_node_prof_directory
+    - upgrade_upgrade_d6_node_story
+    - upgrade_upgrade_d6_node_training
+    - upgrade_upgrade_d6_node_webform
+    - upgrade_upgrade_d6_comment_type
+    - upgrade_upgrade_d6_filter_format

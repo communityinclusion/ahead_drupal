@@ -1,0 +1,21 @@
+uuid: 02587f21-b22f-49cc-aaad-e188fdfca88f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_contract
+    - node.type.prof_directory
+id: node.prof_directory.field_prodir_contract
+field_name: field_prodir_contract
+entity_type: node
+bundle: prof_directory
+label: 'Available for Contract Work?'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

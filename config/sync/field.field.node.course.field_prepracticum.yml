@@ -1,0 +1,19 @@
+uuid: 55eab07b-01dc-4e1f-a68d-ab4f5c9fad81
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prepracticum
+    - node.type.course
+id: node.course.field_prepracticum
+field_name: field_prepracticum
+entity_type: node
+bundle: course
+label: Prepracticum
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

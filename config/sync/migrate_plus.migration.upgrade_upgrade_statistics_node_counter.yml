@@ -1,0 +1,77 @@
+uuid: 7c5e1b1b-0288-4079-b7c1-67c57102e6de
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_statistics_node_counter
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - 'Drupal 7'
+  - Content
+migration_group: migrate_drupal_6
+label: 'Node counter'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: node_counter
+process:
+  nid:
+    -
+      plugin: migration_lookup
+      migration:
+        - upgrade_upgrade_d6_node_book
+        - upgrade_upgrade_d6_node_course
+        - upgrade_upgrade_d6_node_date
+        - upgrade_upgrade_d6_node_forum
+        - upgrade_upgrade_d6_node_image
+        - upgrade_upgrade_d6_node_job
+        - upgrade_upgrade_d6_node_page
+        - upgrade_upgrade_d6_node_panel
+        - upgrade_upgrade_d6_node_profile
+        - upgrade_upgrade_d6_node_prof_directory
+        - upgrade_upgrade_d6_node_story
+        - upgrade_upgrade_d6_node_training
+        - upgrade_upgrade_d6_node_webform
+      source: nid
+    -
+      plugin: skip_on_empty
+      method: row
+  totalcount:
+    -
+      plugin: get
+      source: totalcount
+  daycount:
+    -
+      plugin: get
+      source: daycount
+  timestamp:
+    -
+      plugin: get
+      source: timestamp
+destination:
+  plugin: node_counter
+migration_dependencies:
+  optional:
+    - upgrade_upgrade_d6_node_book
+    - upgrade_upgrade_d6_node_course
+    - upgrade_upgrade_d6_node_date
+    - upgrade_upgrade_d6_node_forum
+    - upgrade_upgrade_d6_node_image
+    - upgrade_upgrade_d6_node_job
+    - upgrade_upgrade_d6_node_page
+    - upgrade_upgrade_d6_node_panel
+    - upgrade_upgrade_d6_node_profile
+    - upgrade_upgrade_d6_node_prof_directory
+    - upgrade_upgrade_d6_node_story
+    - upgrade_upgrade_d6_node_training
+    - upgrade_upgrade_d6_node_webform
+  required: {  }

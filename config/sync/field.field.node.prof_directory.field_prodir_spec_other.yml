@@ -1,0 +1,19 @@
+uuid: 14f6e44b-dc64-4219-a6eb-2bb362e1743f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_spec_other
+    - node.type.prof_directory
+id: node.prof_directory.field_prodir_spec_other
+field_name: field_prodir_spec_other
+entity_type: node
+bundle: prof_directory
+label: 'Other Specialization'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

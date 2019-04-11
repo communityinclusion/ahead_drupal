@@ -1,0 +1,19 @@
+uuid: 3bf5f75e-4d31-4376-9424-014b2334c9e3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alt_prerequisite
+    - node.type.course
+id: node.course.field_alt_prerequisite
+field_name: field_alt_prerequisite
+entity_type: node
+bundle: course
+label: Other
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

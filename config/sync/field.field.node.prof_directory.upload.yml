@@ -1,0 +1,27 @@
+uuid: 34005d12-4e0b-49df-90ea-ad6979268ef9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.upload
+    - node.type.prof_directory
+  module:
+    - file
+id: node.prof_directory.upload
+field_name: upload
+entity_type: node
+bundle: prof_directory
+label: upload
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  description_field: true
+  file_extensions: 'jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp docx'
+  max_filesize: 1MB
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file

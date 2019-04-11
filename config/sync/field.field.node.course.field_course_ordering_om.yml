@@ -1,0 +1,21 @@
+uuid: 26aff96a-e07f-42b9-bc05-a0b60554eaa0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_course_ordering_om
+    - node.type.course
+  module:
+    - options
+id: node.course.field_course_ordering_om
+field_name: field_course_ordering_om
+entity_type: node
+bundle: course
+label: 'Ordering on O&M course descriptions page'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_integer

@@ -1,0 +1,24 @@
+uuid: ed2fbd9d-60f9-4c74-8be7-c5b3293053c7
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: page_url_alias
+label: 'Page url alias'
+type: 'canonical_entities:node'
+pattern: '[node:menu-link:parents]/[node:title]'
+selection_criteria:
+  dc572e3b-3026-453c-abc2-56729e1e582f:
+    id: node_type
+    bundles:
+      course: course
+      page: page
+      prof_directory: prof_directory
+    negate: false
+    context_mapping:
+      node: node
+    uuid: dc572e3b-3026-453c-abc2-56729e1e582f
+selection_logic: and
+weight: -5
+relationships: {  }

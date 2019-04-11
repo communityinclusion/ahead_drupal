@@ -1,0 +1,24 @@
+uuid: 2078bf20-6f78-4a59-8ba6-afce3413395d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_image_galleries
+    - node.type.image
+id: node.image.field_image_galleries
+field_name: field_image_galleries
+entity_type: node
+bundle: image
+label: 'Image Galleries'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      - field_image_galleries
+    auto_create: true
+field_type: entity_reference

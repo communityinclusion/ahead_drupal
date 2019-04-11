@@ -1,0 +1,25 @@
+uuid: d0783c09-bc89-4963-9bd8-4eede2a4afc5
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+    - user
+  theme:
+    - garland
+id: user
+theme: garland
+region: ''
+weight: 0
+provider: null
+plugin: user_login_block
+settings:
+  id: user_login_block
+  label: 'Register to comment and subscribe to comments'
+  provider: user
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/forum\n/forum/*"

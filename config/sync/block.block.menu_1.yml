@@ -1,0 +1,18 @@
+uuid: ac327ddd-ae0a-4d44-9e5f-88a8e1192c7e
+langcode: en
+status: true
+dependencies:
+  theme:
+    - stark
+id: menu_1
+theme: stark
+region: content
+weight: 1
+provider: null
+plugin: 'system_menu_block:secondary-links'
+settings:
+  id: broken
+  label: ''
+  provider: core
+  label_display: '0'
+visibility: {  }

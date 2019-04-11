@@ -1,0 +1,29 @@
+uuid: a0ad0cd5-fcf6-4d07-a249-64205dc2571b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_prof_dir_doe
+    - profile.type.professional_directory
+    - taxonomy.vocabulary.states
+id: profile.professional_directory.field_prof_dir_doe
+field_name: field_prof_dir_doe
+entity_type: profile
+bundle: professional_directory
+label: 'DOE Certified in'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      states: states
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

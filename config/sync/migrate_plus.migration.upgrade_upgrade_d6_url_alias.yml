@@ -1,0 +1,61 @@
+uuid: 1c7e54dd-a3ef-401a-a8f7-d139603a14e3
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_url_alias
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'URL aliases'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_url_alias
+  constants:
+    slash: /
+process:
+  source:
+    -
+      plugin: concat
+      source:
+        - constants/slash
+        - src
+  alias:
+    -
+      plugin: concat
+      source:
+        - constants/slash
+        - dst
+  langcode:
+    -
+      plugin: d6_url_alias_language
+      source: language
+  node_translation:
+    -
+      plugin: explode
+      source: src
+      delimiter: /
+    -
+      plugin: extract
+      default: INVALID_NID
+      index:
+        - 1
+    -
+      plugin: migration_lookup
+      migration: {  }
+destination:
+  plugin: url_alias
+migration_dependencies:
+  required: {  }
+  optional: {  }

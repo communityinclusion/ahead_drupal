@@ -1,0 +1,107 @@
+uuid: fd4cc8d8-667f-412f-af8c-44f7c8148c13
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_node_profile
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'Nodes (profile)'
+source:
+  plugin: d6_node
+  node_type: profile
+process:
+  nid:
+    -
+      plugin: get
+      source: tnid
+  vid:
+    -
+      plugin: get
+      source: vid
+  langcode:
+    -
+      plugin: default_value
+      source: language
+      default_value: und
+  title:
+    -
+      plugin: get
+      source: title
+  uid:
+    -
+      plugin: get
+      source: node_uid
+  status:
+    -
+      plugin: get
+      source: status
+  created:
+    -
+      plugin: get
+      source: created
+  changed:
+    -
+      plugin: get
+      source: changed
+  promote:
+    -
+      plugin: get
+      source: promote
+  sticky:
+    -
+      plugin: get
+      source: sticky
+  body/format:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_filter_format
+      source: format
+  body/value:
+    -
+      plugin: get
+      source: body
+  body/summary:
+    -
+      plugin: get
+      source: teaser
+  revision_uid:
+    -
+      plugin: get
+      source: revision_uid
+  revision_log:
+    -
+      plugin: get
+      source: log
+  revision_timestamp:
+    -
+      plugin: get
+      source: timestamp
+  field_user_reference:
+    -
+      plugin: sub_process
+      source: field_user_reference
+      process:
+        target_id:
+          plugin: migration_lookup
+          migration: upgrade_d6_user
+          source: uid
+destination:
+  plugin: 'entity:node'
+  default_bundle: profile
+migration_dependencies:
+  required:
+    - upgrade_d6_user
+    - upgrade_d6_node_type
+    - upgrade_d6_node_settings
+    - upgrade_d6_filter_format
+  optional:
+    - upgrade_d6_field_instance_widget_settings
+    - upgrade_d6_field_formatter_settings
+    - upgrade_d6_upload_field_instance
+    - upgrade_d6_filter_format
+    - upgrade_d6_user

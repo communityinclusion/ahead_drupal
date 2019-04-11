@@ -1,0 +1,8 @@
+uuid: d467a067-319f-4195-a559-3b76b466b026
+langcode: en
+status: true
+dependencies: {  }
+id: comment_node_prof_directory
+label: 'Professional Directory comment'
+target_entity_type_id: node
+description: null

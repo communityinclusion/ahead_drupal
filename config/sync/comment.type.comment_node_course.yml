@@ -1,0 +1,8 @@
+uuid: ff04fd65-9071-4161-b37d-6a113b9b4ba5
+langcode: en
+status: true
+dependencies: {  }
+id: comment_node_course
+label: 'Course comment'
+target_entity_type_id: node
+description: null

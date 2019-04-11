@@ -1,0 +1,21 @@
+uuid: 140e308f-457a-46eb-ae5d-9e2b6dcfdd9b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_training_ongoing
+    - node.type.training
+id: node.training.field_training_ongoing
+field_name: field_training_ongoing
+entity_type: node
+bundle: training
+label: 'Ongoing/On Demand'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

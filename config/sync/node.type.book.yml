@@ -1,0 +1,11 @@
+uuid: 406da7e9-5fa7-4c77-8e64-9fc2bbe619f2
+langcode: en
+status: true
+dependencies: {  }
+name: Book
+type: book
+description: 'List of books for classes'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

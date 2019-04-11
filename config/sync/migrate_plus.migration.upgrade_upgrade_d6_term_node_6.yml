@@ -1,0 +1,88 @@
+uuid: d74126cf-734a-44ed-880b-5a0435a0b1d2
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_term_node_6
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'Term/node relationships'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_term_node
+  vid: '6'
+process:
+  nid:
+    -
+      plugin: migration_lookup
+      migration:
+        - upgrade_upgrade_d6_node_book
+        - upgrade_upgrade_d6_node_course
+        - upgrade_upgrade_d6_node_date
+        - upgrade_upgrade_d6_node_forum
+        - upgrade_upgrade_d6_node_image
+        - upgrade_upgrade_d6_node_job
+        - upgrade_upgrade_d6_node_page
+        - upgrade_upgrade_d6_node_panel
+        - upgrade_upgrade_d6_node_profile
+        - upgrade_upgrade_d6_node_prof_directory
+        - upgrade_upgrade_d6_node_story
+        - upgrade_upgrade_d6_node_training
+        - upgrade_upgrade_d6_node_webform
+      source: nid
+    -
+      plugin: skip_on_empty
+      method: row
+  type:
+    -
+      plugin: get
+      source: type
+  taxonomy_forums:
+    -
+      plugin: get
+      source: tid
+destination:
+  plugin: 'entity:node'
+migration_dependencies:
+  required:
+    - upgrade_upgrade_d6_vocabulary_entity_display
+    - upgrade_upgrade_d6_vocabulary_entity_form_display
+    - upgrade_upgrade_d6_node_book
+    - upgrade_upgrade_d6_node_course
+    - upgrade_upgrade_d6_node_date
+    - upgrade_upgrade_d6_node_forum
+    - upgrade_upgrade_d6_node_image
+    - upgrade_upgrade_d6_node_job
+    - upgrade_upgrade_d6_node_page
+    - upgrade_upgrade_d6_node_panel
+    - upgrade_upgrade_d6_node_profile
+    - upgrade_upgrade_d6_node_prof_directory
+    - upgrade_upgrade_d6_node_story
+    - upgrade_upgrade_d6_node_training
+    - upgrade_upgrade_d6_node_webform
+  optional:
+    - upgrade_upgrade_d6_node_book
+    - upgrade_upgrade_d6_node_course
+    - upgrade_upgrade_d6_node_date
+    - upgrade_upgrade_d6_node_forum
+    - upgrade_upgrade_d6_node_image
+    - upgrade_upgrade_d6_node_job
+    - upgrade_upgrade_d6_node_page
+    - upgrade_upgrade_d6_node_panel
+    - upgrade_upgrade_d6_node_profile
+    - upgrade_upgrade_d6_node_prof_directory
+    - upgrade_upgrade_d6_node_story
+    - upgrade_upgrade_d6_node_training
+    - upgrade_upgrade_d6_node_webform

@@ -1,0 +1,89 @@
+uuid: 1fe877de-2445-40a4-afa8-5065ae324900
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_field_instance
+class: Drupal\migrate_drupal\Plugin\migrate\FieldMigration
+field_plugin_method: alterFieldInstanceMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Field instance configuration'
+source:
+  plugin: d6_field_instance
+  constants:
+    entity_type: node
+process:
+  field_type_exists:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_field
+      source:
+        - field_name
+    -
+      plugin: extract
+      index:
+        - 1
+    -
+      plugin: skip_on_empty
+      method: row
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  field_name:
+    -
+      plugin: get
+      source: field_name
+  bundle:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_node_type
+      source: type_name
+    -
+      plugin: skip_on_empty
+      method: row
+  label:
+    -
+      plugin: get
+      source: label
+  description:
+    -
+      plugin: get
+      source: description
+  required:
+    -
+      plugin: get
+      source: required
+  status:
+    -
+      plugin: get
+      source: active
+  settings:
+    -
+      plugin: d6_field_field_settings
+      source:
+        - widget_type
+        - widget_settings
+        - global_settings
+  default_value_callback:
+    -
+      plugin: get
+      source: ''
+  default_value:
+    -
+      plugin: d6_field_instance_defaults
+      source:
+        - widget_type
+        - widget_settings
+destination:
+  plugin: 'entity:field_config'
+migration_dependencies:
+  required:
+    - upgrade_d6_node_type
+    - upgrade_d6_field
+  optional:
+    - upgrade_d6_field
+    - upgrade_d6_node_type

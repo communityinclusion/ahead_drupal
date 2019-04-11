@@ -1,0 +1,18 @@
+uuid: 5e5188c9-e32b-462a-9a44-7f52cf6d4018
+langcode: en
+status: false
+dependencies:
+  theme:
+    - mobile_garland
+id: menu_9
+theme: mobile_garland
+region: ''
+weight: 1
+provider: null
+plugin: 'system_menu_block:secondary-links'
+settings:
+  id: broken
+  label: ''
+  provider: core
+  label_display: '0'
+visibility: {  }

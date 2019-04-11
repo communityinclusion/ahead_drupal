@@ -1,0 +1,21 @@
+uuid: ab601905-48e6-49e3-b4da-d3f29fb11af4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_course_location
+    - node.type.course
+id: node.course.field_course_location
+field_name: field_course_location
+entity_type: node
+bundle: course
+label: Location
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: Online
+default_value_callback: ''
+settings: {  }
+field_type: string_long

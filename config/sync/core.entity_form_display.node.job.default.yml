@@ -1,0 +1,212 @@
+uuid: 20e07df5-4c83-49be-8212-367217e6e8eb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.job.body
+    - field.field.node.job.comment_node_job
+    - field.field.node.job.field_category
+    - field.field.node.job.field_city
+    - field.field.node.job.field_email
+    - field.field.node.job.field_job_archived
+    - field.field.node.job.field_job_created
+    - field.field.node.job.field_job_state
+    - field.field.node.job.field_name
+    - field.field.node.job.field_org
+    - field.field.node.job.field_other
+    - field.field.node.job.field_phone
+    - field.field.node.job.field_qualifications
+    - field.field.node.job.field_resume_maailto
+    - field.field.node.job.upload
+    - node.type.job
+  module:
+    - comment
+    - content_moderation
+    - datetime
+    - field_layout
+    - layout_discovery
+    - path
+    - scheduler
+    - text
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings: {  }
+id: node.job.default
+targetEntityType: node
+bundle: job
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 23
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  comment_node_job:
+    type: comment_default
+    weight: 17
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  created:
+    type: datetime_timestamp
+    weight: 14
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_category:
+    weight: 11
+    type: options_buttons
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_city:
+    weight: 9
+    type: string_textfield
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  field_email:
+    weight: 4
+    type: string_textfield
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  field_job_archived:
+    weight: 13
+    type: boolean_checkbox
+    settings:
+      display_label: false
+    third_party_settings: {  }
+    region: content
+  field_job_created:
+    weight: 8
+    type: datetime_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_job_state:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_name:
+    weight: 2
+    type: string_textfield
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  field_org:
+    weight: 3
+    type: string_textarea
+    settings:
+      placeholder: ''
+      rows: 5
+    third_party_settings: {  }
+    region: content
+  field_other:
+    weight: 12
+    type: string_textfield
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  field_phone:
+    weight: 6
+    type: string_textfield
+    settings:
+      size: 20
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  field_qualifications:
+    weight: 1
+    type: text_textarea
+    settings:
+      rows: 7
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  field_resume_maailto:
+    weight: 5
+    type: boolean_checkbox
+    settings:
+      display_label: false
+    third_party_settings: {  }
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 21
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 15
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 19
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 22
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 16
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 18
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  upload: true

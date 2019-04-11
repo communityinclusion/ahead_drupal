@@ -1,0 +1,103 @@
+uuid: 97f2a731-538b-4e92-8df6-3cdb55ecbe7e
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_comment_field_instance
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Comment field instance configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_node_type
+  constants:
+    entity_type: node
+    label: Comments
+    required: true
+process:
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  label:
+    -
+      plugin: get
+      source: constants/label
+  required:
+    -
+      plugin: get
+      source: constants/required
+  field_name:
+    -
+      plugin: migration_lookup
+      source: type
+      migration: upgrade_upgrade_d6_comment_type
+    -
+      plugin: skip_on_empty
+      method: row
+  bundle:
+    -
+      plugin: get
+      source: type
+  default_value/0/status:
+    -
+      plugin: static_map
+      source: comment
+      map:
+        - 0
+        - 1
+        - 2
+      default_value: 2
+  settings/default_mode:
+    -
+      plugin: static_map
+      source: comment_default_mode
+      map:
+        1: 0
+        2: 0
+        3: 1
+        4: 1
+      default_value: 1
+  settings/per_page:
+    -
+      plugin: default_value
+      source: comment_default_per_page
+      default_value: 50
+  settings/anonymous:
+    -
+      plugin: default_value
+      source: comment_anonymous
+      default_value: 0
+  settings/form_location:
+    -
+      plugin: default_value
+      source: comment_form_location
+      default_value: 0
+  settings/preview:
+    -
+      plugin: static_map
+      source: comment_preview
+      map:
+        - 0
+        - 1
+      default_value: 1
+destination:
+  plugin: 'entity:field_config'
+migration_dependencies:
+  required:
+    - upgrade_upgrade_d6_node_type
+    - upgrade_upgrade_d6_comment_field
+  optional:
+    - upgrade_upgrade_d6_comment_type

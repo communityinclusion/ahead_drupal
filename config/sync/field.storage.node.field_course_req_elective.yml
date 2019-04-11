@@ -1,0 +1,39 @@
+uuid: 54d087a2-084e-4a7d-837a-c0e6f092b37b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_course_req_elective
+field_name: field_course_req_elective
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: required
+      label: 'Required TVI'
+    -
+      value: elective
+      label: 'Elective TVI'
+    -
+      value: requiredom
+      label: 'Required O&M'
+    -
+      value: electiveom
+      label: 'Elective O&M'
+    -
+      value: requiredvrt
+      label: 'Required VRT'
+    -
+      value: electivevrt
+      label: 'Elective VRT'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

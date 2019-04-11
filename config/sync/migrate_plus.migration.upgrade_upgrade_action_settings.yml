@@ -1,0 +1,39 @@
+uuid: 348a0283-7d2f-4a30-983c-be4a7492b8ef
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_action_settings
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - 'Drupal 7'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Action configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: variable
+  variables:
+    - actions_max_stack
+  source_module: action
+process:
+  recursion_limit:
+    -
+      plugin: get
+      source: actions_max_stack
+destination:
+  plugin: config
+  config_name: action.settings
+migration_dependencies:
+  required: {  }
+  optional: {  }

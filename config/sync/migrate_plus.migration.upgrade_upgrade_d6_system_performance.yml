@@ -1,0 +1,50 @@
+uuid: 6d9302bf-16ae-4458-a294-a929cbdd238b
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_system_performance
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Performance configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: variable
+  variables:
+    - preprocess_css
+    - preprocess_js
+    - cache_lifetime
+    - cache
+    - page_compression
+  source_module: system
+process:
+  css/preprocess:
+    -
+      plugin: get
+      source: preprocess_css
+  js/preprocess:
+    -
+      plugin: get
+      source: preprocess_js
+  cache/page/max_age:
+    -
+      plugin: get
+      source: cache_lifetime
+destination:
+  plugin: config
+  config_name: system.performance
+migration_dependencies:
+  required: {  }
+  optional: {  }

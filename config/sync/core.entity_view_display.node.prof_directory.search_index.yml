@@ -1,0 +1,145 @@
+uuid: a970581e-551b-44c7-9dd6-70daf2f9cd0f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.search_index
+    - field.field.node.prof_directory.field_prodir_address1
+    - field.field.node.prof_directory.field_prodir_address2
+    - field.field.node.prof_directory.field_prodir_cert
+    - field.field.node.prof_directory.field_prodir_cert_other
+    - field.field.node.prof_directory.field_prodir_city
+    - field.field.node.prof_directory.field_prodir_contract
+    - field.field.node.prof_directory.field_prodir_doe
+    - field.field.node.prof_directory.field_prodir_email_choice
+    - field.field.node.prof_directory.field_prodir_firstname
+    - field.field.node.prof_directory.field_prodir_lastname
+    - field.field.node.prof_directory.field_prodir_phone
+    - field.field.node.prof_directory.field_prodir_spec
+    - field.field.node.prof_directory.field_prodir_spec_other
+    - field.field.node.prof_directory.field_prodir_state
+    - field.field.node.prof_directory.field_prodir_zipcode
+    - node.type.prof_directory
+  module:
+    - text
+    - user
+id: node.prof_directory.search_index
+targetEntityType: node
+bundle: prof_directory
+mode: search_index
+content:
+  field_prodir_address1:
+    label: above
+    weight: 6
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_address2:
+    label: above
+    weight: 7
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_cert:
+    label: above
+    weight: 13
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_cert_other:
+    label: above
+    weight: 14
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_city:
+    label: above
+    weight: 8
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_contract:
+    label: above
+    weight: 16
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_prodir_doe:
+    label: above
+    weight: 15
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_email_choice:
+    label: above
+    weight: 4
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_prodir_firstname:
+    label: above
+    weight: 2
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_lastname:
+    label: above
+    weight: 3
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_phone:
+    label: above
+    weight: 5
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_spec:
+    label: above
+    weight: 11
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_spec_other:
+    label: above
+    weight: 12
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_state:
+    label: above
+    weight: 9
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prodir_zipcode:
+    label: above
+    weight: 10
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden: {  }

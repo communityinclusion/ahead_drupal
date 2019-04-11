@@ -1,0 +1,11 @@
+uuid: 478056e7-2d40-4a07-aac7-70ae6131852d
+langcode: en
+status: true
+dependencies: {  }
+name: Image
+type: image
+description: 'An image (with thumbnail). This is ideal for publishing photographs or screenshots.'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

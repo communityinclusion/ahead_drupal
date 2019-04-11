@@ -1,0 +1,38 @@
+uuid: 6005c455-52bc-4360-9054-d4bc3887e203
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_date_formats
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Date format configuration'
+source:
+  plugin: variable_multirow
+  variables:
+    - date_format_long
+    - date_format_medium
+    - date_format_short
+  source_module: system
+process:
+  id:
+    -
+      plugin: static_map
+      source: name
+      map:
+        date_format_long: long
+        date_format_short: short
+        date_format_medium: medium
+  pattern:
+    -
+      plugin: get
+      source: value
+destination:
+  plugin: 'entity:date_format'
+migration_dependencies:
+  required: {  }
+  optional: {  }

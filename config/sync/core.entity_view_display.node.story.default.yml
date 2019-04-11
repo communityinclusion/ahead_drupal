@@ -1,0 +1,42 @@
+uuid: d9362e58-ecc1-4ed3-9eb1-95f22c37829f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment_node_story.default
+    - field.field.node.story.body
+    - field.field.node.story.comment_node_story
+    - field.field.node.story.upload
+    - node.type.story
+  module:
+    - comment
+    - text
+    - user
+id: node.story.default
+targetEntityType: node
+bundle: story
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  comment_node_story:
+    label: hidden
+    type: comment_default
+    weight: 20
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  upload: true

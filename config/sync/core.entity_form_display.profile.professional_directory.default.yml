@@ -1,0 +1,158 @@
+uuid: 7bf5f458-1d61-4a4f-a27f-2f01326479ba
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.profile.professional_directory.field_address_line_2
+    - field.field.profile.professional_directory.field_first_name
+    - field.field.profile.professional_directory.field_other_certification
+    - field.field.profile.professional_directory.field_other_specialization
+    - field.field.profile.professional_directory.field_phone
+    - field.field.profile.professional_directory.field_prof_dir_address
+    - field.field.profile.professional_directory.field_prof_dir_cert
+    - field.field.profile.professional_directory.field_prof_dir_city
+    - field.field.profile.professional_directory.field_prof_dir_contract
+    - field.field.profile.professional_directory.field_prof_dir_doe
+    - field.field.profile.professional_directory.field_prof_dir_last_name
+    - field.field.profile.professional_directory.field_prof_dir_show_email
+    - field.field.profile.professional_directory.field_prof_dir_spec
+    - field.field.profile.professional_directory.field_prof_dir_state
+    - field.field.profile.professional_directory.field_prof_dir_zip_code
+    - profile.type.professional_directory
+  module:
+    - content_moderation
+    - field_layout
+    - layout_discovery
+    - path
+third_party_settings:
+  field_layout:
+    id: layout_onecol
+    settings: {  }
+id: profile.professional_directory.default
+targetEntityType: profile
+bundle: professional_directory
+mode: default
+content:
+  field_address_line_2:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_first_name:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_other_certification:
+    weight: 14
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_other_specialization:
+    weight: 16
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_phone:
+    weight: 9
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_prof_dir_address:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_prof_dir_cert:
+    weight: 12
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_prof_dir_city:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_prof_dir_contract:
+    weight: 11
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_prof_dir_doe:
+    weight: 13
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_prof_dir_last_name:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_prof_dir_show_email:
+    weight: 10
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_prof_dir_spec:
+    weight: 15
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_prof_dir_state:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_prof_dir_zip_code:
+    weight: 8
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 1
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

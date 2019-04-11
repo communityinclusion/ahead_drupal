@@ -1,0 +1,21 @@
+uuid: 979e346a-6110-4e0e-960e-8e79ca0e69fb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_cert
+    - node.type.prof_directory
+  module:
+    - options
+id: node.prof_directory.field_prodir_cert
+field_name: field_prodir_cert
+entity_type: node
+bundle: prof_directory
+label: Certification
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

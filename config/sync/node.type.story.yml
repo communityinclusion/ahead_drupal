@@ -1,0 +1,11 @@
+uuid: bb7fac7d-5784-480d-907a-ec575defcdf4
+langcode: en
+status: true
+dependencies: {  }
+name: Story
+type: story
+description: 'A <em>story</em>, similar in form to a <em>page</em>, is ideal for creating and displaying content that informs or engages website visitors. Press releases, site announcements, and informal blog-like entries may all be created with a <em>story</em> entry. By default, a <em>story</em> entry is automatically featured on the site''s initial home page, and provides the ability to post comments.'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

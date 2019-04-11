@@ -1,0 +1,45 @@
+uuid: 80a32941-dc25-45ca-9e04-aa0057936425
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_system_logging
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - 'Drupal 7'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'System logging'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: variable
+  variables:
+    - error_level
+  source_module: system
+process:
+  error_level:
+    -
+      plugin: static_map
+      source: error_level
+      default_value: all
+      map:
+        - hide
+        - some
+        - all
+        - verbose
+destination:
+  plugin: config
+  config_name: system.logging
+migration_dependencies:
+  required: {  }
+  optional: {  }

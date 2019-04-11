@@ -1,0 +1,14 @@
+uuid: 7a1fe8e4-b637-4158-9bf6-22d6aa39506b
+name: 'Northeast Resource Center for Vision Education'
+mail: help@nercve.org
+slogan: 'Improving Education for Individuals with Visual Impairments.'
+page:
+  403: /
+  404: /
+  front: /node/6685
+admin_compact_mode: false
+weight_select_max: 100
+langcode: en
+default_langcode: en
+_core:
+  default_config_hash: yXadRE77Va-G6dxhd2kPYapAvbnSvTF6hO4oXiOEynI

@@ -1,0 +1,101 @@
+uuid: 27abec1f-0448-4369-8e66-1095f098d512
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_node_revision_profile
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'Node revisions (profile)'
+source:
+  plugin: d6_node_revision
+  node_type: profile
+process:
+  nid:
+    -
+      plugin: get
+      source: nid
+  vid:
+    -
+      plugin: get
+      source: vid
+  langcode:
+    -
+      plugin: default_value
+      source: language
+      default_value: und
+  title:
+    -
+      plugin: get
+      source: title
+  uid:
+    -
+      plugin: get
+      source: node_uid
+  status:
+    -
+      plugin: get
+      source: status
+  created:
+    -
+      plugin: get
+      source: created
+  changed:
+    -
+      plugin: get
+      source: changed
+  promote:
+    -
+      plugin: get
+      source: promote
+  sticky:
+    -
+      plugin: get
+      source: sticky
+  body/format:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_filter_format
+      source: format
+  body/value:
+    -
+      plugin: get
+      source: body
+  body/summary:
+    -
+      plugin: get
+      source: teaser
+  revision_uid:
+    -
+      plugin: get
+      source: revision_uid
+  revision_log:
+    -
+      plugin: get
+      source: log
+  revision_timestamp:
+    -
+      plugin: get
+      source: timestamp
+  field_user_reference:
+    -
+      plugin: sub_process
+      source: field_user_reference
+      process:
+        target_id:
+          plugin: migration_lookup
+          migration: upgrade_d6_user
+          source: uid
+destination:
+  plugin: 'entity_revision:node'
+  default_bundle: profile
+migration_dependencies:
+  required:
+    - upgrade_d6_node_profile
+  optional:
+    - upgrade_d6_filter_format
+    - upgrade_d6_user

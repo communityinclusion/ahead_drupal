@@ -1,0 +1,168 @@
+uuid: 116daf1e-e3e6-4334-aa1d-f99e587d2e17
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment_node_course.default
+    - field.field.node.course.body
+    - field.field.node.course.comment_node_course
+    - field.field.node.course.field_alt_prerequisite
+    - field.field.node.course.field_course_description_page
+    - field.field.node.course.field_course_location
+    - field.field.node.course.field_course_number
+    - field.field.node.course.field_course_order_vrt
+    - field.field.node.course.field_course_ordering_om
+    - field.field.node.course.field_course_ordering_tvi
+    - field.field.node.course.field_course_req_elective
+    - field.field.node.course.field_course_semester
+    - field.field.node.course.field_credits
+    - field.field.node.course.field_currently_offered
+    - field.field.node.course.field_instructor
+    - field.field.node.course.field_optional_texts
+    - field.field.node.course.field_prepracticum
+    - field.field.node.course.field_prerequisite
+    - field.field.node.course.field_program
+    - field.field.node.course.field_recommended_texts
+    - field.field.node.course.field_required_texts
+    - field.field.node.course.field_section
+    - node.type.course
+  module:
+    - comment
+    - text
+    - user
+id: node.course.default
+targetEntityType: node
+bundle: course
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  comment_node_course:
+    label: hidden
+    type: comment_default
+    weight: 20
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    region: content
+  field_alt_prerequisite:
+    label: inline
+    weight: 6
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_course_location:
+    label: inline
+    weight: 5
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_course_number:
+    label: inline
+    weight: 4
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_course_semester:
+    label: hidden
+    type: entity_reference_label
+    weight: 20
+    settings:
+      link: true
+    third_party_settings: {  }
+    region: content
+  field_credits:
+    label: inline
+    weight: 3
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_currently_offered:
+    label: above
+    weight: -3
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_instructor:
+    label: inline
+    weight: 3
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_optional_texts:
+    label: above
+    weight: 11
+    type: entity_reference_entity_view
+    settings:
+      view_mode: full
+      link: false
+    third_party_settings: {  }
+    region: content
+  field_prepracticum:
+    label: inline
+    weight: 4
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prerequisite:
+    label: inline
+    weight: 5
+    type: entity_reference_label
+    settings:
+      link: true
+    third_party_settings: {  }
+    region: content
+  field_recommended_texts:
+    label: above
+    weight: 10
+    type: entity_reference_entity_view
+    settings:
+      view_mode: full
+      link: false
+    third_party_settings: {  }
+    region: content
+  field_required_texts:
+    label: above
+    weight: 9
+    type: entity_reference_entity_view
+    settings:
+      view_mode: full
+      link: false
+    third_party_settings: {  }
+    region: content
+  field_section:
+    label: inline
+    weight: 6
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_course_description_page: true
+  field_course_order_vrt: true
+  field_course_ordering_om: true
+  field_course_ordering_tvi: true
+  field_course_req_elective: true
+  field_program: true

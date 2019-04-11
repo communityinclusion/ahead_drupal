@@ -1,0 +1,9 @@
+uuid: e88bb5e6-5bc1-48a2-a298-0ddfda4ae1f6
+langcode: en
+status: true
+dependencies: {  }
+name: program
+vid: program
+description: 'The program(s) course are used in.'
+hierarchy: 0
+weight: 0

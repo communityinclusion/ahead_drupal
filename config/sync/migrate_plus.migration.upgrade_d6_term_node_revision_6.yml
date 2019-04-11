@@ -1,0 +1,122 @@
+uuid: 58138e4c-4209-47f6-8481-c7f80d41878b
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_term_node_revision_6
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'Term/node relationship revisions'
+source:
+  plugin: d6_term_node_revision
+  vid: '6'
+process:
+  vid:
+    -
+      plugin: migration_lookup
+      migration:
+        - upgrade_upgrade_d6_node_revision_book
+        - upgrade_upgrade_d6_node_revision_course
+        - upgrade_upgrade_d6_node_revision_date
+        - upgrade_upgrade_d6_node_revision_forum
+        - upgrade_d6_node_revision_book
+        - upgrade_upgrade_d6_node_revision_image
+        - upgrade_d6_node_revision_course
+        - upgrade_upgrade_d6_node_revision_job
+        - upgrade_d6_node_revision_date
+        - upgrade_upgrade_d6_node_revision_page
+        - upgrade_d6_node_revision_forum
+        - upgrade_upgrade_d6_node_revision_panel
+        - upgrade_d6_node_revision_image
+        - upgrade_upgrade_d6_node_revision_prof_directory
+        - upgrade_d6_node_revision_job
+        - upgrade_upgrade_d6_node_revision_profile
+        - upgrade_d6_node_revision_page
+        - upgrade_upgrade_d6_node_revision_story
+        - upgrade_d6_node_revision_panel
+        - upgrade_upgrade_d6_node_revision_training
+        - upgrade_d6_node_revision_profile
+        - upgrade_upgrade_d6_node_revision_webform
+        - upgrade_d6_node_revision_prof_directory
+        - upgrade_d6_node_revision_story
+        - upgrade_d6_node_revision_training
+        - upgrade_d6_node_revision_webform
+      source: vid
+    -
+      plugin: skip_on_empty
+      method: row
+  type:
+    -
+      plugin: get
+      source: type
+  taxonomy_forums:
+    -
+      plugin: get
+      source: tid
+destination:
+  plugin: 'entity_revision:node'
+migration_dependencies:
+  required:
+    - upgrade_d6_term_node_1
+    - upgrade_d6_term_node_2
+    - upgrade_d6_term_node_3
+    - upgrade_d6_term_node_4
+    - upgrade_d6_term_node_5
+    - upgrade_d6_term_node_6
+    - upgrade_d6_node_revision_book
+    - upgrade_d6_node_revision_course
+    - upgrade_d6_node_revision_date
+    - upgrade_d6_node_revision_forum
+    - upgrade_d6_node_revision_image
+    - upgrade_d6_node_revision_job
+    - upgrade_d6_node_revision_page
+    - upgrade_d6_node_revision_panel
+    - upgrade_d6_node_revision_profile
+    - upgrade_d6_node_revision_prof_directory
+    - upgrade_d6_node_revision_story
+    - upgrade_d6_node_revision_training
+    - upgrade_d6_node_revision_webform
+  optional:
+    - upgrade_d6_node_revision_book
+    - upgrade_d6_node_revision_course
+    - upgrade_d6_node_revision_date
+    - upgrade_d6_node_revision_forum
+    - upgrade_d6_node_revision_image
+    - upgrade_d6_node_revision_job
+    - upgrade_d6_node_revision_page
+    - upgrade_d6_node_revision_panel
+    - upgrade_d6_node_revision_profile
+    - upgrade_d6_node_revision_prof_directory
+    - upgrade_d6_node_revision_story
+    - upgrade_d6_node_revision_training
+    - upgrade_d6_node_revision_webform
+    - upgrade_d6_node_revision_book
+    - upgrade_d6_node_revision_course
+    - upgrade_d6_node_revision_date
+    - upgrade_d6_node_revision_forum
+    - upgrade_d6_node_revision_image
+    - upgrade_d6_node_revision_job
+    - upgrade_d6_node_revision_page
+    - upgrade_d6_node_revision_panel
+    - upgrade_d6_node_revision_profile
+    - upgrade_d6_node_revision_prof_directory
+    - upgrade_d6_node_revision_story
+    - upgrade_d6_node_revision_training
+    - upgrade_d6_node_revision_webform
+    - upgrade_upgrade_d6_node_revision_book
+    - upgrade_upgrade_d6_node_revision_course
+    - upgrade_upgrade_d6_node_revision_date
+    - upgrade_upgrade_d6_node_revision_forum
+    - upgrade_upgrade_d6_node_revision_image
+    - upgrade_upgrade_d6_node_revision_job
+    - upgrade_upgrade_d6_node_revision_page
+    - upgrade_upgrade_d6_node_revision_panel
+    - upgrade_upgrade_d6_node_revision_prof_directory
+    - upgrade_upgrade_d6_node_revision_profile
+    - upgrade_upgrade_d6_node_revision_story
+    - upgrade_upgrade_d6_node_revision_training
+    - upgrade_upgrade_d6_node_revision_webform

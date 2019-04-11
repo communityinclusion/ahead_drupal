@@ -1,0 +1,39 @@
+uuid: 2a0f38c4-72ce-4fed-8379-06441ab445d6
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_menu_settings
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - 'Drupal 7'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Menu UI configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: variable
+  variables:
+    - menu_override_parent_selector
+  source_module: menu
+process:
+  override_parent_selector:
+    -
+      plugin: get
+      source: menu_override_parent_selector
+destination:
+  plugin: config
+  config_name: menu_ui.settings
+migration_dependencies:
+  required: {  }
+  optional: {  }

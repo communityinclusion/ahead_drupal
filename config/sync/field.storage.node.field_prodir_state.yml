@@ -1,0 +1,21 @@
+uuid: a5b2f4db-a321-4a42-8854-6bf1f5b926b5
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_prodir_state
+field_name: field_prodir_state
+entity_type: node
+type: list_string
+settings:
+  allowed_values: {  }
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

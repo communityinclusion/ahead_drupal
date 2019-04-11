@@ -1,0 +1,23 @@
+uuid: 2146333a-7548-4688-bd29-b2c435f110c7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_prof_dir_contract
+    - profile.type.professional_directory
+id: profile.professional_directory.field_prof_dir_contract
+field_name: field_prof_dir_contract
+entity_type: profile
+bundle: professional_directory
+label: 'Available for Contract Work?'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

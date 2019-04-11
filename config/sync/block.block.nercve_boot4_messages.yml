@@ -1,0 +1,22 @@
+uuid: f82ad1ba-f97e-46bb-a9cb-f795c47c3973
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - nercve_boot4
+_core:
+  default_config_hash: 5MNdk3fpMKx_xxBTcz2T11DL4XEU1H5SgHl8BsYdFsA
+id: nercve_boot4_messages
+theme: nercve_boot4
+region: highlighted
+weight: 0
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 'Status messages'
+  provider: system
+  label_display: '0'
+visibility: {  }

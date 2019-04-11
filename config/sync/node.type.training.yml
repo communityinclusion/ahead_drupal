@@ -1,0 +1,11 @@
+uuid: 716cdbdc-db40-475c-8718-bdf52fa8b434
+langcode: en
+status: true
+dependencies: {  }
+name: 'Training Event'
+type: training
+description: 'A Listing on the Training Events calendar'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

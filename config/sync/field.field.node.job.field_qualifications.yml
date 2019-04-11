@@ -1,0 +1,21 @@
+uuid: 332c1c55-103b-4e7d-b59b-f50fa2f117c4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_qualifications
+    - node.type.job
+  module:
+    - text
+id: node.job.field_qualifications
+field_name: field_qualifications
+entity_type: node
+bundle: job
+label: Qualifications
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

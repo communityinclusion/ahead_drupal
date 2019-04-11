@@ -1,0 +1,27 @@
+uuid: a9642ebf-eafc-4270-88f2-afdb51ef4285
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.comment_node_course
+    - field.field.comment.comment_node_course.comment_body
+  module:
+    - text
+id: comment.comment_node_course.default
+targetEntityType: comment
+bundle: comment_node_course
+mode: default
+content:
+  comment_body:
+    label: hidden
+    type: text_default
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden: {  }

@@ -1,0 +1,20 @@
+uuid: 9cb9bae4-70d8-42ab-9379-40ff9ec8fcf4
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - garland
+id: system
+theme: garland
+region: ''
+weight: 10
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: ''
+  provider: system
+  label_display: '0'
+visibility: {  }

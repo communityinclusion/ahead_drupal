@@ -1,0 +1,21 @@
+uuid: 6be8d327-971e-42bd-b67c-26e7d89e43f4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_user_reference
+    - node.type.profile
+id: node.profile.field_user_reference
+field_name: field_user_reference
+entity_type: node
+bundle: profile
+label: 'User Reference'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings: {  }
+field_type: entity_reference

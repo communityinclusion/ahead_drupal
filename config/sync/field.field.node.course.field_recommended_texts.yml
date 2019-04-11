@@ -1,0 +1,21 @@
+uuid: 4f3ca8b2-a963-4435-ab3d-2a130d2b8b08
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_recommended_texts
+    - node.type.course
+id: node.course.field_recommended_texts
+field_name: field_recommended_texts
+entity_type: node
+bundle: course
+label: 'Recommended Texts'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings: {  }
+field_type: entity_reference

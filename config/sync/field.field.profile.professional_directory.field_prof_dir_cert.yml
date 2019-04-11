@@ -1,0 +1,21 @@
+uuid: b95b6bf6-9699-4044-924e-baefb0f3c988
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_prof_dir_cert
+    - profile.type.professional_directory
+  module:
+    - options
+id: profile.professional_directory.field_prof_dir_cert
+field_name: field_prof_dir_cert
+entity_type: profile
+bundle: professional_directory
+label: Certification
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

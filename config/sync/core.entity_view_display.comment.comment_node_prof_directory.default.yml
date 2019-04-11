@@ -1,0 +1,27 @@
+uuid: d3d777ed-023d-4c23-bac4-569b442f5b4a
+langcode: en
+status: true
+dependencies:
+  config:
+    - comment.type.comment_node_prof_directory
+    - field.field.comment.comment_node_prof_directory.comment_body
+  module:
+    - text
+id: comment.comment_node_prof_directory.default
+targetEntityType: comment
+bundle: comment_node_prof_directory
+mode: default
+content:
+  comment_body:
+    label: hidden
+    type: text_default
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden: {  }

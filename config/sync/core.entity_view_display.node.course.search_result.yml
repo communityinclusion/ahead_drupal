@@ -1,0 +1,181 @@
+uuid: 7905fbba-eb6c-44c1-8b58-7b0abbef8ffe
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.search_result
+    - field.field.node.course.body
+    - field.field.node.course.field_alt_prerequisite
+    - field.field.node.course.field_course_description_page
+    - field.field.node.course.field_course_location
+    - field.field.node.course.field_course_number
+    - field.field.node.course.field_course_order_vrt
+    - field.field.node.course.field_course_ordering_om
+    - field.field.node.course.field_course_ordering_tvi
+    - field.field.node.course.field_course_req_elective
+    - field.field.node.course.field_credits
+    - field.field.node.course.field_currently_offered
+    - field.field.node.course.field_instructor
+    - field.field.node.course.field_optional_texts
+    - field.field.node.course.field_prepracticum
+    - field.field.node.course.field_prerequisite
+    - field.field.node.course.field_program
+    - field.field.node.course.field_recommended_texts
+    - field.field.node.course.field_required_texts
+    - field.field.node.course.field_section
+    - node.type.course
+  module:
+    - text
+    - user
+id: node.course.search_result
+targetEntityType: node
+bundle: course
+mode: search_result
+content:
+  field_alt_prerequisite:
+    label: inline
+    weight: 6
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_course_description_page:
+    label: above
+    weight: -2
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_course_location:
+    label: inline
+    weight: 5
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_course_number:
+    label: inline
+    weight: 4
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_course_order_vrt:
+    label: above
+    weight: 2
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_course_ordering_om:
+    label: above
+    weight: 1
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_course_ordering_tvi:
+    label: above
+    weight: 0
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_course_req_elective:
+    label: above
+    weight: -1
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_credits:
+    label: inline
+    weight: 3
+    type: number_integer
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    region: content
+  field_currently_offered:
+    label: above
+    weight: -3
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_instructor:
+    label: inline
+    weight: 3
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_optional_texts:
+    label: above
+    weight: 11
+    type: entity_reference_label
+    settings:
+      link: true
+    third_party_settings: {  }
+    region: content
+  field_prepracticum:
+    label: inline
+    weight: 4
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_prerequisite:
+    label: inline
+    weight: 5
+    type: entity_reference_label
+    settings:
+      link: true
+    third_party_settings: {  }
+    region: content
+  field_program:
+    label: hidden
+    weight: -4
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_recommended_texts:
+    label: above
+    weight: 10
+    type: entity_reference_label
+    settings:
+      link: true
+    third_party_settings: {  }
+    region: content
+  field_required_texts:
+    label: above
+    weight: 9
+    type: entity_reference_label
+    settings:
+      link: true
+    third_party_settings: {  }
+    region: content
+  field_section:
+    label: inline
+    weight: 6
+    type: text_default
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  body: true

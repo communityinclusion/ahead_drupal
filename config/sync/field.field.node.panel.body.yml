@@ -1,0 +1,22 @@
+uuid: 2456f3c5-793d-43dc-ae1e-1979a8cad2be
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.panel
+  module:
+    - text
+id: node.panel.body
+field_name: body
+entity_type: node
+bundle: panel
+label: Teaser
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

@@ -1,0 +1,153 @@
+uuid: 925e214e-c387-4de2-aad6-c59b94af1860
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.profile.professional_directory.field_address_line_2
+    - field.field.profile.professional_directory.field_first_name
+    - field.field.profile.professional_directory.field_other_certification
+    - field.field.profile.professional_directory.field_other_specialization
+    - field.field.profile.professional_directory.field_phone
+    - field.field.profile.professional_directory.field_prof_dir_address
+    - field.field.profile.professional_directory.field_prof_dir_cert
+    - field.field.profile.professional_directory.field_prof_dir_city
+    - field.field.profile.professional_directory.field_prof_dir_contract
+    - field.field.profile.professional_directory.field_prof_dir_doe
+    - field.field.profile.professional_directory.field_prof_dir_last_name
+    - field.field.profile.professional_directory.field_prof_dir_show_email
+    - field.field.profile.professional_directory.field_prof_dir_spec
+    - field.field.profile.professional_directory.field_prof_dir_state
+    - field.field.profile.professional_directory.field_prof_dir_zip_code
+    - profile.type.professional_directory
+  module:
+    - layout_builder
+    - options
+third_party_settings:
+  layout_builder:
+    sections: {  }
+id: profile.professional_directory.default
+targetEntityType: profile
+bundle: professional_directory
+mode: default
+content:
+  field_address_line_2:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_first_name:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_other_certification:
+    weight: 12
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_other_specialization:
+    weight: 14
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_phone:
+    weight: 7
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_prof_dir_address:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_prof_dir_cert:
+    weight: 10
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_prof_dir_city:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_prof_dir_contract:
+    weight: 9
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_prof_dir_doe:
+    weight: 11
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_prof_dir_last_name:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_prof_dir_show_email:
+    weight: 8
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_prof_dir_spec:
+    weight: 13
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_prof_dir_state:
+    weight: 5
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_prof_dir_zip_code:
+    weight: 6
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

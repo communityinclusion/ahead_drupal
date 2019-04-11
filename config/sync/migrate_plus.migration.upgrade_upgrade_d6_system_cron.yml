@@ -1,0 +1,44 @@
+uuid: fdfb27a3-962d-4278-b295-e96afc4c613a
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_system_cron
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Cron settings'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: variable
+  variables:
+    - cron_threshold_warning
+    - cron_threshold_error
+    - cron_last
+  source_module: system
+process:
+  threshold/requirements_warning:
+    -
+      plugin: get
+      source: cron_threshold_warning
+  threshold/requirements_error:
+    -
+      plugin: get
+      source: cron_threshold_error
+destination:
+  plugin: config
+  config_name: system.cron
+migration_dependencies:
+  required: {  }
+  optional: {  }

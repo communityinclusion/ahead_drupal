@@ -1,0 +1,68 @@
+uuid: 2995e831-9c25-4077-b98d-5607e5b5a026
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_user_profile_field_instance
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - 'Drupal 7'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'User profile field instance configuration'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: profile_field
+  constants:
+    entity_type: user
+    bundle: user
+process:
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  bundle:
+    -
+      plugin: get
+      source: constants/bundle
+  label:
+    -
+      plugin: get
+      source: title
+  description:
+    -
+      plugin: get
+      source: explanation
+  field_name:
+    -
+      plugin: migration_lookup
+      migration: upgrade_upgrade_user_profile_field
+      source: fid
+    -
+      plugin: skip_on_empty
+      method: row
+    -
+      plugin: extract
+      index:
+        - 1
+  required:
+    -
+      plugin: get
+      source: required
+destination:
+  plugin: 'entity:field_config'
+migration_dependencies:
+  required:
+    - upgrade_upgrade_user_profile_field
+  optional:
+    - upgrade_upgrade_user_profile_field

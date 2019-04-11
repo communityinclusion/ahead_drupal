@@ -1,0 +1,21 @@
+uuid: a68e395c-781c-420a-b92e-867bb97aca3c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_resume_maailto
+    - node.type.job
+id: node.job.field_resume_maailto
+field_name: field_resume_maailto
+entity_type: node
+bundle: job
+label: 'Resumes should be sent to address specified in the job description.'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

@@ -1,0 +1,51 @@
+uuid: d30939c1-b165-4dad-8137-30238c250bf9
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_upgrade_d6_user_contact_settings
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Content
+migration_group: migrate_drupal_6
+label: 'User contact settings'
+source:
+  key: drupal_6
+  database:
+    driver: mysql
+    username: nercve
+    password: icinercve99
+    host: localhost
+    port: ''
+    database: nercve
+    prefix: beta_
+  plugin: d6_user
+  constants:
+    key: contact
+    module: contact
+process:
+  uid:
+    -
+      plugin: get
+      source: uid
+  key:
+    -
+      plugin: get
+      source: constants/key
+  module:
+    -
+      plugin: get
+      source: constants/module
+  settings:
+    -
+      plugin: skip_row_if_not_set
+      index: contact
+      source: data
+destination:
+  plugin: user_data
+migration_dependencies:
+  required:
+    - upgrade_upgrade_d6_user
+  optional: {  }

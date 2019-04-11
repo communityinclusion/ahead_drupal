@@ -1,0 +1,19 @@
+uuid: 3c45ff73-95b8-4678-b79b-01af88dfa0a7
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_prodir_zipcode
+field_name: field_prodir_zipcode
+entity_type: node
+type: string_long
+settings:
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

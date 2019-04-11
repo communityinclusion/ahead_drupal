@@ -1,0 +1,13 @@
+uuid: 7cdce6b9-3847-4095-9f40-0be6a09d1dc1
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: lDM9mvIGAu8Sw8rt-uCO4Sr7yX5VPrDPxYcawkbKd6k
+id: node_make_unsticky_action
+label: 'Make post unsticky'
+type: node
+plugin: node_make_unsticky_action
+configuration: {  }

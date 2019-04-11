@@ -1,0 +1,21 @@
+uuid: daca9ad3-da09-4a19-a251-e5bed37c897b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_doe
+    - node.type.prof_directory
+  module:
+    - options
+id: node.prof_directory.field_prodir_doe
+field_name: field_prodir_doe
+entity_type: node
+bundle: prof_directory
+label: 'DOE Certified in'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

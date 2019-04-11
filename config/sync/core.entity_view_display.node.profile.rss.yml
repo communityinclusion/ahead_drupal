@@ -1,0 +1,31 @@
+uuid: 3f40c665-b671-4e66-8532-5902af804768
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.rss
+    - field.field.node.profile.body
+    - field.field.node.profile.field_user_reference
+    - node.type.profile
+  module:
+    - user
+id: node.profile.rss
+targetEntityType: node
+bundle: profile
+mode: rss
+content:
+  field_user_reference:
+    label: above
+    weight: 31
+    type: entity_reference_label
+    settings:
+      link: true
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  body: true

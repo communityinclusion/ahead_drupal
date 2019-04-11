@@ -1,0 +1,11 @@
+uuid: 0a48a234-a868-46d4-9ff3-bc9d64e56292
+langcode: en
+status: true
+dependencies: {  }
+name: 'Professional Directory'
+type: prof_directory
+description: 'Professional Directory listing'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

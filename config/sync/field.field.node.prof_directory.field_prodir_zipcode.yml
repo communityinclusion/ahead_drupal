@@ -1,0 +1,19 @@
+uuid: b72883eb-10a9-4c52-b6d5-40a3815b011b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_prodir_zipcode
+    - node.type.prof_directory
+id: node.prof_directory.field_prodir_zipcode
+field_name: field_prodir_zipcode
+entity_type: node
+bundle: prof_directory
+label: 'Zip Code'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

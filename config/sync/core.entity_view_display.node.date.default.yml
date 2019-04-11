@@ -1,0 +1,53 @@
+uuid: e016af7c-788a-41cc-b0a2-7bcc0855d2e5
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment_node_date.default
+    - field.field.node.date.body
+    - field.field.node.date.comment_node_date
+    - field.field.node.date.field_date
+    - field.field.node.date.upload
+    - node.type.date
+  module:
+    - comment
+    - datetime
+    - text
+    - user
+id: node.date.default
+targetEntityType: node
+bundle: date
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  comment_node_date:
+    label: hidden
+    type: comment_default
+    weight: 20
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    region: content
+  field_date:
+    label: above
+    weight: -4
+    type: datetime_default
+    settings:
+      format_type: fallback
+      timezone_override: ''
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  upload: true

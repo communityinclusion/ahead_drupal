@@ -1,0 +1,14 @@
+uuid: 0e24a7f3-79c3-4aae-965f-e714d5e2437d
+langcode: en
+status: true
+dependencies:
+  module:
+    - action
+id: e_mail_to_site_admin
+label: 'e-mail to site admin'
+type: system
+plugin: action_send_email_action
+configuration:
+  recipient: paul.foos@umb.edu
+  subject: 'NERCVE posting needs approval'
+  message: "Approve a new listing on the NERCVE site.<br /><br />\r\n\r\nType: %node_type<br />\r\nTitle: %title<br />\r\nURL:  %node_url<br />\r\n"

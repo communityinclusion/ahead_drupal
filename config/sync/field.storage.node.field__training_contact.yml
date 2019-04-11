@@ -1,0 +1,19 @@
+uuid: 249b92e6-792e-4e94-a482-091f5b43e7af
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field__training_contact
+field_name: field__training_contact
+entity_type: node
+type: string_long
+settings:
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

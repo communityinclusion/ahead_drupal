@@ -1,0 +1,22 @@
+uuid: 91885ac5-a56f-4e30-8f14-6451c17d7898
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.prof_directory
+id: node.prof_directory.sticky
+field_name: sticky
+entity_type: node
+bundle: prof_directory
+label: 'Sticky at the top of lists'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

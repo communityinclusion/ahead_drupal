@@ -1,0 +1,67 @@
+uuid: d095532b-7141-4ace-8b72-a227cfd4ef8e
+langcode: en
+status: true
+dependencies: {  }
+id: upgrade_d6_vocabulary_field
+class: Drupal\migrate\Plugin\Migration
+field_plugin_method: alterFieldFormatterMigration
+cck_plugin_method: null
+migration_tags:
+  - 'Drupal 6'
+  - Configuration
+migration_group: migrate_drupal_6
+label: 'Vocabulary field configuration'
+source:
+  plugin: d6_taxonomy_vocabulary
+  constants:
+    entity_type: node
+    type: entity_reference
+    target_entity_type: taxonomy_term
+    field_prefix: field_
+process:
+  entity_type:
+    -
+      plugin: get
+      source: constants/entity_type
+  type:
+    -
+      plugin: get
+      source: constants/type
+  raw_field_name:
+    -
+      plugin: migration_lookup
+      migration: upgrade_d6_taxonomy_vocabulary
+      source: vid
+    -
+      plugin: skip_on_empty
+      method: row
+  field_name:
+    -
+      plugin: concat
+      source:
+        - constants/field_prefix
+        - '@raw_field_name'
+    -
+      plugin: substr
+      length: 32
+    -
+      plugin: forum_vocabulary
+      machine_name: taxonomy_forums
+  settings/target_type:
+    -
+      plugin: get
+      source: constants/target_entity_type
+  cardinality:
+    -
+      plugin: get
+      source: cardinality
+destination:
+  plugin: 'entity:field_storage_config'
+  dependencies:
+    module:
+      - entity_reference
+migration_dependencies:
+  required:
+    - upgrade_d6_taxonomy_vocabulary
+  optional:
+    - upgrade_d6_taxonomy_vocabulary

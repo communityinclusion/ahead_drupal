@@ -1,0 +1,33 @@
+uuid: f51d721c-a7e4-47ce-b9d6-3f06732ee540
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.comment_node_prof_directory
+    - node.type.prof_directory
+  module:
+    - comment
+id: node.prof_directory.comment_node_prof_directory
+field_name: comment_node_prof_directory
+entity_type: node
+bundle: prof_directory
+label: Comments
+description: ''
+required: true
+translatable: true
+default_value:
+  -
+    status: 2
+    cid: 0
+    last_comment_timestamp: 0
+    last_comment_name: null
+    last_comment_uid: 0
+    comment_count: 0
+default_value_callback: ''
+settings:
+  default_mode: 1
+  per_page: 50
+  anonymous: 0
+  form_location: false
+  preview: 1
+field_type: comment

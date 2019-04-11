@@ -1,0 +1,11 @@
+uuid: a05e0627-df3a-4ca1-ac91-160b19c6753d
+langcode: en
+status: true
+dependencies: {  }
+name: Job
+type: job
+description: 'A Job posting'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

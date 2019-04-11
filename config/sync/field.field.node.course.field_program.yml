@@ -1,0 +1,21 @@
+uuid: e671766a-7d3a-47ff-bdc2-a3d3827cdce6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_program
+    - node.type.course
+  module:
+    - options
+id: node.course.field_program
+field_name: field_program
+entity_type: node
+bundle: course
+label: Program
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

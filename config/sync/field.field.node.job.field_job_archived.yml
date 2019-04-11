@@ -1,0 +1,21 @@
+uuid: bd74a705-c2da-42a1-9a1a-67f65e8285e7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_job_archived
+    - node.type.job
+id: node.job.field_job_archived
+field_name: field_job_archived
+entity_type: node
+bundle: job
+label: 'Job Archived'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean
