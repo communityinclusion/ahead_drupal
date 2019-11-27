@@ -41,6 +41,8 @@ class WebformHandlerEmailAdvancedTest extends WebformTestBase {
    * @see \Drupal\Core\Mail\Plugin\Mail\TestMailCollector
    */
   public function testAdvancedEmailHandler() {
+    global $base_url;
+
     /** @var \Drupal\webform\WebformInterface $webform */
     $webform = Webform::load('test_handler_email_advanced');
 
@@ -55,6 +57,8 @@ class WebformHandlerEmailAdvancedTest extends WebformTestBase {
     $this->assertEqual($sent_email['headers']['Return-Path'], 'return_path@example.com');
     $this->assertEqual($sent_email['headers']['Sender'], 'sender_name <sender_mail@example.com>');
     $this->assertEqual($sent_email['headers']['Reply-to'], 'reply_to@example.com');
+    $this->assertEqual($sent_email['params']['custom_parameter'], 'test');
+    $this->assert(!isset($sent_email['params']['parameters']));
 
     $email_handler = $webform->getHandler('email');
     $configuration = $email_handler->getConfiguration();
@@ -146,8 +150,7 @@ class WebformHandlerEmailAdvancedTest extends WebformTestBase {
 
     // Check resend webform includes link to the attachment.
     $this->drupalGet("admin/structure/webform/manage/test_handler_email_advanced/submission/$sid/resend");
-    $this->assertRaw('<span class="file file--mime-text-plain file--text">');
-    $this->assertRaw('file.txt');
+    $this->assertRaw('<strong><a href="' . $base_url . '/system/files/webform/test_handler_email_advanced/6/file.txt">file.txt</a></strong> (text/plain) - 43 bytes');
 
     // Check resend webform with custom message.
     $this->drupalPostForm("admin/structure/webform/manage/test_handler_email_advanced/submission/$sid/resend", ['message[body][value]' => 'Testing 123…'], t('Resend message'));

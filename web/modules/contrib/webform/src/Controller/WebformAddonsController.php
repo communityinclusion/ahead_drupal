@@ -4,13 +4,14 @@ namespace Drupal\webform\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\WebformAddonsManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Provides route responses for webform add-on.
+ * Provides route responses for Webform add-ons.
  */
 class WebformAddonsController extends ControllerBase implements ContainerInjectionInterface {
 
@@ -52,7 +53,7 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
   }
 
   /**
-   * Returns the Webform extend page.
+   * Returns the Webform add-ons page.
    *
    * @return array
    *   The webform submission webform.
@@ -66,6 +67,10 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
     ];
 
     // Filter.
+    $is_claro_theme = (\Drupal::theme()->getActiveTheme()->getName() === 'claro');
+    $data_source = $is_claro_theme ? '.admin-item__title, .admin-item__description' : 'li';
+    $data_parent = $is_claro_theme ? '.admin-item' : 'li';
+
     $build['filter'] = [
       '#type' => 'search',
       '#title' => $this->t('Filter'),
@@ -75,12 +80,12 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
       '#attributes' => [
         'class' => ['webform-form-filter-text'],
         'data-summary' => '.webform-addons-summary',
-        'data-item-single' => $this->t('add-on'),
+        'data-item-singlular' => $this->t('add-on'),
         'data-item-plural' => $this->t('add-ons'),
         'data-no-results' => '.webform-addons-no-results',
         'data-element' => '.admin-list',
-        'data-source' => 'li',
-        'data-parent' => 'li',
+        'data-source' => $data_source,
+        'data-parent' => $data_parent,
         'title' => $this->t('Enter a keyword to filter by.'),
         'autofocus' => 'autofocus',
       ],
@@ -116,6 +121,14 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
       ];
       $projects = $this->addons->getProjects($category_name);
       foreach ($projects as $project_name => &$project) {
+        // Append (Experimental) to title.
+        if (!empty($project['experimental'])) {
+          $project['title'] .= ' [' . $this->t('EXPERIMENTAL') . ']';
+        }
+        // Prepend logo to title.
+        if (isset($project['logo'])) {
+          $project['title'] = Markup::create('<img src="' . $project['logo']->toString() . '" alt="' . $project['title'] . '"/>' . $project['title']);
+        }
         $project['description'] .= '<br /><small>' . $project['url']->toString() . '</small>';
 
         // Append recommended to project's description.
@@ -132,7 +145,8 @@ class WebformAddonsController extends ControllerBase implements ContainerInjecti
               '#message_type' => 'warning',
               '#message_close' => TRUE,
               '#message_storage' => WebformMessage::STORAGE_USER,
-              '#message_message' => $this->t('Please install to the <a href=":href">@title</a> project to improve the Webform module\'s user experience.', [':href' => $project['url']->toString(), '@title' => $project['title']]),
+              '#message_message' => $this->t('Please install to the <a href=":href">@title</a> project to improve the Webform module\'s user experience.', [':href' => $project['url']->toString(), '@title' => $project['title']]) .
+                ' <em>' . $project['install'] . '</em>',
               '#weight' => -100,
             ];
           }

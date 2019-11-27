@@ -178,10 +178,14 @@ class ProcessBase extends Process
             // Revert of doubled backslashes.
             $output = preg_replace('#\\\\{2}#', '\\', $output);
         }
-        $output = $this->removeNonJsonJunk($output);
-        $json = json_decode($output, true);
+        $sanitizedOutput = $this->removeNonJsonJunk($output);
+        $json = json_decode($sanitizedOutput, true);
         if (!isset($json)) {
-            throw new \InvalidArgumentException('Unable to decode output into JSON.');
+            $msg = 'Unable to decode output into JSON: ' . json_last_error_msg();
+            if (json_last_error() == JSON_ERROR_SYNTAX) {
+                $msg .= "\n\n$output";
+            }
+            throw new \InvalidArgumentException($msg);
         }
         return $json;
     }
@@ -209,8 +213,9 @@ class ProcessBase extends Process
         // If the json is not a simple string or a simple array, then is must
         // be an associative array. We will remove non-json garbage characters
         // before and after the enclosing curley-braces.
-        $data = preg_replace('#^[^{]*#', '', $data);
-        $data = preg_replace('#[^}]*$#', '', $data);
+        $start = strpos($data, '{');
+        $end = strrpos($data, '}') + 1;
+        $data = substr($data, $start, $end - $start);
         return $data;
     }
 

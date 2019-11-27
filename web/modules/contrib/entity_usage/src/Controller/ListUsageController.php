@@ -3,6 +3,7 @@
 namespace Drupal\entity_usage\Controller;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -18,6 +19,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class ListUsageController extends ControllerBase {
 
+  /**
+   * Number of items per page to use when nothing was configured.
+   */
+  const ITEMS_PER_PAGE_DEFAULT = 25;
 
   /**
    * The entity field manager.
@@ -41,6 +46,20 @@ class ListUsageController extends ControllerBase {
   protected $allRows;
 
   /**
+   * The Entity Usage settings config object.
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
+  protected $entityUsageConfig;
+
+  /**
+   * The number of records per page this controller should output.
+   *
+   * @var int
+   */
+  protected $itemsPerPage;
+
+  /**
    * ListUsageController constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -50,10 +69,12 @@ class ListUsageController extends ControllerBase {
    * @param \Drupal\entity_usage\EntityUsageInterface $entity_usage
    *   The EntityUsage service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, EntityUsageInterface $entity_usage) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, EntityUsageInterface $entity_usage, ConfigFactoryInterface $config_factory) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->entityUsage = $entity_usage;
+    $this->entityUsageConfig = $config_factory->get('entity_usage.settings');
+    $this->itemsPerPage = $this->entityUsageConfig->get('usage_controller_items_per_page') ?: self::ITEMS_PER_PAGE_DEFAULT;
   }
 
   /**
@@ -63,7 +84,8 @@ class ListUsageController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('entity_field.manager'),
-      $container->get('entity_usage.usage')
+      $container->get('entity_usage.usage'),
+      $container->get('config.factory')
     );
   }
 
@@ -98,10 +120,8 @@ class ListUsageController extends ControllerBase {
     ];
 
     $total = count($all_rows);
-    // @todo Make this configurable on the settings form.
-    $num_per_page = 25;
-    $page = pager_default_initialize($total, $num_per_page);
-    $page_rows = $this->getPageRows($page, $num_per_page, $entity_type, $entity_id);
+    $page = pager_default_initialize($total, $this->itemsPerPage);
+    $page_rows = $this->getPageRows($page, $this->itemsPerPage, $entity_type, $entity_id);
     // If all rows on this page are of entities that have usage on their default
     // revision, we don't need the "Used in" column.
     $used_in_previous_revisions = FALSE;
@@ -188,12 +208,7 @@ class ListUsageController extends ControllerBase {
         if (empty($link)) {
           continue;
         }
-        if (isset($source_entity->status)) {
-          $published = !empty($source_entity->status->value) ? $this->t('Published') : $this->t('Unpublished');
-        }
-        else {
-          $published = '';
-        }
+        $published = $this->getSourceEntityStatus($source_entity);
         $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ? $field_definitions[$records[$default_key]['field_name']]->getLabel() : $this->t('Unknown');
         $rows[] = [
           $link,
@@ -247,6 +262,36 @@ class ListUsageController extends ControllerBase {
       return $this->t('Entity usage information for %entity_label', ['%entity_label' => $entity->label()]);
     }
     return $this->t('Entity Usage List');
+  }
+
+  /**
+   * Retrieve the source entity's status.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $source_entity
+   *   The source entity.
+   *
+   * @return string
+   *   The entity's status.
+   */
+  protected function getSourceEntityStatus(EntityInterface $source_entity) {
+    // Treat paragraph entities in a special manner. Paragraph entities
+    // should get their host (parent) entity's status.
+    if ($source_entity->getEntityTypeId() == 'paragraph') {
+      /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
+      $parent = $source_entity->getParentEntity();
+      if (!empty($parent)) {
+        return $this->getSourceEntityStatus($parent);
+      }
+    }
+
+    if (isset($source_entity->status)) {
+      $published = !empty($source_entity->status->value) ? $this->t('Published') : $this->t('Unpublished');
+    }
+    else {
+      $published = '';
+    }
+
+    return $published;
   }
 
   /**

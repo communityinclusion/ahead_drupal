@@ -1383,6 +1383,57 @@ if (true) {
 	<?php
 }
 
+foo(function () {
+	if ($conditionA &&
+		$conditionB
+	) {
+		if ($conditionC) {
+			$a = 1;
+		}
+	}
+});
+
+switch($foo)
+{
+	case 1:
+		$value = 1; break;
+	case 2:
+		if ($bar) {
+			break;
+		}
+	default:
+		$value = 0;
+}
+
+switch ($x) {
+	case 'a':
+		switch ($y) {
+			case 'c':
+				return true;
+		}
+	case 'b':
+		switch ($z) {
+			case 'd':
+				return true;
+		}
+}
+
+$foo = [
+	[
+		'a' => [
+		],
+		'b' => <<<'FOO'
+foo;
+FOO
+	],
+	$a,
+];
+
+$query = Model::query()
+   ->when($a, function () {
+		static $b = '';
+   });
+
 ?>
 
 <?php

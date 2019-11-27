@@ -403,3 +403,14 @@ $paths = array(
           Init::ROOT_DIR.'/тип'  => 'авто',
           Init::ROOT_DIR.'/цвет' => 'синий',
          );
+
+$foo = array(<<<JSON
+{
+}
+JSON
+       );
+
+// Intentional syntax error.
+$a = array(
+      'a' =>
+     );
