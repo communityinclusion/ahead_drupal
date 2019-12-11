@@ -1,0 +1,86 @@
+diff --git a/nodeaccess.module b/nodeaccess.module
+index 2e33256a..1e0f5083 100644
+--- a/nodeaccess.module
++++ b/nodeaccess.module
+@@ -272,7 +272,7 @@ function nodeaccess_node_access(NodeInterface $node, $op, $account) {
+         $anonymous_rid = $role_map[DRUPAL_ANONYMOUS_RID];
+         // If anonymous has rights to this node, we allow them.
+         if (($grants['rid'][$anonymous_rid]['grant_update'] && $op == 'update') ||
+-            ($grants['rid'][$anonymous_rid]['grant_delete'] && $op == 'delete')) {
++          ($grants['rid'][$anonymous_rid]['grant_delete'] && $op == 'delete')) {
+           return AccessResult::Allowed();
+         }
+         return AccessResult::forbidden();
+@@ -291,39 +291,43 @@ function _nodeaccess_get_grants($node) {
+   $grants = [];
+   // Load all roles.
+   $db = \Drupal::database();
+-  $result = $db->select('nodeaccess', 'na')
+-    ->fields('na', ['na.gid', 'na.grant_view, na.grant_update, na.grant_delete'])
+-    ->condition('nid', $node->id, '=')
+-    ->condition('realm', 'nodeaccess_rid', '=')
+-    ->execute()
+-    ->fetchAll();
+-  foreach ($result as $grant) {
+-    $grants['rid'][$grant->gid] = [
+-      'grant_view' => $grant->grant_view,
+-      'grant_update' => $grant->grant_update,
+-      'grant_delete' => $grant->grant_delete,
+-    ];
++  $query = $db->select('nodeaccess', 'na')
++    ->fields('na', ['gid', 'grant_view', 'grant_update', 'grant_delete'])
++    ->condition('na.nid', $node->id, '=')
++    ->condition('na.realm', 'nodeaccess_rid', '=');
++  $result = $query->execute()->fetchAll();
++
++  if ($result) {
++    foreach ($result as $grant) {
++      $grants['rid'][$grant->gid] = [
++        'grant_view' => $grant->grant_view,
++        'grant_update' => $grant->grant_update,
++        'grant_delete' => $grant->grant_delete,
++      ];
++    }
+   }
++
+   // Load users from node_access.
+   $db = \Drupal::database();
+-  $entries = $db->select('nodeaccess', 'n')
+-    ->fields('n', ['grant_view', 'grant_update', 'grant_delete'])
+-    ->join('users_field_data', 'ufd', 'ufd.uid = n.gid')
+-    ->condition('nid', $node->nid, '=')
+-    ->condition('realm', 'nodeaccess_uid', '=')
+-    ->orderBy('ufd.name', 'ASC')
+-    ->execute()
+-    ->fetchAll();
+-  $result = count($entries);
++  $query = $db->select('nodeaccess', 'n');
++  $query->leftJoin('users_field_data', 'ufd', 'ufd.uid = n.gid');
++  $query->fields('n', ['gid', 'grant_view', 'grant_update', 'grant_delete']);
++  $query->condition('n.nid', $node->id, '=')
++    ->condition('n.realm', 'nodeaccess_uid', '=')
++    ->orderBy('name', 'ASC');
++  $result = $query->execute()->fetchAll();
+
+-  foreach ($result as $account) {
+-    $grants['uid'][$account->uid] = [
+-      'name' => $account->name,
+-      'keep' => 1,
+-      'grant_view' => $account->grant_view,
+-      'grant_update' => $account->grant_update,
+-      'grant_delete' => $account->grant_delete,
+-    ];
++  if ($result) {
++    foreach ($result as $account) {
++      $grants['uid'][$account->uid] = [
++        'name' => $account->name,
++        'keep' => 1,
++        'grant_view' => $account->grant_view,
++        'grant_update' => $account->grant_update,
++        'grant_delete' => $account->grant_delete,
++      ];
++    }
+   }
++
+   return $grants;
+ }
