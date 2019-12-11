@@ -22,14 +22,15 @@ class Action extends BaseGenerator {
    * {@inheritdoc}
    */
   protected function interact(InputInterface $input, OutputInterface $output) {
-    $questions = Utils::moduleQuestions() + Utils::pluginQuestions();
-
+    $questions = Utils::defaultPluginQuestions() + [
+      'category' => new Question('Action category', 'Custom'),
+      'configurable' => new ConfirmationQuestion('Make the action configurable?', FALSE),
+    ];
     // Plugin label should declare an action.
     $questions['plugin_label'] = new Question('Action label', 'Update node title');
-    $questions['category'] = new Question('Action category', 'Custom');
-    $questions['configurable'] = new ConfirmationQuestion('Make the action configurable?', FALSE);
 
-    $vars = $this->collectVars($input, $output, $questions);
+    $vars = &$this->collectVars($input, $output, $questions);
+    $vars['class'] = Utils::camelize($vars['plugin_label']);
 
     $this->addFile()
       ->path('src/Plugin/Action/{class}.php')

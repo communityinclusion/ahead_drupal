@@ -16,21 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class PathautoBulkUpdateForm extends FormBase {
 
   /**
-   * Generate URL aliases for un-aliased paths only.
-   */
-  const ACTION_CREATE = 'create';
-
-  /**
-   * Update URL aliases for paths that have an existing alias.
-   */
-  const ACTION_UPDATE = 'update';
-
-  /**
-   * Regenerate URL aliases for all paths.
-   */
-  const ACTION_ALL = 'all';
-
-  /**
    * The alias type manager.
    *
    * @var \Drupal\pathauto\AliasTypeManager
@@ -68,16 +53,16 @@ class PathautoBulkUpdateForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $form = [];
+    $form = array();
 
-    $form['#update_callbacks'] = [];
+    $form['#update_callbacks'] = array();
 
-    $form['update'] = [
+    $form['update'] = array(
       '#type' => 'checkboxes',
       '#title' => $this->t('Select the types of paths for which to generate URL aliases'),
-      '#options' => [],
-      '#default_value' => [],
-    ];
+      '#options' => array(),
+      '#default_value' => array(),
+    );
 
     $definitions = $this->aliasTypeManager->getVisibleDefinitions();
 
@@ -88,31 +73,31 @@ class PathautoBulkUpdateForm extends FormBase {
       }
     }
 
-    $form['action'] = [
+    $form['action'] = array(
       '#type' => 'radios',
       '#title' => $this->t('Select which URL aliases to generate'),
-      '#options' => [static::ACTION_CREATE => $this->t('Generate a URL alias for un-aliased paths only')],
-      '#default_value' => static::ACTION_CREATE,
-    ];
+      '#options' => ['create' => $this->t('Generate a URL alias for un-aliased paths only')],
+      '#default_value' => 'create',
+    );
 
     $config = $this->config('pathauto.settings');
 
     if ($config->get('update_action') == PathautoGeneratorInterface::UPDATE_ACTION_NO_NEW) {
       // Existing aliases should not be updated.
-      $form['warning'] = [
+      $form['warning'] = array(
         '#markup' => $this->t('<a href=":url">Pathauto settings</a> are set to ignore paths which already have a URL alias. You can only create URL aliases for paths having none.', [':url' => Url::fromRoute('pathauto.settings.form')->toString()]),
-      ];
+      );
     }
     else {
-      $form['action']['#options'][static::ACTION_UPDATE] = $this->t('Update the URL alias for paths having an old URL alias');
-      $form['action']['#options'][static::ACTION_ALL] = $this->t('Regenerate URL aliases for all paths');
+      $form['action']['#options']['update'] = $this->t('Update the URL alias for paths having an old URL alias');
+      $form['action']['#options']['all'] = $this->t('Regenerate URL aliases for all paths');
     }
 
     $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = [
+    $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => $this->t('Update'),
-    ];
+    );
 
     return $form;
   }
@@ -121,19 +106,19 @@ class PathautoBulkUpdateForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $batch = [
+    $batch = array(
       'title' => $this->t('Bulk updating URL aliases'),
-      'operations' => [
-        ['Drupal\pathauto\Form\PathautoBulkUpdateForm::batchStart', []],
-      ],
+      'operations' => array(
+        array('Drupal\pathauto\Form\PathautoBulkUpdateForm::batchStart', array()),
+      ),
       'finished' => 'Drupal\pathauto\Form\PathautoBulkUpdateForm::batchFinished',
-    ];
+    );
 
     $action = $form_state->getValue('action');
 
     foreach ($form_state->getValue('update') as $id) {
       if (!empty($id)) {
-        $batch['operations'][] = ['Drupal\pathauto\Form\PathautoBulkUpdateForm::batchProcess', [$id, $action]];
+        $batch['operations'][] = array('Drupal\pathauto\Form\PathautoBulkUpdateForm::batchProcess', [$id, $action]);
       }
     }
 

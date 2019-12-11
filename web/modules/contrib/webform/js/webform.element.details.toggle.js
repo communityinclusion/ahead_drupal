@@ -25,6 +25,7 @@
         // Get only the main details elements and ignore all nested details.
         var selector = ($tabs.length) ? '.webform-tab' : '.js-webform-details-toggle';
         var $details = $form.find('details').filter(function () {
+          // @todo Figure out how to optimize the below code.
           var $parents = $(this).parentsUntil(selector);
           return ($parents.find('details').length === 0);
         });
@@ -43,7 +44,7 @@
           .attr('title', Drupal.t('Toggle details widget state.'))
           .on('click', function (e) {
             var open;
-            if (Drupal.webform.detailsToggle.isFormDetailsOpen($form)) {
+            if (isFormDetailsOpen($form)) {
               $form.find('details').removeAttr('open');
               open = 0;
             }
@@ -51,7 +52,7 @@
               $form.find('details').attr('open', 'open');
               open = 1;
             }
-            Drupal.webform.detailsToggle.setDetailsToggleLabel($form);
+            setDetailsToggleLabel($form);
 
             // Set the saved states for all the details elements.
             // @see webform.element.details.save.js
@@ -76,7 +77,7 @@
           $details.eq(0).before($toggle);
         }
 
-        Drupal.webform.detailsToggle.setDetailsToggleLabel($form);
+        setDetailsToggleLabel($form);
       });
     }
   };
@@ -90,9 +91,9 @@
    * @return {boolean}
    *   TRUE if a webform's details are all opened.
    */
-  Drupal.webform.detailsToggle.isFormDetailsOpen = function ($form) {
+  function isFormDetailsOpen($form) {
     return ($form.find('details[open]').length === $form.find('details').length);
-  };
+  }
 
   /**
    * Set a webform's details toggle state widget label.
@@ -100,14 +101,14 @@
    * @param {jQuery} $form
    *   A webform.
    */
-  Drupal.webform.detailsToggle.setDetailsToggleLabel = function ($form) {
-    var isOpen = Drupal.webform.detailsToggle.isFormDetailsOpen($form);
+  function setDetailsToggleLabel($form) {
+    var isOpen = isFormDetailsOpen($form);
 
     var label = (isOpen) ? Drupal.t('Collapse all') : Drupal.t('Expand all');
     $form.find('.webform-details-toggle-state').html(label);
 
     var text = (isOpen) ? Drupal.t('All details have been expanded.') : Drupal.t('All details have been collapsed.');
     Drupal.announce(text);
-  };
+  }
 
 })(jQuery, Drupal);

@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\rules\Kernel;
 
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
@@ -11,8 +10,11 @@ use Drupal\rules\Engine\RulesComponent;
  * Test using the Rules API with the placeholder token replacement system.
  *
  * @group Rules
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class TokenIntegrationTest extends RulesKernelTestBase {
+class TokenIntegrationTest extends RulesDrupalTestBase {
 
   /**
    * Tests that date tokens are formatted correctly.
@@ -32,14 +34,14 @@ class TokenIntegrationTest extends RulesKernelTestBase {
     $rule->addExpressionObject($action);
     RulesComponent::create($rule)
       ->addContextDefinition('date', ContextDefinition::create('timestamp'))
-      ->setContextValue('date', $this->time->getRequestTime())
+      ->setContextValue('date', REQUEST_TIME)
       ->execute();
 
-    $messages = $this->messenger->all();
+    $messages = drupal_set_message();
     /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
     $date_formatter = $this->container->get('date.formatter');
-    $date = $date_formatter->format($this->time->getRequestTime(), 'custom', 'Y-m');
-    $this->assertEquals("The date is $date!", (string) $messages[MessengerInterface::TYPE_STATUS][0]);
+    $date = $date_formatter->format(REQUEST_TIME, 'custom', 'Y-m');
+    $this->assertEquals("The date is $date!", (string) $messages['status'][0]);
   }
 
 }

@@ -197,12 +197,12 @@ abstract class DatabaseLogBase extends Command
     protected function createTableHeader()
     {
         return [
-            $this->trans('commands.database.log.common.messages.event-id'),
-            $this->trans('commands.database.log.common.messages.type'),
-            $this->trans('commands.database.log.common.messages.date'),
-            $this->trans('commands.database.log.common.messages.message'),
-            $this->trans('commands.database.log.common.messages.user'),
-            $this->trans('commands.database.log.common.messages.severity'),
+        $this->trans('commands.database.log.common.messages.event-id'),
+        $this->trans('commands.database.log.common.messages.type'),
+        $this->trans('commands.database.log.common.messages.date'),
+        $this->trans('commands.database.log.common.messages.message'),
+        $this->trans('commands.database.log.common.messages.user'),
+        $this->trans('commands.database.log.common.messages.severity'),
         ];
     }
 
@@ -216,13 +216,7 @@ abstract class DatabaseLogBase extends Command
         /**
          * @var User $user
          */
-        if ($user = $this->userStorage->load($dblog->uid)) {
-            $user_id = $user->id();
-            $user_name = $user->getUsername();
-        } else {
-            $user_id = $dblog->uid;
-            $user_name = $this->trans('commands.database.log.common.messages.user-deleted');
-        }
+        $user = $this->userStorage->load($dblog->uid);
 
         return [
             $dblog->wid,
@@ -234,7 +228,7 @@ abstract class DatabaseLogBase extends Command
                 true,
                 true
             ),
-            $user_name . ' (' . $user_id . ')',
+            $user->getUsername() . ' (' . $user->id() . ')',
             $this->severityList[$dblog->severity]->render(),
         ];
     }

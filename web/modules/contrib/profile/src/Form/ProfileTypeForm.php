@@ -5,7 +5,6 @@ namespace Drupal\profile\Form;
 use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\entity\Form\EntityDuplicateFormTrait;
 use Drupal\field_ui\FieldUI;
 use Drupal\user\Entity\Role;
 
@@ -14,78 +13,74 @@ use Drupal\user\Entity\Role;
  */
 class ProfileTypeForm extends BundleEntityFormBase {
 
-  use EntityDuplicateFormTrait;
-
   /**
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
-    /** @var \Drupal\profile\Entity\ProfileTypeInterface $profile_type */
-    $profile_type = $this->entity;
+    /** @var \Drupal\profile\Entity\ProfileTypeInterface $type */
+    $type = $this->entity;
+
+    if ($this->operation == 'add') {
+      $form['#title'] = $this->t('Add profile type');
+    }
+    else {
+      $form['#title'] = $this->t('Edit %label profile type', ['%label' => $type->label()]);
+    }
 
     $form['label'] = [
       '#title' => t('Label'),
       '#type' => 'textfield',
-      '#default_value' => $profile_type->label(),
-      '#description' => t('The admin-facing name.'),
+      '#default_value' => $type->label(),
+      '#description' => t('The human-readable name of this profile type.'),
       '#required' => TRUE,
       '#size' => 30,
     ];
     $form['id'] = [
       '#type' => 'machine_name',
-      '#default_value' => $profile_type->id(),
+      '#default_value' => $type->id(),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#machine_name' => [
         'exists' => '\Drupal\profile\Entity\ProfileType::load',
         'source' => ['label'],
       ],
     ];
-    $form['display_label'] = [
-      '#title' => t('Display label'),
-      '#type' => 'textfield',
-      '#default_value' => $profile_type->getDisplayLabel(),
-      '#description' => t('The user-facing name. If provided, shown on user pages instead of the admin-facing name.'),
-      '#size' => 30,
-    ];
-    $form['multiple'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Allow multiple profiles per user'),
-      '#default_value' => $profile_type->allowsMultiple(),
+    $form['description'] = [
+      '#title' => $this->t('Description'),
+      '#type' => 'textarea',
+      '#default_value' => $type->getDescription(),
+      '#description' => $this->t('This text will be displayed only for administrative purposes.'),
     ];
     $form['registration'] = [
       '#type' => 'checkbox',
       '#title' => t('Include in user registration form'),
-      '#default_value' => $profile_type->getRegistration(),
+      '#default_value' => $type->getRegistration(),
     ];
+    $form['multiple'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Allow multiple profiles'),
+      '#default_value' => $type->getMultiple(),
+    ];
+
     $form['roles'] = [
       '#type' => 'checkboxes',
       '#title' => t('Allowed roles'),
       '#description' => $this->t('Limit the users that can have this profile by role.</br><em>None will indicate that all users can have this profile type.</em>'),
       '#options' => [],
-      '#default_value' => $profile_type->getRoles(),
+      '#default_value' => $type->getRoles(),
     ];
     foreach (Role::loadMultiple() as $role) {
-      /** @var \Drupal\user\RoleInterface $role */
+      /** @var \Drupal\user\Entity\Role $role */
+      // We aren't interested in anon role.
       if ($role->id() !== Role::ANONYMOUS_ID) {
         $form['roles']['#options'][$role->id()] = $role->label();
       }
     }
 
-    $form['allow_revisions'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Allow profiles of this type to be revisioned'),
-      '#default_value' => $profile_type->allowsRevisions(),
-    ];
-    $form['new_revision'] = [
+    $form['use_revisions'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Create a new revision when a profile is modified'),
-      '#default_value' => $profile_type->shouldCreateNewRevision(),
-      '#states' => [
-        'visible' => [
-          ':input[name="allow_revisions"]' => ['checked' => TRUE],
-        ],
-      ],
+      '#default_value' => $type->shouldCreateNewRevision(),
     ];
 
     return $this->protectBundleIdElement($form);
@@ -109,24 +104,16 @@ class ProfileTypeForm extends BundleEntityFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildEntity(array $form, FormStateInterface $form_state) {
-    // Filter out unchecked roles.
-    $form_state->setValue('roles', array_filter($form_state->getValue('roles')));
-    return parent::buildEntity($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function save(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\profile\Entity\ProfileTypeInterface $profile_type */
-    $profile_type = $this->entity;
-    $profile_type->save();
-    $this->postSave($profile_type, $this->operation);
+    $type = $this->entity;
+    $status = $type->save();
 
-    $this->messenger()->addMessage($this->t('Saved the %label profile type.', [
-      '%label' => $this->entity->label(),
-    ]));
+    if ($status == SAVED_UPDATED) {
+      $this->messenger()->addMessage($this->t('%label profile type has been updated.', ['%label' => $type->label()]));
+    }
+    else {
+      $this->messenger()->addMessage($this->t('%label profile type has been created.', ['%label' => $type->label()]));
+    }
     $form_state->setRedirect('entity.profile_type.collection');
   }
 

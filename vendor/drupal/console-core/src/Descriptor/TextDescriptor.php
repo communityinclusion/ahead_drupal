@@ -272,8 +272,7 @@ class TextDescriptor extends Descriptor
                 'init',
                 'list',
                 'shell',
-                'server',
-                'snippet'
+                'server'
             ];
 
             // add commands by namespace

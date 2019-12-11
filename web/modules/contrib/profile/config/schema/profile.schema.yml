@@ -4,30 +4,39 @@ profile.type.*:
   mapping:
     id:
       type: string
-      label: 'ID'
+      label: 'Machine-readable name'
+    uuid:
+      type: string
+      label: 'UUID'
     label:
       type: label
       label: 'Label'
-    display_label:
-      type: label
-      label: 'Display label'
-    multiple:
-      type: boolean
-      label: 'Allow multiple profiles per user'
     registration:
       type: boolean
       label: 'Registration'
+    multiple:
+      type: boolean
+      label: 'Allow multiple profiles'
     roles:
-      type: sequence
       label: 'Allowed roles'
+      type: sequence
       sequence:
         type: string
-    allow_revisions:
+    weight:
+      type: integer
+      label: 'Weight'
+    status:
       type: boolean
-      label: 'Whether this profile type allows revisions'
-    new_revision:
+      label: 'Status'
+    langcode:
+      type: string
+      label: 'Default language'
+    use_revisions:
       type: boolean
-      label: 'Whether a new revision should be created by default'
+      label: 'User revisions'
+    description:
+      type: text
+      label: 'Description'
 
 field.field.*.*.*.third_party.profile:
   type: mapping
@@ -36,14 +45,6 @@ field.field.*.*.*.third_party.profile:
     profile_private:
         type: boolean
         label: 'Whether this field is private or not.'
-
-field.widget.settings.profile_form:
-  type: mapping
-  label: 'Profile form widget settings'
-  mapping:
-    form_mode:
-      type: string
-      label: 'Form mode'
 
 action.configuration.profile_delete_action:
   type: action_configuration_default

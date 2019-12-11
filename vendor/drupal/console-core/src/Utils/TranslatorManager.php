@@ -7,9 +7,6 @@
 
 namespace Drupal\Console\Core\Utils;
 
-use Drupal\Console\Core\Style\DrupalStyle;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\Translation\Loader\ArrayLoader;
@@ -51,21 +48,12 @@ class TranslatorManager implements TranslatorManagerInterface
     protected $coreLanguageRoot;
 
     /**
-     * @var DrupalStyle
-     */
-    private $io;
-
-    /**
      * Translator constructor.
      */
     public function __construct()
     {
         $this->parser = new Parser();
         $this->filesystem = new Filesystem();
-
-        $output = new ConsoleOutput();
-        $input = new ArrayInput([]);
-        $this->io = new DrupalStyle($input, $output);
     }
 
     /**
@@ -103,40 +91,14 @@ class TranslatorManager implements TranslatorManagerInterface
         $language,
         $directoryRoot
     ) {
-        $output = new ConsoleOutput();
-        $input = new ArrayInput([]);
-        $io = new DrupalStyle($input, $output);
-        
         $coreLanguageDirectory =
             $directoryRoot .
             sprintf(
                 DRUPAL_CONSOLE_LANGUAGE,
                 $language
             );
-        $installersLanguageDirectory =
-          $directoryRoot .
-          sprintf(
-            DRUPAL_CONSOLE_LANGUAGE_INSTALLERS,
-            $language
-          );
 
-        $languageDirectory = null;
-        foreach ([$coreLanguageDirectory, $installersLanguageDirectory] as $candidate) {
-            if (is_dir($candidate)) {
-              $languageDirectory = $candidate;
-            }
-        }
-
-        if (!isset($languageDirectory)) {
-            if ($language == 'en') {
-              throw new \Exception('No languages found. Make sure you have installed a console language package in a supported directory');
-            }else{
-                $io->warning(
-                    sprintf(
-                        'Language not available please execute this command in order to get the language locally using composer, run composer require drupal/console-'.$language.''
-                    )
-                );
-            }
+        if (!is_dir($coreLanguageDirectory)) {
             return $this->buildCoreLanguageDirectory('en', $directoryRoot);
         }
 
@@ -144,7 +106,7 @@ class TranslatorManager implements TranslatorManagerInterface
             $this->coreLanguageRoot = $directoryRoot;
         }
 
-        return [$language, $languageDirectory];
+        return [$language, $coreLanguageDirectory];
     }
 
     /**
@@ -202,7 +164,7 @@ class TranslatorManager implements TranslatorManagerInterface
                 try {
                     $this->loadTranslationByFile($resource, 'application');
                 } catch (ParseException $e) {
-                    $this->io->error('application.yml'.' '.$e->getMessage());
+                    echo 'application.yml'.' '.$e->getMessage();
                 }
 
                 continue;
@@ -211,7 +173,7 @@ class TranslatorManager implements TranslatorManagerInterface
             try {
                 $this->loadTranslationByFile($resource, $key);
             } catch (ParseException $e) {
-                $this->io->error($key.'.yml '.$e->getMessage());
+                echo $key.'.yml '.$e->getMessage();
             }
         }
 

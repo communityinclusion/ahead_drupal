@@ -61,7 +61,7 @@ class TranslationDataCollector extends DataCollector implements LateDataCollecto
     }
 
     /**
-     * @return array|Data
+     * @return array
      */
     public function getMessages()
     {

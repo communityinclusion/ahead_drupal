@@ -161,8 +161,6 @@ class ClassLoader
 
             return true;
         }
-
-        return null;
     }
 
     /**
@@ -205,7 +203,5 @@ class ClassLoader
         if ($this->useIncludePath && $file = stream_resolve_include_path($classPath)) {
             return $file;
         }
-
-        return null;
     }
 }

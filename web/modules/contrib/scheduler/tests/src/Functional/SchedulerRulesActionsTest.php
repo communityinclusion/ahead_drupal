@@ -8,9 +8,6 @@ use Drupal\rules\Context\ContextConfig;
  * Tests the six actions that Scheduler provides for use in Rules module.
  *
  * @group scheduler
- * @group legacy
- * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
- * @see https://www.drupal.org/project/scheduler/issues/2924353
  */
 class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
 
@@ -60,7 +57,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
     $rule1->addAction('scheduler_set_publishing_date_action',
       ContextConfig::create()
         ->map('node', 'node')
-        ->setValue('date', $this->requestTime + 1800)
+        ->setValue('date', REQUEST_TIME + 1800)
       )
       ->addAction('rules_system_message',
         ContextConfig::create()
@@ -116,7 +113,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
     $edit = [
       'body[0][value]' => $this->randomString(30),
     ];
-    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, 'Save');
+    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, t('Save'));
     $this->nodeStorage->resetCache([$node->id()]);
     $node = $this->nodeStorage->load($node->id());
     // Check that neither of the rules are triggered, no publish and unpublish
@@ -132,7 +129,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
       'title[0][value]' => 'Trigger Action Rule 1',
       'body[0][value]' => $this->randomString(30),
     ];
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $edit, 'Save');
+    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $edit, t('Save'));
     $this->nodeStorage->resetCache([$this->node->id()]);
     $node = $this->nodeStorage->load($this->node->id());
     // Check that rule 1 is triggered and rule 2 is not. Check that a publishing
@@ -148,7 +145,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
       'title[0][value]' => 'Trigger Action Rule 2',
       'body[0][value]' => $this->randomString(30),
     ];
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $edit, 'Save');
+    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $edit, t('Save'));
     $this->nodeStorage->resetCache([$this->node->id()]);
     $node = $this->nodeStorage->load($this->node->id());
     // Check that rule 2 is triggered and rule 1 is not. Check that the
@@ -182,7 +179,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
     $rule3->addAction('scheduler_set_unpublishing_date_action',
       ContextConfig::create()
         ->map('node', 'node')
-        ->setValue('date', $this->requestTime + 1800)
+        ->setValue('date', REQUEST_TIME + 1800)
       )
       ->addAction('rules_system_message',
         ContextConfig::create()
@@ -238,7 +235,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
     $edit = [
       'body[0][value]' => $this->randomString(30),
     ];
-    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, 'Save');
+    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, t('Save'));
     $this->nodeStorage->resetCache([$node->id()]);
     $node = $this->nodeStorage->load($node->id());
     // Check that neither of the rules are triggered, no publish and unpublish
@@ -254,7 +251,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
       'title[0][value]' => 'Trigger Action Rule 3',
       'body[0][value]' => $this->randomString(30),
     ];
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $edit, 'Save');
+    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $edit, t('Save'));
     $this->nodeStorage->resetCache([$this->node->id()]);
     $node = $this->nodeStorage->load($this->node->id());
     // Check that rule 3 is triggered and rule 4 is not. Check that an
@@ -270,7 +267,7 @@ class SchedulerRulesActionsTest extends SchedulerBrowserTestBase {
       'title[0][value]' => 'Trigger Action Rule 4',
       'body[0][value]' => $this->randomString(30),
     ];
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $edit, 'Save');
+    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $edit, t('Save'));
     $this->nodeStorage->resetCache([$this->node->id()]);
     $node = $this->nodeStorage->load($this->node->id());
     // Check that rule 4 is triggered and rule 3 is not. Check that the

@@ -8,7 +8,7 @@ use Drupal\webform\WebformHelpManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides route responses for Webform help.
+ * Provides route responses for webform help.
  */
 class WebformHelpController extends ControllerBase implements ContainerInjectionInterface {
 
@@ -39,7 +39,7 @@ class WebformHelpController extends ControllerBase implements ContainerInjection
   }
 
   /**
-   * Returns the Webform help page.
+   * Returns the Webform extend page.
    *
    * @return array
    *   The webform submission webform.

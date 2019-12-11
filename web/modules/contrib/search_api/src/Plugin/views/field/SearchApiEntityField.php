@@ -82,7 +82,7 @@ class SearchApiEntityField extends EntityField {
    * @return string|null
    *   The property path of the parent property.
    */
-  public function getParentPath() {
+  protected function getParentPath() {
     if (!isset($this->parentPath)) {
       $combined_property_path = $this->getCombinedPropertyPath();
       list(, $property_path) = Utility::splitCombinedId($combined_property_path);
@@ -280,9 +280,7 @@ class SearchApiEntityField extends EntityField {
       if (!isset($this->entityFieldRenderer)) {
         $entity_type = $this->entityManager->getDefinition($this->getEntityType());
         $this->entityFieldRenderer = new EntityFieldRenderer($this->view, $this->relationship, $this->languageManager, $entity_type, $this->entityManager);
-        $this->entityFieldRenderer
-          ->setDatasourceId($this->getDatasourceId())
-          ->setParentPath($this->getParentPath());
+        $this->entityFieldRenderer->setDatasourceId($this->getDatasourceId());
       }
     }
 

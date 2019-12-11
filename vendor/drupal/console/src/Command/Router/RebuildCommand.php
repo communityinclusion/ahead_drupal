@@ -45,12 +45,7 @@ class RebuildCommand extends Command
             $this->trans('commands.router.rebuild.messages.rebuilding')
         );
 
-        if(!$this->routerBuilder->rebuild()) {
-            $this->getIo()->error(
-                $this->trans('commands.router.rebuild.messages.error-rebuild')
-            );
-            return 1;
-        }
+        $this->routerBuilder->rebuild();
 
         $this->getIo()->success(
             $this->trans('commands.router.rebuild.messages.completed')

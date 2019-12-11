@@ -25,7 +25,7 @@ trait ClassResolverTrait
     /**
      * Gets a class name for a given class or instance.
      *
-     * @param object|string $value
+     * @param mixed $value
      *
      * @return string
      *

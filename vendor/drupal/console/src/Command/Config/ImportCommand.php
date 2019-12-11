@@ -82,30 +82,20 @@ class ImportCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
-    {
-        if (!$input->getOption('directory')) {
-            $directory = $this->getIo()->ask(
-                $this->trans('commands.config.import.questions.directory'),
-                config_get_config_directory(CONFIG_SYNC_DIRECTORY)
-        );
-            $input->setOption('directory', $directory);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $directory = $input->getOption('directory');
         $skipUuid = $input->getOption('skip-uuid');
 
         if ($directory) {
-            $source_storage = new FileStorage($directory);
+            $configSyncDir = $directory;
         } else {
-            $source_storage = \Drupal::service('config.storage.sync');
+            $configSyncDir = config_get_config_directory(
+                CONFIG_SYNC_DIRECTORY
+            );
         }
+
+        $source_storage = new FileStorage($configSyncDir);
 
         $storageComparer = '\Drupal\Core\Config\StorageComparer';
         if ($skipUuid) {

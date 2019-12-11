@@ -9,6 +9,7 @@ use Drupal\Core\TypedData\MapDataDefinition;
 use Drupal\Core\TypedData\TypedDataTrait;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\typed_data\Traits\BrowserTestHelpersTrait;
+use Drupal\typed_data\Util\StateTrait;
 use Drupal\typed_data\Widget\FormWidgetManagerTrait;
 
 /**
@@ -22,6 +23,7 @@ class SelectWidgetTest extends BrowserTestBase {
 
   use BrowserTestHelpersTrait;
   use FormWidgetManagerTrait;
+  use StateTrait;
   use TypedDataTrait;
 
   /**
@@ -45,7 +47,7 @@ class SelectWidgetTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->widget = $this->getFormWidgetManager()->createInstance('select');
   }
@@ -79,23 +81,21 @@ class SelectWidgetTest extends BrowserTestBase {
     $context_definition = ContextDefinition::create('filter_format')
       ->setLabel('Filter format')
       ->setDescription('Some example selection.');
-    \Drupal::state()->set('typed_data_widgets.definition', $context_definition);
+    $this->getState()->set('typed_data_widgets.definition', $context_definition);
 
     $this->drupalLogin($this->createUser([], NULL, TRUE));
     $path = 'admin/config/user-interface/typed-data-widgets/' . $this->widget->getPluginId();
     $this->drupalGet($path);
 
-    /** @var \Drupal\Tests\WebAssert $assert */
-    $assert = $this->assertSession();
-    $assert->elementTextContains('css', 'label[for=edit-data-value]', $context_definition->getLabel());
-    $assert->elementTextContains('css', 'div[id=edit-data-value--description]', $context_definition->getDescription());
-    $assert->fieldValueEquals('data[value]', $context_definition->getDefaultValue());
+    $this->assertSession()->elementTextContains('css', 'label[for=edit-data-value]', $context_definition->getLabel());
+    $this->assertSession()->elementTextContains('css', 'div[id=edit-data-value--description]', $context_definition->getDescription());
+    $this->assertSession()->fieldValueEquals('data[value]', $context_definition->getDefaultValue());
 
     $this->getSession()->getPage()->selectFieldOption('data[value]', 'plain_text');
     $this->pressButton('Submit');
 
     $this->drupalGet($path);
-    $assert->fieldValueEquals('data[value]', 'plain_text');
+    $this->assertSession()->fieldValueEquals('data[value]', 'plain_text');
   }
 
   /**
@@ -107,7 +107,7 @@ class SelectWidgetTest extends BrowserTestBase {
       ->setLabel('Filter format')
       ->setDescription('Some example selection.')
       ->setRequired(TRUE);
-    \Drupal::state()->set('typed_data_widgets.definition', $context_definition);
+    $this->getState()->set('typed_data_widgets.definition', $context_definition);
 
     $this->drupalLogin($this->createUser([], NULL, TRUE));
     $path = 'admin/config/user-interface/typed-data-widgets/' . $this->widget->getPluginId();
@@ -116,14 +116,13 @@ class SelectWidgetTest extends BrowserTestBase {
     // Set the empty option and make sure it results in a violation.
     $this->fillField('data[value]', '');
     $this->pressButton('Submit');
-
-    /** @var \Drupal\Tests\WebAssert $assert */
-    $assert = $this->assertSession();
-    $assert->fieldExists('data[value]')->hasClass('error');
+    $this->assertSession()
+      ->fieldExists('data[value]')
+      ->hasClass('error');
 
     // Make sure the changes have not been saved also.
     $this->drupalGet($path);
-    $assert->fieldValueEquals('data[value]', $context_definition->getDefaultValue());
+    $this->assertSession()->fieldValueEquals('data[value]', $context_definition->getDefaultValue());
   }
 
 }

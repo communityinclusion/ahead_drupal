@@ -33,11 +33,11 @@ class ClassNotFoundFatalErrorHandler implements FatalErrorHandlerInterface
         $notFoundSuffix = '\' not found';
         $notFoundSuffixLen = \strlen($notFoundSuffix);
         if ($notFoundSuffixLen > $messageLen) {
-            return null;
+            return;
         }
 
         if (0 !== substr_compare($error['message'], $notFoundSuffix, -$notFoundSuffixLen)) {
-            return null;
+            return;
         }
 
         foreach (['class', 'interface', 'trait'] as $typeName) {
@@ -71,8 +71,6 @@ class ClassNotFoundFatalErrorHandler implements FatalErrorHandlerInterface
 
             return new ClassNotFoundException($message, $exception);
         }
-
-        return null;
     }
 
     /**
@@ -187,19 +185,13 @@ class ClassNotFoundFatalErrorHandler implements FatalErrorHandlerInterface
             }
         }
 
-        try {
-            require_once $file;
-        } catch (\Throwable $e) {
-            return null;
-        }
+        require_once $file;
 
         foreach ($candidates as $candidate) {
             if ($this->classExists($candidate)) {
                 return $candidate;
             }
         }
-
-        return null;
     }
 
     /**

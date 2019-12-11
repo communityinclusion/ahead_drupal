@@ -3,7 +3,6 @@
 namespace Drupal\migrate_tools\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Datetime\DateFormatter;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
@@ -21,11 +20,6 @@ use Drush\Commands\DrushCommands;
  * Migrate Tools drush commands.
  */
 class MigrateToolsCommands extends DrushCommands {
-
-  /**
-   * Default ID list delimiter.
-   */
-  public const DEFAULT_ID_LIST_DELIMITER = ':';
 
   /**
    * Migration plugin manager service.
@@ -95,8 +89,6 @@ class MigrateToolsCommands extends DrushCommands {
    * @option group A comma-separated list of migration groups to list
    * @option tag Name of the migration tag to list
    * @option names-only Only return names, not all the details (faster)
-   * @option continue-on-failure When a migration fails, continue processing
-   *   remaining migrations.
    *
    * @default $options []
    *
@@ -129,18 +121,17 @@ class MigrateToolsCommands extends DrushCommands {
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Migrations status formatted as table.
    */
-  public function status($migration_names = '', array $options = [
-    'group' => self::REQ,
-    'tag' => self::REQ,
-    'names-only' => FALSE,
-    'continue-on-failure' => FALSE,
-  ]) {
+  public function status($migration_names = '', array $options = []) {
+    $options += [
+      'group' => NULL,
+      'tag' => NULL,
+      'names-only' => NULL,
+    ];
     $names_only = $options['names-only'];
 
     $migrations = $this->migrationsList($migration_names, $options);
 
     $table = [];
-    $errors = [];
     // Take it one group at a time, listing the migrations within each group.
     foreach ($migrations as $group_id => $migration_list) {
       /** @var \Drupal\migrate_plus\Entity\MigrationGroup $group */
@@ -161,12 +152,12 @@ class MigrateToolsCommands extends DrushCommands {
             $source_plugin = $migration->getSourcePlugin();
           }
           catch (\Exception $e) {
-            $error = dt(
-              'Failure retrieving information on @migration: @message',
-              ['@migration' => $migration_id, '@message' => $e->getMessage()]
+            $this->logger()->error(
+              dt(
+                'Failure retrieving information on @migration: @message',
+                ['@migration' => $migration_id, '@message' => $e->getMessage()]
+              )
             );
-            $this->logger()->error($error);
-            $errors[] = $error;
             continue;
           }
 
@@ -229,11 +220,6 @@ class MigrateToolsCommands extends DrushCommands {
       }
     }
 
-    // If any errors occurred, throw an exception.
-    if (!empty($errors)) {
-      throw new \Exception(implode(PHP_EOL, $errors));
-    }
-
     return new RowsOfFields($table);
   }
 
@@ -253,17 +239,12 @@ class MigrateToolsCommands extends DrushCommands {
    * @option limit Limit on the number of items to process in each migration
    * @option feedback Frequency of progress messages, in items processed
    * @option idlist Comma-separated list of IDs to import
-   * @option idlist-delimiter The delimiter for records
+   * @option idlist-delimiter The delimiter for records, defaults to ':'
    * @option update  In addition to processing unprocessed items from the
    *   source, update previously-imported items with the current data
    * @option force Force an operation to run, even if all dependencies are not
    *   satisfied
-   * @option continue-on-failure When a migration fails, continue processing
-   *   remaining migrations.
    * @option execute-dependencies Execute all dependent migrations first.
-   * @option skip-progress-bar Skip displaying a progress bar.
-   * @option sync Sync source and destination. Delete destination records that
-   *   do not exist in the source.
    *
    * @default $options []
    *
@@ -291,26 +272,40 @@ class MigrateToolsCommands extends DrushCommands {
    * @throws \Exception
    *   If there are not enough parameters to the command.
    */
-  public function import($migration_names = '', array $options = [
-    'all' => FALSE,
-    'group' => self::REQ,
-    'tag' => self::REQ,
-    'limit' => self::REQ,
-    'feedback' => self::REQ,
-    'idlist' => self::REQ,
-    'idlist-delimiter' => self::DEFAULT_ID_LIST_DELIMITER,
-    'update' => FALSE,
-    'force' => FALSE,
-    'continue-on-failure' => FALSE,
-    'execute-dependencies' => FALSE,
-    'skip-progress-bar' => FALSE,
-    'sync' => FALSE,
-  ]) {
+  public function import($migration_names = '', array $options = []) {
+    $options += [
+      'all' => NULL,
+      'group' => NULL,
+      'tag' => NULL,
+      'limit' => NULL,
+      'feedback' => NULL,
+      'idlist' => NULL,
+      'idlist-delimiter' => ':',
+      'update' => NULL,
+      'force' => NULL,
+      'execute-dependencies' => NULL,
+    ];
     $group_names = $options['group'];
     $tag_names = $options['tag'];
     $all = $options['all'];
+    $additional_options = [];
     if (!$all && !$group_names && !$migration_names && !$tag_names) {
       throw new \Exception(dt('You must specify --all, --group, --tag or one or more migration names separated by commas'));
+    }
+
+    $possible_options = [
+      'limit',
+      'feedback',
+      'idlist',
+      'idlist-delimiter',
+      'update',
+      'force',
+      'execute-dependencies',
+    ];
+    foreach ($possible_options as $option) {
+      if ($options[$option]) {
+        $additional_options[$option] = $options[$option];
+      }
     }
 
     $migrations = $this->migrationsList($migration_names, $options);
@@ -323,7 +318,7 @@ class MigrateToolsCommands extends DrushCommands {
       array_walk(
         $migration_list,
         [$this, 'executeMigration'],
-        $options
+        $additional_options
       );
     }
   }
@@ -342,11 +337,9 @@ class MigrateToolsCommands extends DrushCommands {
    * @option group A comma-separated list of migration groups to rollback
    * @option tag ID of the migration tag to rollback
    * @option feedback Frequency of progress messages, in items processed
+   * @option feedback Frequency of progress messages, in items processed
    * @option idlist Comma-separated list of IDs to rollback
-   * @option idlist-delimiter The delimiter for records
-   * @option skip-progress-bar Skip displaying a progress bar.
-   * @option continue-on-failure When a rollback fails, continue processing
-   *   remaining migrations.
+   * @option idlist-delimiter The delimiter for records, defaults to ':'
    *
    * @default $options []
    *
@@ -369,21 +362,27 @@ class MigrateToolsCommands extends DrushCommands {
    * @throws \Exception
    *   If there are not enough parameters to the command.
    */
-  public function rollback($migration_names = '', array $options = [
-    'all' => FALSE,
-    'group' => self::REQ,
-    'tag' => self::REQ,
-    'feedback' => self::REQ,
-    'idlist' => self::REQ,
-    'idlist-delimiter' => self::DEFAULT_ID_LIST_DELIMITER,
-    'skip-progress-bar' => FALSE,
-    'continue-on-failure' => FALSE,
-  ]) {
+  public function rollback($migration_names = '', array $options = []) {
+    $options += [
+      'all' => NULL,
+      'group' => NULL,
+      'tag' => NULL,
+      'feedback' => NULL,
+      'idlist' => NULL,
+      'idlist-delimiter' => ':',
+    ];
     $group_names = $options['group'];
     $tag_names = $options['tag'];
     $all = $options['all'];
+    $additional_options = [];
     if (!$all && !$group_names && !$migration_names && !$tag_names) {
       throw new \Exception(dt('You must specify --all, --group, --tag, or one or more migration names separated by commas'));
+    }
+
+    foreach (['feedback', 'idlist', 'idlist-delimiter'] as $option) {
+      if ($options[$option]) {
+        $additional_options[$option] = $options[$option];
+      }
     }
 
     $migrations = $this->migrationsList($migration_names, $options);
@@ -393,41 +392,17 @@ class MigrateToolsCommands extends DrushCommands {
 
     // Take it one group at a time,
     // rolling back the migrations within each group.
-    $has_failure = FALSE;
-    foreach ($migrations as $migration_list) {
+    foreach ($migrations as $group_id => $migration_list) {
       // Roll back in reverse order.
       $migration_list = array_reverse($migration_list);
       foreach ($migration_list as $migration_id => $migration) {
-        if ($options['skip-progress-bar']) {
-          $migration->set('skipProgressBar', TRUE);
-        }
-        // Initialize the Synmfony Console progress bar.
-        \Drupal::service('migrate_tools.migration_drush_command_progress')->initializeProgress(
-          $this->output(),
-          $migration
-        );
         $executable = new MigrateExecutable(
           $migration,
           $this->getMigrateMessage(),
-          $options
+          $additional_options
         );
         // drush_op() provides --simulate support.
-        $result = drush_op([$executable, 'rollback']);
-        if ($result == MigrationInterface::RESULT_FAILED) {
-          $has_failure = TRUE;
-        }
-      }
-    }
-
-    // If any rollbacks failed, throw an exception to generate exit status.
-    if ($has_failure) {
-      $error_message = dt('!name migration failed.', ['!name' => $migration_id]);
-      if ($options['continue-on-failure']) {
-        $this->logger()->error($error_message);
-      }
-      else {
-        // Nudge Drush to use a non-zero exit code.
-        throw new \Exception($error_message);
+        drush_op([$executable, 'rollback']);
       }
     }
   }
@@ -478,9 +453,9 @@ class MigrateToolsCommands extends DrushCommands {
       }
     }
     else {
-      $error = dt('Migration @id does not exist', ['@id' => $migration_id]);
-      $this->logger()->error($error);
-      throw new \Exception($error);
+      $this->logger()->error(
+        dt('Migration @id does not exist', ['@id' => $migration_id])
+      );
     }
   }
 
@@ -515,9 +490,9 @@ class MigrateToolsCommands extends DrushCommands {
       }
     }
     else {
-      $error = dt('Migration @id does not exist', ['@id' => $migration_id]);
-      $this->logger()->error($error);
-      throw new \Exception($error);
+      $this->logger()->error(
+        dt('Migration @id does not exist', ['@id' => $migration_id])
+      );
     }
   }
 
@@ -531,9 +506,9 @@ class MigrateToolsCommands extends DrushCommands {
    *
    * @command migrate:messages
    *
-   * @option csv Export messages as a CSV (deprecated)
+   * @option csv Export messages as a CSV
    * @option idlist Comma-separated list of IDs to import
-   * @option idlist-delimiter The delimiter for records
+   * @option idlist-delimiter The delimiter for records, defaults to ':'
    *
    * @default $options []
    *
@@ -546,55 +521,35 @@ class MigrateToolsCommands extends DrushCommands {
    *
    * @field-labels
    *   source_ids_hash: Source IDs Hash
-   *   source_ids: Source ID(s)
-   *   destination_ids: Destination ID(s)
    *   level: Level
    *   message: Message
-   * @default-fields source_ids_hash,source_ids,destination_ids,level,message
+   * @default-fields source_ids_hash,level,message
    *
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    *   Source fields of the given migration formatted as a table.
    */
-  public function messages($migration_id, array $options = [
-    'csv' => FALSE,
-    'idlist' => self::REQ,
-    'idlist-delimiter' => self::DEFAULT_ID_LIST_DELIMITER,
-  ]) {
+  public function messages($migration_id, array $options = []) {
+    $options += [
+      'csv' => NULL,
+      'idlist' => NULL,
+      'idlist-delimiter' => ':',
+    ];
     /** @var \Drupal\migrate\Plugin\MigrationInterface $migration */
     $migration = $this->migrationPluginManager->createInstance(
       $migration_id
     );
     if (!$migration) {
-      $error = dt('Migration @id does not exist', ['@id' => $migration_id]);
-      $this->logger()->error($error);
-      throw new \Exception($error);
+      $this->logger()->error(
+        dt('Migration @id does not exist', ['@id' => $migration_id])
+      );
+      return NULL;
     }
     $id_list = MigrateTools::buildIdList($options);
-    /** @var \Drupal\migrate\Plugin\MigrateIdMapInterface|\Drupal\migrate_tools\IdMapFilter $map */
     $map = new IdMapFilter($migration->getIdMap(), $id_list);
-    $source_id_keys = $this->getSourceIdKeys($map);
     $table = [];
-    // TODO: Remove after 8.7 support goes away.
-    $iterator_method = method_exists($map, 'getMessages') ? 'getMessages' : 'getMessageIterator';
-    foreach ($map->{$iterator_method}() as $row) {
+    foreach ($map->getMessageIterator() as $row) {
       unset($row->msgid);
-      $array_row = (array) $row;
-      // If the message includes useful IDs don't print the hash.
-      if (count($source_id_keys) === count(array_intersect_key($source_id_keys, $array_row))) {
-        unset($array_row['source_ids_hash']);
-      }
-      $source_ids = $destination_ids = [];
-      foreach ($array_row as $name => $item) {
-        if (substr($name, 0, 4) === 'src_') {
-          $source_ids[$name] = $item;
-        }
-        if (substr($name, 0, 5) === 'dest_') {
-          $destination_ids[$name] = $item;
-        }
-      }
-      $array_row['source_ids'] = implode(', ', $source_ids);
-      $array_row['destination_ids'] = implode(', ', $destination_ids);
-      $table[] = $array_row;
+      $table[] = (array) $row;
     }
     if (empty($table)) {
       $this->logger()->notice(dt('No messages for this migration'));
@@ -606,29 +561,9 @@ class MigrateToolsCommands extends DrushCommands {
       foreach ($table as $row) {
         fputcsv(STDOUT, $row);
       }
-      $this->logger()->notice('--csv option is deprecated in 4.5 and is removed from 5.0. Use \'--format=csv\' instead.');
-      @trigger_error('--csv option is deprecated in migrate_tool:8.x-4.5 and is removed from migrate_tool:8.x-5.0. Use \'--format=csv\' instead. See https://www.drupal.org/node/123', E_USER_DEPRECATED);
       return NULL;
     }
     return new RowsOfFields($table);
-  }
-
-  /**
-   * Get the source ID keys.
-   *
-   * @param \Drupal\migrate_tools\IdMapFilter $map
-   *   The migration ID map.
-   *
-   * @return array
-   *   The source ID keys.
-   */
-  protected function getSourceIdKeys(IdMapFilter $map) {
-    $map->rewind();
-    $columns = $map->currentSource();
-    $source_id_keys = array_map(static function ($id) {
-      return 'src_' . $id;
-    }, array_keys($columns));
-    return array_combine($source_id_keys, $source_id_keys);
   }
 
   /**
@@ -671,9 +606,9 @@ class MigrateToolsCommands extends DrushCommands {
       return new RowsOfFields($table);
     }
     else {
-      $error = dt('Migration @id does not exist', ['@id' => $migration_id]);
-      $this->logger()->error($error);
-      throw new \Exception($error);
+      $this->logger()->error(
+        dt('Migration @id does not exist', ['@id' => $migration_id])
+      );
     }
   }
 
@@ -694,8 +629,14 @@ class MigrateToolsCommands extends DrushCommands {
    */
   protected function migrationsList($migration_ids = '', array $options = []) {
     // Filter keys must match the migration configuration property name.
-    $filter['migration_group'] = explode(',', $options['group']);
-    $filter['migration_tags'] = explode(',', $options['tag']);
+    $filter['migration_group'] = $options['group'] ? explode(
+      ',',
+      $options['group']
+    ) : [];
+    $filter['migration_tags'] = $options['tag'] ? explode(
+      ',',
+      $options['tag']
+    ) : [];
 
     $manager = $this->migrationPluginManager;
     $plugins = $manager->createInstances([]);
@@ -718,21 +659,12 @@ class MigrateToolsCommands extends DrushCommands {
     // Do not return any migrations which fail to meet requirements.
     /** @var \Drupal\migrate\Plugin\Migration $migration */
     foreach ($matched_migrations as $id => $migration) {
-      try {
-        if ($migration->getSourcePlugin() instanceof RequirementsInterface) {
+      if ($migration->getSourcePlugin() instanceof RequirementsInterface) {
+        try {
           $migration->getSourcePlugin()->checkRequirements();
         }
-      }
-      catch (RequirementsException $e) {
-        unset($matched_migrations[$id]);
-      }
-      catch (PluginNotFoundException $exception) {
-        if ($options['continue-on-failure']) {
-          $this->logger()->error($exception->getMessage());
+        catch (RequirementsException $e) {
           unset($matched_migrations[$id]);
-        }
-        else {
-          throw $exception;
         }
       }
     }
@@ -747,14 +679,15 @@ class MigrateToolsCommands extends DrushCommands {
           foreach ($values as $search_value) {
             foreach ($matched_migrations as $id => $migration) {
               // Cast to array because migration_tags can be an array.
-              $definition = $migration->getPluginDefinition();
-              $configured_values = (array) ($definition[$property] ?? NULL);
-              $configured_id = in_array($search_value, $configured_values, TRUE) ? $search_value : 'default';
-              if (empty($search_value) || $search_value === $configured_id) {
+              $configured_values = (array) $migration->get($property);
+              $configured_id = (in_array(
+                $search_value,
+                $configured_values
+              )) ? $search_value : 'default';
+              if (empty($search_value) || $search_value == $configured_id) {
                 if (empty($migration_ids) || in_array(
                     mb_strtolower($id),
-                    $migration_ids,
-                    TRUE
+                    $migration_ids
                   )) {
                   $filtered_migrations[$id] = $migration;
                 }
@@ -773,7 +706,7 @@ class MigrateToolsCommands extends DrushCommands {
         $migrations[$configured_group_id][$id] = $migration;
       }
     }
-    return $migrations ?? [];
+    return isset($migrations) ? $migrations : [];
   }
 
   /**
@@ -799,9 +732,8 @@ class MigrateToolsCommands extends DrushCommands {
     // migration is not run multiple times.
     static $executed_migrations = [];
 
-    if ($options['execute-dependencies']) {
-      $definition = $migration->getPluginDefinition();
-      $required_migrations = $definition['requirements'] ?? [];
+    if (isset($options['execute-dependencies'])) {
+      $required_migrations = $migration->get('requirements');
       $required_migrations = array_filter($required_migrations, function ($value) use ($executed_migrations) {
         return !isset($executed_migrations[$value]);
       });
@@ -814,20 +746,11 @@ class MigrateToolsCommands extends DrushCommands {
         $executed_migrations += $required_migrations;
       }
     }
-    if ($options['sync']) {
-      $migration->set('syncSource', TRUE);
-    }
-    if ($options['skip-progress-bar']) {
-      $migration->set('skipProgressBar', TRUE);
-    }
-    if ($options['continue-on-failure']) {
-      $migration->set('continueOnFailure', TRUE);
-    }
-    if ($options['force']) {
+    if (!empty($options['force'])) {
       $migration->set('requirements', []);
     }
-    if ($options['update']) {
-      if (!$options['idlist']) {
+    if (!empty($options['update'])) {
+      if (empty($options['idlist'])) {
         $migration->getIdMap()->prepareUpdate();
       }
       else {
@@ -838,37 +761,18 @@ class MigrateToolsCommands extends DrushCommands {
         }
       }
     }
-
-    // Initialize the Synmfony Console progress bar.
-    \Drupal::service('migrate_tools.migration_drush_command_progress')->initializeProgress(
-      $this->output(),
-      $migration
-    );
-
     $executable = new MigrateExecutable($migration, $this->getMigrateMessage(), $options);
     // drush_op() provides --simulate support.
-    $result = drush_op([$executable, 'import']);
+    drush_op([$executable, 'import']);
     $executed_migrations += [$migration_id => $migration_id];
     if ($count = $executable->getFailedCount()) {
-      $error_message = dt(
-        '!name Migration - !count failed.',
-        ['!name' => $migration_id, '!count' => $count]
+      // Nudge Drush to use a non-zero exit code.
+      throw new \Exception(
+        dt(
+          '!name Migration - !count failed.',
+          ['!name' => $migration_id, '!count' => $count]
+        )
       );
-    }
-    elseif ($result == MigrationInterface::RESULT_FAILED) {
-      $error_message = dt('!name migration failed.', ['!name' => $migration_id]);
-    }
-    else {
-      $error_message = '';
-    }
-    if ($error_message) {
-      if ($options['continue-on-failure']) {
-        $this->logger()->error($error_message);
-      }
-      else {
-        // Nudge Drush to use a non-zero exit code.
-        throw new \Exception($error_message);
-      }
     }
   }
 

@@ -11,8 +11,9 @@ use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 /**
  * Tests the Rules component class.
  *
- * @coversDefaultClass \Drupal\rules\Engine\RulesComponent
  * @group Rules
+ *
+ * @cover RulesComponent
  */
 class RulesComponentTest extends RulesIntegrationTestBase {
 
@@ -37,7 +38,7 @@ class RulesComponentTest extends RulesIntegrationTestBase {
   }
 
   /**
-   * @covers ::getExpression
+   * @cover ::getExpression()
    */
   public function testGetExpression() {
     $rule = $this->rulesExpressionManager->createRule();
@@ -45,7 +46,7 @@ class RulesComponentTest extends RulesIntegrationTestBase {
   }
 
   /**
-   * @covers ::getContextDefinitions
+   * @cover ::getContextDefinitions()
    */
   public function testGetContextDefinitions() {
     $rule = $this->rulesExpressionManager->createRule();
@@ -58,7 +59,7 @@ class RulesComponentTest extends RulesIntegrationTestBase {
   }
 
   /**
-   * @covers ::getProvidedContext
+   * @cover ::getProvidedContext()
    */
   public function testGetProvidedContext() {
     $rule = $this->rulesExpressionManager->createRule();
@@ -69,7 +70,7 @@ class RulesComponentTest extends RulesIntegrationTestBase {
   }
 
   /**
-   * @covers ::getState
+   * @cover ::getState()
    */
   public function testGetState() {
     $rule = $this->rulesExpressionManager->createRule();

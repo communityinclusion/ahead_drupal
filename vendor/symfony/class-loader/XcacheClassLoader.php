@@ -106,8 +106,6 @@ class XcacheClassLoader
 
             return true;
         }
-
-        return null;
     }
 
     /**

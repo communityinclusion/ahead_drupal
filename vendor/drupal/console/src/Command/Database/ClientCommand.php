@@ -32,12 +32,6 @@ class ClientCommand extends Command
                 $this->trans('commands.database.client.arguments.database'),
                 'default'
             )
-            ->addArgument(
-                'target',
-                InputArgument::OPTIONAL,
-                $this->trans('commands.database.client.arguments.target'),
-                'default'
-            )
             ->setHelp($this->trans('commands.database.client.help'))
             ->setAliases(['dbc']);
     }
@@ -49,10 +43,18 @@ class ClientCommand extends Command
     {
         $database = $input->getArgument('database');
         $learning = $input->getOption('learning');
-        $target = $input->getArgument('target');
 
-        $databaseConnection = $this->resolveConnection($database, $target);
-        $connection = $this->getConnectionString($databaseConnection);
+        $databaseConnection = $this->resolveConnection($database);
+
+        $connection = sprintf(
+            '%s -A --database=%s --user=%s --password=%s --host=%s --port=%s',
+            $databaseConnection['driver'],
+            $databaseConnection['database'],
+            $databaseConnection['username'],
+            $databaseConnection['password'],
+            $databaseConnection['host'],
+            $databaseConnection['port']
+        );
 
         if ($learning) {
             $this->getIo()->commentBlock(

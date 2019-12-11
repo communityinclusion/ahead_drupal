@@ -37,10 +37,7 @@ class LineLengthSniff implements Sniff
     public $absoluteLineLimit = 100;
 
     /**
-     * Whether or not to ignore trailing comments.
-     *
-     * This has the effect of also ignoring all lines
-     * that only contain comments.
+     * Whether or not to ignore comment lines.
      *
      * @var boolean
      */
@@ -112,34 +109,17 @@ class LineLengthSniff implements Sniff
             $stackPtr--;
         }
 
-        $onlyComment = false;
-        if (isset(Tokens::$commentTokens[$tokens[$stackPtr]['code']]) === true) {
-            $prevNonWhiteSpace = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+        if (isset(Tokens::$phpcsCommentTokens[$tokens[$stackPtr]['code']]) === true) {
+            $prevNonWhiteSpace = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
             if ($tokens[$stackPtr]['line'] !== $tokens[$prevNonWhiteSpace]['line']) {
-                $onlyComment = true;
-            }
-        }
-
-        if ($onlyComment === true
-            && isset(Tokens::$phpcsCommentTokens[$tokens[$stackPtr]['code']]) === true
-        ) {
-            // Ignore PHPCS annotation comments that are on a line by themselves.
-            return;
-        }
-
-        $lineLength = ($tokens[$stackPtr]['column'] + $tokens[$stackPtr]['length'] - 1);
-
-        if ($this->ignoreComments === true
-            && isset(Tokens::$commentTokens[$tokens[$stackPtr]['code']]) === true
-        ) {
-            // Trailing comments are being ignored in line length calculations.
-            if ($onlyComment === true) {
-                // The comment is the only thing on the line, so no need to check length.
+                // Ignore PHPCS annotation comments if they are on a line by themselves.
                 return;
             }
 
-            $lineLength -= $tokens[$stackPtr]['length'];
+            unset($prevNonWhiteSpace);
         }
+
+        $lineLength = ($tokens[$stackPtr]['column'] + $tokens[$stackPtr]['length'] - 1);
 
         // Record metrics for common line length groupings.
         if ($lineLength <= 80) {
@@ -152,13 +132,19 @@ class LineLengthSniff implements Sniff
             $phpcsFile->recordMetric($stackPtr, 'Line length', '151 or more');
         }
 
-        if ($onlyComment === true) {
+        if ($tokens[$stackPtr]['code'] === T_COMMENT
+            || $tokens[$stackPtr]['code'] === T_DOC_COMMENT_STRING
+        ) {
+            if ($this->ignoreComments === true) {
+                return;
+            }
+
             // If this is a long comment, check if it can be broken up onto multiple lines.
             // Some comments contain unbreakable strings like URLs and so it makes sense
             // to ignore the line length in these cases if the URL would be longer than the max
             // line length once you indent it to the correct level.
             if ($lineLength > $this->lineLimit) {
-                $oldLength = $tokens[$stackPtr]['length'];
+                $oldLength = strlen($tokens[$stackPtr]['content']);
                 $newLength = strlen(ltrim($tokens[$stackPtr]['content'], "/#\t "));
                 $indent    = (($tokens[$stackPtr]['column'] - 1) + ($oldLength - $newLength));
 

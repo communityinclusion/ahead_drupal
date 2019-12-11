@@ -29,7 +29,7 @@ function webform_scheduled_email_drush_command() {
       'send_limit' => 'The maximum number of emails to be sent. If set to 0 no emails will be sent. (Default 500)',
     ],
     'callback' => 'webform_scheduled_email_cron_process',
-    'aliases' => ['wfsec', 'webform:scheduled-email:cron'],
+    'aliases' => ['wfsec'],
   ];
 
   return $items;

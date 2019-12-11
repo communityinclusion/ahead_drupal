@@ -8,7 +8,7 @@ trait loadTasks
      * @param string $password
      * @param string $pathToSvn
      *
-     * @return \Robo\Task\Vcs\SvnStack|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\Vcs\SvnStack
      */
     protected function taskSvnStack($username = '', $password = '', $pathToSvn = 'svn')
     {
@@ -18,7 +18,7 @@ trait loadTasks
     /**
      * @param string $pathToGit
      *
-     * @return \Robo\Task\Vcs\GitStack|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\Vcs\GitStack
      */
     protected function taskGitStack($pathToGit = 'git')
     {
@@ -28,7 +28,7 @@ trait loadTasks
     /**
      * @param string $pathToHg
      *
-     * @return \Robo\Task\Vcs\HgStack|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\Vcs\HgStack
      */
     protected function taskHgStack($pathToHg = 'hg')
     {

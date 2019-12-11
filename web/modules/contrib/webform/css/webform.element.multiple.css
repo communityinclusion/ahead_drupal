@@ -20,8 +20,7 @@
   vertical-align: top;
 }
 
-.webform-multiple-table td .description,
-.webform-multiple-table td .form-item--error-message {
+.webform-multiple-table td .description {
   white-space: normal;
 }
 
@@ -77,27 +76,14 @@
   width: auto;
 }
 
-.webform-multiple-table td .form-type-datetime .form-type-textfield input {
-  width: 12em;
-}
 .webform-multiple-table .webform-multiple-sort-weight {
   width: 4em;
 }
 
 .webform-multiple-table td input[type="image"] {
-  width: 20px;
-  height: auto;
-  min-width: initial;
-  max-width: initial;
-  box-sizing: border-box;
-  margin: 0;
-  border: 2px solid #333;
-  border-radius: 50%;
-  padding: 2px;
-}
-
-.webform-multiple-table td input[type="image"] + input[type="image"] {
-  margin-left: 2px;
+  padding: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .webform-multiple-table .container-inline input[type="submit"] {
@@ -109,15 +95,6 @@
  */
 .webform-multiple-table .form-item + .form-item {
   margin-top: .2em;
-}
-
-/**
- * Fix margin be checkboxes and radios.
- */
-.webform-multiple-table .form-checkboxes .form-item,
-.webform-multiple-table .form-radios .form-item {
-  margin-top: 0.4em;
-  margin-bottom: 0.4em;
 }
 
 /**

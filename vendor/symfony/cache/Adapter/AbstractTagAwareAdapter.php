@@ -229,14 +229,10 @@ abstract class AbstractTagAwareAdapter implements TagAwareAdapterInterface, TagA
             unset($this->deferred[$key]);
         }
 
-        try {
-            foreach ($this->doFetch($ids) as $id => $value) {
-                foreach ($value['tags'] ?? [] as $tag) {
-                    $tagData[$this->getId(self::TAGS_PREFIX.$tag)][] = $id;
-                }
+        foreach ($this->doFetch($ids) as $id => $value) {
+            foreach ($value['tags'] ?? [] as $tag) {
+                $tagData[$this->getId(self::TAGS_PREFIX.$tag)][] = $id;
             }
-        } catch (\Exception $e) {
-            // ignore unserialization failures
         }
 
         try {

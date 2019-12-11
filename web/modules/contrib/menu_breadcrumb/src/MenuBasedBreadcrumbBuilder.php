@@ -39,13 +39,6 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   protected $configFactory;
 
   /**
-   * The menu active trail interface.
-   *
-   * @var \Drupal\Core\Menu\MenuActiveTrailInterface
-   */
-  protected $menuActiveTrail;
-
-  /**
    * The menu link manager interface.
    *
    * @var \Drupal\Core\Menu\MenuLinkManagerInterface
@@ -141,7 +134,6 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
-    MenuActiveTrailInterface $menu_active_trail,
     MenuLinkManagerInterface $menu_link_manager,
     AdminContext $admin_context,
     TitleResolverInterface $title_resolver,
@@ -152,7 +144,6 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     LockBackendInterface $lock
   ) {
     $this->configFactory = $config_factory;
-    $this->menuActiveTrail = $menu_active_trail;
     $this->menuLinkManager = $menu_link_manager;
     $this->adminContext = $admin_context;
     $this->titleResolver = $title_resolver;
@@ -223,17 +214,10 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
           }
         }
 
-        if ($this->config->get('derived_active_trail')) {
-          // Do not use the global MenuActiveTrail service because we need one
-          // which is aware of the given routeMatch, not of the global one.
-          $menuActiveTrail = new MenuActiveTrail($this->menuLinkManager, $route_match, $this->cacheMenu, $this->lock);
-          $trail_ids = $menuActiveTrail->getActiveTrailIds($menu_name);
-        }
-        else {
-          // Default, for the majority & compatibility with historical use and
-          // other modules: use the global (injected) MenuActiveTrail service.
-          $trail_ids = $this->menuActiveTrail->getActiveTrailIds($menu_name);
-        }
+        // Do not use the global MenuActiveTrail service because we need one
+        // which is aware of the given routeMatch, not of the global one.
+        $menuActiveTrail = new MenuActiveTrail($this->menuLinkManager, $route_match, $this->cacheMenu, $this->lock);
+        $trail_ids = $menuActiveTrail->getActiveTrailIds($menu_name);
         $trail_ids = array_filter($trail_ids);
         if ($trail_ids) {
           $this->menuName = $menu_name;
@@ -312,11 +296,6 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
         continue;
       }
 
-      // Stop items when the first url matching occurs.
-      if ($this->config->get('stop_on_first_match') && $plugin->getUrlObject()->toString() == Url::fromRoute('<current>')->toString()) {
-        break;
-      }
-
       $links[] = Link::fromTextAndUrl($plugin->getTitle(), $plugin->getUrlObject());
       $breadcrumb->addCacheableDependency($plugin);
       // In the last line, MenuLinkContent plugin is not providing cache tags.
@@ -333,7 +312,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
     // Create a breadcrumb for <front> which may be either added or replaced:
     $langcode = $this->contentLanguage;
-    $label = $this->config->get('front_title') ?
+    $label = $this->config->get('home_as_site_name') ?
       $this->configFactory->get('system.site')->get('name') :
       $this->t('Home', [], ['langcode' => $langcode]);
     // (https://www.drupal.org/docs/develop/standards/coding-standards#array)
@@ -358,7 +337,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       if ($this->config->get('remove_home')) {
         array_shift($links);
       }
-      elseif ($this->config->get('front_title') != 2) {
+      else {
         $links[0] = $home_link;
       }
     }

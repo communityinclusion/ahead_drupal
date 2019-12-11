@@ -42,10 +42,11 @@ class UserBase extends Command
                 ->getStorage('user')
                 ->load($user);
         } else {
-            $userEntities = $this->entityTypeManager
-                ->getStorage('user')
-                ->loadByProperties(['name' => $user]);
-            $userEntity = reset($userEntities);
+            $userEntity = reset(
+                $this->entityTypeManager
+                    ->getStorage('user')
+                    ->loadByProperties(['name' => $user])
+            );
         }
 
         return $userEntity;

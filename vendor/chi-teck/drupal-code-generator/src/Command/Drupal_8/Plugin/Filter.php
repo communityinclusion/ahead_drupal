@@ -21,7 +21,7 @@ class Filter extends BaseGenerator {
    * {@inheritdoc}
    */
   protected function interact(InputInterface $input, OutputInterface $output) {
-    $questions = Utils::moduleQuestions() + Utils::pluginQuestions();
+    $questions = Utils::defaultPluginQuestions();
 
     $filter_types = [
       'TYPE_HTML_RESTRICTOR' => 'HTML restrictor',
@@ -33,6 +33,7 @@ class Filter extends BaseGenerator {
     $questions['filter_type'] = new ChoiceQuestion('Filter type', $choices);
 
     $vars = &$this->collectVars($input, $output, $questions);
+    $vars['class'] = Utils::camelize($vars['plugin_label']);
     $vars['filter_type'] = array_search($vars['filter_type'], $filter_types);
 
     $this->addFile()

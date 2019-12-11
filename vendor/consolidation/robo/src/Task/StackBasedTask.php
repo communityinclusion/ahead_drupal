@@ -85,7 +85,7 @@ abstract class StackBasedTask extends BaseTask
      * this class.  Calling one of the delegate's methods will defer
      * execution until the run() method is called.
      *
-     * @return null|object
+     * @return null
      */
     protected function getDelegate()
     {
@@ -219,7 +219,7 @@ abstract class StackBasedTask extends BaseTask
      * Execute one task method
      *
      * @param string $command
-     * @param array $action
+     * @param string $action
      *
      * @return \Robo\Result
      */

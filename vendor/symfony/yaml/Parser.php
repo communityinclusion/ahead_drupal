@@ -436,9 +436,6 @@ class Parser
                     $value = '';
 
                     foreach ($this->lines as $line) {
-                        if ('' !== ltrim($line) && '#' === ltrim($line)[0]) {
-                            continue;
-                        }
                         // If the indentation is not consistent at offset 0, it is to be considered as a ParseError
                         if (0 === $this->offset && !$deprecatedUsage && isset($line[0]) && ' ' === $line[0]) {
                             throw new ParseException('Unable to parse.', $this->getRealCurrentLineNb() + 1, $this->currentLine, $this->filename);
@@ -564,7 +561,7 @@ class Parser
         $oldLineIndentation = $this->getCurrentLineIndentation();
 
         if (!$this->moveToNextLine()) {
-            return '';
+            return;
         }
 
         if (null === $indentation) {
@@ -607,7 +604,7 @@ class Parser
         } else {
             $this->moveToPreviousLine();
 
-            return '';
+            return;
         }
 
         if ($inSequence && $oldLineIndentation === $newIndent && isset($data[0][0]) && '-' === $data[0][0]) {
@@ -615,7 +612,7 @@ class Parser
             // and therefore no nested list or mapping
             $this->moveToPreviousLine();
 
-            return '';
+            return;
         }
 
         $isItUnindentedCollection = $this->isStringUnIndentedCollectionItem();
@@ -715,7 +712,7 @@ class Parser
         if (self::preg_match('/^(?:'.self::TAG_PATTERN.' +)?'.self::BLOCK_SCALAR_HEADER_PATTERN.'$/', $value, $matches)) {
             $modifiers = isset($matches['modifiers']) ? $matches['modifiers'] : '';
 
-            $data = $this->parseBlockScalar($matches['separator'], preg_replace('#\d+#', '', $modifiers), (int) abs((int) $modifiers));
+            $data = $this->parseBlockScalar($matches['separator'], preg_replace('#\d+#', '', $modifiers), (int) abs($modifiers));
 
             if ('' !== $matches['tag']) {
                 if ('!!binary' === $matches['tag']) {
@@ -1102,17 +1099,14 @@ class Parser
         return $value;
     }
 
-    /**
-     * @return string|null
-     */
     private function getLineTag($value, $flags, $nextLineCheck = true)
     {
         if ('' === $value || '!' !== $value[0] || 1 !== self::preg_match('/^'.self::TAG_PATTERN.' *( +#.*)?$/', $value, $matches)) {
-            return null;
+            return;
         }
 
         if ($nextLineCheck && !$this->isNextLineIndented()) {
-            return null;
+            return;
         }
 
         $tag = substr($matches['tag'], 1);

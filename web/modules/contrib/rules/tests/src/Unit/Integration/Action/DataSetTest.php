@@ -13,14 +13,14 @@ class DataSetTest extends RulesIntegrationTestBase {
   /**
    * The action to be tested.
    *
-   * @var \Drupal\rules\Core\RulesActionInterface
+   * @var RulesActionInterface
    */
   protected $action;
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->action = $this->actionManager->createInstance('rules_data_set');
   }

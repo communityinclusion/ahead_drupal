@@ -22,6 +22,7 @@ class NamedColoursSniff implements Sniff
      */
     public $supportedTokenizers = ['CSS'];
 
+
     /**
      * A list of named colours.
      *

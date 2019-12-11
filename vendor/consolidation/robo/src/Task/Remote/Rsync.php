@@ -447,8 +447,6 @@ class Rsync extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param string $from
-     *
      * @return string
      */
     protected function getFromPathSpec($from)

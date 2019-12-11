@@ -21,9 +21,10 @@ class CKEditor extends BaseGenerator {
    * {@inheritdoc}
    */
   protected function interact(InputInterface $input, OutputInterface $output) {
-    $questions = Utils::moduleQuestions() + Utils::pluginQuestions();
+    $questions = Utils::defaultPluginQuestions();
 
     $vars = &$this->collectVars($input, $output, $questions);
+    $vars['class'] = Utils::camelize($vars['plugin_label']);
 
     $unprefixed_plugin_id = preg_replace('/^' . $vars['machine_name'] . '_/', '', $vars['plugin_id']);
 

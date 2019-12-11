@@ -36,7 +36,6 @@ trait ProfileTestTrait {
     $type = ProfileType::create([
       'id' => $id,
       'label' => $label,
-      'display_label' => $label,
       'registration' => $registration,
       'roles' => $roles,
     ]);

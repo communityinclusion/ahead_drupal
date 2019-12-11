@@ -10,7 +10,7 @@ namespace Robo\ClassDiscovery;
 interface ClassDiscoveryInterface
 {
     /**
-     * @param string $searchPattern
+     * @param $searchPattern
      *
      * @return $this
      */
@@ -22,7 +22,7 @@ interface ClassDiscoveryInterface
     public function getClasses();
 
     /**
-     * @param string $class
+     * @param $class
      *
      * @return string|null
      */

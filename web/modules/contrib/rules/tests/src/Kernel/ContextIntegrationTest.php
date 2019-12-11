@@ -8,11 +8,14 @@ use Drupal\rules\Engine\RulesComponent;
 use Drupal\rules\Exception\EvaluationException;
 
 /**
- * Tests the extended core context API with Rules.
+ * Tests the the extended core context API with Rules.
  *
  * @group Rules
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class ContextIntegrationTest extends RulesKernelTestBase {
+class ContextIntegrationTest extends RulesDrupalTestBase {
 
   /**
    * Tests that a required context mapping that is NULL throws an exception.
@@ -38,7 +41,7 @@ class ContextIntegrationTest extends RulesKernelTestBase {
       $this->fail('No exception thrown when required context value is NULL');
     }
     catch (EvaluationException $e) {
-      $this->assertTrue(TRUE, 'Exception thrown as expected when a required context is NULL');
+      $this->pass('Exception thrown as expected when a required context is NULL');
     }
   }
 
@@ -55,14 +58,14 @@ class ContextIntegrationTest extends RulesKernelTestBase {
         ->toArray()
     );
 
-    $rule = $this->expressionManager->createRule();
+    $rule = $this->expressionManager->createRule([]);
     $rule->addExpressionObject($action);
     try {
       $rule->execute();
       $this->fail('No exception thrown when required context value is NULL');
     }
     catch (EvaluationException $e) {
-      $this->assertTrue(TRUE, 'Exception thrown as expected when a required context is NULL');
+      $this->pass('Exception thrown as expected when a required context is NULL');
     }
   }
 

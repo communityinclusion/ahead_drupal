@@ -92,20 +92,9 @@ class Drupal implements DrupalInterface
                 $io->writeln('➤ Creating request');
             }
 
-            $parsed_url = parse_url($uri);
-
-            if($parsed_url['scheme'] == 'https') {
-                $_SERVER['HTTPS'] = 'on';
-            }
-
-            $path = '/';
-            if(isset($parsed_url['path'])) {
-                $path =  $parsed_url['path'] . $path;
-            }
-
             $_SERVER['HTTP_HOST'] = parse_url($uri, PHP_URL_HOST);
             $_SERVER['SERVER_PORT'] = null;
-            $_SERVER['REQUEST_URI'] = $path;
+            $_SERVER['REQUEST_URI'] = '/';
             $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
             $_SERVER['REQUEST_METHOD'] = 'GET';
             $_SERVER['SERVER_SOFTWARE'] = null;

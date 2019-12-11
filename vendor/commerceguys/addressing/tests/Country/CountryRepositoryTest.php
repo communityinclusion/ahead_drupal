@@ -2,7 +2,6 @@
 
 namespace CommerceGuys\Addressing\Tests\Country;
 
-use CommerceGuys\Addressing\Country\Country;
 use CommerceGuys\Addressing\Country\CountryRepository;
 use org\bovigo\vfs\vfsStream;
 
@@ -63,7 +62,7 @@ class CountryRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         // Explicit locale.
         $country = $countryRepository->get('FR', 'es');
-        $this->assertInstanceOf(Country::class, $country);
+        $this->assertInstanceOf('CommerceGuys\\Addressing\\Country\\Country', $country);
         $this->assertEquals('FR', $country->getCountryCode());
         $this->assertEquals('Francia', $country->getName());
         $this->assertEquals('FRA', $country->getThreeLetterCode());
@@ -73,14 +72,14 @@ class CountryRepositoryTest extends \PHPUnit_Framework_TestCase
 
         // Default locale, lowercase country code.
         $country = $countryRepository->get('fr');
-        $this->assertInstanceOf(Country::class, $country);
+        $this->assertInstanceOf('CommerceGuys\\Addressing\\Country\\Country', $country);
         $this->assertEquals('FR', $country->getCountryCode());
         $this->assertEquals('Frankreich', $country->getName());
         $this->assertEquals('de', $country->getLocale());
 
         // Fallback locale.
         $country = $countryRepository->get('FR', 'INVALID-LOCALE');
-        $this->assertInstanceOf(Country::class, $country);
+        $this->assertInstanceOf('CommerceGuys\\Addressing\\Country\\Country', $country);
         $this->assertEquals('FR', $country->getCountryCode());
         $this->assertEquals('France', $country->getName());
         $this->assertEquals('en', $country->getLocale());

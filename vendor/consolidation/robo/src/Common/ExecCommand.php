@@ -124,9 +124,6 @@ trait ExecCommand
         return $cmd;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getCommandDescription()
     {
         return $this->process->getCommandLine();

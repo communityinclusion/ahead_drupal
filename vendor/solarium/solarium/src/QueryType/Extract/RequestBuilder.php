@@ -50,7 +50,7 @@ class RequestBuilder extends BaseRequestBuilder
 
             // literal.*
             foreach ($doc->getFields() as $name => $value) {
-                if ($value instanceof \DateTimeInterface) {
+                if ($value instanceof \DateTime) {
                     $value = $query->getHelper()->formatDate($value);
                 }
                 $value = (array) $value;

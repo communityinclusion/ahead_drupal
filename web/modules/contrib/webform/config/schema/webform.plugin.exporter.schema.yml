@@ -8,6 +8,3 @@ webform.exporter.delimited_text:
     delimiter:
       type: string
       label: Delimiter
-    excel:
-      type: boolean
-      label: Excel

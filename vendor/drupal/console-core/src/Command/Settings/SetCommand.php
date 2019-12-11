@@ -82,18 +82,6 @@ class SetCommand extends Command
         $settingName = $input->getArgument('name');
         $settingValue = $input->getArgument('value');
 
-        // Reset the default values ​​of the statistics.
-        if ($settingName == 'statistics.enabled') {
-            $this->configurationManager->updateConfigGlobalParameter(
-                'statistics.last-attempted',
-                null
-            );
-            $this->configurationManager->updateConfigGlobalParameter(
-                'statistics.times-attempted',
-                0
-            );
-        }
-
         $userConfigFile = sprintf(
             '%s/.console/config.yml',
             $this->configurationManager->getHomeDirectory()
@@ -123,8 +111,6 @@ class SetCommand extends Command
         }
 
         $parents = array_merge(['application'], explode(".", $settingName));
-        // Change the value type if it is boolean.
-        $settingValue = json_decode($settingValue) === null ? $settingValue : json_decode($settingValue);
 
         $this->nestedArray->setValue(
             $userConfigFileParsed,
@@ -177,7 +163,6 @@ class SetCommand extends Command
             return 1;
         }
 
-        $settingValue = is_bool($settingValue) ? $settingValue ? 'true' : 'false' : $settingValue;
         $this->getIo()->success(
             sprintf(
                 $this->trans('commands.settings.set.messages.success'),

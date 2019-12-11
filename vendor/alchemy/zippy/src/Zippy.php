@@ -80,11 +80,9 @@ class Zippy
      *
      * @throws RuntimeException In case of failure
      */
-    public function open($path, $type = null)
+    public function open($path)
     {
-        if (null === $type) {
-            $type = $this->guessAdapterExtension($path);
-        }
+        $type = $this->guessAdapterExtension($path);
 
         try {
             return $this

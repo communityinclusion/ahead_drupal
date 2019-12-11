@@ -19,13 +19,15 @@ class SchedulerNonEnabledTypeTest extends SchedulerBrowserTestBase {
     $this->contentName = 'not_for_scheduler';
     $this->contentType = $this->drupalCreateContentType(['type' => $this->contentName, 'name' => 'Not for Scheduler']);
 
-    // Create an admin user with permission to create the new content type.
-    $this->adminUser2 = $this->drupalCreateUser([
+    // Create an administrator user.
+    $this->adminUser = $this->drupalCreateUser([
       'access content',
-      'administer nodes',
       'administer scheduler',
       'create ' . $this->contentName . ' content',
+      'edit own ' . $this->contentName . ' content',
+      'delete own ' . $this->contentName . ' content',
       'view own unpublished content',
+      'administer nodes',
       'schedule publishing of nodes',
       'access site reports',
     ]);
@@ -78,7 +80,7 @@ class SchedulerNonEnabledTypeTest extends SchedulerBrowserTestBase {
       'title' => $title,
       'status' => 0,
       'type' => $this->contentName,
-      'publish_on' => $this->requestTime - 2,
+      'publish_on' => REQUEST_TIME - 2,
     ];
     $node = $this->drupalCreateNode($edit);
 
@@ -105,7 +107,7 @@ class SchedulerNonEnabledTypeTest extends SchedulerBrowserTestBase {
       'title' => $title,
       'status' => 1,
       'type' => $this->contentName,
-      'unpublish_on' => $this->requestTime - 1,
+      'unpublish_on' => REQUEST_TIME - 1,
     ];
     $node = $this->drupalCreateNode($edit);
 
@@ -136,7 +138,7 @@ class SchedulerNonEnabledTypeTest extends SchedulerBrowserTestBase {
    */
   public function testNonEnabledNodeType() {
     // Log in.
-    $this->drupalLogin($this->adminUser2);
+    $this->drupalLogin($this->adminUser);
 
     // 1. By default check that the scheduler date fields are not displayed.
     $this->checkNonEnabledTypes(FALSE, FALSE, 1);

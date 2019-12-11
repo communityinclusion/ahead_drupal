@@ -35,7 +35,7 @@ class RelativeNamespaceDiscovery extends AbstractClassDiscovery
     /**
      * @param string $relativeNamespace
      *
-     * @return $this
+     * @return RelativeNamespaceDiscovery
      */
     public function setRelativeNamespace($relativeNamespace)
     {
@@ -45,7 +45,7 @@ class RelativeNamespaceDiscovery extends AbstractClassDiscovery
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getClasses()
     {
@@ -77,8 +77,8 @@ class RelativeNamespaceDiscovery extends AbstractClassDiscovery
     }
 
     /**
-     * @param string|array $directories
-     * @param string $pattern
+     * @param $directories
+     * @param $pattern
      *
      * @return \Symfony\Component\Finder\Finder
      */
@@ -93,9 +93,9 @@ class RelativeNamespaceDiscovery extends AbstractClassDiscovery
     }
 
     /**
-     * @param string $path
+     * @param $path
      *
-     * @return string
+     * @return mixed
      */
     protected function convertPathToNamespace($path)
     {
@@ -103,8 +103,6 @@ class RelativeNamespaceDiscovery extends AbstractClassDiscovery
     }
 
     /**
-     * @param string $namespace
-     *
      * @return string
      */
     public function convertNamespaceToPath($namespace)

@@ -4,14 +4,17 @@ namespace Drupal\Tests\rules\Kernel;
 
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\rules\Plugin\RulesExpression\RuleExpression;
+use Drupal\rules\Plugin\RulesExpression\Rule;
 
 /**
  * Tests storage and loading of Rules config entities.
  *
  * @group Rules
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class ConfigEntityTest extends RulesKernelTestBase {
+class ConfigEntityTest extends RulesDrupalTestBase {
 
   /**
    * The entity storage for Rules config entities.
@@ -23,7 +26,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
 
     $this->storage = $this->container->get('entity_type.manager')->getStorage('rules_component');
@@ -31,8 +34,6 @@ class ConfigEntityTest extends RulesKernelTestBase {
 
   /**
    * Tests that an empty rule configuration can be saved.
-   *
-   * @doesNotPerformAssertions
    */
   public function testSavingEmptyRule() {
     $rule = $this->expressionManager->createRule();
@@ -104,7 +105,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
     $loaded_entity = $this->storage->load('test_rule');
     // Create the Rules expression object from the configuration.
     $expression = $loaded_entity->getExpression();
-    $this->assertInstanceOf(RuleExpression::class, $expression);
+    $this->assertInstanceOf(Rule::class, $expression);
     $context_definitions = $loaded_entity->getContextDefinitions();
     $this->assertEquals($context_definitions['test']->getDataType(), 'string', 'Data type of context definition is correct.');
     $this->assertEquals($context_definitions['test']->getLabel(), 'Test string', 'Label of context definition is correct.');
@@ -112,8 +113,6 @@ class ConfigEntityTest extends RulesKernelTestBase {
 
   /**
    * Tests that a reaction rule config entity can be saved.
-   *
-   * @doesNotPerformAssertions
    */
   public function testReactionRuleSaving() {
     $rule = $this->expressionManager->createRule();

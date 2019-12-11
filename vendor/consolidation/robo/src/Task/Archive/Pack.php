@@ -40,8 +40,7 @@ class Pack extends BaseTask implements PrintedInterface
     /**
      * Construct the class.
      *
-     * @param string $archiveFile
-     *   The full path and name of the archive file to create.
+     * @param string $archiveFile The full path and name of the archive file to create.
      *
      * @since   1.0
      */
@@ -53,8 +52,7 @@ class Pack extends BaseTask implements PrintedInterface
     /**
      * Satisfy the parent requirement.
      *
-     * @return bool
-     *   Always returns true.
+     * @return bool Always returns true.
      *
      * @since   1.0
      */
@@ -78,10 +76,10 @@ class Pack extends BaseTask implements PrintedInterface
      * Add an item to the archive. Like file_exists(), the parameter
      * may be a file or a directory.
      *
-     * @param string $placementLocation
-     *   Relative path and name of item to store in archive.
-     * @param string $filesystemLocation
-     *   Absolute or relative path to file or directory's location in filesystem.
+     * @var string
+     *             Relative path and name of item to store in archive
+     * @var string
+     *             Absolute or relative path to file or directory's location in filesystem
      *
      * @return $this
      */
@@ -96,10 +94,10 @@ class Pack extends BaseTask implements PrintedInterface
      * Alias for addFile, in case anyone has angst about using
      * addFile with a directory.
      *
-     * @param string $placementLocation
-     *   Relative path and name of directory to store in archive.
-     * @param string $filesystemLocation
-     *   Absolute or relative path to directory or directory's location in filesystem.
+     * @var string
+     *             Relative path and name of directory to store in archive
+     * @var string
+     *             Absolute or relative path to directory or directory's location in filesystem
      *
      * @return $this
      */
@@ -113,14 +111,13 @@ class Pack extends BaseTask implements PrintedInterface
     /**
      * Add a file or directory, or list of same to the archive.
      *
-     * @param string|array $item
-     *   If given a string, should contain the relative filesystem path to the
-     *   the item to store in archive; this will also be used as the item's
-     *   path in the archive, so absolute paths should not be used here.
-     *   If given an array, the key of each item should be the path to store
-     *   in the archive, and the value should be the filesystem path to the
-     *   item to store.
-     *
+     * @var string|array
+     *                   If given a string, should contain the relative filesystem path to the
+     *                   the item to store in archive; this will also be used as the item's
+     *                   path in the archive, so absolute paths should not be used here.
+     *                   If given an array, the key of each item should be the path to store
+     *                   in the archive, and the value should be the filesystem path to the
+     *                   item to store.
      * @return $this
      */
     public function add($item)

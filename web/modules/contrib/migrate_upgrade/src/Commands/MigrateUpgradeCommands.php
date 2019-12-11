@@ -171,7 +171,7 @@ class MigrateUpgradeCommands extends DrushCommands {
   /**
    * Rolls back and removes upgrade migrations.
    *
-   * @throws \Drush\Exceptions\UserAbortException
+   * @throws UserAbortException
    *   If user chose to not perform the rollback.
    *
    * @command migrate:upgrade-rollback

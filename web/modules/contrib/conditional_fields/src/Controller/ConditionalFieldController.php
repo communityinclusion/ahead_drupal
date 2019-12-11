@@ -7,7 +7,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Entity\EntityFormBuilder;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
@@ -23,7 +22,7 @@ class ConditionalFieldController extends ControllerBase {
   /**
    * Form Builder.
    *
-   * @var \Drupal\Core\Form\FormBuilderInterface|EntityFormBuilder
+   * @var \Drupal\Core\Form\FormBuilderInterface
    */
   protected $formBuilder;
 

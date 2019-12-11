@@ -7,19 +7,18 @@
 
 namespace Drupal\Console\Command\Generate;
 
-use Drupal\Console\Core\Command\Command;
-use Drupal\Console\Core\Utils\StringConverter;
-use Drupal\Console\Core\Utils\ChainQueue;
-use Drupal\Console\Command\Shared\ArrayInputTrait;
-use Drupal\Console\Command\Shared\ModuleTrait;
-use Drupal\Console\Command\Shared\ConfirmationTrait;
-use Drupal\Console\Generator\PluginViewsFieldGenerator;
-use Drupal\Console\Extension\Manager;
-use Drupal\Console\Utils\Site;
 use Drupal\Console\Utils\Validator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Drupal\Console\Generator\PluginViewsFieldGenerator;
+use Drupal\Console\Command\Shared\ModuleTrait;
+use Drupal\Console\Command\Shared\ConfirmationTrait;
+use Drupal\Console\Core\Command\Command;
+use Drupal\Console\Extension\Manager;
+use Drupal\Console\Core\Utils\ChainQueue;
+use Drupal\Console\Utils\Site;
+use Drupal\Console\Core\Utils\StringConverter;
 
 /**
  * Class PluginViewsFieldCommand
@@ -28,9 +27,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class PluginViewsFieldCommand extends Command
 {
-    use ArrayInputTrait;
-    use ConfirmationTrait;
     use ModuleTrait;
+    use ConfirmationTrait;
 
     /**
      * @var Manager
@@ -65,12 +63,12 @@ class PluginViewsFieldCommand extends Command
     /**
      * PluginViewsFieldCommand constructor.
      *
-     * @param Manager $extensionManager
+     * @param Manager                   $extensionManager
      * @param PluginViewsFieldGenerator $generator
-     * @param Site $site
-     * @param StringConverter $stringConverter
-     * @param Validator $validator
-     * @param ChainQueue $chainQueue
+     * @param Site                      $site
+     * @param StringConverter           $stringConverter
+     * @param Validator                 $validator
+     * @param ChainQueue                $chainQueue
      */
     public function __construct(
         Manager $extensionManager,
@@ -102,10 +100,22 @@ class PluginViewsFieldCommand extends Command
                 $this->trans('commands.common.options.module')
             )
             ->addOption(
-                'fields',
+                'class',
                 null,
-                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                $this->trans('commands.generate.plugin.views.field.options.fields')
+                InputOption::VALUE_REQUIRED,
+                $this->trans('commands.generate.plugin.views.field.options.class')
+            )
+            ->addOption(
+                'title',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                $this->trans('commands.generate.plugin.views.field.options.title')
+            )
+            ->addOption(
+                'description',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                $this->trans('commands.generate.plugin.views.field.options.description')
             )
             ->setAliases(['gpvf']);
     }
@@ -120,29 +130,18 @@ class PluginViewsFieldCommand extends Command
             return 1;
         }
 
-        $module = $this->validateModule($input->getOption('module'));
-        $fields = $input->getOption('fields');
-        $noInteraction = $input->getOption('no-interaction');
-
-        // Parse nested data.
-        if ($noInteraction) {
-            $fields = $this->explodeInlineArray($fields);
-        }
-
-        $function = $module . '_views_data';
-        $viewsFile = $module . '.views.inc';
-        if ($this->extensionManager->validateModuleFunctionExist($module, $function, $viewsFile)) {
-            $this->getIo()->warning(
-                sprintf(
-                    $this->trans('commands.generate.plugin.views.field.messages.views-data-already-implemented'),
-                    $module
-                )
-            );
-        }
+        $module = $input->getOption('module');
+        $class_name = $this->validator->validateClassName($input->getOption('class'));
+        $class_machine_name = $this->stringConverter->camelCaseToUnderscore($class_name);
+        $title = $input->getOption('title');
+        $description = $input->getOption('description');
 
         $this->generator->generate([
             'module' => $module,
-            'fields' => $fields,
+            'class_machine_name' => $class_machine_name,
+            'class_name' => $class_name,
+            'title' => $title,
+            'description' => $description,
         ]);
 
         $this->chainQueue->addCommand('cache:rebuild', ['cache' => 'discovery']);
@@ -155,52 +154,37 @@ class PluginViewsFieldCommand extends Command
         // --module option
         $this->getModuleOption();
 
-        // --fields option
-        $fields = $input->getOption('fields');
-        if (empty($fields)) {
-            while (true) {
-                // --class option
-                $class_name = $this->getIo()->ask(
-                    $this->trans('commands.generate.plugin.views.field.questions.class'),
-                    'CustomViewsField',
-                    function ($class_name) {
-                        return $this->validator->validateClassName($class_name);
-                    }
-                );
-
-                // --title option
-                $title = $this->getIo()->ask(
-                    $this->trans('commands.generate.plugin.views.field.questions.title'),
-                    $this->stringConverter->camelCaseToHuman($class_name)
-                );
-
-                // --description option
-                $description = $this->getIo()->ask(
-                    $this->trans('commands.generate.plugin.views.field.questions.description'),
-                    $this->trans('commands.generate.plugin.views.field.questions.description_default')
-                );
-
-                array_push(
-                    $fields,
-                    [
-                        'title' => $title,
-                        'description' => $description,
-                        'class_name' => $class_name,
-                        'class_machine_name' => $this->stringConverter->camelCaseToUnderscore($class_name),
-                    ]
-                );
-
-                if (!$this->getIo()->confirm(
-                    $this->trans('commands.generate.plugin.views.field.questions.field-add'),
-                    true
-                )
-                ) {
-                    break;
+        // --class option
+        $class_name = $input->getOption('class');
+        if (!$class_name) {
+            $class_name = $this->getIo()->ask(
+                $this->trans('commands.generate.plugin.views.field.questions.class'),
+                'CustomViewsField',
+                function ($class_name) {
+                    return $this->validator->validateClassName($class_name);
                 }
-            }
-        } else {
-            $fields = $this->explodeInlineArray($fields);
+            );
         }
-        $input->setOption('fields', $fields);
+        $input->setOption('class', $class_name);
+
+        // --title option
+        $title = $input->getOption('title');
+        if (!$title) {
+            $title = $this->getIo()->ask(
+                $this->trans('commands.generate.plugin.views.field.questions.title'),
+                $this->stringConverter->camelCaseToHuman($class_name)
+            );
+            $input->setOption('title', $title);
+        }
+
+        // --description option
+        $description = $input->getOption('description');
+        if (!$description) {
+            $description = $this->getIo()->ask(
+                $this->trans('commands.generate.plugin.views.field.questions.description'),
+                $this->trans('commands.generate.plugin.views.field.questions.description_default')
+            );
+            $input->setOption('description', $description);
+        }
     }
 }

@@ -17,3 +17,4 @@ questions:
 examples:
     - description: 'Provide a config type and a config name'
       execution: drupal config:delete active all
+

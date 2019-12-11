@@ -87,8 +87,8 @@ abstract class AdapterTestCase extends CachePoolTest
         $cache = $this->createCachePool(0, __FUNCTION__);
 
         $v = $cache->get('k1', function () use (&$counter, $cache) {
-            $cache->get('k2', function () use (&$counter) { return ++$counter; });
-            $v = $cache->get('k2', function () use (&$counter) { return ++$counter; }); // ensure the callback is called once
+            $v = $cache->get('k2', function () use (&$counter) { return ++$counter; });
+            $v = $cache->get('k2', function () use (&$counter) { return ++$counter; });
 
             return $v;
         });

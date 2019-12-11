@@ -45,18 +45,15 @@ class EntityTestCompositeRelationship extends EntityTestMulRev implements Entity
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields['parent_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Parent ID'))
-      ->setDescription(t('The ID of the parent entity of which this entity is referenced.'))
-      ->setRevisionable(TRUE);
+      ->setDescription(t('The ID of the parent entity of which this entity is referenced.'));
 
     $fields['parent_type'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Parent type'))
-      ->setDescription(t('The entity parent type to which this entity is referenced.'))
-      ->setRevisionable(TRUE);
+      ->setDescription(t('The entity parent type to which this entity is referenced.'));
 
     $fields['parent_field_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Parent field name'))
-      ->setDescription(t('The entity parent field name to which this entity is referenced.'))
-      ->setRevisionable(TRUE);
+      ->setDescription(t('The entity parent field name to which this entity is referenced.'));
 
     return $fields;
   }

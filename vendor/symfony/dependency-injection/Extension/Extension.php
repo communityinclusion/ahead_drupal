@@ -84,12 +84,11 @@ abstract class Extension implements ExtensionInterface, ConfigurationExtensionIn
         $class = $container->getReflectionClass($class);
         $constructor = $class ? $class->getConstructor() : null;
 
-        return $class && (!$constructor || !$constructor->getNumberOfRequiredParameters()) ? $class->newInstance() : null;
+        if ($class && (!$constructor || !$constructor->getNumberOfRequiredParameters())) {
+            return $class->newInstance();
+        }
     }
 
-    /**
-     * @return array
-     */
     final protected function processConfiguration(ConfigurationInterface $configuration, array $configs)
     {
         $processor = new Processor();

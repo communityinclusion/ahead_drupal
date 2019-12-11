@@ -1,16 +1,6 @@
 CHANGELOG
 =========
 
-5.0.0
------
-
- * added argument `$triggerDeprecation` to `OptionsResolver::offsetGet()`
-
-4.3.0
------
-
- * added `OptionsResolver::addNormalizer` method
-
 4.2.0
 -----
 

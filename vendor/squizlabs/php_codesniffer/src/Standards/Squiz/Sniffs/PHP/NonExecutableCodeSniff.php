@@ -105,7 +105,6 @@ class NonExecutableCodeSniff implements Sniff
                         T_CASE,
                         T_DEFAULT,
                         T_CLOSE_CURLY_BRACKET,
-                        T_ENDSWITCH,
                     ],
                     ($end + 1)
                 );

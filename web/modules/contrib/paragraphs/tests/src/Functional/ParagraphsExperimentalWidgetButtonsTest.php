@@ -2,7 +2,10 @@
 
 namespace Drupal\Tests\paragraphs\Functional;
 
-use Drupal\Tests\paragraphs\Functional\Experimental\ParagraphsExperimentalTestBase;
+use Drupal\paragraphs\Tests\Classic\ParagraphsCoreVersionUiTestTrait;
+use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\paragraphs\FunctionalJavascript\LoginAdminTrait;
+use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\node\Entity\Node;
 
@@ -11,7 +14,11 @@ use Drupal\node\Entity\Node;
  *
  * @group paragraphs
  */
-class ParagraphsExperimentalWidgetButtonsTest extends ParagraphsExperimentalTestBase {
+class ParagraphsExperimentalWidgetButtonsTest extends BrowserTestBase {
+
+  use LoginAdminTrait;
+  use ParagraphsCoreVersionUiTestTrait;
+  use ParagraphsTestBaseTrait;
 
   /**
    * Modules to enable.

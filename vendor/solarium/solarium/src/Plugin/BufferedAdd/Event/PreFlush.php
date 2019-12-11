@@ -3,7 +3,7 @@
 namespace Solarium\Plugin\BufferedAdd\Event;
 
 use Solarium\Core\Query\DocumentInterface;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * PreFlush event, see Events for details.

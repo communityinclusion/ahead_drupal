@@ -23,6 +23,7 @@ class ESLintSniff implements Sniff
      */
     public $supportedTokenizers = ['JS'];
 
+
     /**
      * ESLint configuration file path.
      *

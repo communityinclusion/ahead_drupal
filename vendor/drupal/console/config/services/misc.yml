@@ -13,7 +13,3 @@ services:
     arguments: ['@console.root', '@app.root']
     tags:
       - { name: drupal.command }
-  console.composerize:
-    class: Drupal\Console\Command\ComposerizeCommand
-    tags:
-      - { name: drupal.command }

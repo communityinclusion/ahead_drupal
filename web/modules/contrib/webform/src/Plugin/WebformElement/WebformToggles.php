@@ -2,6 +2,8 @@
 
 namespace Drupal\webform\Plugin\WebformElement;
 
+use Drupal\webform\WebformSubmissionInterface;
+
 /**
  * Provides a 'toggles' element.
  *
@@ -45,6 +47,14 @@ class WebformToggles extends OptionsBase {
    */
   public function hasMultipleValues(array $element) {
     return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+    $element['#element_validate'][] = [get_class($this), 'validateMultipleOptions'];
+    parent::prepare($element, $webform_submission);
   }
 
   /**

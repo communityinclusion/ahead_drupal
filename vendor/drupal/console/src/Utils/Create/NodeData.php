@@ -24,7 +24,6 @@ class NodeData extends Base
      * @param $limit
      * @param $titleWords
      * @param $timeRange
-     * @param $revision
      *
      * @return array
      */
@@ -33,7 +32,6 @@ class NodeData extends Base
         $limit,
         $titleWords,
         $timeRange,
-        $revision,
         $language = LanguageInterface::LANGCODE_NOT_SPECIFIED
     ) {
         $nodes = [];
@@ -57,13 +55,6 @@ class NodeData extends Base
 
                 $this->generateFieldSampleData($node);
                 $node->save();
-
-                if($revision) {
-                    for ($a = 0; $a < 3; $a++) {
-                        $this->addRevision($node, $a);
-                    }
-                }
-
                 $nodes['success'][] = [
                     'nid' => $node->id(),
                     'node_type' => $bundles[$contentType],
@@ -80,17 +71,5 @@ class NodeData extends Base
         }
 
         return $nodes;
-    }
-
-    /**
-     * @param $node
-     * @param $count
-     */
-    private function addRevision($node, $count) {
-        $node->setTitle($this->getRandom()->sentences(mt_rand(1, 5), true));
-        $node->setNewRevision(TRUE);
-        $node->revision_log = "Revision number $count was created";
-        $node->setRevisionCreationTime(REQUEST_TIME);
-        $node->save();
     }
 }

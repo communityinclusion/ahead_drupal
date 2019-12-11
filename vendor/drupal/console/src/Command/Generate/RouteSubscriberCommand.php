@@ -108,7 +108,7 @@ class RouteSubscriberCommand extends Command
             return 1;
         }
 
-        $module = $this->validateModule($input->getOption('module'));
+        $module = $input->getOption('module');
         $name = $input->getOption('name');
         $class = $this->validator->validateClassName($input->getOption('class'));
 

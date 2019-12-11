@@ -1,7 +1,6 @@
 <?php
 namespace Drush\Commands\core;
 
-use Consolidation\SiteProcess\Util\Tty;
 use Drush\Drush;
 use Drupal\Core\Url;
 use Drush\Commands\DrushCommands;
@@ -78,7 +77,8 @@ class RunserverCommands extends DrushCommands
         $php = $this->getConfig()->get('php', 'php');
         $process = $this->processManager()->process([$php, '-S', $addr . ':' . $uri['port'], $router]);
         $process->setWorkingDirectory(Drush::bootstrapManager()->getRoot());
-        $process->setTty(Tty::isTtySupported());
+        // See https://github.com/drush-ops/drush/issues/4015
+        $process->setTty(is_writable('/dev/tty'));
         if ($options['quiet']) {
             $process->disableOutput();
         }

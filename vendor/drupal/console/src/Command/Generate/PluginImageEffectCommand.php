@@ -128,7 +128,7 @@ class PluginImageEffectCommand extends Command
             return 1;
         }
 
-        $module = $this->validateModule($input->getOption('module'));
+        $module = $input->getOption('module');
         $class_name = $this->validator->validateClassName($input->getOption('class'));
         $label = $input->getOption('label');
         $plugin_id = $input->getOption('plugin-id');

@@ -23,9 +23,6 @@ class Select extends ConditionalFieldsHandlerBase {
    */
   public function statesHandler($field, $field_info, $options) {
     $state = [];
-    $select_states = [];
-
-    $values_array = $this->getConditionValues( $options );
 
     switch ($options['values_set']) {
       case CONDITIONAL_FIELDS_DEPENDENCY_VALUES_WIDGET:
@@ -36,34 +33,28 @@ class Select extends ConditionalFieldsHandlerBase {
           $state[$options['state']][$options['selector']]['value'] = (array) $state[$options['state']][$options['selector']]['value'];
         }
         else {
-          $state[$options['state']][$options['selector']]['value'] = $values_array;
+          $state[$options['state']][$options['selector']]['value'] = [];
         }
-        break;
+        return $state;
 
       case CONDITIONAL_FIELDS_DEPENDENCY_VALUES_XOR:
-        $input_states[$options['selector']] = [
-          $options['condition'] => [ 'xor' => $values_array],
-        ];
-        $state[$options['state']] = $input_states;
-        break;
+        $select_states[$options['state']][] = 'xor';
+
       case CONDITIONAL_FIELDS_DEPENDENCY_VALUES_REGEX:
-          $select_states[$options['state']][] = [
-            $options['selector'] => [
-              $options['condition'] => [ 'regex' => $options['regex']],
-            ],
-          ];
-        $state = $select_states;
-        break;
+        $regex = TRUE;
       case CONDITIONAL_FIELDS_DEPENDENCY_VALUES_NOT:
-        $options['state'] = '!' . $options['state'];
       case CONDITIONAL_FIELDS_DEPENDENCY_VALUES_OR:
         foreach ((array) $options['values'] as $value) {
-          $select_states[$options['state']][$options['selector']][] = [$options['condition'] => $value];
+          $select_states[$options['state']][] = [
+            $options['selector'] => [
+              $options['condition'] => empty($regex) ? $value : $options['value'],
+            ],
+          ];
         }
-        $state = $select_states;
         break;
     }
 
+    $state = $select_states;
     return $state;
   }
 

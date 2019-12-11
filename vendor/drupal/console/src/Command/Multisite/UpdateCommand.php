@@ -8,7 +8,6 @@
 namespace Drupal\Console\Command\Multisite;
 
 use Drupal\Console\Core\Command\Command;
-use Drupal\Console\Utils\Site;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,20 +24,13 @@ class UpdateCommand extends Command
     protected $appRoot;
 
     /**
-    * @var Site
-    */
-    protected $site;
-
-    /**
      * DebugCommand constructor.
      *
      * @param $appRoot
-     * @param Site $site
      */
-    public function __construct($appRoot, Site $site)
+    public function __construct($appRoot)
     {
         $this->appRoot = $appRoot;
-        $this->site = $site;
         parent::__construct();
     }
 
@@ -89,7 +81,7 @@ class UpdateCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $this->uri = $this->site->getMultisiteName($input);
+        $this->uri = parse_url($input->getParameterOption(['--uri', '-l'], 'default'), PHP_URL_HOST);
 
         $sites = $this->getMultisite($this->uri);
         if ($this->uri == "default") {
@@ -121,7 +113,7 @@ class UpdateCommand extends Command
         $this->fs = new Filesystem();
 
         if (empty($this->uri)) {
-            $uri =  $this->site->getMultisiteName($input);
+            $uri =  parse_url($input->getParameterOption(['--uri', '-l'], 'default'), PHP_URL_HOST);
             $sites = $this->getMultisite($uri);
             $this->uri = $sites[$uri];
         }

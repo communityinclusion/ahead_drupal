@@ -31,7 +31,7 @@ class EntityCreateTest extends RulesEntityIntegrationTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
 
     // Prepare some mocked bundle field definitions. This is needed because

@@ -30,12 +30,12 @@ class SourceCsvFormTest extends BrowserTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
-    'csv_source_test',
+    'taxonomy',
     'migrate',
     'migrate_plus',
-    'migrate_source_csv',
     'migrate_tools',
-    'taxonomy',
+    'migrate_source_csv',
+    'csv_source_test',
   ];
 
   /**

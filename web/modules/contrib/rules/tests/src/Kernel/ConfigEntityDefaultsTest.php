@@ -6,8 +6,11 @@ namespace Drupal\Tests\rules\Kernel;
  * Tests default config.
  *
  * @group Rules
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class ConfigEntityDefaultsTest extends RulesKernelTestBase {
+class ConfigEntityDefaultsTest extends RulesDrupalTestBase {
 
   /**
    * The entity storage for Rules config entities.
@@ -42,7 +45,7 @@ class ConfigEntityDefaultsTest extends RulesKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->entityTypeManager = $this->container->get('entity_type.manager');
     $this->storage = $this->entityTypeManager->getStorage('rules_component');
@@ -64,7 +67,7 @@ class ConfigEntityDefaultsTest extends RulesKernelTestBase {
       ->execute();
 
     // Test that the action was executed correctly.
-    $messages = $this->container->get('messenger')->all();
+    $messages = drupal_get_messages();
     $message_string = isset($messages['status'][0]) ? (string) $messages['status'][0] : NULL;
     $this->assertEquals($message_string, 'test@example.com');
 

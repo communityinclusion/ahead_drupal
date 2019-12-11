@@ -177,7 +177,8 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     }
 
     /**
-     * @param string $val
+     * @param \DOMNode $node
+     * @param string   $val
      *
      * @return bool
      */
@@ -195,7 +196,8 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     }
 
     /**
-     * @param string $val
+     * @param \DOMNode $node
+     * @param string   $val
      *
      * @return bool
      */
@@ -208,7 +210,8 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     }
 
     /**
-     * @param string $val
+     * @param \DOMNode $node
+     * @param string   $val
      *
      * @return bool
      */
@@ -221,6 +224,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     }
 
     /**
+     * @param \DOMNode             $node
      * @param \DOMDocumentFragment $fragment
      *
      * @return bool
@@ -299,7 +303,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
         $typeCastAttributes = $this->resolveXmlTypeCastAttributes($context);
 
         foreach ($node->attributes as $attr) {
-            if (!is_numeric($attr->nodeValue) || !$typeCastAttributes || (isset($attr->nodeValue[1]) && '0' === $attr->nodeValue[0])) {
+            if (!is_numeric($attr->nodeValue) || !$typeCastAttributes) {
                 $data['@'.$attr->nodeName] = $attr->nodeValue;
 
                 continue;
@@ -364,6 +368,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     /**
      * Parse the data and convert it to DOMElements.
      *
+     * @param \DOMNode     $parentNode
      * @param array|object $data
      * @param string|null  $xmlRootNodeName
      *
@@ -426,12 +431,13 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
             return $this->appendNode($parentNode, $data, 'data');
         }
 
-        throw new NotEncodableValueException(sprintf('An unexpected value could not be serialized: %s', !\is_resource($data) ? var_export($data, true) : sprintf('%s resource', get_resource_type($data))));
+        throw new NotEncodableValueException(sprintf('An unexpected value could not be serialized: %s', var_export($data, true)));
     }
 
     /**
      * Selects the type of node to create and appends it to the parent.
      *
+     * @param \DOMNode     $parentNode
      * @param array|object $data
      * @param string       $nodeName
      * @param string       $key
@@ -468,7 +474,8 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     /**
      * Tests the value being passed and decide what sort of element to create.
      *
-     * @param mixed $val
+     * @param \DOMNode $node
+     * @param mixed    $val
      *
      * @return bool
      *
@@ -515,6 +522,8 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
 
     /**
      * Get XML option for type casting attributes Defaults to true.
+     *
+     * @param array $context
      *
      * @return bool
      */

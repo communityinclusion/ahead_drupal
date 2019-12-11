@@ -18,6 +18,14 @@ use Drupal\Component\Annotation\Plugin;
  * @see \Drupal\devel_generate\DevelGenerateBaseInterface
  */
 class DevelGenerate extends Plugin {
+
+  /**
+   * The plugin ID.
+   *
+   * @var string
+   */
+  public $id;
+
   /**
    * The human-readable name of the DevelGenerate type.
    *

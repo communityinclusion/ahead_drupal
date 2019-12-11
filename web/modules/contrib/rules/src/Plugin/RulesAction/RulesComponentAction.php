@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   deriver = "Drupal\rules\Plugin\RulesAction\RulesComponentActionDeriver"
  * )
  *
- * @todo Add access callback information from Drupal 7.
+ * @todo: Add access callback information from Drupal 7.
  */
 class RulesComponentAction extends RulesActionBase implements ContainerFactoryPluginInterface {
 
@@ -41,7 +41,7 @@ class RulesComponentAction extends RulesActionBase implements ContainerFactoryPl
   protected $saveLater = [];
 
   /**
-   * Constructs a RulesComponentAction object.
+   * Constructs an EntityCreate object.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.

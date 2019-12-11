@@ -4,7 +4,6 @@ arguments:
 messages:
   rebuilding: 'Rebuilding routes, wait a moment please'
   completed: 'Done rebuilding route(s).'
-  error-rebuild: 'Error to rebuild route(s).'
 examples:
   - description: 'Rebuild routes'
     execution:

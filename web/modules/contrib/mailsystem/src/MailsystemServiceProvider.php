@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains \Drupal\mailsystem\MailsystemServiceProvider.
+ */
+
 namespace Drupal\mailsystem;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;

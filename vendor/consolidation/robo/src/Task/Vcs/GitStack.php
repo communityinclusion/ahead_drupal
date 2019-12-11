@@ -42,7 +42,6 @@ class GitStack extends CommandStack
      *
      * @param string $repo
      * @param string $to
-     * @param string $branch
      *
      * @return $this
      */

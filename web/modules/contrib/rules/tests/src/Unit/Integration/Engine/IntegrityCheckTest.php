@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\rules\Unit\Integration\Engine;
 
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
@@ -37,6 +36,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $rule = $this->rulesExpressionManager->createRule();
     $action = $this->rulesExpressionManager->createAction('rules_entity_save', ContextConfig::create()
       ->map('entity', 'unknown_variable')
+      ->toArray()
     );
     $rule->addExpressionObject($action);
 
@@ -61,6 +61,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       ->map('entity', 'unknown_variable_1'));
     $second_action = $this->rulesExpressionManager->createAction('rules_entity_save', ContextConfig::create()
       ->map('entity', 'unknown_variable_2')
+      ->toArray()
     );
     $rule->addExpressionObject($second_action);
 
@@ -145,6 +146,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     // The condition provides a "provided_text" variable.
     $condition = $this->rulesExpressionManager->createCondition('rules_test_provider', ContextConfig::create()
       ->provideAs('provided_text', 'invalid_näme')
+      ->toArray()
     );
     $rule->addExpressionObject($condition);
 
@@ -169,6 +171,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       // violation.
       ->map('type', 'variable_1')
       ->setValue('entity_id', 1)
+      ->toArray()
     );
     $rule->addExpressionObject($action);
 
@@ -194,6 +197,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
       // trigger the violation.
       ->setValue('data', 'some value')
       ->setValue('value', 'some new value')
+      ->toArray()
     );
     $rule->addExpressionObject($action);
 
@@ -217,6 +221,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     // violation.
     $condition = $this->rulesExpressionManager->createCondition('rules_test_string_condition', ContextConfig::create()
       ->map('text', 'list_variable')
+      ->toArray()
     );
     $rule->addExpressionObject($condition);
 
@@ -242,6 +247,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $condition = $this->rulesExpressionManager->createCondition('rules_node_is_of_type', ContextConfig::create()
       ->map('node', 'node')
       ->map('types', 'node')
+      ->toArray()
     );
     $rule->addExpressionObject($condition);
 
@@ -267,6 +273,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     $condition = $this->rulesExpressionManager->createCondition('rules_node_is_of_type', ContextConfig::create()
       ->map('node', 'list_variable')
       ->map('types', 'list_variable')
+      ->toArray()
     );
     $rule->addExpressionObject($condition);
 
@@ -315,6 +322,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     // The most inner action will trigger a violation for an unknown variable.
     $action = $this->rulesExpressionManager->createAction('rules_entity_save', ContextConfig::create()
       ->map('entity', 'unknown_variable')
+      ->toArray()
     );
     $action_set->addExpressionObject($action);
     $rule->addExpressionObject($action_set);
@@ -400,7 +408,7 @@ class IntegrityCheckTest extends RulesEntityIntegrationTestBase {
     );
     $rule->addAction('rules_system_message', ContextConfig::create()
       ->map('message', 'variable_added')
-      ->setValue('type', MessengerInterface::TYPE_STATUS)
+      ->setValue('type', 'status')
     );
     // The message action requires a string, thus if the context is not refined
     // it will end up as "any" and integrity check would fail.

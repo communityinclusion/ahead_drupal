@@ -7,10 +7,7 @@ use Drupal\node\Entity\NodeType;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
- * Tests if webform nodes exist.
- *
- * Tests that the Webform node module cannot be uninstalled
- *  if webform nodes exist.
+ * Tests that the Webform node module cannot be uninstalled if webform nodes exist.
  *
  * @group webform_node
  */
@@ -50,14 +47,14 @@ class WebformNodeUninstallTest extends KernelTestBase {
 
     // No nodes exist.
     $validation_reasons = \Drupal::service('module_installer')->validateUninstall(['webform_node']);
-    $this->assertEquals($validation_reasons, [], 'The webform_node module is not required.');
+    $this->assertEqual([], $validation_reasons, 'The webform_node module is not required.');
 
     $node = Node::create(['title' => $this->randomString(), 'type' => 'webform']);
     $node->save();
 
     // Check webform node module can't be uninstalled.
     $validation_reasons = \Drupal::service('module_installer')->validateUninstall(['webform_node']);
-    $this->assertEquals($validation_reasons['webform_node'], ['To uninstall Webform node, delete all content that has the Webform content type.']);
+    $this->assertEqual(['To uninstall Webform node, delete all content that has the Webform content type.'], $validation_reasons['webform_node']);
 
     $node->delete();
 

@@ -4,11 +4,8 @@ namespace Drupal\webform_access;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\webform\Utility\WebformDialogHelper;
 use Drupal\webform_access\Entity\WebformAccessGroup;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a class to build a listing of webform access type entities.
@@ -21,32 +18,6 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   protected $limit = FALSE;
-
-  /**
-   * Access group storage.
-   *
-   * @var \Drupal\webform_access\WebformAccessGroupStorageInterface
-   */
-  protected $accessGroupStorage;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, WebformAccessGroupStorageInterface $access_group_storage) {
-    parent::__construct($entity_type, $storage);
-    $this->accessGroupStorage = $access_group_storage;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    return new static(
-      $entity_type,
-      $container->get('entity.manager')->getStorage($entity_type->id()),
-      $container->get('entity.manager')->getStorage('webform_access_group')
-    );
-  }
 
   /**
    * {@inheritdoc}
@@ -79,7 +50,7 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
       return [];
     }
 
-    return [
+    $build['info'] = [
       '#markup' => $this->formatPlural($total, '@total access type', '@total access types', ['@total' => $total]),
       '#prefix' => '<div>',
       '#suffix' => '</div>',
@@ -108,7 +79,7 @@ class WebformAccessTypeListBuilder extends ConfigEntityListBuilder {
     $row['label'] = $entity->toLink($entity->label(), 'edit-form');
 
     // Groups.
-    $entity_ids = $this->accessGroupStorage->getQuery()
+    $entity_ids = \Drupal::entityQuery('webform_access_group')
       ->condition('type', $entity->id())
       ->execute();
     $items = [];

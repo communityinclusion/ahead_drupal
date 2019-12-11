@@ -42,7 +42,7 @@ class ConditionContainerForm implements ExpressionFormInterface {
       '#theme' => 'table',
       '#caption' => $this->t('Conditions'),
       '#header' => [$this->t('Elements'), $this->t('Operations')],
-      '#empty' => $this->t('None'),
+      '#empty' => t('None'),
     ];
 
     foreach ($this->conditionContainer as $condition) {

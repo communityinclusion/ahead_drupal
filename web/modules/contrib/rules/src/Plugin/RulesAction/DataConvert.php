@@ -20,30 +20,22 @@ use Drupal\rules\Exception\InvalidArgumentException;
  *     "rounding_behavior" = @ContextDefinition("string",
  *       label = @Translation("Rounding behavior"),
  *       default_value = NULL,
- *       required = FALSE
- *     ),
+ *       required = false
+ *     )
  *   },
  *   provides = {
  *     "conversion_result" = @ContextDefinition("any",
  *        label = @Translation("Conversion result")
- *      ),
+ *      )
  *   }
  * )
  * @todo Add rounding_behaviour default value "round".
  * @todo Add various input restrictions.
  * @todo Add options_list for target type.
  * @todo Specify the right data type for the provided result.
+ * @todo Alter context definition based on the target type.
  */
 class DataConvert extends RulesActionBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function refineContextDefinitions(array $selected_data) {
-    if ($type = $this->getContextValue('target_type')) {
-      $this->pluginDefinition['provides']['conversion_result']->setDataType($type);
-    }
-  }
 
   /**
    * Executes the plugin.
@@ -56,7 +48,7 @@ class DataConvert extends RulesActionBase {
    *   The behaviour for rounding.
    */
   protected function doExecute($value, $target_type, $rounding_behavior) {
-    // @todo Add support for objects implementing __toString().
+    // @todo: Add support for objects implementing __toString().
     if (!is_scalar($value)) {
       throw new InvalidArgumentException('Only scalar values are supported.');
     }

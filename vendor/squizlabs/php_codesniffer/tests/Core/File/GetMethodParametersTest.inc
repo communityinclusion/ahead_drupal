@@ -19,8 +19,7 @@ function defaultValues($var1=1, $var2='value') {}
 function typeHint(foo $var1, bar $var2) {}
 
 class MyClass {
-    /* testSelfTypeHint */
-    function typeSelfHint(self $var) {}
+/* testSelfTypeHint */ function typeSelfHint(self $var) {}
 }
 
 /* testNullableTypeHint */

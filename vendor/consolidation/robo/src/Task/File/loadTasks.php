@@ -6,7 +6,7 @@ trait loadTasks
     /**
      * @param array|\Iterator $files
      *
-     * @return \Robo\Task\File\Concat|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\File\Concat
      */
     protected function taskConcat($files)
     {
@@ -16,7 +16,7 @@ trait loadTasks
     /**
      * @param string $file
      *
-     * @return \Robo\Task\File\Replace|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\File\Replace
      */
     protected function taskReplaceInFile($file)
     {
@@ -26,7 +26,7 @@ trait loadTasks
     /**
      * @param string $file
      *
-     * @return \Robo\Task\File\Write|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\File\Write
      */
     protected function taskWriteToFile($file)
     {
@@ -39,7 +39,7 @@ trait loadTasks
      * @param string $baseDir
      * @param bool $includeRandomPart
      *
-     * @return \Robo\Task\File\TmpFile|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\File\TmpFile
      */
     protected function taskTmpFile($filename = 'tmp', $extension = '', $baseDir = '', $includeRandomPart = true)
     {

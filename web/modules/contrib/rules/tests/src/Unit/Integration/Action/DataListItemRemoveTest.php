@@ -20,7 +20,7 @@ class DataListItemRemoveTest extends RulesIntegrationTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
 
     $this->action = $this->actionManager->createInstance('rules_list_item_remove');

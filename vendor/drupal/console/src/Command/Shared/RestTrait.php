@@ -49,8 +49,8 @@ trait RestTrait
 
     public function getRestDrupalConfig()
     {
-        if ($this->entityTypeManager) {
-            return $this->entityTypeManager->getStorage('rest_resource_config')->loadMultiple() ?: [];
+        if ($this->configFactory) {
+            return $this->configFactory->get('rest.settings')->get('resources') ?: [];
         }
 
         return null;

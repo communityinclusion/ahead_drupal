@@ -134,13 +134,12 @@ class Extension extends BaseExtension
     }
 
     /**
-     * @param string $testType
      * @param bool $fullPath
      * @return string
      */
-    public function getTestsPath($testType, $fullPath = false)
+    public function getTestsPath($fullPath = false)
     {
-        return $this->getPath($fullPath) . '/tests/' . $testType;
+        return $this->getPath($fullPath) . '/tests';
     }
 
     /**
@@ -160,24 +159,4 @@ class Extension extends BaseExtension
     {
         return $this->getTestsSourcePath($fullPath) . '/FunctionalJavascript';
     }
-
-    /**
-     * @param BaseExtension $extension
-     */
-    function loadFromParentObj(BaseExtension $extension)
-    {
-        $objValues = get_object_vars($extension);
-        foreach($objValues AS $key => $value)
-        {
-            $this->$key = $value;
-        }
-    }
-
-    /**
-     * @param $root
-     */
-    function setRoot($root) {
-        $this->root = $root;
-    }
-
 }

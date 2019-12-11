@@ -167,7 +167,9 @@ class OutputRules implements RulesInterface
 
         $this->outputMode = static::IM_IN_HTML;
         $this->out = $output;
-        $this->hasHTML5 = defined('ENT_HTML5');
+
+        // If HHVM, see https://github.com/facebook/hhvm/issues/2727
+        $this->hasHTML5 = defined('ENT_HTML5') && !defined('HHVM_VERSION');
     }
 
     public function addRule(array $rule)

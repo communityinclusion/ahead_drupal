@@ -22,17 +22,14 @@ class TwigExtension extends BaseGenerator {
    * {@inheritdoc}
    */
   protected function interact(InputInterface $input, OutputInterface $output) {
-    $questions = Utils::moduleQuestions();
+    $questions = Utils::defaultQuestions();
     $default_class = function ($vars) {
-      return Utils::camelize($vars['machine_name']) . 'TwigExtension';
+      return Utils::camelize($vars['name']) . 'TwigExtension';
     };
     $questions['class'] = new Question('Class', $default_class);
-    $this->collectVars($input, $output, $questions);
+    $questions['di'] = new ConfirmationQuestion('Would you like to inject dependencies?', FALSE);
 
-    $di_question = new ConfirmationQuestion('Would you like to inject dependencies?');
-    if ($this->ask($input, $output, $di_question)) {
-      $this->collectServices($input, $output);
-    }
+    $this->collectVars($input, $output, $questions);
 
     $this->addFile()
       ->path('src/{class}.php')

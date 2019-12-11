@@ -38,11 +38,6 @@ class Extender implements PluginInterface, EventSubscriberInterface
     {
         $this->composer = $composer;
         $this->io = $io;
-
-      $installer = new Installer($io, $composer);
-
-      $composer->getInstallationManager()->addInstaller($installer);
-
     }
 
     /**

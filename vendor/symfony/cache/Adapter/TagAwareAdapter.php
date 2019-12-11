@@ -160,14 +160,7 @@ class TagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterfac
         if (!$this->pool->hasItem($key)) {
             return false;
         }
-
-        $itemTags = $this->pool->getItem(static::TAGS_PREFIX.$key);
-
-        if (!$itemTags->isHit()) {
-            return false;
-        }
-
-        if (!$itemTags = $itemTags->get()) {
+        if (!$itemTags = $this->pool->getItem(static::TAGS_PREFIX.$key)->get()) {
             return true;
         }
 
@@ -286,16 +279,6 @@ class TagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterfac
         return $this->invalidateTags([]);
     }
 
-    public function __sleep()
-    {
-        throw new \BadMethodCallException('Cannot serialize '.__CLASS__);
-    }
-
-    public function __wakeup()
-    {
-        throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
-    }
-
     public function __destruct()
     {
         $this->commit();
@@ -317,10 +300,7 @@ class TagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterfac
             }
 
             unset($tagKeys[$key]);
-
-            if ($item->isHit()) {
-                $itemTags[$key] = $item->get() ?: [];
-            }
+            $itemTags[$key] = $item->get() ?: [];
 
             if (!$tagKeys) {
                 $tagVersions = $this->getTagVersions($itemTags);

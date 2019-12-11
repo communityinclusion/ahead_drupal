@@ -1,10 +1,9 @@
+id: devel
+label: 'Development'
+description: 'Links related to Devel module.'
 langcode: en
-status: true
+locked: true
 dependencies:
   enforced:
     module:
       - devel
-id: devel
-label: Development
-description: 'Links related to Devel module.'
-locked: true

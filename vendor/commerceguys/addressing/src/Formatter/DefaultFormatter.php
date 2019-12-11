@@ -144,14 +144,13 @@ class DefaultFormatter implements FormatterInterface
     {
         $countries = $this->countryRepository->getList($options['locale']);
         $values = $this->getValues($address, $addressFormat);
-        $countryCode = $address->getCountryCode();
 
         $view = [];
         $view['country'] = [
             'html' => $options['html'],
             'html_tag' => 'span',
             'html_attributes' => ['class' => 'country'],
-            'value' => isset($countries[$countryCode]) ? $countries[$countryCode] : $countryCode,
+            'value' => $countries[$address->getCountryCode()],
         ];
         foreach ($addressFormat->getUsedFields() as $field) {
             // The constant is more suitable as a class than the value since

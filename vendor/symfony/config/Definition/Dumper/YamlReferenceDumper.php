@@ -70,8 +70,10 @@ class YamlReferenceDumper
     }
 
     /**
-     * @param int  $depth
-     * @param bool $prototypedArray
+     * @param NodeInterface      $node
+     * @param NodeInterface|null $parentNode
+     * @param int                $depth
+     * @param bool               $prototypedArray
      */
     private function writeNode(NodeInterface $node, NodeInterface $parentNode = null, $depth = 0, $prototypedArray = false)
     {
@@ -213,6 +215,8 @@ class YamlReferenceDumper
     }
 
     /**
+     * @param PrototypedArrayNode $node
+     *
      * @return array
      */
     private function getPrototypeChildren(PrototypedArrayNode $node)

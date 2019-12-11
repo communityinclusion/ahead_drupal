@@ -2,7 +2,6 @@
 
 namespace Drupal\webform\Plugin\WebformElement;
 
-use Drupal\webform\Plugin\WebformElementOtherInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Drupal\webform\WebformSubmissionConditionsValidator;
 
@@ -16,7 +15,15 @@ use Drupal\webform\WebformSubmissionConditionsValidator;
  *   category = @Translation("Options elements"),
  * )
  */
-class WebformCheckboxesOther extends Checkboxes implements WebformElementOtherInterface {
+class WebformCheckboxesOther extends Checkboxes implements WebformOtherInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
+    $element['#element_validate'][] = [get_class($this), 'validateMultipleOptions'];
+    parent::prepare($element, $webform_submission);
+  }
 
   /**
    * {@inheritdoc}

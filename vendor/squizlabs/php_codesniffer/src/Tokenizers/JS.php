@@ -16,6 +16,7 @@ use PHP_CodeSniffer\Config;
 class JS extends Tokenizer
 {
 
+
     /**
      * A list of tokens that are allowed to open a scope.
      *

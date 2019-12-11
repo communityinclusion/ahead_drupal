@@ -26,24 +26,6 @@ interface WebformAccessGroupInterface extends ConfigEntityInterface {
   public function getTypeLabel();
 
   /**
-   * Set admin user ids assigned to webform access group.
-   *
-   * @param array $uids
-   *   An array of admin user ids.
-   *
-   * @return $this
-   */
-  public function setAdminIds(array $uids);
-
-  /**
-   * Get admin user ids assigned to webform access group.
-   *
-   * @return array
-   *   An array of admin user ids.
-   */
-  public function getAdminIds();
-
-  /**
    * Set user ids assigned to webform access group.
    *
    * @param array $uids
@@ -82,68 +64,6 @@ interface WebformAccessGroupInterface extends ConfigEntityInterface {
   public function getEntityIds();
 
   /**
-   * Set email addresses assigned to webform access group.
-   *
-   * @param array $emails
-   *   An array of email addresses .
-   *
-   * @return $this
-   */
-  public function setEmails(array $emails);
-
-  /**
-   * Get email addresses assigned to webform access group.
-   *
-   * @return array
-   *   An array of email addresses .
-   */
-  public function getEmails();
-
-  /****************************************************************************/
-  // Add/Remote methods.
-  /****************************************************************************/
-
-  /**
-   * Add admin user id to webform access group.
-   *
-   * @param int $uid
-   *   A admin user id.
-   *
-   * @return $this
-   */
-  public function addAdminId($uid);
-
-  /**
-   * Remove admin user id to webform access group.
-   *
-   * @param int $uid
-   *   A user id.
-   *
-   * @return $this
-   */
-  public function removeAdminId($uid);
-
-  /**
-   * Add user id to webform access group.
-   *
-   * @param int $uid
-   *   A user id.
-   *
-   * @return $this
-   */
-  public function addUserId($uid);
-
-  /**
-   * Remove user id to webform access group.
-   *
-   * @param int $uid
-   *   A user id.
-   *
-   * @return $this
-   */
-  public function removeUserId($uid);
-
-  /**
    * Add entity id to webform access group.
    *
    * @param string $entity_type
@@ -172,28 +92,24 @@ interface WebformAccessGroupInterface extends ConfigEntityInterface {
   public function removeEntityId($entity_type, $entity_id, $field_name, $webform_id);
 
   /**
-   * Add email address to webform access group.
+   * Add user id to webform access group.
    *
-   * @param string $email
-   *   An email address.
+   * @param int $uid
+   *   A user id.
    *
    * @return $this
    */
-  public function addEmail($email);
+  public function addUserId($uid);
 
   /**
-   * Remove email address to webform access group.
+   * Remove user id to webform access group.
    *
-   * @param int $email
-   *   An email address.
+   * @param int $uid
+   *   A user id.
    *
    * @return $this
    */
-  public function removeEmail($email);
-
-  /****************************************************************************/
-  // Caching methods.
-  /****************************************************************************/
+  public function removeUserId($uid);
 
   /**
    * Invalidates an entity's cache tags upon save.

@@ -85,10 +85,10 @@ class ControllerResolver implements ArgumentResolverInterface, ControllerResolve
             }
         }
 
-        try {
-            $callable = $this->createController($controller);
-        } catch (\InvalidArgumentException $e) {
-            throw new \InvalidArgumentException(sprintf('The controller for URI "%s" is not callable. %s', $request->getPathInfo(), $e->getMessage()));
+        $callable = $this->createController($controller);
+
+        if (!\is_callable($callable)) {
+            throw new \InvalidArgumentException(sprintf('The controller for URI "%s" is not callable. %s', $request->getPathInfo(), $this->getControllerError($callable)));
         }
 
         return $callable;
@@ -116,6 +116,7 @@ class ControllerResolver implements ArgumentResolverInterface, ControllerResolve
     }
 
     /**
+     * @param Request                $request
      * @param callable               $controller
      * @param \ReflectionParameter[] $parameters
      *
@@ -165,7 +166,7 @@ class ControllerResolver implements ArgumentResolverInterface, ControllerResolve
      *
      * @return callable A PHP callable
      *
-     * @throws \InvalidArgumentException When the controller cannot be created
+     * @throws \InvalidArgumentException
      */
     protected function createController($controller)
     {
@@ -179,13 +180,7 @@ class ControllerResolver implements ArgumentResolverInterface, ControllerResolve
             throw new \InvalidArgumentException(sprintf('Class "%s" does not exist.', $class));
         }
 
-        $controller = [$this->instantiateController($class), $method];
-
-        if (!\is_callable($controller)) {
-            throw new \InvalidArgumentException($this->getControllerError($controller));
-        }
-
-        return $controller;
+        return [$this->instantiateController($class), $method];
     }
 
     /**

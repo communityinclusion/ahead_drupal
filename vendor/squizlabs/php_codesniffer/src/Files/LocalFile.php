@@ -171,8 +171,6 @@ class LocalFile extends File
         $this->warningCount = 0;
         $this->fixableCount = 0;
 
-        $this->replayingErrors = true;
-
         foreach ($errors as $line => $lineErrors) {
             foreach ($lineErrors as $column => $colErrors) {
                 foreach ($colErrors as $error) {
@@ -208,8 +206,6 @@ class LocalFile extends File
                 }
             }
         }
-
-        $this->replayingErrors = false;
 
     }//end replayErrors()
 

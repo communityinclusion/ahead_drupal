@@ -31,7 +31,7 @@
         $output.val($input.val());
 
         // Sync input and output values.
-        $input.on('change input', function () {
+        $input.on('input', function () {
           $output.val($input.val());
         });
         $output.on('input', function () {

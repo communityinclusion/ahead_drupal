@@ -77,7 +77,6 @@ function migrate_tools_drush_command() {
       'tag' => 'ID of the migration tag to rollback',
       'feedback' => 'Frequency of progress messages, in items processed',
       'idlist' => 'Comma-separated list of IDs to import',
-      'idlist-delimiter' => 'The delimiter for records, defaults to \':\'',
     ],
     'arguments' => [
       'migration' => 'Name of migration(s) to rollback. Delimit multiple using commas.',
@@ -257,15 +256,7 @@ function drush_migrate_tools_migrate_import($migration_names = '') {
     return;
   }
 
-  $options = [
-    'limit',
-    'feedback',
-    'idlist',
-    'idlist-delimiter',
-    'update',
-    'force',
-  ];
-  foreach ($options as $option) {
+  foreach (['limit', 'feedback', 'idlist', 'update', 'force'] as $option) {
     if (drush_get_option($option)) {
       $options[$option] = drush_get_option($option);
     }
@@ -349,7 +340,7 @@ function drush_migrate_tools_migrate_rollback($migration_names = '') {
     return;
   }
 
-  foreach (['feedback', 'idlist', 'idlist-delimiter'] as $option) {
+  foreach (['feedback', 'idlist'] as $option) {
     if (drush_get_option($option)) {
       $options[$option] = drush_get_option($option);
     }

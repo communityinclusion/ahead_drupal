@@ -6,8 +6,7 @@ function myFunction() {}
 /* testReturnFunction */
 function myFunction(array ...$arrays): array
 {
-    /* testNestedClosure */
-    return array_map(function(array $array): int {
+    return array_map(/* testNestedClosure */function(array $array): int {
         return array_sum($array);
     }, $arrays);
 }

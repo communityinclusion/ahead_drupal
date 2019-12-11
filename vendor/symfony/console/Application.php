@@ -454,11 +454,12 @@ class Application
         if (!$command->isEnabled()) {
             $command->setApplication(null);
 
-            return null;
+            return;
         }
 
-        // Will throw if the command is not correctly initialized.
-        $command->getDefinition();
+        if (null === $command->getDefinition()) {
+            throw new LogicException(sprintf('Command class "%s" is not correctly initialized. You probably forgot to call the parent constructor.', \get_class($command)));
+        }
 
         if (!$command->getName()) {
             throw new LogicException(sprintf('The command defined in "%s" cannot have an empty name.', \get_class($command)));
@@ -529,10 +530,6 @@ class Application
     {
         $namespaces = [];
         foreach ($this->all() as $command) {
-            if ($command->isHidden()) {
-                continue;
-            }
-
             $namespaces = array_merge($namespaces, $this->extractAllNamespaces($command->getName()));
 
             foreach ($command->getAliases() as $alias) {
@@ -599,15 +596,6 @@ class Application
         $this->init();
 
         $aliases = [];
-
-        foreach ($this->commands as $command) {
-            foreach ($command->getAliases() as $alias) {
-                if (!$this->has($alias)) {
-                    $this->commands[$alias] = $command;
-                }
-            }
-        }
-
         $allCommands = $this->commandLoader ? array_merge($this->commandLoader->getNames(), array_keys($this->commands)) : array_keys($this->commands);
         $expr = preg_replace_callback('{([^:]+|)}', function ($matches) { return preg_quote($matches[1]).'[^:]*'; }, $name);
         $commands = preg_grep('{^'.$expr.'}', $allCommands);
@@ -626,11 +614,6 @@ class Application
             $message = sprintf('Command "%s" is not defined.', $name);
 
             if ($alternatives = $this->findAlternatives($name, $allCommands)) {
-                // remove hidden commands
-                $alternatives = array_filter($alternatives, function ($name) {
-                    return !$this->get($name)->isHidden();
-                });
-
                 if (1 == \count($alternatives)) {
                     $message .= "\n\nDid you mean this?\n    ";
                 } else {
@@ -639,7 +622,7 @@ class Application
                 $message .= implode("\n    ", $alternatives);
             }
 
-            throw new CommandNotFoundException($message, array_values($alternatives));
+            throw new CommandNotFoundException($message, $alternatives);
         }
 
         // filter out aliases for commands which are already on the list
@@ -663,18 +646,13 @@ class Application
             }
             $abbrevs = array_map(function ($cmd) use ($commandList, $usableWidth, $maxLen) {
                 if (!$commandList[$cmd] instanceof Command) {
-                    $commandList[$cmd] = $this->commandLoader->get($cmd);
+                    return $cmd;
                 }
-
-                if ($commandList[$cmd]->isHidden()) {
-                    return false;
-                }
-
                 $abbrev = str_pad($cmd, $maxLen, ' ').' '.$commandList[$cmd]->getDescription();
 
                 return Helper::strlen($abbrev) > $usableWidth ? Helper::substr($abbrev, 0, $usableWidth - 3).'...' : $abbrev;
             }, array_values($commands));
-            $suggestions = $this->getAbbreviationSuggestions(array_filter($abbrevs));
+            $suggestions = $this->getAbbreviationSuggestions($abbrevs);
 
             throw new CommandNotFoundException(sprintf("Command \"%s\" is ambiguous.\nDid you mean one of these?\n%s", $name, $suggestions), array_values($commands));
         }
@@ -822,11 +800,11 @@ class Application
                 for ($i = 0, $count = \count($trace); $i < $count; ++$i) {
                     $class = isset($trace[$i]['class']) ? $trace[$i]['class'] : '';
                     $type = isset($trace[$i]['type']) ? $trace[$i]['type'] : '';
-                    $function = isset($trace[$i]['function']) ? $trace[$i]['function'] : '';
+                    $function = $trace[$i]['function'];
                     $file = isset($trace[$i]['file']) ? $trace[$i]['file'] : 'n/a';
                     $line = isset($trace[$i]['line']) ? $trace[$i]['line'] : 'n/a';
 
-                    $output->writeln(sprintf(' %s%s at <info>%s:%s</info>', $class, $function ? $type.$function.'()' : '', $file, $line), OutputInterface::VERBOSITY_QUIET);
+                    $output->writeln(sprintf(' %s%s%s() at <info>%s:%s</info>', $class, $type, $function, $file, $line), OutputInterface::VERBOSITY_QUIET);
                 }
 
                 $output->writeln('', OutputInterface::VERBOSITY_QUIET);
@@ -1036,7 +1014,7 @@ class Application
     /**
      * Gets the name of the command based on input.
      *
-     * @return string|null
+     * @return string The command name
      */
     protected function getCommandName(InputInterface $input)
     {
@@ -1112,7 +1090,8 @@ class Application
      */
     public function extractNamespace($name, $limit = null)
     {
-        $parts = explode(':', $name, -1);
+        $parts = explode(':', $name);
+        array_pop($parts);
 
         return implode(':', null === $limit ? $parts : \array_slice($parts, 0, $limit));
     }

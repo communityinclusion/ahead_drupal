@@ -22,7 +22,7 @@ class UserRoleRemoveTest extends RulesEntityIntegrationTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->enableModule('user');
     $this->action = $this->actionManager->createInstance('rules_user_role_remove');

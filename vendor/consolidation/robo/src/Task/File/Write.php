@@ -75,8 +75,7 @@ class Write extends BaseTask
      *
      * @param string $line
      *
-     * @return $this
-     *   The current instance.
+     * @return $this The current instance
      */
     public function line($line)
     {
@@ -89,8 +88,7 @@ class Write extends BaseTask
      *
      * @param array $lines
      *
-     * @return $this
-     *   The current instance.
+     * @return $this The current instance
      */
     public function lines(array $lines)
     {
@@ -103,8 +101,7 @@ class Write extends BaseTask
      *
      * @param string $text
      *
-     * @return $this
-     *   The current instance.
+     * @return $this The current instance
      */
     public function text($text)
     {
@@ -123,8 +120,7 @@ class Write extends BaseTask
      *
      * @param string $filename
      *
-     * @return $this
-     *   The current instance.
+     * @return $this The current instance
      */
     public function textFromFile($filename)
     {
@@ -138,8 +134,7 @@ class Write extends BaseTask
      * @param string $name
      * @param string $val
      *
-     * @return $this
-     *   The current instance.
+     * @return $this The current instance
      */
     public function place($name, $val)
     {
@@ -154,8 +149,7 @@ class Write extends BaseTask
      * @param string $string
      * @param string $replacement
      *
-     * @return $this
-     *   The current instance.
+     * @return $this The current instance
      */
     public function replace($string, $replacement)
     {
@@ -169,8 +163,7 @@ class Write extends BaseTask
      * @param string $pattern
      * @param string $replacement
      *
-     * @return $this
-     *   The current instance.
+     * @return $this The current instance
      */
     public function regexReplace($pattern, $replacement)
     {
@@ -209,8 +202,8 @@ class Write extends BaseTask
     }
 
     /**
-     * @param string $contents
-     * @param string $filename
+     * @param $contents string
+     * @param $filename string
      *
      * @return string
      */

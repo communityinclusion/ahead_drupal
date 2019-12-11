@@ -21,12 +21,15 @@ class Process extends BaseGenerator {
    * {@inheritdoc}
    */
   protected function interact(InputInterface $input, OutputInterface $output) {
-    $questions = Utils::moduleQuestions();
+
+    $questions = Utils::defaultQuestions();
     $questions['plugin_id'] = new Question('Plugin ID', '{machine_name}_example');
     $questions['plugin_id']->setValidator([Utils::class, 'validateMachineName']);
-    $questions['class'] = Utils::pluginClassQuestion();
 
-    $this->collectVars($input, $output, $questions);
+    $vars = &$this->collectVars($input, $output, $questions);
+
+    $unprefixed_plugin_id = preg_replace('/^' . $vars['machine_name'] . '_/', '', $vars['plugin_id']);
+    $vars['class'] = Utils::camelize($unprefixed_plugin_id);
 
     $this->addFile()
       ->path('src/Plugin/migrate/process/{class}.php')

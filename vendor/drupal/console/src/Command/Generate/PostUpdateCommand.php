@@ -108,7 +108,7 @@ class PostUpdateCommand extends Command
             return 1;
         }
 
-        $module = $this->validateModule($input->getOption('module'));
+        $module = $input->getOption('module');
         $postUpdateName = $input->getOption('post-update-name');
 
         $this->validatePostUpdateName($module, $postUpdateName);

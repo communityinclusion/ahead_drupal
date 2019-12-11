@@ -18,9 +18,6 @@ abstract class CommandStack extends BaseTask implements CommandInterface, Printe
      */
     protected $executable;
 
-    /**
-     * @var \Robo\Result
-     */
     protected $result;
 
     /**
@@ -72,9 +69,9 @@ abstract class CommandStack extends BaseTask implements CommandInterface, Printe
             $command = $this->executable . ' ' . $this->stripExecutableFromCommand($command);
             $command = trim($command);
         }
-
+        
         $this->exec[] = $command;
-
+        
         return $this;
     }
 

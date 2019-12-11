@@ -7,10 +7,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\webform\Plugin\WebformElementManagerInterface;
-use Drupal\webform\Twig\WebformTwigExtension;
 use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\Utility\WebformYaml;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -19,13 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Render controller for webform submissions.
  */
 class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformSubmissionViewBuilderInterface {
-
-  /**
-   * The route match object.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  protected $routeMatch;
 
   /**
    * Webform request handler.
@@ -63,17 +54,12 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
    *   The webform element manager service.
    * @param \Drupal\webform\WebformSubmissionConditionsValidatorInterface $conditions_validator
    *   The webform submission conditions (#states) validator.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The route match object.
-   *
-   * @todo Webform 8.x-6.x: Move $route_match before $webform_request.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityManagerInterface $entity_manager, LanguageManagerInterface $language_manager, WebformRequestInterface $webform_request, WebformElementManagerInterface $element_manager, WebformSubmissionConditionsValidatorInterface $conditions_validator, RouteMatchInterface $route_match = NULL) {
+  public function __construct(EntityTypeInterface $entity_type, EntityManagerInterface $entity_manager, LanguageManagerInterface $language_manager, WebformRequestInterface $webform_request, WebformElementManagerInterface $element_manager, WebformSubmissionConditionsValidatorInterface $conditions_validator) {
     parent::__construct($entity_type, $entity_manager, $language_manager);
     $this->requestHandler = $webform_request;
     $this->elementManager = $element_manager;
     $this->conditionsValidator = $conditions_validator;
-    $this->routeMatch = $route_match ?: \Drupal::routeMatch();
   }
 
   /**
@@ -86,22 +72,8 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
       $container->get('language_manager'),
       $container->get('webform.request'),
       $container->get('plugin.manager.webform.element'),
-      $container->get('webform_submission.conditions_validator'),
-      $container->get('current_route_match')
+      $container->get('webform_submission.conditions_validator')
     );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function view(EntityInterface $entity, $view_mode = 'full', $langcode = NULL) {
-    // Allow modules to set custom webform submission view mode.
-    // @see \Drupal\webform_entity_print\Plugin\WebformExporter\WebformEntityPrintWebformExporter::writeSubmission
-    if ($webform_submissions_view_mode = \Drupal::request()->request->get('_webform_submissions_view_mode')) {
-      $view_mode = $webform_submissions_view_mode;
-    }
-
-    return parent::view($entity, $view_mode, $langcode);
   }
 
   /**
@@ -110,13 +82,11 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
   protected function getBuildDefaults(EntityInterface $entity, $view_mode) {
     $build = parent::getBuildDefaults($entity, $view_mode);
     // The webform submission will be rendered in the wrapped webform submission
-    // template already. Instead we are going to wrap the rendered submission
-    // in a webform submission data template.
+    // template already and thus has no entity template itself.
     // @see \Drupal\contact_storage\ContactMessageViewBuilder
     // @see \Drupal\comment\CommentViewBuilder::getBuildDefaults
     // @see \Drupal\block_content\BlockContentViewBuilder::getBuildDefaults
-    // @see webform-submission-data.html.twig
-    $build['#theme'] = 'webform_submission_data';
+    unset($build['#theme']);
     return $build;
   }
 
@@ -141,29 +111,15 @@ class WebformSubmissionViewBuilder extends EntityViewBuilder implements WebformS
         ];
       }
       else {
-        // Track PDF.
-        // @see webform_entity_print.module
-        $route_name = $this->routeMatch->getRouteName();
-        $pdf = in_array($route_name, ['entity_print.view.debug', 'entity_print.view'])
-          || \Drupal::request()->request->get('_webform_entity_print');
         $options = [
           'view_mode' => $view_mode,
           'excluded_elements' => $webform->getSetting('submission_excluded_elements'),
           'exclude_empty' => $webform->getSetting('submission_exclude_empty'),
           'exclude_empty_checkbox' => $webform->getSetting('submission_exclude_empty_checkbox'),
-          'pdf' => $pdf,
         ];
       }
 
       switch ($view_mode) {
-        case 'twig':
-          // @see \Drupal\webform_entity_print_attachment\Element\WebformEntityPrintAttachment::getFileContent
-          $build[$id]['data'] = WebformTwigExtension::buildTwigTemplate(
-            $webform_submission,
-            $webform_submission->_webform_view_mode_twig
-          );
-          break;
-
         case 'yaml':
           // Note that the YAML view ignores all access controls and excluded
           // settings.

@@ -112,8 +112,6 @@ class WinCacheClassLoader
 
             return true;
         }
-
-        return null;
     }
 
     /**

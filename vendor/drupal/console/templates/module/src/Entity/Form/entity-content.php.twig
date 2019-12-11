@@ -11,7 +11,6 @@ namespace Drupal\{{module}}\Form;
 {% block use_class %}
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 {% endblock %}
 
 {% block class_declaration %}
@@ -23,27 +22,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class {{ entity_class }}Form extends ContentEntityForm {% endblock %}
 {% block class_methods %}
   /**
-   * The current user account.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
-   */
-  protected $account;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    // Instantiates this form class.
-    $instance = parent::create($container);
-    $instance->account = $container->get('current_user');
-    return $instance;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var \Drupal\{{module}}\Entity\{{ entity_class }} $entity */
+    /* @var $entity \Drupal\{{module}}\Entity\{{ entity_class }} */
     $form = parent::buildForm($form, $form_state);
 {% if revisionable %}
 
@@ -56,6 +38,8 @@ class {{ entity_class }}Form extends ContentEntityForm {% endblock %}
       ];
     }
 {% endif %}
+
+    $entity = $this->entity;
 
     return $form;
   }
@@ -72,8 +56,8 @@ class {{ entity_class }}Form extends ContentEntityForm {% endblock %}
       $entity->setNewRevision();
 
       // If a new revision is created, save the current user as revision author.
-      $entity->setRevisionCreationTime($this->time->getRequestTime());
-      $entity->setRevisionUserId($this->account->id());
+      $entity->setRevisionCreationTime(REQUEST_TIME);
+      $entity->setRevisionUserId(\Drupal::currentUser()->id());
     }
     else {
       $entity->setNewRevision(FALSE);
@@ -84,13 +68,13 @@ class {{ entity_class }}Form extends ContentEntityForm {% endblock %}
 
     switch ($status) {
       case SAVED_NEW:
-        $this->messenger()->addMessage($this->t('Created the %label {{ label }}.', [
+        drupal_set_message($this->t('Created the %label {{ label }}.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        $this->messenger()->addMessage($this->t('Saved the %label {{ label }}.', [
+        drupal_set_message($this->t('Saved the %label {{ label }}.', [
           '%label' => $entity->label(),
         ]));
     }

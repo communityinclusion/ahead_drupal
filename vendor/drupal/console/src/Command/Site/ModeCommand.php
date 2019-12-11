@@ -7,16 +7,16 @@
 
 namespace Drupal\Console\Command\Site;
 
-use Drupal\Console\Core\Command\Command;
-use Drupal\Console\Core\Utils\ChainQueue;
-use Drupal\Console\Core\Utils\ConfigurationManager;
-use Drupal\Core\Config\ConfigFactory;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use Drupal\Console\Core\Command\ContainerAwareCommand;
+use Drupal\Console\Core\Utils\ConfigurationManager;
+use Drupal\Core\Config\ConfigFactory;
+use Drupal\Console\Core\Utils\ChainQueue;
 
-class ModeCommand extends Command
+class ModeCommand extends ContainerAwareCommand
 {
     /**
      * @var ConfigFactory

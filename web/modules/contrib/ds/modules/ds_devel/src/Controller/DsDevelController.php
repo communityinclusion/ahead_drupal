@@ -24,6 +24,13 @@ class DsDevelController extends ControllerBase {
   protected $entityDisplayRepository;
 
   /**
+   * The current request.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $currentRequest;
+
+  /**
    * The renderer.
    *
    * @var \Drupal\Core\Render\RendererInterface
@@ -33,12 +40,15 @@ class DsDevelController extends ControllerBase {
   /**
    * DsDevelController constructor.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $currentRequest
+   *   The current request.
    * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $displayRepository
    *   The display repository.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer service.
    */
-  public function __construct(EntityDisplayRepositoryInterface $displayRepository, RendererInterface $renderer) {
+  public function __construct(Request $currentRequest, EntityDisplayRepositoryInterface $displayRepository, RendererInterface $renderer) {
+    $this->currentRequest = $currentRequest;
     $this->entityDisplayRepository = $displayRepository;
     $this->renderer = $renderer;
   }
@@ -48,6 +58,7 @@ class DsDevelController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('request_stack')->getCurrentRequest(),
       $container->get('entity_display.repository'),
       $container->get('renderer')
     );
@@ -58,20 +69,18 @@ class DsDevelController extends ControllerBase {
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   A RouteMatch object.
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
    *
    * @return array
    *   The Views fields report page.
    */
-  public function entityMarkup(RouteMatchInterface $route_match, Request $request) {
+  public function entityMarkup(RouteMatchInterface $route_match) {
 
     $parameter_name = $route_match->getRouteObject()
       ->getOption('_devel_entity_type_id');
     $entity = $route_match->getParameter($parameter_name);
     $entity_type_id = $entity->getEntityTypeId();
 
-    $key = $request->query->get('key', 'default');
+    $key = $this->currentRequest->get('key', 'default');
 
     $built_entity = $this->entityTypeManager()
       ->getViewBuilder($entity_type_id)

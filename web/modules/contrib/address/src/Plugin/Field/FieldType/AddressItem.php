@@ -22,8 +22,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   description = @Translation("An entity field containing a postal address"),
  *   category = @Translation("Address"),
  *   default_widget = "address_default",
- *   default_formatter = "address_default",
- *   list_class = "\Drupal\address\Plugin\Field\FieldType\AddressFieldItemList"
+ *   default_formatter = "address_default"
  * )
  */
 class AddressItem extends FieldItemBase implements AddressInterface {
@@ -173,12 +172,12 @@ class AddressItem extends FieldItemBase implements AddressInterface {
     $element['field_overrides_title'] = [
       '#type' => 'item',
       '#title' => $this->t('Field overrides'),
-      '#description' => $this->t('Use field overrides to override the country-specific address format, forcing specific properties to always be hidden, optional, or required.'),
+      '#description' => $this->t('Use field overrides to override the country-specific address format, forcing specific fields to always be hidden, optional, or required.'),
     ];
     $element['field_overrides'] = [
       '#type' => 'table',
       '#header' => [
-        $this->t('Property'),
+        $this->t('Field'),
         $this->t('Override'),
       ],
       '#element_validate' => [[get_class($this), 'fieldOverridesValidate']],
@@ -195,9 +194,9 @@ class AddressItem extends FieldItemBase implements AddressInterface {
         'override' => [
           '#type' => 'select',
           '#options' => [
-            FieldOverride::HIDDEN => $this->t('Hidden'),
-            FieldOverride::OPTIONAL => $this->t('Optional'),
-            FieldOverride::REQUIRED => $this->t('Required'),
+            FieldOverride::HIDDEN => t('Hidden'),
+            FieldOverride::OPTIONAL => t('Optional'),
+            FieldOverride::REQUIRED => t('Required'),
           ],
           '#default_value' => $override,
           '#empty_option' => $this->t('- No override -'),
@@ -238,8 +237,8 @@ class AddressItem extends FieldItemBase implements AddressInterface {
         $field_overrides[$field] = FieldOverride::HIDDEN;
       }
     }
-    elseif ($overrides = $this->getSetting('field_overrides')) {
-      foreach ($overrides as $field => $data) {
+    else {
+      foreach ($this->getSetting('field_overrides') as $field => $data) {
         $field_overrides[$field] = $data['override'];
       }
     }

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Contains \Drupal\mailsystem\Adapter.
+ */
 
 namespace Drupal\mailsystem;
 

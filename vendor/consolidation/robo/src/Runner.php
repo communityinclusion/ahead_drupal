@@ -31,9 +31,7 @@ class Runner implements ContainerAwareInterface
     protected $roboFile;
 
     /**
-     * Working dir of Robo.
-     *
-     * @var string
+     * @var string working dir of Robo
      */
     protected $dir;
 
@@ -43,16 +41,12 @@ class Runner implements ContainerAwareInterface
     protected $errorConditions = [];
 
     /**
-     * GitHub Repo for SelfUpdate.
-     *
-     * @var string
+     * @var string GitHub Repo for SelfUpdate
      */
     protected $selfUpdateRepository = null;
 
     /**
-     * Filename to load configuration from (set to 'robo.yml' for RoboFiles).
-     *
-     * @var string
+     * @var string filename to load configuration from (set to 'robo.yml' for RoboFiles)
      */
     protected $configFilename = 'conf.yml';
 
@@ -62,7 +56,7 @@ class Runner implements ContainerAwareInterface
     protected $envConfigPrefix = false;
 
     /**
-     * @var null|\Composer\Autoload\ClassLoader
+     * @var \Composer\Autoload\ClassLoader
      */
     protected $classLoader = null;
 
@@ -85,10 +79,6 @@ class Runner implements ContainerAwareInterface
         $this->dir = getcwd();
     }
 
-    /**
-     * @param string $msg
-     * @param string $errorType
-     */
     protected function errorCondition($msg, $errorType)
     {
         $this->errorConditions[$msg] = $errorType;
@@ -157,9 +147,6 @@ class Runner implements ContainerAwareInterface
 
     /**
      * Get a list of locations where config files may be loaded
-     *
-     * @param string $userConfig
-     *
      * @return string[]
      */
     protected function getConfigFilePaths($userConfig)
@@ -271,16 +258,16 @@ class Runner implements ContainerAwareInterface
     }
 
     /**
-     * @param string $relativeNamespace
+     * @param $relativeNamespace
      *
-     * @return string[]
+     * @return array|string[]
      */
     protected function discoverCommandClasses($relativeNamespace)
     {
         /** @var \Robo\ClassDiscovery\RelativeNamespaceDiscovery $discovery */
         $discovery = Robo::service('relativeNamespaceDiscovery');
         $discovery->setRelativeNamespace($relativeNamespace.'\Commands')
-            ->setSearchPattern('/.*Commands?\.php$/');
+            ->setSearchPattern('*Commands.php');
         return $discovery->getClasses();
     }
 
@@ -288,7 +275,7 @@ class Runner implements ContainerAwareInterface
      * @param \Robo\Application $app
      * @param string|BuilderAwareInterface|ContainerAwareInterface $commandClass
      *
-     * @return null|object
+     * @return mixed|void
      */
     public function registerCommandClass($app, $commandClass)
     {
@@ -308,7 +295,7 @@ class Runner implements ContainerAwareInterface
     }
 
     /**
-     * @param string|\Robo\Contract\BuilderAwareInterface|\League\Container\ContainerAwareInterface $commandClass
+     * @param string|BuilderAwareInterface|ContainerAwareInterface  $commandClass
      *
      * @return null|object
      */
@@ -357,8 +344,7 @@ class Runner implements ContainerAwareInterface
      *
      * @param array $args
      *
-     * @return array $args
-     *   With shebang script removed.
+     * @return array $args with shebang script removed
      */
     protected function shebang($args)
     {
@@ -385,11 +371,9 @@ class Runner implements ContainerAwareInterface
      * Determine if the specified argument is a path to a shebang script.
      * If so, load it.
      *
-     * @param string $filepath
-     *   File to check.
+     * @param string $filepath file to check
      *
-     * @return bool
-     *   Returns TRUE if shebang script was processed.
+     * @return bool Returns TRUE if shebang script was processed
      */
     protected function isShebangFile($filepath)
     {

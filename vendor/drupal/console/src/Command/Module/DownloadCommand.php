@@ -7,7 +7,6 @@
 
 namespace Drupal\Console\Command\Module;
 
-use GuzzleHttp\Client;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,22 +14,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Drupal\Console\Core\Command\Command;
 use Drupal\Console\Command\Shared\ProjectDownloadTrait;
 use Drupal\Console\Utils\DrupalApi;
+use GuzzleHttp\Client;
 use Drupal\Console\Extension\Manager;
 use Drupal\Console\Utils\Validator;
 use Drupal\Console\Utils\Site;
+use Drupal\Console\Core\Utils\ConfigurationManager;
+use Drupal\Console\Core\Utils\ShellProcess;
 
 class DownloadCommand extends Command
 {
     use ProjectDownloadTrait;
 
     /**
-     * @var DrupalApi
-     */
+ * @var DrupalApi
+*/
     protected $drupalApi;
 
     /**
-     * @var Client
-     */
+ * @var Client
+*/
     protected $httpClient;
 
     /**
@@ -39,19 +41,29 @@ class DownloadCommand extends Command
     protected $appRoot;
 
     /**
-     * @var Manager
-     */
+ * @var Manager
+*/
     protected $extensionManager;
 
     /**
-     * @var Validator
-     */
+ * @var Validator
+*/
     protected $validator;
 
     /**
-     * @var Site
+ * @var ConfigurationManager
+*/
+    protected $configurationManager;
+
+    /**
+ * @var ShellProcess
+*/
+    protected $shellProcess;
+
+    /**
+     * @var string
      */
-    protected $site;
+    protected $root;
 
     /**
      * DownloadCommand constructor.
@@ -62,6 +74,9 @@ class DownloadCommand extends Command
      * @param Manager              $extensionManager
      * @param Validator            $validator
      * @param Site                 $site
+     * @param ConfigurationManager $configurationManager
+     * @param ShellProcess         $shellProcess
+     * @param $root
      */
     public function __construct(
         DrupalApi $drupalApi,
@@ -69,7 +84,10 @@ class DownloadCommand extends Command
         $appRoot,
         Manager $extensionManager,
         Validator $validator,
-        Site $site
+        Site $site,
+        ConfigurationManager $configurationManager,
+        ShellProcess $shellProcess,
+        $root
     ) {
         $this->drupalApi = $drupalApi;
         $this->httpClient = $httpClient;
@@ -77,6 +95,9 @@ class DownloadCommand extends Command
         $this->extensionManager = $extensionManager;
         $this->validator = $validator;
         $this->site = $site;
+        $this->configurationManager = $configurationManager;
+        $this->shellProcess = $shellProcess;
+        $this->root = $root;
         parent::__construct();
     }
 
@@ -102,6 +123,18 @@ class DownloadCommand extends Command
                 InputOption::VALUE_NONE,
                 $this->trans('commands.module.download.options.latest')
             )
+            ->addOption(
+                'composer',
+                null,
+                InputOption::VALUE_NONE,
+                $this->trans('commands.module.install.options.composer')
+            )
+            ->addOption(
+                'unstable',
+                null,
+                InputOption::VALUE_NONE,
+                $this->trans('commands.module.download.options.unstable')
+            )
             ->setAliases(['mod']);
     }
 
@@ -110,6 +143,7 @@ class DownloadCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        $composer = $input->getOption('composer');
         $module = $input->getArgument('module');
 
         if (!$module) {
@@ -117,13 +151,15 @@ class DownloadCommand extends Command
             $input->setArgument('module', $module);
         }
 
-        $path = $input->getOption('path');
-        if (!$path) {
-            $path = $this->getIo()->ask(
-                $this->trans('commands.module.download.questions.path'),
-                'modules/contrib'
-            );
-            $input->setOption('path', $path);
+        if (!$composer) {
+            $path = $input->getOption('path');
+            if (!$path) {
+                $path = $this->getIo()->ask(
+                    $this->trans('commands.module.download.questions.path'),
+                    'modules/contrib'
+                );
+                $input->setOption('path', $path);
+            }
         }
     }
 
@@ -135,9 +171,82 @@ class DownloadCommand extends Command
         $modules = $input->getArgument('module');
         $latest = $input->getOption('latest');
         $path = $input->getOption('path');
+        $composer = $input->getOption('composer');
+        $unstable = true;
 
-        $this->downloadModules($modules, $latest, $path);
+        if ($composer) {
+            foreach ($modules as $module) {
+                if (!$latest) {
+                    $versions = $this->drupalApi
+                        ->getPackagistModuleReleases($module, 10, $unstable);
 
-        return 1;
+                    if (!$versions) {
+                        $this->getIo()->error(
+                            sprintf(
+                                $this->trans(
+                                    'commands.module.download.messages.no-releases'
+                                ),
+                                $module
+                            )
+                        );
+
+                        return 1;
+                    } else {
+                        $version = $this->getIo()->choice(
+                            sprintf(
+                                $this->trans(
+                                    'commands.site.new.questions.composer-release'
+                                ),
+                                $module
+                            ),
+                            $versions
+                        );
+                    }
+                } else {
+                    $versions = $this->drupalApi
+                        ->getPackagistModuleReleases($module, 10, $unstable);
+
+                    if (!$versions) {
+                        $this->getIo()->error(
+                            sprintf(
+                                $this->trans(
+                                    'commands.module.download.messages.no-releases'
+                                ),
+                                $module
+                            )
+                        );
+                        return 1;
+                    } else {
+                        $version = current(
+                            $this->drupalApi
+                                ->getPackagistModuleReleases($module, 1, $unstable)
+                        );
+                    }
+                }
+
+                // Register composer repository
+                $command = "composer config repositories.drupal composer https://packages.drupal.org/8";
+                $this->shellProcess->exec($command, $this->root);
+
+                $command = sprintf(
+                    'composer require drupal/%s:%s --prefer-dist --optimize-autoloader --sort-packages --update-no-dev',
+                    $module,
+                    $version
+                );
+
+                if ($this->shellProcess->exec($command, $this->root)) {
+                    $this->getIo()->success(
+                        sprintf(
+                            $this->trans('commands.module.download.messages.composer'),
+                            $module
+                        )
+                    );
+                }
+            }
+        } else {
+            $this->downloadModules($modules, $latest, $path);
+        }
+
+        return true;
     }
 }

@@ -62,8 +62,7 @@ class EventInfoController extends ControllerBase {
 
       $rows[][] = [
         'data' => $event_name,
-        'class' => ['devel-event-name-header'],
-        'filter' => TRUE,
+        'class' => 'table-filter-text-source devel-event-name-header',
         'colspan' => '3',
         'header' => TRUE,
       ];
@@ -71,8 +70,7 @@ class EventInfoController extends ControllerBase {
       foreach ($listeners as $priority => $listener) {
         $row['name'] = [
           'data' => $event_name,
-          'class' => ['visually-hidden'],
-          'filter' => TRUE,
+          'class' => 'table-filter-text-source visually-hidden',
         ];
         $row['class'] = [
           'data' => $this->resolveCallableName($listener),
@@ -84,16 +82,33 @@ class EventInfoController extends ControllerBase {
       }
     }
 
+    $output['#attached']['library'][] = 'system/drupal.system.modules';
+
+    $output['filters'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['table-filter', 'js-show'],
+      ],
+    ];
+    $output['filters']['name'] = [
+      '#type' => 'search',
+      '#title' => $this->t('Search'),
+      '#size' => 30,
+      '#placeholder' => $this->t('Enter event name'),
+      '#attributes' => [
+        'class' => ['table-filter-text'],
+        'data-table' => '.devel-filter-text',
+        'autocomplete' => 'off',
+        'title' => $this->t('Enter a part of the event name to filter by.'),
+      ],
+    ];
     $output['events'] = [
-      '#type' => 'devel_table_filter',
-      '#filter_label' => $this->t('Search'),
-      '#filter_placeholder' => $this->t('Enter event name'),
-      '#filter_description' => $this->t('Enter a part of the event name to filter by.'),
+      '#type' => 'table',
       '#header' => $headers,
       '#rows' => $rows,
       '#empty' => $this->t('No events found.'),
       '#attributes' => [
-        'class' => ['devel-event-list'],
+        'class' => ['devel-event-list', 'devel-filter-text'],
       ],
     ];
 

@@ -11,13 +11,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Drupal\Console\Core\Command\Command;
-use Drupal\Core\Entity\EntityTypeRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeRepository;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 class DeleteCommand extends Command
 {
     /**
-     * @var EntityTypeRepositoryInterface
+     * @var EntityTypeRepository
      */
     protected $entityTypeRepository;
 
@@ -29,11 +29,11 @@ class DeleteCommand extends Command
     /**
      * DeleteCommand constructor.
      *
-     * @param EntityTypeRepositoryInterface $entityTypeRepository
-     * @param EntityTypeManagerInterface    $entityTypeManager
+     * @param EntityTypeRepository       $entityTypeRepository
+     * @param EntityTypeManagerInterface $entityTypeManager
      */
     public function __construct(
-        EntityTypeRepositoryInterface $entityTypeRepository,
+        EntityTypeRepository $entityTypeRepository,
         EntityTypeManagerInterface $entityTypeManager
     ) {
         $this->entityTypeRepository = $entityTypeRepository;

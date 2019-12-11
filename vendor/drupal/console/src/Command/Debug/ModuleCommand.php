@@ -7,12 +7,13 @@
 
 namespace Drupal\Console\Command\Debug;
 
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Drupal\Console\Core\Command\Command;
 use Drupal\Console\Utils\Site;
+use GuzzleHttp\Client;
 use Drupal\Console\Core\Utils\ConfigurationManager;
 
 class ModuleCommand extends Command
@@ -28,6 +29,14 @@ class ModuleCommand extends Command
     protected $site;
 
     /**
+     * DebugCommand constructor.
+     *
+     * @param Client  $httpClient
+     */
+
+    protected $httpClient;
+
+    /**
      * ChainDebugCommand constructor.
      *
      * @param ConfigurationManager $configurationManager
@@ -35,10 +44,12 @@ class ModuleCommand extends Command
      */
     public function __construct(
         ConfigurationManager $configurationManager,
-        Site $site
+        Site $site,
+        Client $httpClient
     ) {
         $this->configurationManager = $configurationManager;
         $this->site = $site;
+        $this->httpClient = $httpClient;
         parent::__construct();
     }
 
@@ -73,7 +84,61 @@ class ModuleCommand extends Command
 
         $status = strtolower($input->getOption('status'));
         $type = strtolower($input->getOption('type'));
-        $modules = $input->getArgument('module');
+        $modules = strtolower($input->getArgument('module'));
+
+        if ($modules) {
+            $config = $this->configurationManager->getConfiguration();
+            $repo = $config->get('application.composer.repositories.default');
+
+            foreach ($modules as $module) {
+                $url = sprintf(
+                    '%s/packages/drupal/%s.json',
+                    $config->get('application.composer.packages.default'),
+                    $module
+                );
+
+                try {
+                    $data = $this->httpClient->getUrlAsJson($repo . $url);
+                } catch (\Exception $e) {
+                    $this->getIo()->error(
+                        sprintf(
+                            $this->trans('commands.debug.module.messages.no-results'),
+                            $module
+                        )
+                    );
+
+                    return 1;
+                }
+
+                $tableHeader = [
+                  '<info>'.$data->package->name.'</info>'
+                ];
+
+                $tableRows = [];
+
+                $tableRows[] = [
+                  $data->package->description
+                ];
+
+                $tableRows[] = [
+                  '<comment>'.$this->trans('commands.debug.module.messages.total-downloads').'</comment>',
+                  $data->package->downloads->total
+                ];
+
+                $tableRows[] = [
+                  '<comment>'.$this->trans('commands.debug.module.messages.total-monthly').'</comment>',
+                  $data->package->downloads->monthly
+                ];
+
+                $tableRows[] = [
+                  '<comment>'.$this->trans('commands.debug.module.messages.total-daily').'</comment>',
+                  $data->package->downloads->daily
+                ];
+
+                $this->getIo()->table($tableHeader, $tableRows, 'compact');
+            }
+            return 0;
+        }
 
         if ($status == 'installed') {
             $status = 1;
@@ -101,58 +166,32 @@ class ModuleCommand extends Command
           $this->trans('commands.debug.module.messages.origin'),
         ];
 
-        $tableRows = $this->getModules($status, $type, $modules);
-
-        $this->getIo()->table($tableHeader, $tableRows, 'compact');
-    }
-
-    /**
-     * Get the module info
-     * @param $status
-     * @param $type
-     * @param $modules
-     *
-     * @return array
-     */
-    private function getModules($status, $type, $modules) {
-
-        $result = [];
-        $modulesData = system_rebuild_module_data();
-
-        if(!$modules) {
-            $modules = array_keys($modulesData) ;
-        }
-
-        foreach ($modules as $module) {
-            $moduleData = $modulesData[strtolower($module)];
-
-            if(!$moduleData) {
+        $tableRows = [];
+        $modules = system_rebuild_module_data();
+        foreach ($modules as $module_id => $module) {
+            if ($status >= 0 && $status != $module->status) {
                 continue;
             }
 
-            if ($status >= 0 && $status != $moduleData->status) {
+            if ($type !== null && $type !== $module->origin) {
                 continue;
             }
 
-            if ($type !== null && $type !== $moduleData->origin) {
-                continue;
-            }
+            $module_status = ($module->status) ? $this->trans('commands.debug.module.messages.installed') : $this->trans('commands.debug.module.messages.uninstalled');
+            $module_origin = ($module->origin) ? $module->origin : 'no core';
+            $schema_version = (drupal_get_installed_schema_version($module_id)!= -1?drupal_get_installed_schema_version($module_id): '');
 
-            $module_status = ($moduleData->status) ? $this->trans('commands.debug.module.messages.installed') : $this->trans('commands.debug.module.messages.uninstalled');
-            $module_origin = ($moduleData->origin) ? $moduleData->origin : 'no core';
-            $schema_version = (drupal_get_installed_schema_version($module)!= -1?drupal_get_installed_schema_version($module): '');
-
-            $result [] = [
-                $module,
-                $moduleData->info['name'],
-                $moduleData->info['package'],
-                $moduleData->info['version'],
-                $schema_version,
-                $module_status,
-                $module_origin,
+            $tableRows [] = [
+              $module_id,
+              $module->info['name'],
+              $module->info['package'],
+              $module->info['version'],
+              $schema_version,
+              $module_status,
+              $module_origin,
             ];
         }
 
-        return $result;
+        $this->getIo()->table($tableHeader, $tableRows, 'compact');
     }
 }

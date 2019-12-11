@@ -20,7 +20,7 @@ class TextComparisonTest extends RulesIntegrationTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
 
     $this->condition = $this->conditionManager->createInstance('rules_text_comparison');

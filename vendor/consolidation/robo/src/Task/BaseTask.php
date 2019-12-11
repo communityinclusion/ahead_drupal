@@ -23,8 +23,6 @@ abstract class BaseTask implements TaskInterface, LoggerAwareInterface, Verbosit
      * ConfigAwareInterface uses this to decide where configuration
      * items come from. Default is this prefix + class name + key,
      * e.g. `task.Remote.Ssh.remoteDir`.
-     *
-     * @return string
      */
     protected static function configPrefix()
     {
@@ -35,8 +33,6 @@ abstract class BaseTask implements TaskInterface, LoggerAwareInterface, Verbosit
      * ConfigAwareInterface uses this to decide where configuration
      * items come from. Default is this prefix + class name + key,
      * e.g. `task.Ssh.remoteDir`.
-     *
-     * @return string
      */
     protected static function configPostfix()
     {

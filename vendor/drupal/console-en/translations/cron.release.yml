@@ -5,3 +5,4 @@ examples:
     - description: 'Execute the cron globally'
       execution: |
         drupal cron:execute
+

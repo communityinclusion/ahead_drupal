@@ -9,8 +9,6 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\typed_data\Exception\InvalidArgumentException;
 
 /**
- * Tests that data fetcher definition fetching functions work correctly.
- *
  * @coversDefaultClass \Drupal\typed_data\DataFetcher
  *
  * @group typed_data
@@ -48,11 +46,8 @@ class DataDefinitionFetcherTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
-
-    $this->installEntitySchema('node');
-
     $this->dataFetcher = $this->container->get('typed_data.data_fetcher');
     $this->typedDataManager = $this->container->get('typed_data_manager');
 

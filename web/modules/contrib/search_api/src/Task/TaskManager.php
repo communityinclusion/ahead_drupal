@@ -296,10 +296,7 @@ class TaskManager implements TaskManagerInterface {
       // effect in the other request. Take the same action here to ensure that
       // we are not requeueing stale batches when there are multiple tasks being
       // handled in a single request.
-      // (Drush 9.6 changed the structure of $result, so check for both variants
-      // as long as we support earlier Drush versions, too.)
-      if (!empty($result['context']['drush_batch_process_finished'])
-          || !empty($result['drush_batch_process_finished'])) {
+      if ($result['context']['drush_batch_process_finished'] === TRUE) {
         $batch = &batch_get();
         $batch = NULL;
         unset($batch);
@@ -326,8 +323,6 @@ class TaskManager implements TaskManagerInterface {
     // Initialize context information.
     if (!isset($context['sandbox']['task_ids'])) {
       $context['sandbox']['task_ids'] = $task_ids;
-    }
-    if (!isset($context['results']['total'])) {
       $context['results']['total'] = $this->getTasksCount($conditions);
     }
 

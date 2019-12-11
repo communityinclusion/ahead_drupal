@@ -37,7 +37,7 @@ trait ProjectDownloadTrait
                 true
             );
 
-            if (empty($moduleName) || is_numeric($moduleName)) {
+            if (empty($moduleName) && is_numeric($moduleName)) {
                 break;
             }
 
@@ -69,7 +69,7 @@ trait ProjectDownloadTrait
                 true
             );
 
-            if (empty($moduleName) || is_numeric($moduleName)) {
+            if (empty($moduleName) || is_numeric($modules)) {
                 break;
             }
 
@@ -128,49 +128,6 @@ trait ProjectDownloadTrait
 
         return $this->downloadModules($dependencies, $latest, $path, $resultList);
     }
-    
-    private function downloadThemes($themes, $latest, $path = null, $resultList = [])
-    {
-        if (!$resultList) {
-            $resultList = [
-              'invalid' => [],
-              'uninstalled' => [],
-              'dependencies' => []
-            ];
-        }
-        drupal_static_reset('system_rebuild_module_data');
-
-        $missingThemes = $this->validator->getMissingThemes($themes);
-
-        $invalidModules = [];
-        if ($missingThemes) {
-            $this->getIo()->info(
-                sprintf(
-                    $this->trans('commands.theme.install.messages.theme-missing'),
-                    implode(', ', $missingThemes)
-                )
-            );
-            foreach ($missingThemes as $missingTheme) {
-                $version = $this->releasesQuestion($missingTheme, $latest);
-                if ($version) {
-                    $this->downloadProject($missingTheme, $version, 'theme', $path);
-                } else {
-                    $invalidModules[] = $missingTheme;
-                    unset($themes[array_search($missingTheme, $themes)]);
-                }
-                $this->extensionManager->discoverModules();
-            }
-        }
-        $this->themeHandler->install($themes);
-
-        $unInstalledThemes = $this->validator->getUninstalledThemes($themes);
-        
-        if (!$unInstalledThemes) {
-            return 0;
-        }else{
-            return $this->setInfoMessage('commands.theme.install.messages.theme-success', $missingThemes);
-        }
-    }
 
     protected function calculateDependencies($modules)
     {
@@ -209,7 +166,7 @@ trait ProjectDownloadTrait
 
         $this->getIo()->comment(
             sprintf(
-                $this->trans('commands.' . $commandKey . '.messages.downloading'),
+                $this->trans('commands.'.$commandKey.'.messages.downloading'),
                 $project,
                 $version
             )
@@ -244,7 +201,7 @@ trait ProjectDownloadTrait
             }
 
             $zippy = Zippy::load();
-            if (PHP_OS === 'WIN32' || PHP_OS === 'WINNT') {
+            if (PHP_OS === "WIN32" || PHP_OS === "WINNT") {
                 $container = AdapterContainer::load();
                 $container['Drupal\\Console\\Zippy\\Adapter\\TarGzGNUTarForWindowsAdapter'] = function ($container) {
                     return TarGzGNUTarForWindowsAdapter::newInstance(
@@ -306,17 +263,17 @@ trait ProjectDownloadTrait
 
         $this->getIo()->comment(
             sprintf(
-                $this->trans('commands.' . $commandKey . '.messages.getting-releases'),
+                $this->trans('commands.'.$commandKey.'.messages.getting-releases'),
                 implode(',', [$project])
             )
         );
 
-        $releases = $this->drupalApi->getProjectReleases($project, $latest? 1 : 15, $stable);
+        $releases = $this->drupalApi->getProjectReleases($project, $latest?1:15, $stable);
 
         if (!$releases) {
             $this->getIo()->error(
                 sprintf(
-                    $this->trans('commands.' . $commandKey . '.messages.no-releases'),
+                    $this->trans('commands.'.$commandKey.'.messages.no-releases'),
                     implode(',', [$project])
                 )
             );
@@ -329,7 +286,7 @@ trait ProjectDownloadTrait
         }
 
         $version = $this->getIo()->choice(
-            $this->trans('commands.' . $commandKey . '.messages.select-release'),
+            $this->trans('commands.'.$commandKey.'.messages.select-release'),
             $releases
         );
 
@@ -346,7 +303,7 @@ trait ProjectDownloadTrait
         case 'module':
             return 'modules/contrib';
         case 'theme':
-            return 'themes/contrib';
+            return 'themes';
         case 'profile':
             return 'profiles';
         case 'core':

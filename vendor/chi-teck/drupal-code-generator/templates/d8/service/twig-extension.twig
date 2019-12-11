@@ -1,26 +1,32 @@
-{% import 'lib/di.twig' as di %}
 <?php
 
 namespace Drupal\{{ machine_name }};
 
-{% if services %}
-{{ di.use(services) }}
+{% if di %}
+use Drupal\example\ExampleInterface;
+
 {% endif %}
 /**
  * Twig extension.
  */
 class {{ class }} extends \Twig_Extension {
 
-{% if services %}
-{{ di.properties(services) }}
+{% if di %}
+  /**
+   * The example service.
+   *
+   * @var \Drupal\example\ExampleInterface
+   */
+  protected $example;
 
   /**
-   * Constructs a new {{ class }} object.
+   * Constructs a new {{ class }} instance.
    *
-{{ di.annotation(services) }}
+   * @param \Drupal\example\ExampleInterface $example
+   *   The example service.
    */
-  public function __construct({{ di.signature(services) }}) {
-{{ di.assignment(services) }}
+  public function __construct(ExampleInterface $example) {
+    $this->example = $example;
   }
 
 {% endif %}

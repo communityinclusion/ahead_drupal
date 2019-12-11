@@ -8,14 +8,14 @@ use Consolidation\Config\ConfigInterface;
 trait ConfigAwareTrait
 {
     /**
-     * @var \Consolidation\Config\ConfigInterface
+     * @var ConfigInterface
      */
     protected $config;
 
     /**
      * Set the config management object.
      *
-     * @param \Consolidation\Config\ConfigInterface $config
+     * @param ConfigInterface $config
      *
      * @return $this
      */
@@ -29,7 +29,7 @@ trait ConfigAwareTrait
     /**
      * Get the config management object.
      *
-     * @return \Consolidation\Config\ConfigInterface
+     * @return \Robo\Config\Config
      */
     public function getConfig()
     {
@@ -79,7 +79,7 @@ trait ConfigAwareTrait
     /**
      * @param string $key
      * @param mixed $value
-     * @param \Consolidation\Config\ConfigInterface|null $config
+     * @param Config|null $config
      */
     public static function configure($key, $value, $config = null)
     {

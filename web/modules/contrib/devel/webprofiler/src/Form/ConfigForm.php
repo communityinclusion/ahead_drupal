@@ -131,13 +131,13 @@ class ConfigForm extends ConfigFormBase {
       '#type' => 'details',
       '#title' => $this->t('Database settings'),
       '#open' => FALSE,
-      '#states' => [
-        'visible' => [
-          [
-            'input[name="active_toolbar_items[database]"]' => ['checked' => TRUE],
-          ],
-        ],
-      ],
+      '#states' => array(
+        'visible' => array(
+          array(
+            'input[name="active_toolbar_items[database]"]' => array('checked' => TRUE),
+          ),
+        ),
+      ),
     ];
 
     $form['database']['query_sort'] = [
@@ -207,7 +207,7 @@ class ConfigForm extends ConfigFormBase {
    */
   public function purge(array &$form, FormStateInterface $form_state) {
     $this->profiler->purge();
-    $this->messenger()->addMessage($this->t('Profiles purged'));
+    drupal_set_message($this->t('Profiles purged'));
   }
 
   /**
@@ -235,5 +235,4 @@ class ConfigForm extends ConfigFormBase {
       'webprofiler.config',
     ];
   }
-
 }

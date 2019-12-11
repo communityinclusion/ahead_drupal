@@ -16,15 +16,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * This plugin looks for existing entities.
  *
+ * @MigrateProcessPlugin(
+ *   id = "entity_lookup",
+ *   handle_multiples = TRUE
+ * )
+ *
  * In its most simple form, this plugin needs no configuration. However, if the
  * lookup properties cannot be determined through introspection, define them via
  * configuration.
- *
- * Available configuration keys:
- * - access_check: (optional) Indicates if access to the entity for this user
- *   will be checked. Default is true.
- *
- * @codingStandardsIgnoreStart
  *
  * Example usage with minimal configuration:
  * @code
@@ -36,10 +35,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *     default_value: page
  *   field_tags:
  *     plugin: entity_lookup
- *     access_check: false
  *     source: tags
  * @endcode
- * In this example above, the access check is disabled.
  *
  * Example usage with full configuration:
  * @code
@@ -52,13 +49,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *     entity_type: taxonomy_term
  *     ignore_case: true
  * @endcode
- *
- * @codingStandardsIgnoreEnd
- *
- * @MigrateProcessPlugin(
- *   id = "entity_lookup",
- *   handle_multiples = TRUE
- * )
  */
 class EntityLookup extends ProcessPluginBase implements ContainerFactoryPluginInterface {
 
@@ -133,13 +123,6 @@ class EntityLookup extends ProcessPluginBase implements ContainerFactoryPluginIn
   protected $destinationProperty;
 
   /**
-   * The access check flag.
-   *
-   * @var string
-   */
-  protected $accessCheck = TRUE;
-
-  /**
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, EntityManagerInterface $entityManager, SelectionPluginManagerInterface $selectionPluginManager) {
@@ -194,9 +177,6 @@ class EntityLookup extends ProcessPluginBase implements ContainerFactoryPluginIn
    *   with the $row above.
    */
   protected function determineLookupProperties($destinationProperty) {
-    if (isset($this->configuration['access_check'])) {
-      $this->accessCheck = $this->configuration['access_check'];
-    }
     if (!empty($this->configuration['value_key'])) {
       $this->lookupValueKey = $this->configuration['value_key'];
     }
@@ -280,7 +260,6 @@ class EntityLookup extends ProcessPluginBase implements ContainerFactoryPluginIn
 
     $query = $this->entityManager->getStorage($this->lookupEntityType)
       ->getQuery()
-      ->accessCheck($this->accessCheck)
       ->condition($this->lookupValueKey, $value, $multiple ? 'IN' : NULL);
     // Sqlite and possibly others returns data in a non-deterministic order.
     // Make it deterministic.

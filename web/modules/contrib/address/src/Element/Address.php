@@ -21,7 +21,7 @@ use Drupal\Core\Render\Element\FormElement;
  * Provides an address form element.
  *
  * Use #field_overrides to override the country-specific address format,
- * forcing specific properties to be hidden, optional, or required.
+ * forcing specific fields to be hidden, optional, or required.
  *
  * Usage example:
  * @code
@@ -38,7 +38,7 @@ use Drupal\Core\Render\Element\FormElement;
  *     'country_code' => 'US',
  *     'langcode' => 'en',
  *   ],
- *   '#field_overrides' => [
+ *   '@field_overrides' => [
  *     AddressField::ORGANIZATION => FieldOverride::REQUIRED,
  *     AddressField::ADDRESS_LINE2 => FieldOverride::HIDDEN,
  *     AddressField::POSTAL_CODE => FieldOverride::OPTIONAL,
@@ -120,12 +120,6 @@ class Address extends FormElement {
     $element['#default_value'] = self::applyDefaults($element['#default_value']);
     if (empty($element['#default_value']['country_code']) && $element['#required']) {
       $element['#default_value']['country_code'] = Country::getDefaultCountry($element['#available_countries']);
-    }
-    // Any input with a NULL or missing country_code is considered invalid.
-    // Even if the element is optional and no country is selected, the
-    // country_code would be an empty string, not NULL.
-    if (is_array($input) && !isset($input['country_code'])) {
-      $input = NULL;
     }
     if (is_array($input)) {
       $input = self::applyDefaults($input);
@@ -412,11 +406,9 @@ class Address extends FormElement {
     if (isset($keys[$triggering_element_name])) {
       $input = &$form_state->getUserInput();
       foreach ($keys[$triggering_element_name] as $key) {
-        if (isset($element[$key])) {
-          $parents = array_merge($element['#parents'], [$key]);
-          NestedArray::setValue($input, $parents, '');
-          $element[$key]['#value'] = '';
-        }
+        $parents = array_merge($element['#parents'], [$key]);
+        NestedArray::setValue($input, $parents, '');
+        $element[$key]['#value'] = '';
       }
     }
 

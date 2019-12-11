@@ -16,7 +16,7 @@ use Drupal\webform\WebformSubmissionInterface;
 /**
  * Provides a base class for 'webform_computed' elements.
  */
-abstract class WebformComputedBase extends FormElement implements WebformComputedInterface {
+abstract class WebformComputedBase extends FormElement {
 
   /**
    * Denotes HTML.
@@ -91,7 +91,7 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
       // @see drupal_process_states;
       $element['#type'] = 'item';
 
-      $value = static::computeValue($element, $webform_submission);
+      $value = static::processValue($element, $webform_submission);
       static::setWebformComputedElementValue($element, $value);
     }
 
@@ -115,7 +115,7 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
       $wrapper_id = 'webform-computed-' . implode('-', $element['#parents']) . '-wrapper';
 
       // Get computed value element keys which are used to trigger Ajax updates.
-      preg_match_all('/(?:\[webform_submission:values:|data\.)([_a-z0-9]+)/', $element['#template'], $matches);
+      preg_match_all('/(?:\[webform_submission:values:|data\.)([_a-z]+)/', $element['#template'], $matches);
       $element_keys = $matches[1] ?: [];
       $element_keys = array_unique($element_keys);
 
@@ -138,11 +138,11 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
           'wrapper' => $wrapper_id,
           'progress' => ['type' => 'none'],
         ],
-        // Disable validation, hide button, add submit button trigger class.
+        // Hide button and disable validation.
         '#attributes' => [
-          'formnovalidate' => 'formnovalidate',
           'class' => [
             'js-hide',
+            'js-webform-novalidate',
             'js-webform-computed-submit',
           ],
         ],
@@ -160,9 +160,17 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
   }
 
   /**
-   * {@inheritdoc}
+   * Process computed value.
+   *
+   * @param array $element
+   *   The element.
+   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
+   *   A webform submission.
+   *
+   * @return array|string
+   *   The string with tokens replaced.
    */
-  public static function computeValue(array $element, WebformSubmissionInterface $webform_submission) {
+  public static function processValue(array $element, WebformSubmissionInterface $webform_submission) {
     return $element['#template'];
   }
 
@@ -175,7 +183,7 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
     // the accurate computed value.
     $webform_submission = static::getWebformSubmission($element, $form_state, $complete_form);
     if ($webform_submission) {
-      $value = static::computeValue($element, $webform_submission);
+      $value = static::processValue($element, $webform_submission);
       $form_state->setValueForElement($element['value'], NULL);
       $form_state->setValueForElement($element['hidden'], NULL);
       $form_state->setValueForElement($element, $value);
@@ -223,16 +231,7 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
    * Determine if the current request is using Ajax.
    */
   protected static function isAjax() {
-    // return (\Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT) === 'drupal_ajax');
-    //
-    // ISSUE:
-    // For nodes with computed elements there is a duplicate
-    // _wrapper_format parameter.
-    // (i.e ?_wrapper_format=html&_wrapper_format=drupal_ajax)
-    // WORKAROUND:
-    // See if _wrapper_format=drupal_ajax is being appended to the query string.
-    $querystring = \Drupal::request()->getQueryString();
-    return (strpos($querystring, MainContentViewSubscriber::WRAPPER_FORMAT . '=drupal_ajax') !== FALSE);
+    return (\Drupal::request()->get(MainContentViewSubscriber::WRAPPER_FORMAT) === 'drupal_ajax');
   }
 
   /**
@@ -279,7 +278,7 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
 
     // Set element value and #markup  after the form has been validated.
     $webform_submission = static::getWebformSubmission($element, $form_state, $form);
-    $value = static::computeValue($element, $webform_submission);
+    $value = static::processValue($element, $webform_submission);
     static::setWebformComputedElementValue($element, $value);
 
     // Only return the wrapper id, this prevents the computed element from
@@ -360,7 +359,7 @@ abstract class WebformComputedBase extends FormElement implements WebformCompute
       //
       // Therefore, we are creating a single clone of the webform submission
       // and only copying the submitted form values to the cached submission.
-      if ($form_state->isValidationComplete() && !$form_state->isRebuilding()) {
+      if ($form_state->isValidationComplete()) {
         if (!isset(static::$submissions[$webform_submission->uuid()])) {
           static::$submissions[$webform_submission->uuid()] = clone $form_object->getEntity();
         }

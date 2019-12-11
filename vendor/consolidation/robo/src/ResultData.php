@@ -40,7 +40,7 @@ class ResultData extends Data implements ExitCodeInterface, OutputDataInterface
      * @param string $message
      * @param array $data
      *
-     * @return static
+     * @return \Robo\ResultData
      */
     public static function message($message, $data = [])
     {
@@ -51,7 +51,7 @@ class ResultData extends Data implements ExitCodeInterface, OutputDataInterface
      * @param string $message
      * @param array $data
      *
-     * @return static
+     * @return \Robo\ResultData
      */
     public static function cancelled($message = '', $data = [])
     {

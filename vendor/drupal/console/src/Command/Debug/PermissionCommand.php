@@ -2,22 +2,22 @@
 
 /**
  * @file
- * Contains \Drupal\Console\Command\PermissionCommand.
+ * Contains \Drupal\Console\Command\PermissionDebugCommand.
  */
 
 namespace Drupal\Console\Command\Debug;
 
-use Drupal\Console\Core\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Drupal\Console\Core\Command\ContainerAwareCommand;
 
 /**
  * Class DebugCommand
  *
  * @package Drupal\Console\Command\Debug
  */
-class PermissionCommand extends Command
+class PermissionCommand extends ContainerAwareCommand
 {
     /**
      * {@inheritdoc}

@@ -3,15 +3,10 @@ base:
   js:
     image_captcha.js: {}
   css:
-    theme:
+    all:
       image_captcha.css: {}
   dependencies:
     - core/jquery
     - core/drupal
     - core/drupalSettings
     - core/jquery.once
-
-image-captcha-refresh:
-  version: 1.0
-  js:
-    js/image_captcha_refresh.js: {}

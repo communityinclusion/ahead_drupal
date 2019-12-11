@@ -108,7 +108,5 @@ class FragmentHandler
         }
 
         $response->sendContent();
-
-        return null;
     }
 }

@@ -11,9 +11,7 @@ namespace Drupal\{{ module }};
 {% block use_class %}
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Session\AccountInterface;
-{% if is_translatable %}
 use Drupal\Core\Language\LanguageInterface;
-{% endif %}
 use Drupal\{{ module }}\Entity\{{ entity_class }}Interface;
 {% endblock %}
 
@@ -48,7 +46,6 @@ class {{ entity_class }}Storage extends SqlContentEntityStorage implements {{ en
       [':uid' => $account->id()]
     )->fetchCol();
   }
-{% if is_translatable %}
 
   /**
    * {@inheritdoc}
@@ -67,5 +64,4 @@ class {{ entity_class }}Storage extends SqlContentEntityStorage implements {{ en
       ->condition('langcode', $language->getId())
       ->execute();
   }
-{% endif %}
 {% endblock %}

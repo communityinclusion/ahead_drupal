@@ -6,7 +6,7 @@ trait loadTasks
     /**
      * @param null|string $pathToApiGen
      *
-     * @return \Robo\Task\ApiGen\ApiGen|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\ApiGen\ApiGen
      */
     protected function taskApiGen($pathToApiGen = null)
     {

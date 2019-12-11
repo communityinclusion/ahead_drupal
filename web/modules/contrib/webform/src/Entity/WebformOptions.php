@@ -16,13 +16,6 @@ use Drupal\webform\WebformOptionsInterface;
  * @ConfigEntityType(
  *   id = "webform_options",
  *   label = @Translation("Webform options"),
- *   label_collection = @Translation("Webform options"),
- *   label_singular = @Translation("webform options"),
- *   label_plural = @Translation("webform options"),
- *   label_count = @PluralTranslation(
- *     singular = "@count webform options",
- *     plural = "@count webform options",
- *   ),
  *   handlers = {
  *     "storage" = "\Drupal\webform\WebformOptionsStorage",
  *     "access" = "Drupal\webform\WebformOptionsAccessControlHandler",
@@ -119,17 +112,6 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
   /**
    * {@inheritdoc}
    */
-  public function set($property_name, $value) {
-    // Make sure to reset decoded options when options are updated.
-    if ($property_name === 'options') {
-      $this->optionsDecoded = NULL;
-    }
-    return parent::set($property_name, $value);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getOptions() {
     if (!isset($this->optionsDecoded)) {
       try {
@@ -138,7 +120,7 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
         $options = (is_array($options)) ? $options : [];
       }
       catch (\Exception $exception) {
-        $link = $this->toLink($this->t('Edit'), 'edit-form')->toString();
+        $link = $this->link($this->t('Edit'), 'edit-form');
         \Drupal::logger('webform')->notice('%title options are not valid. @message', ['%title' => $this->label(), '@message' => $exception->getMessage(), 'link' => $link]);
         $options = FALSE;
       }
@@ -153,7 +135,6 @@ class WebformOptions extends ConfigEntityBase implements WebformOptionsInterface
   public function setOptions(array $options) {
     $this->options = Yaml::encode($options);
     $this->optionsDecoded = NULL;
-    return $this;
   }
 
   /**

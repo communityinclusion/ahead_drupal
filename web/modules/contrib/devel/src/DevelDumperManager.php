@@ -3,8 +3,6 @@
 namespace Drupal\devel;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Messenger\MessengerTrait;
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
@@ -14,7 +12,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class DevelDumperManager implements DevelDumperManagerInterface {
 
   use StringTranslationTrait;
-  use MessengerTrait;
 
   /**
    * The devel config.
@@ -91,10 +88,10 @@ class DevelDumperManager implements DevelDumperManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function message($input, $name = NULL, $type = MessengerInterface::TYPE_STATUS, $plugin_id = NULL) {
+  public function message($input, $name = NULL, $type = 'status', $plugin_id = NULL) {
     if ($this->hasAccessToDevelInformation()) {
       $output = $this->export($input, $name, $plugin_id);
-      $this->messenger()->addMessage($output, $type, TRUE);
+      drupal_set_message($output, $type, TRUE);
     }
   }
 
@@ -106,7 +103,7 @@ class DevelDumperManager implements DevelDumperManagerInterface {
     // The temp directory does vary across multiple simpletest instances.
     $file = file_directory_temp() . '/drupal_debug.txt';
     if (file_put_contents($file, $output, FILE_APPEND) === FALSE && $this->hasAccessToDevelInformation()) {
-      $this->messenger()->addError($this->t('Devel was unable to write to %file.', ['%file' => $file]));
+      drupal_set_message($this->t('Devel was unable to write to %file.', ['%file' => $file]), 'error');
       return FALSE;
     }
   }

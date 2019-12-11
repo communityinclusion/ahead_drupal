@@ -23,15 +23,4 @@ interface ConditionalFieldsHandlersPluginInterface {
    */
   public function getWidgetValue(array $value_form);
 
-  /**
-   * Get values form the condition options
-   *
-   * @param array $options
-   *   The condition options or the array of values
-   *
-   * @return mixed
-   *   Values for triggering events.
-   */
-  public function getConditionValues( array $options );
-
 }

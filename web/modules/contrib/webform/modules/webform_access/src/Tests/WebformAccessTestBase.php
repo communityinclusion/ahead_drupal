@@ -33,14 +33,14 @@ abstract class WebformAccessTestBase extends WebformNodeTestBase {
   protected $users = [];
 
   /**
-   * Access types (manager, employee, and customer).
+   * Access types (manager and employee).
    *
    * @var \Drupal\webform_access\WebformAccessTypeInterface[]
    */
   protected $types = [];
 
   /**
-   * Access groups (manager, employee, and customer).
+   * Access groups (manager and employee).
    *
    * @var \Drupal\webform_access\WebformAccessGroupInterface[]
    */
@@ -64,10 +64,6 @@ abstract class WebformAccessTestBase extends WebformNodeTestBase {
       'employee' => [
         'view_any',
         'update_any',
-      ],
-      'customer' => [
-        'view_own',
-        'update_own',
       ],
     ];
     foreach ($types as $type => $permissions) {

@@ -28,9 +28,6 @@ use Symfony\Component\VarDumper\Cloner\VarCloner;
  */
 abstract class DataCollector implements DataCollectorInterface, \Serializable
 {
-    /**
-     * @var array|Data
-     */
     protected $data = [];
 
     /**

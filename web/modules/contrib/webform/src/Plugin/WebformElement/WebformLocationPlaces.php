@@ -29,8 +29,6 @@ class WebformLocationPlaces extends WebformLocationBase {
       'app_id' => '',
       'api_key' => '',
       'placeholder' => '',
-      'geolocation' => FALSE,
-      'hidden' => FALSE,
     ] + parent::getDefaultProperties();
   }
 

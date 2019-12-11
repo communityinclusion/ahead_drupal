@@ -656,8 +656,6 @@ abstract class ParserAbstract implements Parser
             'iterable' => true,
             'void'     => true,
             'object'   => true,
-            'null'     => true,
-            'false'    => true,
         ];
 
         if (!$name->isUnqualified()) {
@@ -839,26 +837,6 @@ abstract class ParserAbstract implements Parser
             }
             return new Encapsed($newContents, $attributes);
         }
-    }
-
-    /**
-     * Create attributes for a zero-length node with the given start attributes.
-     *
-     * @param array $startAttributes
-     * @return array
-     */
-    protected function createZeroLengthAttributes(array $startAttributes) {
-        $attributes = $startAttributes;
-        if (isset($startAttributes['startLine'])) {
-            $attributes['endLine'] = $startAttributes['startLine'];
-        }
-        if (isset($startAttributes['startTokenPos'])) {
-            $attributes['endTokenPos'] = $startAttributes['startTokenPos'] - 1;
-        }
-        if (isset($startAttributes['startFilePos'])) {
-            $attributes['endFilePos'] = $startAttributes['startFilePos'] - 1;
-        }
-        return $attributes;
     }
 
     protected function checkModifier($a, $b, $modifierPos) {

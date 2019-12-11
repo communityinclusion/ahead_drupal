@@ -1,6 +1,5 @@
-{% include 'module/php_tag.php.twig' %}
+{% extends "base/file.php.twig" %}
 
-/**
- * @file
- * Contains {{machine_name}}.module.
- */
+{% block file_path %}{{machine_name}}.module.{% endblock %}
+
+

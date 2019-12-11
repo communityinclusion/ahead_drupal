@@ -37,10 +37,9 @@ trait EventsTrait
             }
 
             $callbackSuggestion = str_replace('.', '_', $event);
-
             $callback = $this->getIo()->ask(
                 $this->trans('commands.generate.event.subscriber.questions.callback-name'),
-                $this->stringConverter->underscoreToCamelCase($callbackSuggestion)
+                $callbackSuggestion
             );
 
             $eventCollection[$event] = $callback;

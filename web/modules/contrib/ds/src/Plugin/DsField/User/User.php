@@ -57,16 +57,13 @@ class User extends Entity {
     /* @var $node \Drupal\node\NodeInterface */
     $node = $this->entity();
     $uid = $node->getOwnerId();
+
     $user = $this->entityTypeManager
       ->getStorage('user')
       ->load($uid);
-
-    $build = [];
-    if ($user) {
-      $build = $this->entityTypeManager
-        ->getViewBuilder('user')
-        ->view($user, $view_mode);
-    }
+    $build = $this->entityTypeManager
+      ->getViewBuilder('user')
+      ->view($user, $view_mode);
 
     return $build;
   }

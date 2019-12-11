@@ -156,6 +156,8 @@ class Question
     /**
      * Sets a validator for the question.
      *
+     * @param callable|null $validator
+     *
      * @return $this
      */
     public function setValidator(callable $validator = null)
@@ -214,6 +216,8 @@ class Question
      *
      * The normalizer can be a callable (a string), a closure or a class implementing __invoke.
      *
+     * @param callable $normalizer
+     *
      * @return $this
      */
     public function setNormalizer(callable $normalizer)
@@ -228,7 +232,7 @@ class Question
      *
      * The normalizer can ba a callable (a string), a closure or a class implementing __invoke.
      *
-     * @return callable|null
+     * @return callable
      */
     public function getNormalizer()
     {

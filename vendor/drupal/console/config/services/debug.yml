@@ -67,7 +67,7 @@ services:
       - { name: drupal.command }
   console.module_debug:
     class: Drupal\Console\Command\Debug\ModuleCommand
-    arguments: ['@console.configuration_manager', '@console.site']
+    arguments: ['@console.configuration_manager', '@console.site', '@http_client']
     tags:
       - { name: drupal.command }
   console.image_styles_debug:
@@ -130,7 +130,7 @@ services:
       - { name: drupal.command }
   console.rest_debug:
     class: Drupal\Console\Command\Debug\RestCommand
-    arguments: ['@entity_type.manager', '@?plugin.manager.rest']
+    arguments: ['@?plugin.manager.rest']
     tags:
       - { name: drupal.command }
   console.test_debug:
@@ -147,8 +147,3 @@ services:
     arguments: ['@console.drupal_api']
     tags:
       - { name: drupal.command }
-  console.hook_debug:
-      class: Drupal\Console\Command\Debug\HookCommand
-      arguments: ['@console.extension_manager', '@module_handler']
-      tags:
-        - { name: drupal.command }

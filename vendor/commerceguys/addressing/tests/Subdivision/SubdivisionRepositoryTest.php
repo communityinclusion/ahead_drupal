@@ -2,7 +2,6 @@
 
 namespace CommerceGuys\Addressing\Tests\Subdivision;
 
-use CommerceGuys\Addressing\Subdivision\Subdivision;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
 use org\bovigo\vfs\vfsStream;
 
@@ -91,7 +90,7 @@ class SubdivisionRepositoryTest extends \PHPUnit_Framework_TestCase
         $subdivision = $subdivisionRepository->get('SC', ['BR']);
         $subdivisionChild = $subdivisionRepository->get('Abelardo Luz', ['BR', 'SC']);
 
-        $this->assertInstanceOf(Subdivision::class, $subdivision);
+        $this->assertInstanceOf('CommerceGuys\Addressing\Subdivision\Subdivision', $subdivision);
         $this->assertEquals(null, $subdivision->getParent());
         $this->assertEquals('BR', $subdivision->getCountryCode());
         $this->assertEquals('pt', $subdivision->getLocale());
@@ -104,12 +103,12 @@ class SubdivisionRepositoryTest extends \PHPUnit_Framework_TestCase
         $children = $subdivision->getChildren();
         $this->assertEquals($subdivisionChild, $children['Abelardo Luz']);
 
-        $this->assertInstanceOf(Subdivision::class, $subdivisionChild);
+        $this->assertInstanceOf('CommerceGuys\Addressing\Subdivision\Subdivision', $subdivisionChild);
         $this->assertEquals('Abelardo Luz', $subdivisionChild->getCode());
         // $subdivision contains the loaded children while $parent doesn't,
         // so they can't be compared directly.
         $parent = $subdivisionChild->getParent();
-        $this->assertInstanceOf(Subdivision::class, $parent);
+        $this->assertInstanceOf('CommerceGuys\Addressing\Subdivision\Subdivision', $parent);
         $this->assertEquals($subdivision->getCode(), $parent->getCode());
     }
 

@@ -3,7 +3,6 @@
 namespace Drupal\rules\Engine;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\rules\Context\ContextConfig;
 
 /**
  * Defines an interface for the expression plugin manager.
@@ -21,50 +20,50 @@ interface ExpressionManagerInterface extends PluginManagerInterface {
   /**
    * Creates a new rule.
    *
-   * @param \Drupal\rules\Context\ContextConfig $configuration
-   *   (optional) The context configuration used to create the plugin instance.
+   * @param array $configuration
+   *   The configuration array to create the plugin instance with.
    *
-   * @return \Drupal\rules\Engine\RuleExpressionInterface
+   * @return \Drupal\rules\Plugin\RulesExpression\RuleInterface
    *   The created rule.
    */
-  public function createRule(ContextConfig $configuration = NULL);
+  public function createRule(array $configuration = []);
 
   /**
    * Creates a new action set.
    *
-   * @param \Drupal\rules\Context\ContextConfig $configuration
-   *   (optional) The context configuration used to create the plugin instance.
+   * @param array $configuration
+   *   The configuration array to create the plugin instance with.
    *
-   * @return \Drupal\rules\Plugin\RulesExpression\ActionSetExpression
+   * @return \Drupal\rules\Plugin\RulesExpression\ActionSet
    *   The created action set.
    */
-  public function createActionSet(ContextConfig $configuration = NULL);
+  public function createActionSet(array $configuration = []);
 
   /**
    * Creates a new action expression.
    *
    * @param string $id
    *   The action plugin id.
-   * @param \Drupal\rules\Context\ContextConfig $configuration
-   *   (optional) The context configuration used to create the plugin instance.
+   * @param array $configuration
+   *   Optional configuration settings.
    *
    * @return \Drupal\rules\Engine\ActionExpressionInterface
    *   The created action expression.
    */
-  public function createAction($id, ContextConfig $configuration = NULL);
+  public function createAction($id, array $configuration = []);
 
   /**
    * Creates a new condition expression.
    *
    * @param string $id
    *   The condition plugin id.
-   * @param \Drupal\rules\Context\ContextConfig $configuration
-   *   (optional) The context configuration used to create the plugin instance.
+   * @param array $configuration
+   *   Optional configuration settings.
    *
    * @return \Drupal\rules\Engine\ConditionExpressionInterface
    *   The created condition expression.
    */
-  public function createCondition($id, ContextConfig $configuration = NULL);
+  public function createCondition($id, array $configuration = []);
 
   /**
    * Creates a new 'and' condition container.

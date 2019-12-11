@@ -233,7 +233,7 @@ class Runner
      * Exits if the minimum requirements of PHP_CodeSniffer are not met.
      *
      * @return array
-     * @throws \PHP_CodeSniffer\Exceptions\DeepExitException If the requirements are not met.
+     * @throws \PHP_CodeSniffer\Exceptions\DeepExitException
      */
     public function checkRequirements()
     {
@@ -281,7 +281,7 @@ class Runner
      * Init the rulesets and other high-level settings.
      *
      * @return void
-     * @throws \PHP_CodeSniffer\Exceptions\DeepExitException If a referenced standard is not installed.
+     * @throws \PHP_CodeSniffer\Exceptions\DeepExitException
      */
     public function init()
     {
@@ -292,9 +292,6 @@ class Runner
         // Ensure this option is enabled or else line endings will not always
         // be detected properly for files created on a Mac with the /r line ending.
         ini_set('auto_detect_line_endings', true);
-
-        // Disable the PCRE JIT as this caused issues with parallel running.
-        ini_set('pcre.jit', false);
 
         // Check that the standards are valid.
         foreach ($this->config->standards as $standard) {
@@ -539,10 +536,7 @@ class Runner
                 }//end if
             }//end for
 
-            $success = $this->processChildProcs($childProcs);
-            if ($success === false) {
-                throw new RuntimeException('One or more child processes failed to run');
-            }
+            $this->processChildProcs($childProcs);
         }//end if
 
         restore_error_handler();
@@ -708,14 +702,12 @@ class Runner
      *
      * @param array $childProcs An array of child processes to wait for.
      *
-     * @return bool
+     * @return void
      */
     private function processChildProcs($childProcs)
     {
         $numProcessed = 0;
         $totalBatches = count($childProcs);
-
-        $success = true;
 
         while (count($childProcs) > 0) {
             foreach ($childProcs as $key => $procData) {
@@ -723,26 +715,13 @@ class Runner
                 if ($res === $procData['pid']) {
                     if (file_exists($procData['out']) === true) {
                         include $procData['out'];
-
-                        unlink($procData['out']);
-                        unset($childProcs[$key]);
-
-                        $numProcessed++;
-
-                        if (isset($childOutput) === false) {
-                            // The child process died, so the run has failed.
-                            $file = new DummyFile(null, $this->ruleset, $this->config);
-                            $file->setErrorCounts(1, 0, 0, 0);
-                            $this->printProgress($file, $totalBatches, $numProcessed);
-                            $success = false;
-                            continue;
+                        if (isset($childOutput) === true) {
+                            $this->reporter->totalFiles    += $childOutput['totalFiles'];
+                            $this->reporter->totalErrors   += $childOutput['totalErrors'];
+                            $this->reporter->totalWarnings += $childOutput['totalWarnings'];
+                            $this->reporter->totalFixable  += $childOutput['totalFixable'];
+                            $this->reporter->totalFixed    += $childOutput['totalFixed'];
                         }
-
-                        $this->reporter->totalFiles    += $childOutput['totalFiles'];
-                        $this->reporter->totalErrors   += $childOutput['totalErrors'];
-                        $this->reporter->totalWarnings += $childOutput['totalWarnings'];
-                        $this->reporter->totalFixable  += $childOutput['totalFixable'];
-                        $this->reporter->totalFixed    += $childOutput['totalFixed'];
 
                         if (isset($debugOutput) === true) {
                             echo $debugOutput;
@@ -753,6 +732,11 @@ class Runner
                                 Cache::set($path, $cache);
                             }
                         }
+
+                        unlink($procData['out']);
+                        unset($childProcs[$key]);
+
+                        $numProcessed++;
 
                         // Fake a processed file so we can print progress output for the batch.
                         $file = new DummyFile(null, $this->ruleset, $this->config);
@@ -767,8 +751,6 @@ class Runner
                 }//end if
             }//end foreach
         }//end while
-
-        return $success;
 
     }//end processChildProcs()
 

@@ -20,23 +20,13 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 trait VerbosityThresholdTrait
 {
-    /**
-     * @var \Robo\Contract\OutputAdapterInterface
-     */
+    /** var OutputAdapterInterface */
     protected $outputAdapter;
-
-    /**
-     * @var int
-     */
     protected $verbosityThreshold = 0;
 
     /**
-     * Required verbosity level before any TaskIO output will be produced.
+     * Required verbocity level before any TaskIO output will be produced.
      * e.g. OutputInterface::VERBOSITY_VERBOSE
-     *
-     * @param int $verbosityThreshold
-     *
-     * @return $this
      */
     public function setVerbosityThreshold($verbosityThreshold)
     {
@@ -44,9 +34,6 @@ trait VerbosityThresholdTrait
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function verbosityThreshold()
     {
         return $this->verbosityThreshold;
@@ -58,24 +45,18 @@ trait VerbosityThresholdTrait
     }
 
     /**
-     * @return \Robo\Contract\OutputAdapterInterface
+     * @return OutputAdapterInterface
      */
     public function outputAdapter()
     {
         return $this->outputAdapter;
     }
 
-    /**
-     * @return bool
-     */
     public function hasOutputAdapter()
     {
         return isset($this->outputAdapter);
     }
 
-    /**
-     * @return bool
-     */
     public function verbosityMeetsThreshold()
     {
         if ($this->hasOutputAdapter()) {
@@ -86,9 +67,7 @@ trait VerbosityThresholdTrait
 
     /**
      * Print a message if the selected verbosity level is over this task's
-     * verbosity threshold.
-     *
-     * @param string $message
+     * verbosity threshhold.
      */
     public function writeMessage($message)
     {

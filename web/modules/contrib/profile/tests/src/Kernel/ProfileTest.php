@@ -53,13 +53,12 @@ class ProfileTest extends EntityKernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-
     $this->installEntitySchema('profile');
     $this->installEntitySchema('view');
     $this->installSchema('user', ['users_data']);
     $this->installConfig(['profile', 'user']);
-
-    $this->profileStorage = $this->container->get('entity_type.manager')->getStorage('profile');
+    $this->profileStorage = $this->container->get('entity_type.manager')
+      ->getStorage('profile');
     $this->user1 = $this->createUser();
     $this->user2 = $this->createUser();
   }
@@ -68,10 +67,13 @@ class ProfileTest extends EntityKernelTestBase {
    * Tests the profile entity and its methods.
    */
   public function testProfile() {
+    $time = $this->container->get('datetime.time');
+
     $types_data = [
       'profile_type_0' => ['label' => $this->randomMachineName()],
       'profile_type_1' => ['label' => $this->randomMachineName()],
     ];
+
     /** @var \Drupal\profile\Entity\ProfileTypeInterface[] $types */
     $types = [];
     foreach ($types_data as $id => $values) {
@@ -83,27 +85,17 @@ class ProfileTest extends EntityKernelTestBase {
     /** @var \Drupal\profile\Entity\ProfileInterface $profile */
     $profile = $this->profileStorage->create([
       'type' => $types['profile_type_0']->id(),
+      'uid' => $this->user1->id(),
     ]);
 
-    $profile->setOwnerId($this->user1->id());
-    $this->assertEquals($this->user1->id(), $profile->getOwnerId());
-
-    $profile->setCreatedTime('1554159046');
-    $this->assertEquals('1554159046', $profile->getCreatedTime());
-
-    $profile->setChangedTime('1554159090');
-    $this->assertEquals('1554159090', $profile->getChangedTime());
-
-    $this->assertEquals('default', $profile->getData('test', 'default'));
-    $profile->setData('test', 'value');
-    $this->assertEquals('value', $profile->getData('test', 'default'));
-    $profile->unsetData('test');
-    $this->assertNull($profile->getData('test'));
-    $this->assertEquals('default', $profile->getData('test', 'default'));
+    $this->assertEquals($profile->getOwnerId(), $this->user1->id());
+    $this->assertEquals($profile->getCreatedTime(), $time->getRequestTime());
+    $this->assertEquals($profile->getChangedTime(), $time->getRequestTime());
 
     // Save the profile.
     $profile->save();
-    $expected_label = new TranslatableMarkup('@type #@id', [
+    $this->assertEquals($time->getRequestTime(), $profile->getChangedTime());
+    $expected_label = new TranslatableMarkup('@type profile #@id', [
       '@type' => $types['profile_type_0']->label(),
       '@id' => $profile->id(),
     ]);
@@ -153,108 +145,27 @@ class ProfileTest extends EntityKernelTestBase {
   }
 
   /**
-   * Tests comparing profiles.
+   * Tests profiles are active by default.
    */
-  public function testCompare() {
-    $field_storage = FieldStorageConfig::create([
-      'field_name' => 'field_fullname',
-      'entity_type' => 'profile',
-      'type' => 'text',
-    ]);
-    $field_storage->save();
-    foreach (['customer_billing', 'customer_shipping'] as $profile_type_id) {
-      $profile_type = ProfileType::create([
-        'id' => $profile_type_id,
-        'label' => $profile_type_id,
-      ]);
-      $profile_type->save();
-
-      $field = FieldConfig::create([
-        'field_storage' => $field_storage,
-        'bundle' => $profile_type_id,
-        'label' => 'Full name',
-      ]);
-      $field->save();
-    }
-
-    $first_profile = Profile::create([
-      'type' => 'customer_billing',
-      'uid' => 1,
-      'field_fullname' => 'John Smith',
-    ]);
-    $second_profile = Profile::create([
-      'type' => 'customer_billing',
-      'uid' => 1,
-      'field_fullname' => '',
-    ]);
-    $third_profile = Profile::create([
-      'type' => 'customer_shipping',
-      'uid' => 2,
-      'field_fullname' => 'John Smith',
-    ]);
-
-    $this->assertTrue($first_profile->equalToProfile($third_profile));
-    $this->assertFalse($first_profile->equalToProfile($third_profile, ['type', 'field_fullname']));
-    $this->assertFalse($first_profile->equalToProfile($second_profile));
-    $this->assertTrue($first_profile->equalToProfile($second_profile, ['type']));
-  }
-
-  /**
-   * Tests populating a profile using another profile's field values.
-   */
-  public function testPopulate() {
+  public function testProfileActive() {
     $profile_type = ProfileType::create([
-      'id' => 'customer',
-      'label' => 'Customer',
+      'id' => 'test_defaults',
+      'label' => 'test_defaults',
     ]);
     $profile_type->save();
 
-    $field_storage = FieldStorageConfig::create([
-      'field_name' => 'field_fullname',
-      'entity_type' => 'profile',
-      'type' => 'text',
+    // Create new profiles.
+    $profile1 = Profile::create([
+      'type' => $profile_type->id(),
+      'uid' => $this->user1->id(),
     ]);
-    $field_storage->save();
+    $profile1->save();
+    $this->assertTrue($profile1->isActive());
 
-    $field = FieldConfig::create([
-      'field_storage' => $field_storage,
-      'bundle' => $profile_type->id(),
-      'label' => 'Full name',
-    ]);
-    $field->save();
+    $profile1->setActive(FALSE);
+    $profile1->save();
 
-    $first_profile = Profile::create([
-      'type' => 'customer',
-      'uid' => 1,
-      'field_fullname' => 'John Smith',
-      'status' => FALSE,
-    ]);
-    $second_profile = Profile::create([
-      'type' => 'customer',
-      'uid' => 1,
-      'field_fullname' => '',
-      'status' => FALSE,
-    ]);
-    $third_profile = Profile::create([
-      'type' => 'customer',
-      'uid' => 2,
-      'field_fullname' => 'Jane Smith',
-      'status' => TRUE,
-    ]);
-
-    $third_profile->populateFromProfile($second_profile, ['field_fullname']);
-    // Confirm that the configurable field was transferred.
-    $this->assertEmpty($third_profile->get('field_fullname')->value);
-    // Confirm that the base fields were not changed.
-    $this->assertEquals(2, $third_profile->getOwnerId());
-    $this->assertTrue($third_profile->isPublished());
-
-    $third_profile->populateFromProfile($first_profile);
-    // Confirm that the configurable field was transferred.
-    $this->assertEquals('John Smith', $third_profile->get('field_fullname')->value);
-    // Confirm that the base fields were not changed.
-    $this->assertEquals(2, $third_profile->getOwnerId());
-    $this->assertTrue($third_profile->isPublished());
+    $this->assertFalse($profile1->isActive());
   }
 
   /**
@@ -267,16 +178,17 @@ class ProfileTest extends EntityKernelTestBase {
     ]);
     $profile_type->save();
 
-    /** @var \Drupal\profile\Entity\ProfileInterface $profile1 */
+    // Create a new profile.
     $profile1 = Profile::create([
       'type' => $profile_type->id(),
       'uid' => $this->user1->id(),
     ]);
     $profile1->save();
-    // Confirm that the profile was set as default.
+
+    // Verify that the first profile of this type is default.
     $this->assertTrue($profile1->isDefault());
 
-    /** @var \Drupal\profile\Entity\ProfileInterface $profile2 */
+    // Create a second new profile.
     $profile2 = Profile::create([
       'type' => $profile_type->id(),
       'uid' => $this->user1->id(),
@@ -284,23 +196,57 @@ class ProfileTest extends EntityKernelTestBase {
     $profile2->setDefault(TRUE);
     $profile2->save();
 
-    // Confirm that setting the second profile as default removed the
-    // flag from the first profile.
-    $profile2 = $this->reloadEntity($profile2);
-    $profile1 = $this->reloadEntity($profile1);
-    $this->assertTrue($profile2->isDefault());
-    $this->assertFalse($profile1->isDefault());
+    $this->assertFalse($this->reloadEntity($profile1)->isDefault());
+    $this->assertTrue($this->reloadEntity($profile2)->isDefault());
 
-    // Verify that an unpublished profile cannot be the default.
-    $profile2->setUnpublished();
+    $profile1->setDefault(TRUE)->save();
+    $this->assertFalse($this->reloadEntity($profile2)->isDefault());
+    $this->assertTrue($this->reloadEntity($profile1)->isDefault());
+
+    // Verify that a deactivated profile cannot be the default and that if the
+    // current default is disactivated another default is set.
+    $profile2->setActive(FALSE);
     $profile2->save();
-    $this->assertFalse($profile2->isDefault());
 
-    $profile1 = $this->reloadEntity($profile1);
-    $this->assertFalse($profile1->isDefault());
-    // Confirm that re-saving the other published profile sets it as default.
+    $this->assertFalse($this->reloadEntity($profile2)->isDefault());
+    $this->assertTrue($this->reloadEntity($profile1)->isDefault());
+  }
+
+  /**
+   * Tests loading default from storage handler.
+   */
+  public function testLoadDefaultProfile() {
+    $profile_type = ProfileType::create([
+      'id' => 'test_defaults',
+      'label' => 'test_defaults',
+    ]);
+    $profile_type->save();
+
+    // Create new profiles.
+    $profile1 = Profile::create([
+      'type' => $profile_type->id(),
+      'uid' => $this->user1->id(),
+    ]);
+    $profile1->setActive(TRUE);
     $profile1->save();
-    $this->assertTrue($profile1->isDefault());
+    $profile2 = Profile::create([
+      'type' => $profile_type->id(),
+      'uid' => $this->user1->id(),
+    ]);
+    $profile2->setActive(TRUE);
+    $profile2->setDefault(TRUE);
+    $profile2->save();
+
+    /** @var \Drupal\profile\ProfileStorageInterface $storage */
+    $storage = \Drupal::entityTypeManager()->getStorage('profile');
+
+    $default_profile = $storage->loadDefaultByUser($this->user1, $profile_type->id());
+    $this->assertEquals($profile2->id(), $default_profile->id());
+
+    // Ensure that \Drupal\profile\Entity\Profile::preSave doesn't crash.
+    $anonymous_profile = Profile::create(['type' => $profile_type->id()]);
+    $anonymous_profile->save();
+    $this->assertTrue(empty($anonymous_profile->getOwner()));
   }
 
   /**
@@ -347,7 +293,7 @@ class ProfileTest extends EntityKernelTestBase {
     $this->assertEquals($existing_profile_id, $profile1->id());
     $this->assertEquals($existing_revision_id, $profile1->getRevisionId());
 
-    $profile_type->set('allow_revision', TRUE);
+    $profile_type->set('use_revisions', TRUE);
     $profile_type->save();
 
     // Create new profiles.

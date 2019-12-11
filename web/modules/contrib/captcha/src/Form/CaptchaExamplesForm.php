@@ -2,43 +2,15 @@
 
 namespace Drupal\captcha\Form;
 
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Displays the captcha settings form.
  */
 class CaptchaExamplesForm extends FormBase {
-
-  /**
-   * The module handler.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
-   * CaptchaExamplesForm constructor.
-   *
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
-   *   Constructor.
-   */
-  public function __construct(ModuleHandlerInterface $moduleHandler) {
-    $this->moduleHandler = $moduleHandler;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('module_handler')
-    );
-  }
 
   /**
    * {@inheritdoc}
@@ -57,7 +29,7 @@ class CaptchaExamplesForm extends FormBase {
     if ($module && $challenge) {
       // Generate 10 example challenges.
       for ($i = 0; $i < 10; $i++) {
-        $form["challenge_{$i}"] = $this->buildChallenge($module, $challenge);
+        $form["challenge_{$i}"] = _captcha_generate_example_challenge($module, $challenge);
       }
     }
     else {
@@ -66,7 +38,7 @@ class CaptchaExamplesForm extends FormBase {
         '#markup' => $this->t('This page gives an overview of all available challenge types, generated with their current settings.'),
       ];
 
-      $modules_list = $this->moduleHandler->getImplementations('captcha');
+      $modules_list = \Drupal::moduleHandler()->getImplementations('captcha');
       foreach ($modules_list as $mkey => $module) {
         $challenges = call_user_func_array($module . '_captcha', ['list']);
 
@@ -78,7 +50,7 @@ class CaptchaExamplesForm extends FormBase {
                 '%challenge' => $challenge,
                 '%module' => $module,
               ]),
-              'challenge' => $this->buildChallenge($module, $challenge),
+              'challenge' => _captcha_generate_example_challenge($module, $challenge),
               'more_examples' => [
                 '#markup' => Link::fromTextAndUrl($this->t('10 more examples of this challenge.'), Url::fromRoute('captcha_examples', [
                   'module' => $module,
@@ -97,17 +69,8 @@ class CaptchaExamplesForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {}
+  public function submitForm(array &$form, FormStateInterface $form_state) {
 
-  /**
-   * Returns a renderable array for a given CAPTCHA challenge.
-   */
-  protected function buildChallenge($module, $challenge) {
-    return [
-      '#type' => 'captcha',
-      '#captcha_type' => $module . '/' . $type,
-      '#captcha_admin_mode' => TRUE,
-    ];
   }
 
 }

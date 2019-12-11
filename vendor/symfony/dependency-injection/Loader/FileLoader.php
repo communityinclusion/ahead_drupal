@@ -86,11 +86,12 @@ abstract class FileLoader extends BaseFileLoader
     /**
      * Registers a definition in the container with its instanceof-conditionals.
      *
-     * @param string $id
+     * @param string     $id
+     * @param Definition $definition
      */
     protected function setDefinition($id, Definition $definition)
     {
-        $this->container->removeBindings($id);
+        $this->container->addRemovedBindingIds($id);
 
         if ($this->isLoadingInstanceof) {
             if (!$definition instanceof ChildDefinition) {
@@ -149,7 +150,12 @@ abstract class FileLoader extends BaseFileLoader
             try {
                 $r = $this->container->getReflectionClass($class);
             } catch (\ReflectionException $e) {
-                $classes[$class] = $e->getMessage();
+                $classes[$class] = sprintf(
+                    'While discovering services from namespace "%s", an error was thrown when processing the class "%s": "%s".',
+                    $namespace,
+                    $class,
+                    $e->getMessage()
+                );
                 continue;
             }
             // check to make sure the expected class exists

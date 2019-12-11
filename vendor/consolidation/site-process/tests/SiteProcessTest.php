@@ -126,17 +126,6 @@ class SiteProcessTest extends TestCase
             ],
 
             [
-                "docker-compose -p project exec --workdir src --user root drupal ls -al /path1 /path2",
-                'src',
-                true,
-                ['docker' => ['service' => 'drupal', 'project' => 'project', 'exec' => ['options' => '--user root']]],
-                ['ls', '-al', '/path1', '/path2'],
-                [],
-                [],
-                NULL,
-            ],
-
-            [
                 "drush status '--fields=root,uri'",
                 false,
                 false,
@@ -177,17 +166,6 @@ class SiteProcessTest extends TestCase
                 ['drush', 'rsync', 'a', 'b', '--', '--include=vendor/autoload.php'],
                 [],
                 ['exclude' => 'vendor'],
-                NULL,
-            ],
-
-            [
-                "env foo=bar baz=zong drush status",
-                false,
-                false,
-                ['env-vars' => ['foo' => 'bar', 'baz' => 'zong']],
-                ['drush', 'status'],
-                [],
-                [],
                 NULL,
             ],
         ];
@@ -238,7 +216,7 @@ class SiteProcessTest extends TestCase
                 'LINUX',
             ],
             [
-                "Unable to decode output into JSON: Syntax error\n\nNo json data here",
+                'Unable to decode output into JSON.',
                 'No json data here',
                 NULL,
             ],

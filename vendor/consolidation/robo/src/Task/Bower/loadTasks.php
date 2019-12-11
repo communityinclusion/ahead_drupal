@@ -6,7 +6,7 @@ trait loadTasks
     /**
      * @param null|string $pathToBower
      *
-     * @return \Robo\Task\Bower\Install|\Robo\Collection\CollectionBuilder
+     * @return Install
      */
     protected function taskBowerInstall($pathToBower = null)
     {
@@ -16,7 +16,7 @@ trait loadTasks
     /**
      * @param null|string $pathToBower
      *
-     * @return \Robo\Task\Bower\Update|\Robo\Collection\CollectionBuilder
+     * @return Update
      */
     protected function taskBowerUpdate($pathToBower = null)
     {

@@ -57,7 +57,7 @@ class SchedulerNodeAccessTest extends SchedulerBrowserTestBase {
         'type' => $this->type,
         'status' => $data['status'],
         'title' => 'Test node to be ' . $data['after'],
-        $field => $this->requestTime + 1,
+        $field => REQUEST_TIME + 1,
       ];
       $node = $this->drupalCreateNode($settings);
       $this->drupalGet('node/' . $node->id());

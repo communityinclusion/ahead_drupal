@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Contains \Drupal\mailsystem_test\Controller\MailsystemTestController.
+ */
 
 namespace Drupal\mailsystem_test\Controller;
 use Symfony\Component\HttpFoundation\Response;

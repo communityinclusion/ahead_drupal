@@ -59,7 +59,7 @@ class ExampleDevelGenerate extends DevelGenerateBase {
       'pass'    => '',
       'mail'    => 'example_devel_generate@example.com',
       'status'  => 1,
-      'created' => \Drupal::time()->getRequestTime(),
+      'created' => REQUEST_TIME,
       'roles' => '',
       'devel_generate' => TRUE // A flag to let hook_user_* know that this is a generated user.
     );

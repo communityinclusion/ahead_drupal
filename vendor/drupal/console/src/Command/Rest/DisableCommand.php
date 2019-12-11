@@ -13,8 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Drupal\Console\Core\Command\Command;
 use Drupal\Console\Annotations\DrupalCommand;
 use Drupal\Console\Command\Shared\RestTrait;
+use Drupal\Core\Config\ConfigFactory;
 use Drupal\rest\Plugin\Type\ResourcePluginManager;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * @DrupalCommand(
@@ -27,9 +27,9 @@ class DisableCommand extends Command
     use RestTrait;
 
     /**
-     * @var EntityTypeManagerInterface
+     * @var ConfigFactory
      */
-    protected $entityTypeManager;
+    protected $configFactory;
 
     /**
      * @var ResourcePluginManager
@@ -39,14 +39,14 @@ class DisableCommand extends Command
     /**
      * DisableCommand constructor.
      *
-     * @param EntityTypeManagerInterface $entityTypeManager
-     * @param ResourcePluginManager      $pluginManagerRest
+     * @param ConfigFactory         $configFactory
+     * @param ResourcePluginManager $pluginManagerRest
      */
     public function __construct(
-        EntityTypeManagerInterface $entityTypeManager,
+        ConfigFactory $configFactory,
         ResourcePluginManager $pluginManagerRest
     ) {
-        $this->entityTypeManager = $entityTypeManager;
+        $this->configFactory = $configFactory;
         $this->pluginManagerRest = $pluginManagerRest;
         parent::__construct();
     }
@@ -68,7 +68,10 @@ class DisableCommand extends Command
     {
         $resource_id = $input->getArgument('resource-id');
         $rest_resources = $this->getRestResources();
-        $rest_resources_ids = array_keys($rest_resources['enabled']);
+        $rest_resources_ids = array_merge(
+            array_keys($rest_resources['enabled']),
+            array_keys($rest_resources['disabled'])
+        );
 
         if (!$resource_id) {
             $resource_id = $this->getIo()->choice(

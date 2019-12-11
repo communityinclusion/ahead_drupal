@@ -9,8 +9,11 @@ use Drupal\rules\Ui\RulesUiDefinition;
  * Tests embedding the Rules UI.
  *
  * @group RulesUi
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class RulesUiEmbedTest extends RulesKernelTestBase {
+class RulesUiEmbedTest extends RulesDrupalTestBase {
 
   /**
    * Modules to enable.
@@ -29,7 +32,7 @@ class RulesUiEmbedTest extends RulesKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
 
     $this->rulesUiManager = $this->container->get('plugin.manager.rules_ui');
@@ -40,7 +43,7 @@ class RulesUiEmbedTest extends RulesKernelTestBase {
   }
 
   /**
-   * @covers \Drupal\rules\Ui\RulesUiManager
+   * @cover \Drupal\rules\Ui\RulesUiManager
    */
   public function testUiManager() {
     $definition = $this->rulesUiManager->getDefinitions();

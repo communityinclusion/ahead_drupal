@@ -9,7 +9,7 @@
 
 namespace PHP_CodeSniffer\Exceptions;
 
-class RuntimeException extends \RuntimeException
+class RuntimeException extends \Exception
 {
 
 }//end class

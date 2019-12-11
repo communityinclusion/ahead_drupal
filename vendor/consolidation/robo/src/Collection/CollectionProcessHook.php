@@ -17,7 +17,7 @@ use Robo\Result;
 class CollectionProcessHook implements ProcessResultInterface
 {
     /**
-     * @param \Robo\Contract\TaskInterface|mixed $result
+     * @param \Robo\Result|\Robo\Contract\TaskInterface $result
      * @param \Consolidation\AnnotatedCommand\CommandData $commandData
      *
      * @return null|\Robo\Result

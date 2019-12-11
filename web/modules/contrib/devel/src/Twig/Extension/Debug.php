@@ -92,7 +92,7 @@ class Debug extends \Twig_Extension {
    */
   public function dump(\Twig_Environment $env, array $context, array $args = []) {
     if (!$env->isDebug()) {
-      return NULL;
+      return;
     }
 
     ob_start();
@@ -122,6 +122,8 @@ class Debug extends \Twig_Extension {
    *   An array of parameters passed to the template.
    * @param array $args
    *   An array of parameters passed the function.
+   *
+   * @return void
    *
    * @see \Drupal\devel\DevelDumperManager::message()
    */
@@ -181,7 +183,7 @@ class Debug extends \Twig_Extension {
    * Filters the Twig context variable.
    *
    * @param array $context
-   *   The Twig context.
+   *  The Twig context.
    *
    * @return array
    *   An array Twig context variables.

@@ -11,6 +11,7 @@ namespace Drupal\{{ module }};
 {% block use_class %}
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
+use Symfony\Component\Routing\Route;
 {% endblock %}
 
 {% block class_declaration %}
@@ -29,6 +30,7 @@ class {{ entity_class }}HtmlRouteProvider extends AdminHtmlRouteProvider {% endb
     $collection = parent::getRoutes($entity_type);
 
     // Provide your custom entity routes here.
+
     return $collection;
   }
 {% endblock %}

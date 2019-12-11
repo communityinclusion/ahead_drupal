@@ -79,7 +79,7 @@ class RulesComponentEditForm extends RulesComponentFormBase {
     // Also remove the temporarily stored component, it has been persisted now.
     $this->rulesUiHandler->clearTemporaryStorage();
 
-    $this->messenger()->addMessage($this->t('Rule component %label has been updated.', ['%label' => $this->entity->label()]));
+    drupal_set_message($this->t('Rule component %label has been updated.', ['%label' => $this->entity->label()]));
   }
 
   /**
@@ -87,7 +87,7 @@ class RulesComponentEditForm extends RulesComponentFormBase {
    */
   public function cancel(array $form, FormStateInterface $form_state) {
     $this->rulesUiHandler->clearTemporaryStorage();
-    $this->messenger()->addMessage($this->t('Canceled.'));
+    drupal_set_message($this->t('Canceled.'));
     $form_state->setRedirect('entity.rules_component.collection');
   }
 

@@ -7,11 +7,9 @@ trait ResourceExistenceChecker
      * Checks if the given input is a file or folder.
      *
      * @param string|string[] $resources
-     * @param string $type
-     *   Allowed values: "file", "dir", "fileAndDir"
+     * @param string $type "file", "dir", "fileAndDir"
      *
-     * @return bool
-     *   True if no errors were encountered otherwise false.
+     * @return bool True if no errors were encountered otherwise false.
      */
     protected function checkResources($resources, $type = 'fileAndDir')
     {
@@ -43,10 +41,8 @@ trait ResourceExistenceChecker
      *
      * It will print an error as well on the console.
      *
-     * @param string $resource
-     *   File or folder.
-     * @param string $type
-     *   Allowed values: "file", "dir", "fileAndDir".
+     * @param string $resource File or folder.
+     * @param string $type "file", "dir", "fileAndDir"
      *
      * @return bool
      */

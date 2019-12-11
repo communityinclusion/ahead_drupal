@@ -3,11 +3,11 @@
 namespace Drupal\Tests\rules\Unit\Integration\Action;
 
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 use Prophecy\Argument;
+use Psr\Log\LoggerInterface;
 
 /**
  * @coversDefaultClass \Drupal\rules\Plugin\RulesAction\SystemSendEmail
@@ -16,7 +16,7 @@ use Prophecy\Argument;
 class SystemSendEmailTest extends RulesIntegrationTestBase {
 
   /**
-   * @var \Drupal\Core\Logger\LoggerChannelInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Psr\Log\LoggerInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $logger;
 
@@ -35,15 +35,15 @@ class SystemSendEmailTest extends RulesIntegrationTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
-    $this->logger = $this->prophesize(LoggerChannelInterface::class);
+    $this->logger = $this->prophesize(LoggerInterface::class);
     $logger_factory = $this->prophesize(LoggerChannelFactoryInterface::class);
     $logger_factory->get('rules')->willReturn($this->logger->reveal());
 
     $this->mailManager = $this->prophesize(MailManagerInterface::class);
 
-    // @todo This is wrong, the logger is no factory.
+    // @todo this is wrong, the logger is no factory.
     $this->container->set('logger.factory', $logger_factory->reveal());
     $this->container->set('plugin.manager.mail', $this->mailManager->reveal());
 
@@ -86,7 +86,7 @@ class SystemSendEmailTest extends RulesIntegrationTestBase {
       ->shouldBeCalledTimes(1);
 
     $this->logger->notice(
-      // @todo Assert the actual message here, but PHPunit goes into an endless
+      // @todo assert the actual message here, but PHPunit goes into an endless
       // loop with that.
       Argument::any(), Argument::any()
     )->shouldBeCalledTimes(1);
@@ -121,7 +121,7 @@ class SystemSendEmailTest extends RulesIntegrationTestBase {
       ->shouldBeCalledTimes(1);
 
     $this->logger->notice(
-      // @todo Assert the actual message here, but PHPunit goes into an endless
+      // @todo assert the actual message here, but PHPunit goes into an endless
       // with that.
       Argument::any(), Argument::any()
     )->shouldBeCalledTimes(1);

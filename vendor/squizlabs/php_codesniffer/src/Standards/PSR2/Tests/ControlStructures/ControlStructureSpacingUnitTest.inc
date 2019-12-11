@@ -36,16 +36,6 @@ if (
     $settingsUpdated = FALSE;
 }
 
-if ( // comment
-    $something
-) {
-}
-
-while ( /* comment */
-    true
-) {
-}
-
 // phpcs:set PSR2.ControlStructures.ControlStructureSpacing requiredSpacesAfterOpen 1
 // phpcs:set PSR2.ControlStructures.ControlStructureSpacing requiredSpacesBeforeClose 1
 foreach ($something as $blah => $that) {}

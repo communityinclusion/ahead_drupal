@@ -31,10 +31,6 @@ class ApiGen extends BaseTask implements CommandInterface
      * @var string
      */
     protected $command;
-
-    /**
-     * @var string
-     */
     protected $operation = 'generate';
 
     /**
@@ -88,12 +84,10 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|\Traversable|string $arg
-     *   A single object or something traversable.
+     * @param array|Traversable|string $arg a single object or something traversable
      *
-     * @return array|\Traversable
-     *   The provided argument if it was already traversable, or the given
-     *   argument returned as a one-element array.
+     * @return array|Traversable the provided argument if it was already traversable, or the given
+     *                           argument returned as a one-element array
      */
     protected static function forceTraversable($arg)
     {
@@ -105,12 +99,10 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string $arg
-     *   A single argument or an array of multiple string values.
+     * @param array|string $arg a single argument or an array of multiple string values
      *
-     * @return string
-     *   A comma-separated string of all of the provided arguments, suitable as
-     *   a command-line "list" type argument for ApiGen.
+     * @return string a comma-separated string of all of the provided arguments, suitable
+     *                as a command-line "list" type argument for ApiGen
      */
     protected static function asList($arg)
     {
@@ -119,15 +111,13 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $val
-     *   An argument to be normalized.
-     * @param string $default
-     *   One of self::BOOL_YES or self::BOOK_NO if the provided value could not
-     *   deterministically be converted to a yes or no value.
+     * @param bool|string $val an argument to be normalized
+     * @param string $default one of self::BOOL_YES or self::BOOK_NO if the provided
+     *               value could not deterministically be converted to a
+     *               yes or no value
      *
-     * @return string
-     *   The given value as a command-line "yes|no" type of argument for ApiGen,
-     *   or the default value if none could be determined.
+     * @return string the given value as a command-line "yes|no" type of argument for ApiGen,
+     *                or the default value if none could be determined
      */
     protected static function asTextBool($val, $default)
     {
@@ -165,8 +155,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string|\Traversable $src
-     *   One or more source values.
+     * @param array|string|Traversable $src one or more source values
      *
      * @return $this
      */
@@ -190,8 +179,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string $exts
-     *   One or more extensions.
+     * @param array|string $exts one or more extensions
      *
      * @return $this
      */
@@ -202,8 +190,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string $exclude
-     *   One or more exclusions.
+     * @param array|string $exclude one or more exclusions
      *
      * @return $this
      */
@@ -216,8 +203,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string|\Traversable $path
-     *   One or more skip-doc-path values.
+     * @param array|string|Traversable $path one or more skip-doc-path values
      *
      * @return $this
      */
@@ -230,8 +216,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string|\Traversable $prefix
-     *   One or more skip-doc-prefix values.
+     * @param array|string|Traversable $prefix one or more skip-doc-prefix values
      *
      * @return $this
      */
@@ -244,8 +229,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string $charset
-     *   One or more charsets.
+     * @param array|string $charset one or more charsets
      *
      * @return $this
      */
@@ -322,8 +306,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string $tags
-     *   One or more supported html tags.
+     * @param array|string $tags one or more supported html tags
      *
      * @return $this
      */
@@ -345,8 +328,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string $types
-     *   One or more supported autocomplete types.
+     * @param array|string $types or more supported autocomplete types
      *
      * @return $this
      */
@@ -357,8 +339,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param array|string $levels
-     *   One or more access levels.
+     * @param array|string $levels one or more access levels
      *
      * @return $this
      */
@@ -369,8 +350,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param boolean|string $internal
-     *   'yes' or true if internal, 'no' or false if not.
+     * @param boolean|string $internal 'yes' or true if internal, 'no' or false if not
      *
      * @return $this
      */
@@ -381,9 +361,8 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $php
-     *   'yes' or true to generate documentation for internal php classes, 'no'
-     *   or false otherwise.
+     * @param boolean|string $php 'yes' or true to generate documentation for internal php classes,
+     *                            'no' or false otherwise
      *
      * @return $this
      */
@@ -394,9 +373,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $tree
-     *   'yes' or true to generate a tree view of classes, 'no' or false
-     *   otherwise.
+     * @param bool|string $tree 'yes' or true to generate a tree view of classes, 'no' or false otherwise
      *
      * @return $this
      */
@@ -407,9 +384,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $dep
-     *   'yes' or true to generate documentation for deprecated classes, 'no' or
-     *   false otherwise.
+     * @param bool|string $dep 'yes' or true to generate documentation for deprecated classes, 'no' or false otherwise
      *
      * @return $this
      */
@@ -420,8 +395,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $todo
-     *   'yes' or true to document tasks, 'no' or false otherwise.
+     * @param bool|string $todo 'yes' or true to document tasks, 'no' or false otherwise
      *
      * @return $this
      */
@@ -432,9 +406,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $src
-     *   'yes' or true to generate highlighted source code, 'no' or false
-     *   otherwise.
+     * @param bool|string $src 'yes' or true to generate highlighted source code, 'no' or false otherwise
      *
      * @return $this
      */
@@ -445,9 +417,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $zipped
-     *   'yes' or true to generate downloadable documentation, 'no' or false
-     *   otherwise.
+     * @param bool|string $zipped 'yes' or true to generate downloadable documentation, 'no' or false otherwise
      *
      * @return $this
      */
@@ -457,11 +427,6 @@ class ApiGen extends BaseTask implements CommandInterface
         return $this;
     }
 
-    /**
-     * @param string $path
-     *
-     * @return $this
-     */
     public function report($path)
     {
         $this->option('report', $path);
@@ -469,9 +434,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $wipeout
-     *   'yes' or true to clear out the destination directory, 'no' or false
-     *   otherwise.
+     * @param bool|string $wipeout 'yes' or true to clear out the destination directory, 'no' or false otherwise
      *
      * @return $this
      */
@@ -482,8 +445,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $quiet
-     *   'yes' or true for quiet, 'no' or false otherwise.
+     * @param bool|string $quiet 'yes' or true for quiet, 'no' or false otherwise
      *
      * @return $this
      */
@@ -494,8 +456,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $bar
-     *   'yes' or true to display a progress bar, 'no' or false otherwise.
+     * @param bool|string $bar 'yes' or true to display a progress bar, 'no' or false otherwise
      *
      * @return $this
      */
@@ -506,8 +467,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $colors
-     *   'yes' or true colorize the output, 'no' or false otherwise.
+     * @param bool|string $colors 'yes' or true colorize the output, 'no' or false otherwise
      *
      * @return $this
      */
@@ -518,8 +478,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $check
-     *   'yes' or true to check for updates, 'no' or false otherwise.
+     * @param bool|string $check 'yes' or true to check for updates, 'no' or false otherwise
      *
      * @return $this
      */
@@ -530,8 +489,7 @@ class ApiGen extends BaseTask implements CommandInterface
     }
 
     /**
-     * @param bool|string $debug
-     *   'yes' or true to enable debug mode, 'no' or false otherwise.
+     * @param bool|string $debug 'yes' or true to enable debug mode, 'no' or false otherwise
      *
      * @return $this
      */

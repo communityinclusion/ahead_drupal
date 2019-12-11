@@ -392,14 +392,3 @@ $paths = [
           Init::ROOT_DIR.'/тип'  => 'авто',
           Init::ROOT_DIR.'/цвет' => 'синий',
          ];
-
-$foo = [<<<JSON
-{
-}
-JSON
-       ];
-
-// Intentional syntax error.
-$a = [
-      'a' =>
-     ];

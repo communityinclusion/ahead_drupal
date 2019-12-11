@@ -28,7 +28,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   component. For example, 'conditions' or 'foo.conditions'. Required if
  *   'config_parameter' is omitted.
  *
- * @see \Drupal\rules\Ui\RulesUiDefinition::settings()
+ * @see RulesUiDefinition::settings
  */
 class RulesUiConfigHandler extends PluginBase implements RulesUiHandlerInterface, ContainerFactoryPluginInterface {
 
@@ -138,7 +138,7 @@ class RulesUiConfigHandler extends PluginBase implements RulesUiHandlerInterface
    * {@inheritdoc}
    */
   public function getBaseRouteUrl(array $options = []) {
-    // @see \Drupal\Core\Url::fromRouteMatch()
+    // See Url::fromRouteMatch()
     return Url::fromRoute(
       $this->pluginDefinition->base_route,
       $this->currentRouteMatch->getRawParameters()->all(),
@@ -150,7 +150,7 @@ class RulesUiConfigHandler extends PluginBase implements RulesUiHandlerInterface
    * {@inheritdoc}
    */
   public function getUrlFromRoute($route_suffix, array $route_parameters, array $options = []) {
-    // @see \Drupal\Core\Url::fromRouteMatch()
+    // See Url::fromRouteMatch()
     return Url::fromRoute(
       $this->pluginDefinition->base_route . '.' . $route_suffix,
       $route_parameters + $this->currentRouteMatch->getRawParameters()->all(),

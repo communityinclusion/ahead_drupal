@@ -42,9 +42,10 @@ class XmlReferenceDumper
     }
 
     /**
-     * @param int    $depth
-     * @param bool   $root      If the node is the root node
-     * @param string $namespace The namespace of the node
+     * @param NodeInterface $node
+     * @param int           $depth
+     * @param bool          $root      If the node is the root node
+     * @param string        $namespace The namespace of the node
      */
     private function writeNode(NodeInterface $node, $depth = 0, $root = false, $namespace = null)
     {
@@ -306,7 +307,5 @@ class XmlReferenceDumper
         if (\is_array($value)) {
             return implode(',', $value);
         }
-
-        return '';
     }
 }

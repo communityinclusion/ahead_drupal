@@ -92,12 +92,12 @@ class JsonDescriptor extends Descriptor
 
     /**
      * Writes data as json.
+     *
+     * @return array|string
      */
     private function writeData(array $data, array $options)
     {
-        $flags = isset($options['json_encoding']) ? $options['json_encoding'] : 0;
-
-        $this->write(json_encode($data, $flags));
+        $this->write(json_encode($data, isset($options['json_encoding']) ? $options['json_encoding'] : 0));
     }
 
     /**

@@ -61,7 +61,7 @@ class WebformRating extends Range {
     static::setAttributes($element, ['form-webform-rating']);
 
     // If value is an empty string set it the min.
-    if (isset($element['#attributes']['value']) && $element['#attributes']['value'] === '') {
+    if ($element['#attributes']['value'] == '') {
       $element['#attributes']['value'] = $element['#attributes']['min'];
     }
 

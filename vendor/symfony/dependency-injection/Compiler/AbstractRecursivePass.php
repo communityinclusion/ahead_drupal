@@ -81,7 +81,8 @@ abstract class AbstractRecursivePass implements CompilerPassInterface
     }
 
     /**
-     * @param bool $required
+     * @param Definition $definition
+     * @param bool       $required
      *
      * @return \ReflectionFunctionAbstract|null
      *
@@ -89,10 +90,6 @@ abstract class AbstractRecursivePass implements CompilerPassInterface
      */
     protected function getConstructor(Definition $definition, $required)
     {
-        if ($definition->isSynthetic()) {
-            return null;
-        }
-
         if (\is_string($factory = $definition->getFactory())) {
             if (!\function_exists($factory)) {
                 throw new RuntimeException(sprintf('Invalid service "%s": function "%s" does not exist.', $this->currentId, $factory));
@@ -140,7 +137,8 @@ abstract class AbstractRecursivePass implements CompilerPassInterface
     }
 
     /**
-     * @param string $method
+     * @param Definition $definition
+     * @param string     $method
      *
      * @throws RuntimeException
      *

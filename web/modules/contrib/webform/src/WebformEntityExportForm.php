@@ -2,6 +2,7 @@
 
 namespace Drupal\webform;
 
+use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Utility\WebformYaml;
@@ -61,7 +62,8 @@ class WebformEntityExportForm extends EntityForm {
   protected function getYaml() {
     $config_name = $this->getConfigName();
     $data = $this->config($config_name)->getRawData();
-    return WebformYaml::encode($data);
+    $yaml = Yaml::encode($data);
+    return WebformYaml::tidy($yaml);
   }
 
   /**

@@ -67,7 +67,7 @@ EOF
 
             $loadedClass = 123;
 
-            new ClassExistenceResource('MissingFooClass', false);
+            $res = new ClassExistenceResource('MissingFooClass', false);
 
             $this->assertSame(123, $loadedClass);
         } finally {
@@ -81,11 +81,12 @@ EOF
         $this->assertTrue($res->isFresh(time()));
     }
 
+    /**
+     * @expectedException \ReflectionException
+     * @expectedExceptionMessage Class Symfony\Component\Config\Tests\Fixtures\MissingParent not found
+     */
     public function testBadParentWithNoTimestamp()
     {
-        $this->expectException('ReflectionException');
-        $this->expectExceptionMessage('Class "Symfony\Component\Config\Tests\Fixtures\MissingParent" not found while loading "Symfony\Component\Config\Tests\Fixtures\BadParent".');
-
         $res = new ClassExistenceResource(BadParent::class, false);
         $res->isFresh(0);
     }

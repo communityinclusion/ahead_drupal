@@ -7,14 +7,17 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\rules\Context\ContextDefinition;
 use Drupal\rules\Engine\RulesComponent;
-use Drupal\Tests\rules\Kernel\RulesKernelTestBase;
+use Drupal\Tests\rules\Kernel\RulesDrupalTestBase;
 
 /**
  * Tests that data selector autocomplete results work correctly.
  *
  * @group Rules
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class AutocompleteTest extends RulesKernelTestBase {
+class AutocompleteTest extends RulesDrupalTestBase {
 
   /**
    * {@inheritdoc}
@@ -24,17 +27,10 @@ class AutocompleteTest extends RulesKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
 
     $this->installEntitySchema('user');
-    $this->installEntitySchema('node');
-
-    // The global CurrentUserContext doesn't work properly without a
-    // fully-installed user module.
-    // @see https://www.drupal.org/project/rules/issues/2989417
-    $this->container->get('module_handler')->loadInclude('user', 'install');
-    user_install();
 
     $entity_type_manager = $this->container->get('entity_type.manager');
     $entity_type_manager->getStorage('node_type')
@@ -147,11 +143,13 @@ class AutocompleteTest extends RulesKernelTestBase {
       ],
       [
         'value' => 'node.nid',
-        'label' => 'node.nid (ID)',
+        // @todo Remove this once Drupal 8.0.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 5), '8.1.0') === -1 ? 'node.nid (Node ID)' : 'node.nid (ID)',
       ],
       [
         'value' => 'node.nid.',
-        'label' => 'node.nid... (ID)',
+        // @todo Remove this once Drupal 8.0.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 5), '8.1.0') === -1 ? 'node.nid... (Node ID)' : 'node.nid... (ID)',
       ],
       [
         'value' => 'node.promote',
@@ -162,7 +160,11 @@ class AutocompleteTest extends RulesKernelTestBase {
         'label' => 'node.promote... (Promoted to front page)',
       ],
     ],
-    [
+    // The "Default revision" flag was added in core 8.5.x but not 8.4.x.
+    // Use tertiary conditional to either add two items or add none.
+    // @todo Remove this conditional check when 8.4.x is no longer supported.
+    // @see https://www.drupal.org/project/rules/issues/2936679
+    (version_compare(substr(\Drupal::VERSION, 0, 3), '8.5', '>=')) ? [
       [
         'value' => 'node.revision_default',
         'label' => 'node.revision_default (Default revision)',
@@ -171,7 +173,7 @@ class AutocompleteTest extends RulesKernelTestBase {
         'value' => 'node.revision_default.',
         'label' => 'node.revision_default... (Default revision)',
       ],
-    ],
+    ] : [],
     [
       [
         'value' => 'node.revision_log',
@@ -183,11 +185,15 @@ class AutocompleteTest extends RulesKernelTestBase {
       ],
       [
         'value' => 'node.revision_timestamp',
-        'label' => 'node.revision_timestamp (Revision create time)',
+        // @todo In Drupal 8.4.x the text changed from (Revision timestamp) to
+        // (Revision create time). Remove this once 8.3.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 3), '8.4', '>=') ? 'node.revision_timestamp (Revision create time)' : 'node.revision_timestamp (Revision timestamp)',
       ],
       [
         'value' => 'node.revision_timestamp.',
-        'label' => 'node.revision_timestamp... (Revision create time)',
+        // @todo In Drupal 8.4.x the text changed from (Revision timestamp) to
+        // (Revision create time). Remove this once 8.3.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 3), '8.4', '>=') ? 'node.revision_timestamp... (Revision create time)' : 'node.revision_timestamp... (Revision timestamp)',
       ],
       [
         'value' => 'node.revision_translation_affected',
@@ -199,19 +205,27 @@ class AutocompleteTest extends RulesKernelTestBase {
       ],
       [
         'value' => 'node.revision_uid',
-        'label' => 'node.revision_uid (Revision user)',
+        // @todo In Drupal 8.4.x the text changed from (Revision user ID) to
+        // (Revision user). Remove this once 8.3.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 3), '8.4', '>=') ? 'node.revision_uid (Revision user)' : 'node.revision_uid (Revision user ID)',
       ],
       [
         'value' => 'node.revision_uid.',
-        'label' => 'node.revision_uid... (Revision user)',
+        // @todo In Drupal 8.4.x the text changed from (Revision user ID) to
+        // (Revision user). Remove this once 8.3.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 3), '8.4', '>=') ? 'node.revision_uid... (Revision user)' : 'node.revision_uid... (Revision user ID)',
       ],
       [
         'value' => 'node.status',
-        'label' => 'node.status (Published)',
+        // In Core 8.4 the text has changed from Publishing Status to Published.
+        // @todo Remove this version checking when 8.3.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 3), '8.4', '>=') ? 'node.status (Published)' : 'node.status (Publishing status)',
       ],
       [
         'value' => 'node.status.',
-        'label' => 'node.status... (Published)',
+        // In Core 8.4 the text has changed from Publishing Status to Published.
+        // @todo Remove this version checking when 8.3.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 3), '8.4', '>=') ? 'node.status... (Published)' : 'node.status... (Publishing status)',
       ],
       [
         'value' => 'node.sticky',
@@ -231,11 +245,13 @@ class AutocompleteTest extends RulesKernelTestBase {
       ],
       [
         'value' => 'node.type',
-        'label' => 'node.type (Content type)',
+        // @todo Remove this once Drupal 8.0.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 5), '8.1.0') === -1 ? 'node.type (Type)' : 'node.type (Content type)',
       ],
       [
         'value' => 'node.type.',
-        'label' => 'node.type... (Content type)',
+        // @todo Remove this once Drupal 8.0.x is unsupported.
+        'label' => version_compare(substr(\Drupal::VERSION, 0, 5), '8.1.0') === -1 ? 'node.type... (Type)' : 'node.type... (Content type)',
       ],
       [
         'value' => 'node.uid',
@@ -262,7 +278,7 @@ class AutocompleteTest extends RulesKernelTestBase {
         'label' => 'node.vid... (Revision ID)',
       ],
     ]);
-    // Because this is a huge array, run the assertion per entry as that is
+    // Because this is a huge array run the assertion per entry because that is
     // easier for debugging.
     foreach ($expected as $index => $entry) {
       $this->assertSame($entry, $results[$index]);

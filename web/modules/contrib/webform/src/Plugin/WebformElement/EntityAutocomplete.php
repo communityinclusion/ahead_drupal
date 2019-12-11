@@ -39,11 +39,6 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
    * {@inheritdoc}
    */
   public function setDefaultValue(array &$element) {
-    // Make sure tags or multiple is used.
-    if (!empty($element['#tags']) && isset($element['#multiple'])) {
-      unset($element['#multiple']);
-    }
-
     if (isset($element['#multiple'])) {
       $element['#default_value'] = (isset($element['#default_value'])) ? (array) $element['#default_value'] : NULL;
       return;
@@ -95,6 +90,7 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
    */
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
+    $element['#after_build'][] = [get_class($this), 'afterBuildEntityAutocomplete'];
 
     // Remove maxlength.
     $element['#maxlength'] = NULL;
@@ -109,21 +105,19 @@ class EntityAutocomplete extends WebformElementBase implements WebformElementEnt
   }
 
   /**
-   * {@inheritdoc}
+   * Form API callback. After build set the #element_validate handler.
    */
-  protected function prepareElementValidateCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
-    parent::prepareElementValidateCallbacks($element, $webform_submission);
+  public static function afterBuildEntityAutocomplete(array $element, FormStateInterface $form_state) {
     $element['#element_validate'][] = ['\Drupal\webform\Plugin\WebformElement\EntityAutocomplete', 'validateEntityAutocomplete'];
+    return $element;
   }
 
   /**
    * Form API callback. Remove target id property and create an array of entity ids.
    */
   public static function validateEntityAutocomplete(array &$element, FormStateInterface $form_state) {
-    // Must use ::getValue($element['#parents']) because $element['#value'] is
-    // not being updated.
-    // @see \Drupal\Core\Entity\Element\EntityAutocomplete::validateEntityAutocomplete
-    $value = $form_state->getValue($element['#parents']);
+    $name = $element['#name'];
+    $value = $form_state->getValue($name);
     if (empty($value) || !is_array($value)) {
       return;
     }

@@ -42,7 +42,7 @@ class DataFilterTest extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->typedDataManager = $this->container->get('typed_data_manager');
     $this->dataFilterManager = $this->container->get('plugin.manager.typed_data_filter');

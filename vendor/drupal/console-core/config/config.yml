@@ -1,8 +1,4 @@
 application:
-  statistics:
-    enabled: false
-    last-attempted: ~
-    times-attempted: 0
   language: 'en'
   autowire:
     commands:
@@ -21,14 +17,11 @@ application:
     defaults: ~
     mappings: ~
   languages:
-    ar: 'العَرَبِيَّة‎'
     en: 'English'
     es: 'Español'
     ca: 'Català'
-    fa-ir: 'فارسی'
     fr: 'Français'
     ko: '한국어'
-    he: 'בעברית'
     hi: 'हिन्दी'
     hu: 'Magyar'
     id: 'Bahasa Indonesia'
@@ -40,7 +33,5 @@ application:
     ru: 'pусский язык'
     tl: 'Tagalog'
     vn: 'Tiếng Việt'
-    ua: 'українська'
-    ur: 'اُردُو'
     zh-hans: '简体中文'
     zh-hant: '繁體中文'

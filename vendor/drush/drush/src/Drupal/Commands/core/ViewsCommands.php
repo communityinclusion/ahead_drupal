@@ -97,8 +97,8 @@ class ViewsCommands extends DrushCommands
             // Convert boolean values into a string to print.
             if (is_bool($value)) {
                 $value = $value ? 'TRUE' : 'FALSE';
-            } elseif (is_string($value)) {
-                // Wrap string values in quotes.
+            } // Wrap string values in quotes.
+            elseif (is_string($value)) {
                 $value = "\"$value\"";
             }
             $this->logger()->success(dt('!setting set to !value', [

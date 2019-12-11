@@ -15,6 +15,7 @@ use PHP_CodeSniffer\Files\File;
 class ForEachLoopDeclarationSniff implements Sniff
 {
 
+
     /**
      * How many spaces should follow the opening bracket.
      *

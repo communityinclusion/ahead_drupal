@@ -17,11 +17,6 @@
   color: #ccc;
 }
 
-#toolbar-item-administration-search-tray label {
-  background: transparent;
-  color: #ccc !important;
-}
-
 .adminimal-admin-toolbar .toolbar-tray .toolbar-menu li {
   background: #333;
 }
@@ -68,12 +63,15 @@
   color: #fff !important;
 }
 
-.adminimal .toolbar .toolbar-bar .toolbar-tab:not(.workspaces-toolbar-tab) > .toolbar-item {
-  color: #bebebe;
+.adminimal-admin-toolbar .toolbar .toolbar-bar .toolbar-tab > .toolbar-item {
   font-weight: 600;
 }
 
-.adminimal .toolbar .toolbar-bar .toolbar-tab:not(.workspaces-toolbar-tab) > .toolbar-item:hover {
+.adminimal-admin-toolbar .toolbar .toolbar-bar .toolbar-item {
+  color: #bebebe;
+}
+
+.adminimal-admin-toolbar .toolbar .toolbar-bar .toolbar-tab > .toolbar-item:hover {
   background-image: none;
   background-color: #2d2d2d;
   color: #fff;
@@ -83,7 +81,7 @@
 .adminimal-admin-toolbar .toolbar .toolbar-bar .toolbar-tab > .toolbar-item.is-active,
 .adminimal-admin-toolbar .toolbar .toolbar-bar .toolbar-tab > .toolbar-item:focus {
   background-image: none;
-  background-color: rgba(255, 255, 255, .03);
+  background-color: #333;
   text-decoration: none;
 }
 
@@ -107,15 +105,12 @@
 
 .adminimal-admin-toolbar .toolbar .toolbar-tray {
   background-color: #333;
+  box-shadow: -2px 2px 12px rgba(0,0,0,0.85);
 }
 
 .adminimal-admin-toolbar .toolbar .toolbar-tray-horizontal {
   border-bottom: 1px solid #333;
   box-shadow: none;
-}
-
-.adminimal-admin-toolbar .toolbar .toolbar-tray-vertical {
-  box-shadow: -2px 2px 12px rgba(0,0,0,0.85);
 }
 
 .adminimal-admin-toolbar .toolbar .toolbar-toggle-orientation {

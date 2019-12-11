@@ -10,6 +10,7 @@ namespace Drupal\Console\Command\Generate;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Drupal\Console\Command\Shared\ServicesTrait;
 use Drupal\Console\Command\Shared\ConfirmationTrait;
 use Drupal\Console\Command\Shared\ModuleTrait;
 use Drupal\Console\Generator\AjaxCommandGenerator;
@@ -26,6 +27,7 @@ use Drupal\Console\Utils\Validator;
 class AjaxCommand extends Command
 {
     use ModuleTrait;
+    use ServicesTrait;
     use ConfirmationTrait;
 
     /**
@@ -115,7 +117,7 @@ class AjaxCommand extends Command
             return 1;
         }
 
-        $module = $this->validateModule($input->getOption('module'));
+        $module = $input->getOption('module');
         $class = $this->validator->validateClassName($input->getOption('class'));
         $method = $input->getOption('method');
         $js_name = $input->getOption('js-name');

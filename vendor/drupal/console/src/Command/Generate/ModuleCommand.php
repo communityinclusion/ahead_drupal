@@ -7,7 +7,6 @@
 
 namespace Drupal\Console\Command\Generate;
 
-use Drupal\Console\Utils\Site;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +17,6 @@ use Drupal\Console\Utils\Validator;
 use Drupal\Console\Core\Utils\StringConverter;
 use Drupal\Console\Utils\DrupalApi;
 use Webmozart\PathUtil\Path;
-use Drupal\Console\Core\Utils\ChainQueue;
 
 class ModuleCommand extends Command
 {
@@ -54,16 +52,6 @@ class ModuleCommand extends Command
      */
     protected $twigtemplate;
 
-    /**
-     * @var ChainQueue
-     */
-    protected $chainQueue;
-
-    /**
-     * @var Site
-     */
-    protected $site;
-
 
     /**
      * ModuleCommand constructor.
@@ -73,8 +61,6 @@ class ModuleCommand extends Command
      * @param $appRoot
      * @param StringConverter $stringConverter
      * @param DrupalApi       $drupalApi
-     * @param ChainQueue      $chainQueue
-     * @param Site            $site
      * @param $twigtemplate
      */
     public function __construct(
@@ -83,8 +69,6 @@ class ModuleCommand extends Command
         $appRoot,
         StringConverter $stringConverter,
         DrupalApi $drupalApi,
-        ChainQueue $chainQueue,
-        Site $site,
         $twigtemplate = null
     ) {
         $this->generator = $generator;
@@ -92,8 +76,6 @@ class ModuleCommand extends Command
         $this->appRoot = $appRoot;
         $this->stringConverter = $stringConverter;
         $this->drupalApi = $drupalApi;
-        $this->chainQueue = $chainQueue;
-        $this->site = $site;
         $this->twigtemplate = $twigtemplate;
         parent::__construct();
     }
@@ -198,21 +180,14 @@ class ModuleCommand extends Command
         // Get the profile path and define a profile path if it is null
         // Check that it is an absolute path or otherwise create an absolute path using appRoot
         $modulePath = $input->getOption('module-path');
-        if(is_null($modulePath)) {
-            $uri = $this->site->getMultisiteName($input);
-            $defaultModulePath = 'modules/custom';
-            $modulePath = $this->site->multisiteMode($uri)? 'sites/'.$this->site->getMultisiteDir($uri).'/'.$defaultModulePath : $defaultModulePath;
-        }
+        $modulePath = $modulePath == null ? 'modules/custom' : $modulePath;
         $modulePath = Path::isAbsolute($modulePath) ? $modulePath : Path::makeAbsolute($modulePath, $this->appRoot);
         $modulePath = $this->validator->validateModulePath($modulePath, true);
 
-        $machineName = $input->getOption('machine-name') ?
-            $this->validator->validateMachineName($input->getOption('machine-name'))
-            :$this->stringConverter->createMachineName($module);
-
-        $description = $input->getOption('description')?:$this->trans('commands.generate.module.suggestions.my-awesome-module');
-        $core = $input->getOption('core')?:'8.x';
-        $package = $input->getOption('package')?:'Custom';
+        $machineName = $this->validator->validateMachineName($input->getOption('machine-name'));
+        $description = $input->getOption('description');
+        $core = $input->getOption('core');
+        $package = $input->getOption('package');
         $moduleFile = $input->getOption('module-file');
         $featuresBundle = $input->getOption('features-bundle');
         $composer = $input->getOption('composer');
@@ -238,28 +213,6 @@ class ModuleCommand extends Command
             'test' => $test,
             'twig_template' => $twigTemplate,
         ]);
-
-        if ($composer) {
-            $this->chainQueue
-              ->addCommand(
-                'generate:composer', [
-                '--module' => $machineName,
-                '--name' => 'drupal/' . $machineName,
-                '--type' => 'drupal-module',
-                '--description' => $description,
-                '--keywords' => 'Drupal',
-                '--license' => 'GPL-2.0+',
-                '--homepage' => 'https://www.drupal.org/project/' . $machineName,
-                '--minimum-stability' => 'dev',
-                '--support' => [
-                  '"channel":"issues", "url":"https://www.drupal.org/project/issues/' . $machineName . '"',
-                  '"channel":"source", "url":"http://cgit.drupalcode.org/' . $machineName . '"',
-                ],
-                '--no-interaction' => 'yes',
-              ],
-                false
-              );
-        }
 
         return 0;
     }
@@ -295,7 +248,7 @@ class ModuleCommand extends Command
 
         try {
             $machineName = $input->getOption('machine-name') ?
-                $validator->validateModuleName(
+              $this->validator->validateModuleName(
                   $input->getOption('machine-name')
               ) : null;
         } catch (\Exception $error) {
@@ -315,11 +268,9 @@ class ModuleCommand extends Command
 
         $modulePath = $input->getOption('module-path');
         if (!$modulePath) {
-            $uri = $this->site->getMultisiteName($input);
-            $defaultModulePath = 'modules/custom';
             $modulePath = $this->getIo()->ask(
                 $this->trans('commands.generate.module.questions.module-path'),
-                $this->site->multisiteMode($uri)? 'sites/'.$this->site->getMultisiteDir($uri).'/'.$defaultModulePath : $defaultModulePath,
+                'modules/custom',
                 function ($modulePath) use ($machineName) {
                     $fullPath = Path::isAbsolute($modulePath) ? $modulePath : Path::makeAbsolute($modulePath, $this->appRoot);
                     $fullPath = $fullPath.'/'.$machineName;

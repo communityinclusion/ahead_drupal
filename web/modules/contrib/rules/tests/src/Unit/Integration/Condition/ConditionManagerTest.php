@@ -8,13 +8,12 @@ use Drupal\Tests\rules\Unit\Integration\RulesIntegrationTestBase;
 /**
  * Tests the Rules condition manager.
  *
- * @coversDefaultClass \Drupal\rules\Core\ConditionManager
  * @group RulesCondition
  */
 class ConditionManagerTest extends RulesIntegrationTestBase {
 
   /**
-   * @covers ::getDiscovery
+   * @cover getDiscovery()
    */
   public function testContextDefinitionAnnotations() {
     $definitions = $this->conditionManager->getDefinitions();

@@ -2,8 +2,6 @@
 
 namespace Drupal\webform\Plugin\WebformElement;
 
-use Drupal\webform\Plugin\WebformElementOtherInterface;
-
 /**
  * Provides a 'buttons_other' element.
  *
@@ -14,4 +12,4 @@ use Drupal\webform\Plugin\WebformElementOtherInterface;
  *   category = @Translation("Options elements"),
  * )
  */
-class WebformButtonsOther extends OptionsBase implements WebformElementOtherInterface {}
+class WebformButtonsOther extends OptionsBase implements WebformOtherInterface {}

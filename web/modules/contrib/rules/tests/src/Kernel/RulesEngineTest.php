@@ -12,21 +12,18 @@ use Drupal\rules\Engine\ExecutionState;
  * Test using the Rules API to create and evaluate rules.
  *
  * @group Rules
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class RulesEngineTest extends RulesKernelTestBase {
+class RulesEngineTest extends RulesDrupalTestBase {
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->installEntitySchema('user');
-
-    // The global CurrentUserContext doesn't work properly without a
-    // fully-installed user module.
-    // @see https://www.drupal.org/project/rules/issues/2989417
-    $this->container->get('module_handler')->loadInclude('user', 'install');
-    user_install();
   }
 
   /**
@@ -131,14 +128,14 @@ class RulesEngineTest extends RulesKernelTestBase {
 
     // Check that the newly named variable exists and has the provided value.
     $variable = $state->getVariable('newname');
-    $this->assertEquals($variable->getValue(), 'test value');
+    $this->assertEqual($variable->getValue(), 'test value');
   }
 
   /**
    * Tests that multiple actions can consume and provide context variables.
    */
   public function testActionProvidedContext() {
-    // @todo Convert the test to make use of actions instead of conditions.
+    // @todo: Convert the test to make use of actions instead of conditions.
     $rule = $this->expressionManager->createRule();
 
     // The condition provides a "provided_text" variable.
@@ -161,9 +158,9 @@ class RulesEngineTest extends RulesKernelTestBase {
 
     // Check that the created variables exists and have the provided values.
     $concatenated = $state->getVariable('concatenated');
-    $this->assertEquals($concatenated->getValue(), 'test valuetest value');
+    $this->assertEqual($concatenated->getValue(), 'test valuetest value');
     $concatenated2 = $state->getVariable('concatenated2');
-    $this->assertEquals($concatenated2->getValue(), 'test valuetest valuetest valuetest value');
+    $this->assertEqual($concatenated2->getValue(), 'test valuetest valuetest valuetest value');
   }
 
   /**

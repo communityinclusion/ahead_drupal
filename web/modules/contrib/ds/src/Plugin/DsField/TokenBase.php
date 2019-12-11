@@ -59,11 +59,6 @@ abstract class TokenBase extends DsFieldBase {
     $langcode = $this->languageManager->getCurrentLanguage()->getId();
     $value = $this->token->replace($content, [$this->getEntityTypeId() => $this->entity()], ['langcode' => $langcode, 'clear' => TRUE]);
 
-    // Empty string in token fields treated as empty field.
-    if ($value === '') {
-      return [];
-    }
-
     return [
       '#type' => 'processed_text',
       '#text' => $value,

@@ -2,7 +2,6 @@
 
 namespace Drupal\typed_data;
 
-use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\Core\TypedData\TypedDataTrait;
@@ -10,7 +9,7 @@ use Drupal\Core\TypedData\TypedDataTrait;
 /**
  * Base class for data filters.
  */
-abstract class DataFilterBase extends PluginBase implements DataFilterInterface {
+abstract class DataFilterBase implements DataFilterInterface {
 
   use TypedDataTrait;
   use StringTranslationTrait;
@@ -30,10 +29,9 @@ abstract class DataFilterBase extends PluginBase implements DataFilterInterface 
   protected $pluginDefinition;
 
   /**
-   * {@inheritdoc}
+   * Constructs the object.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct($configuration, $plugin_id, $plugin_definition) {
     $this->filterId = $plugin_id;
     $this->pluginDefinition = $plugin_definition;
   }

@@ -7,14 +7,14 @@
 
 namespace Drupal\Console\Command\Site;
 
-use Drupal\Console\Core\Command\Command;
-use Drupal\Console\Core\Utils\ChainQueue;
-use Drupal\Core\State\StateInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Drupal\Console\Core\Command\ContainerAwareCommand;
+use Drupal\Core\State\StateInterface;
+use Drupal\Console\Core\Utils\ChainQueue;
 
-class MaintenanceCommand extends Command
+class MaintenanceCommand extends ContainerAwareCommand
 {
     /**
      * @var StateInterface
@@ -66,7 +66,7 @@ class MaintenanceCommand extends Command
             $this->state->set($stateName, true);
             $modeMessage = 'commands.site.maintenance.messages.maintenance-on';
         }
-        else if ('OFF' === strtoupper($mode)) {
+        if ('OFF' === strtoupper($mode)) {
             $this->state->set($stateName, false);
             $modeMessage = 'commands.site.maintenance.messages.maintenance-off';
         }

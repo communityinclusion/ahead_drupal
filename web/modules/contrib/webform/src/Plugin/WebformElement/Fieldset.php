@@ -23,7 +23,6 @@ class Fieldset extends ContainerBase {
       // Description/Help.
       'help' => '',
       'help_title' => '',
-      'help_display' => '',
       'description' => '',
       'more' => '',
       'more_title' => '',

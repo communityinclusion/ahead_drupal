@@ -7,18 +7,18 @@
 
 namespace Drupal\Console\Command\Debug;
 
-use Drupal\Console\Core\Command\Command;
-use Drupal\views\Views;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Drupal\Console\Core\Command\ContainerAwareCommand;
+use Drupal\views\Views;
 
 /**
  * Class ViewsPluginsCommand
  *
  * @package Drupal\Console\Command\Debug
  */
-class ViewsPluginsCommand extends Command
+class ViewsPluginsCommand extends ContainerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -63,7 +63,7 @@ class ViewsPluginsCommand extends Command
             foreach ($plugin['views'] as $plugin_name => $view) {
                 $views[] = $view;
             }
-            $rows[] = [$plugin['type'], $plugin['title'], $plugin['provider'], implode(',', $views)];
+            $rows[] = [$plugin['type'], $plugin['title'], $plugin['provider'], implode(",", $views)];
         }
 
         // Sort rows by field name.

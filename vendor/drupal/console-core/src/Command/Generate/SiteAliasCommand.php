@@ -47,7 +47,6 @@ class SiteAliasCommand extends Command
     private $extraOptions = [
         'ssh' => [
             'none' => '',
-            'tty' => '-tt',
             'vagrant' => '-o PasswordAuthentication=no -i ~/.vagrant.d/insecure_private_key',
         ],
         'container' => [
@@ -131,12 +130,6 @@ class SiteAliasCommand extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 $this->trans('commands.generate.site.alias.options.port')
-            )
-            ->addOption(
-                'drupal-console-binary',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                $this->trans('commands.generate.site.alias.options.drupal-console-binary')
             )
             ->addOption(
                 'extra-options',
@@ -239,19 +232,6 @@ class SiteAliasCommand extends Command
         }
 
         if ($type !== 'local') {
-            $drupalConsoleBinary = $input->getOption('drupal-console-binary');
-            if (!$drupalConsoleBinary) {
-
-                $drupalConsoleBinary = $this->getIo()->askEmpty(
-                    $this->trans(
-                        'commands.generate.site.alias.questions.drupal-console-binary'
-                    ),
-                    'drupal'
-                );
-
-                $input->setOption('drupal-console-binary', $drupalConsoleBinary);
-            }
-
             $extraOptions = $input->getOption('extra-options');
             if (!$extraOptions) {
                 $options = array_values($this->extraOptions[$type]);
@@ -328,7 +308,6 @@ class SiteAliasCommand extends Command
                 'environment' => $input->getOption('environment'),
                 'type' => $input->getOption('type'),
                 'extra_options' => $input->getOption('extra-options'),
-                'drupal_console_binary' => $input->getOption('drupal-console-binary'),
                 'root' => $input->getOption('composer-root'),
                 'uri' => $input->getOption('site-uri'),
                 'port' => $input->getOption('port'),

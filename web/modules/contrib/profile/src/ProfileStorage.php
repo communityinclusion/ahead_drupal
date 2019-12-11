@@ -13,45 +13,34 @@ class ProfileStorage extends SqlContentEntityStorage implements ProfileStorageIn
   /**
    * {@inheritdoc}
    */
-  public function loadMultipleByUser(AccountInterface $account, $profile_type_id, $published = TRUE) {
-    $query = $this->getQuery();
-    $query
-      ->condition('uid', $account->id())
-      ->condition('type', $profile_type_id)
-      ->condition('status', $published)
-      ->sort('is_default', 'DESC')
-      ->sort('profile_id', 'DESC')
-      ->accessCheck(FALSE);
-    $result = $query->execute();
-
-    return $result ? $this->loadMultiple($result) : [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function loadByUser(AccountInterface $account, $profile_type_id) {
-    $query = $this->getQuery();
-    $query
-      ->condition('uid', $account->id())
-      ->condition('type', $profile_type_id)
-      ->condition('status', TRUE)
-      ->sort('is_default', 'DESC')
-      ->sort('profile_id', 'DESC')
-      ->range(0, 1)
-      ->accessCheck(FALSE);
-    $result = $query->execute();
-
-    return $result ? $this->load(reset($result)) : NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function loadDefaultByUser(AccountInterface $account, $profile_type_id) {
+  public function loadByUser(AccountInterface $account, $profile_type, $active = TRUE) {
     $result = $this->loadByProperties([
       'uid' => $account->id(),
-      'type' => $profile_type_id,
+      'type' => $profile_type,
+      'status' => $active,
+    ]);
+
+    return !empty($result) ? reset($result) : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadMultipleByUser(AccountInterface $account, $profile_type, $active = TRUE) {
+    return $this->loadByProperties([
+      'uid' => $account->id(),
+      'type' => $profile_type,
+      'status' => $active,
+    ]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadDefaultByUser(AccountInterface $account, $profile_type) {
+    $result = $this->loadByProperties([
+      'uid' => $account->id(),
+      'type' => $profile_type,
       'status' => TRUE,
       'is_default' => TRUE,
     ]);

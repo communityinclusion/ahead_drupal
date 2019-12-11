@@ -8,8 +8,11 @@ use Drupal\rules\Context\ContextConfig;
  * Tests that action specific config schema works.
  *
  * @group Rules
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class ConfigSchemaTest extends RulesKernelTestBase {
+class ConfigSchemaTest extends RulesDrupalTestBase {
 
   /**
    * The entity storage for Rules config entities.
@@ -21,7 +24,7 @@ class ConfigSchemaTest extends RulesKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
 
     $this->storage = $this->container->get('entity_type.manager')->getStorage('rules_component');
@@ -29,8 +32,6 @@ class ConfigSchemaTest extends RulesKernelTestBase {
 
   /**
    * Make sure the system send email config schema works on saving.
-   *
-   * @doesNotPerformAssertions
    */
   public function testMailActionContextSchema() {
     $rule = $this->expressionManager

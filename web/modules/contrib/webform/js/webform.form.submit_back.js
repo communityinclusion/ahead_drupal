@@ -11,9 +11,7 @@
   if (window.history && window.history.pushState) {
     window.history.pushState('', null, '');
     window.onpopstate = function (event) {
-      $('#edit-wizard-prev, #edit-preview-prev, .webform-button--previous')
-        .slice(0, 1)
-        .click();
+      $('#edit-wizard-prev, #edit-preview-prev').click();
     };
   }
 

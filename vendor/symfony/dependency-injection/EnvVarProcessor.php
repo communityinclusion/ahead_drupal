@@ -65,7 +65,7 @@ class EnvVarProcessor implements EnvVarProcessorInterface
 
         if (false !== $i || 'string' !== $prefix) {
             if (null === $env = $getEnv($name)) {
-                return null;
+                return;
             }
         } elseif (isset($_ENV[$name])) {
             $env = $_ENV[$name];
@@ -77,7 +77,7 @@ class EnvVarProcessor implements EnvVarProcessorInterface
             }
 
             if (null === $env = $this->container->getParameter("env($name)")) {
-                return null;
+                return;
             }
         }
 

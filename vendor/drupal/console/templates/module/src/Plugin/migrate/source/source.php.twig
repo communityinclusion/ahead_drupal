@@ -17,8 +17,7 @@ use Drupal\migrate\Plugin\migrate\source\SqlBase;
  * Provides a '{{class_name}}' migrate source.
  *
  * @MigrateSource(
- *  id = "{{plugin_id}}",
- *  source_module = "{{module}}"
+ *  id = "{{plugin_id}}"
  * )
  */
 class {{class_name}} extends SqlBase {% endblock %}
@@ -27,11 +26,11 @@ class {{class_name}} extends SqlBase {% endblock %}
    * {@inheritdoc}
    */
   public function query() {
+
     return $this->select('{{table}}', '{{alias}}')
-      ->fields('{{alias}}')
-{% if group_by %}
+      ->fields('{{alias}}'){% if group_by %}
       ->groupBy('{{alias}}.{{group_by}}')
-{% endif %};
+      {% endif %};
   }
 
   /**
@@ -39,10 +38,10 @@ class {{class_name}} extends SqlBase {% endblock %}
    */
   public function fields() {
     $fields = [
-{% for field in fields %}
-      '{{field.id}}' => $this->t('{{field.description}}'),
-{% endfor %}
-    ];
+    {% for field in fields %}
+  '{{field.id}}' => $this->t('{{field.description}}'),
+    {% endfor %}
+];
     return $fields;
   }
 
@@ -50,6 +49,7 @@ class {{class_name}} extends SqlBase {% endblock %}
    * {@inheritdoc}
    */
   public function getIds() {
-    return [];
+    return [
+    ];
   }
 {% endblock %}

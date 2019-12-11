@@ -22,7 +22,7 @@ trait TaskIO
     use VerbosityThresholdTrait;
 
     /**
-     * @return null|\Psr\Log\LoggerInterface
+     * @return mixed|null|\Psr\Log\LoggerInterface
      */
     public function logger()
     {
@@ -169,7 +169,7 @@ trait TaskIO
     }
 
     /**
-     * @param bool $inProgress
+     * @param $inProgress
      */
     protected function showTaskProgress($inProgress)
     {
@@ -218,8 +218,7 @@ trait TaskIO
     /**
      * @param null|array $context
      *
-     * @return array
-     *   Context information.
+     * @return array with context information
      */
     protected function getTaskContext($context = null)
     {

@@ -56,6 +56,12 @@ class ExportCommand extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 $this->trans('commands.config.export.options.directory')
+            )
+            ->addOption(
+                'tar',
+                null,
+                InputOption::VALUE_NONE,
+                $this->trans('commands.config.export.options.tar')
             )->addOption(
                 'remove-uuid',
                 null,
@@ -66,11 +72,6 @@ class ExportCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 $this->trans('commands.config.export.options.remove-config-hash')
-            )->addOption(
-                'tar',
-                null,
-                InputOption::VALUE_NONE,
-                $this->trans('commands.config.export.options.tar')
             )
             ->setAliases(['ce']);
     }
@@ -78,28 +79,12 @@ class ExportCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
-    {
-        if (!$input->getOption('directory')) {
-            $directory = $this->getIo()->ask(
-                $this->trans('commands.config.export.questions.directory'),
-                config_get_config_directory(CONFIG_SYNC_DIRECTORY)
-            );
-            $input->setOption('directory', $directory);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $drupal_root = $this->drupalFinder->getComposerRoot();
-        $directory = $drupal_root.'/'.$input->getOption('directory');
+        $directory = $input->getOption('directory');
         $tar = $input->getOption('tar');
         $removeUuid = $input->getOption('remove-uuid');
         $removeHash = $input->getOption('remove-config-hash');
-        $drupal_root = $this->drupalFinder->getComposerRoot();
 
         if (!$directory) {
             $directory = config_get_config_directory(CONFIG_SYNC_DIRECTORY);
@@ -107,7 +92,7 @@ class ExportCommand extends Command
 
         $fileSystem = new Filesystem();
         try {
-            $fileSystem->mkdir($drupal_root."/".$directory);
+            $fileSystem->mkdir($directory);
         } catch (IOExceptionInterface $e) {
             $this->getIo()->error(
                 sprintf(
@@ -118,9 +103,7 @@ class ExportCommand extends Command
         }
 
         // Remove previous yaml files before creating new ones
-        foreach (glob($directory . '/*') as $item) {
-            $fileSystem->remove($item);
-        }
+        array_map('unlink', glob($directory . '/*'));
 
         if ($tar) {
             $dateTime = new \DateTime();
@@ -160,7 +143,7 @@ class ExportCommand extends Command
                 $collection_storage = $this->storage->createCollection($collection);
                 $collection_path = str_replace('.', '/', $collection);
                 if (!$tar) {
-                    $fileSystem->mkdir("$directory/$collection_path", 0755);
+                    mkdir("$directory/$collection_path", 0755, true);
                 }
                 foreach ($collection_storage->listAll() as $name) {
                     $configName = "$collection_path/$name.yml";

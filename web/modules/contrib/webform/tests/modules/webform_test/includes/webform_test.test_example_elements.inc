@@ -23,7 +23,8 @@ function webform_test_test_example_elements() {
     'basic_elements' => [],
     'advanced_elements' => [],
   ];
-  foreach ($definitions as $element_type => $definition) {
+  foreach ($definitions as $definition) {
+    $element_type = $definition['id'];
     if (!empty($definition['composite'])) {
       continue;
     }

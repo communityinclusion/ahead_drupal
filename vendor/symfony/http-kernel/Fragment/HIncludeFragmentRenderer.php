@@ -19,7 +19,6 @@ use Symfony\Component\Templating\EngineInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Loader\ExistsLoaderInterface;
-use Twig\Loader\SourceContextLoaderInterface;
 
 /**
  * Implements the Hinclude rendering strategy.
@@ -138,23 +137,22 @@ class HIncludeFragmentRenderer extends RoutableFragmentRenderer
         }
 
         $loader = $this->templating->getLoader();
-
-        if (1 === Environment::MAJOR_VERSION && !$loader instanceof ExistsLoaderInterface) {
-            try {
-                if ($loader instanceof SourceContextLoaderInterface) {
-                    $loader->getSourceContext($template);
-                } else {
-                    $loader->getSource($template);
-                }
-
-                return true;
-            } catch (LoaderError $e) {
-            }
-
-            return false;
+        if ($loader instanceof ExistsLoaderInterface || method_exists($loader, 'exists')) {
+            return $loader->exists($template);
         }
 
-        return $loader->exists($template);
+        try {
+            if (method_exists($loader, 'getSourceContext')) {
+                $loader->getSourceContext($template);
+            } else {
+                $loader->getSource($template);
+            }
+
+            return true;
+        } catch (LoaderError $e) {
+        }
+
+        return false;
     }
 
     /**

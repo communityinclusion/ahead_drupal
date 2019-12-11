@@ -6,3 +6,4 @@ messages:
   failed: '"%s" failed: "%s".'
   missing-name: 'Provide a valid queue name.'
   invalid-name: 'Invalid queue name "%s" provided.'
+

@@ -168,7 +168,6 @@ class WebformAdminConfigHandlersForm extends WebformAdminConfigBaseForm {
       '#title' => $this->t('Submission handlers'),
       '#description' => $this->t('Select available submission handlers'),
       '#open' => TRUE,
-      '#weight' => 10,
     ];
     $form['handler_types']['excluded_handlers'] = $this->buildExcludedPlugins(
       $this->handlerManager,

@@ -2,15 +2,12 @@
 
 namespace Drupal\viewfield\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\FormatterBase;
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\views\Views;
 
 /**
- * Viewfield Default Formatter plugin definition.
  *
  * @FieldFormatter(
  *   id = "viewfield_default",
@@ -93,15 +90,13 @@ class ViewfieldFormatterDefault extends FormatterBase {
    */
   public function view(FieldItemListInterface $items, $langcode = NULL) {
     $elements = parent::view($items, $langcode);
-    if (!empty($elements)) {
-      $elements['#theme'] = 'viewfield';
-      $elements['#entity'] = $items->getEntity();
-      $elements['#entity_type'] = $items->getEntity()->getEntityTypeId();
-      $elements['#bundle'] = $items->getEntity()->bundle();
-      $elements['#field_name'] = $this->fieldDefinition->getName();
-      $elements['#field_type'] = $this->fieldDefinition->getType();
-      $elements['#view_mode'] = $this->viewMode;
-    }
+    $elements['#theme'] = 'viewfield';
+    $elements['#entity'] = $items->getEntity();
+    $elements['#entity_type'] = $items->getEntity()->getEntityTypeId();
+    $elements['#bundle'] = $items->getEntity()->bundle();
+    $elements['#field_name'] = $this->fieldDefinition->getName();
+    $elements['#field_type'] = $this->fieldDefinition->getType();
+    $elements['#view_mode'] = $this->viewMode;
 
     return $elements;
   }
@@ -122,83 +117,47 @@ class ViewfieldFormatterDefault extends FormatterBase {
       }
     }
 
-    $elements = [];
-    $cacheability = new CacheableMetadata();
+    // @todo Design and implement a caching strategy.
+    $elements = [
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
 
     $always_build_output = $this->getSetting('always_build_output');
     $view_title = $this->getSetting('view_title');
     $empty_view_title = $this->getSetting('empty_view_title');
 
     foreach ($values as $delta => $value) {
+      $target_id = $value['target_id'];
+      $display_id = $value['display_id'];
+      $arguments = $this->processArguments($value['arguments'], $entity);
 
-      if (!empty($value['target_id']) && !empty($value['display_id'])) {
-        $target_id = $value['target_id'];
-        $display_id = $value['display_id'];
-        $items_to_display = $value['items_to_display'];
+      // @see views_embed_view()
+      // @see views_get_view_result()
+      $view = Views::getView($target_id);
+      if (!$view || !$view->access($display_id)) {
+        continue;
+      }
 
-        if (!empty($value['arguments'])) {
-          $arguments = $this->processArguments($value['arguments'], $entity);
-        }
-        else {
-          $arguments = [];
-        }
+      $view->setArguments($arguments);
+      $view->setDisplay($display_id);
+      $view->preExecute();
+      $view->execute();
 
-        // @see views_embed_view()
-        // @see views_get_view_result()
-        $view = Views::getView($target_id);
-        if (!$view || !$view->access($display_id)) {
-          continue;
-        }
-
-        // Set arguments if they exist
-        if (!empty($arguments)) {
-          $view->setArguments($arguments);
-        }
-
-        $view->setDisplay($display_id);
-
-        // Override items to display if set.
-        if(!empty($items_to_display)) {
-          $view->setItemsPerPage($items_to_display);
-        }
-
-        $view->preExecute();
-        $view->execute();
-
-        // Disable pager, if items_to_display was set.
-        if (!empty($items_to_display)) {
-          $view->pager = new \Drupal\views\Plugin\views\pager\None([], '', []);
-          $view->pager->init($view, $view->display_handler);
-          $view->pager->setItemsPerPage($items_to_display);
-        }
-
-        $rendered_view = $view->buildRenderable($display_id, $arguments);
-
-        // Get cache metadata from view and merge.
-        $view_cacheability = CacheableMetadata::createFromRenderArray($view->element);
-        $cacheability = $cacheability->merge($view_cacheability);
-
-        if (!empty($view->result) || $always_build_output) {
-          $elements[$delta] = [
-            '#theme' => 'viewfield_item',
-            '#content' => $rendered_view,
-            '#title' => $view->getTitle(),
-            '#label_display' => empty($view->result) ? $empty_view_title : $view_title,
-            '#delta' => $delta,
-            '#field_name' => $this->fieldDefinition->getName(),
-            '#view_id' => $target_id,
-            '#display_id' => $display_id,
-          ];
-          // Add arguments to view cache keys to allow multiple viewfields with
-          // same view but different arguments per page.
-          $cache_keys = array_merge($rendered_view['#cache']['keys'], $arguments);
-          $elements[$delta]['#content']['#cache']['keys'] = $cache_keys;
-        }
+      if (!empty($view->result) || $always_build_output) {
+        $elements[$delta] = [
+          '#theme' => 'viewfield_item',
+          '#content' => $view->buildRenderable($display_id, $arguments),
+          '#title' => $view->getTitle(),
+          '#label_display' => empty($view->result) ? $empty_view_title : $view_title,
+          '#delta' => $delta,
+          '#field_name' => $this->fieldDefinition->getName(),
+          '#view_id' => $target_id,
+          '#display_id' => $display_id,
+        ];
       }
     }
-
-    // Apply merged cache metadata to $elements.
-    $cacheability->applyTo($elements);
 
     return $elements;
   }
@@ -214,7 +173,7 @@ class ViewfieldFormatterDefault extends FormatterBase {
    * @return array
    *   The array of processed arguments.
    */
-  protected function processArguments($argument_string, FieldableEntityInterface $entity) {
+  protected function processArguments($argument_string, $entity) {
     $arguments = [];
 
     if (!empty($argument_string)) {
@@ -234,9 +193,11 @@ class ViewfieldFormatterDefault extends FormatterBase {
             $found = TRUE;
           }
         }
-        else {
-          $arguments = explode('/', $argument_string);
-          $pos = strlen($argument_string) + 1;
+        elseif (($comma = strpos($argument_string, ',', $pos)) !== FALSE) {
+          // Otherwise, get everything before next comma.
+          $arguments[] = substr($argument_string, $pos, $comma - $pos);
+          // Skip to after comma and repeat
+          $pos = $comma + 1;
           $found = TRUE;
         }
         if (!$found) {
@@ -284,5 +245,4 @@ class ViewfieldFormatterDefault extends FormatterBase {
       'visually_hidden' => '- ' . $this->t('Visually Hidden') . ' -',
     ];
   }
-
 }

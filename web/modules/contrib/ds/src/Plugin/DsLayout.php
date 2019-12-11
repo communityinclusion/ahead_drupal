@@ -8,7 +8,6 @@ use Drupal\Core\Layout\LayoutDefault;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Url;
 use Drupal\ds\Ds;
-use Drupal\Core\Link;
 
 /**
  * Layout class for all Display Suite layouts.
@@ -143,32 +142,29 @@ class DsLayout extends LayoutDefault implements PluginFormInterface {
     $classes_access = (\Drupal::currentUser()->hasPermission('admin_classes'));
     $classes = Ds::getClasses();
     if (!empty($classes)) {
-      $layoutSettings = $this->getPluginDefinition()->get('settings') ?: [];
 
-      $default_layout_classes = isset($layoutSettings['classes']['layout_class']) ? $layoutSettings['classes']['layout_class'] : [];
       $form['ds_classes']['layout_class'] = [
         '#type' => 'select',
         '#multiple' => TRUE,
         '#options' => $classes,
         '#title' => $this->t('Class for layout'),
-        '#default_value' => !empty($configuration['classes']['layout_class']) ? $configuration['classes']['layout_class'] : $default_layout_classes,
+        '#default_value' => !empty($configuration['classes']['layout_class']) ? $configuration['classes']['layout_class'] : [],
       ];
 
       foreach ($regions as $region_name => $region_definition) {
-        $default_classes = isset($layoutSettings['classes'][$region_name]) ? $layoutSettings['classes'][$region_name] : [];
         $form['ds_classes'][$region_name] = [
           '#type' => 'select',
           '#multiple' => TRUE,
           '#options' => $classes,
           '#title' => $this->t('Class for @region', ['@region' => $region_definition['label']]),
-          '#default_value' => isset($configuration['classes'][$region_name]) ? $configuration['classes'][$region_name] : $default_classes,
+          '#default_value' => isset($configuration['classes'][$region_name]) ? $configuration['classes'][$region_name] : [],
         ];
       }
       if ($classes_access) {
         $url = Url::fromRoute('ds.classes');
         $destination = \Drupal::destination()->getAsArray();
         $url->setOption('query', $destination);
-        $form['ds_classes']['info'] = ['#markup' => Link::fromTextAndUrl(t('Manage region and field CSS classes'), $url)->toString()];
+        $form['ds_classes']['info'] = ['#markup' => \Drupal::l(t('Manage region and field CSS classes'), $url)];
       }
     }
     else {
@@ -176,7 +172,7 @@ class DsLayout extends LayoutDefault implements PluginFormInterface {
         $url = Url::fromRoute('ds.classes');
         $destination = \Drupal::destination()->getAsArray();
         $url->setOption('query', $destination);
-        $form['ds_classes']['info'] = ['#markup' => '<p>' . $this->t('You have not defined any CSS classes which can be used on regions.') . '</p><p>' .  Link::fromTextAndUrl(t('Manage region and field CSS classes'), $url)->toString() . '</p>'];
+        $form['ds_classes']['info'] = ['#markup' => '<p>' . $this->t('You have not defined any CSS classes which can be used on regions.') . '</p><p>' . \Drupal::l(t('Manage region and field CSS classes'), $url) . '</p>'];
       }
       else {
         $form['ds_classes']['#access'] = FALSE;

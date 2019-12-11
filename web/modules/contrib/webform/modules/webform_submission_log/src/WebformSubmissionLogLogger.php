@@ -2,8 +2,10 @@
 
 namespace Drupal\webform_submission_log;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Logger\LogMessageParserInterface;
 use Drupal\Core\Logger\RfcLoggerTrait;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -30,14 +32,14 @@ class WebformSubmissionLogLogger implements LoggerInterface {
   /**
    * WebformSubmissionLog constructor.
    *
-   * @param \Drupal\Core\Logger\LogMessageParserInterface $parser
-   *   The log message parser service.
    * @param \Drupal\webform_submission_log\WebformSubmissionLogManagerInterface $log_manager
    *   The webform submission log manager.
+   * @param \Drupal\Core\Logger\LogMessageParserInterface $parser
+   *   The log message parser service.
    */
   public function __construct(LogMessageParserInterface $parser, WebformSubmissionLogManagerInterface $log_manager) {
-    $this->parser = $parser;
     $this->logManager = $log_manager;
+    $this->parser = $parser;
   }
 
   /**

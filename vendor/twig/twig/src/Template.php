@@ -253,11 +253,7 @@ abstract class Template implements \Twig_TemplateInterface
      */
     public function renderParentBlock($name, array $context, array $blocks = [])
     {
-        if ($this->env->isDebug()) {
-            ob_start();
-        } else {
-            ob_start(function () { return ''; });
-        }
+        ob_start();
         $this->displayParentBlock($name, $context, $blocks);
 
         return ob_get_clean();
@@ -278,11 +274,7 @@ abstract class Template implements \Twig_TemplateInterface
      */
     public function renderBlock($name, array $context, array $blocks = [], $useBlocks = true)
     {
-        if ($this->env->isDebug()) {
-            ob_start();
-        } else {
-            ob_start(function () { return ''; });
-        }
+        ob_start();
         $this->displayBlock($name, $context, $blocks, $useBlocks);
 
         return ob_get_clean();
@@ -425,11 +417,7 @@ abstract class Template implements \Twig_TemplateInterface
     public function render(array $context)
     {
         $level = ob_get_level();
-        if ($this->env->isDebug()) {
-            ob_start();
-        } else {
-            ob_start(function () { return ''; });
-        }
+        ob_start();
         try {
             $this->display($context);
         } catch (\Exception $e) {
@@ -537,7 +525,7 @@ abstract class Template implements \Twig_TemplateInterface
         if (self::METHOD_CALL !== $type) {
             $arrayItem = \is_bool($item) || \is_float($item) ? (int) $item : $item;
 
-            if (((\is_array($object) || $object instanceof \ArrayObject) && (isset($object[$arrayItem]) || \array_key_exists($arrayItem, (array) $object)))
+            if (((\is_array($object) || $object instanceof \ArrayObject) && (isset($object[$arrayItem]) || \array_key_exists($arrayItem, $object)))
                 || ($object instanceof \ArrayAccess && isset($object[$arrayItem]))
             ) {
                 if ($isDefinedTest) {
@@ -604,7 +592,7 @@ abstract class Template implements \Twig_TemplateInterface
 
         // object property
         if (self::METHOD_CALL !== $type && !$object instanceof self) { // \Twig\Template does not have public properties, and we don't want to allow access to internal ones
-            if (isset($object->$item) || \array_key_exists((string) $item, (array) $object)) {
+            if (isset($object->$item) || \array_key_exists((string) $item, $object)) {
                 if ($isDefinedTest) {
                     return true;
                 }

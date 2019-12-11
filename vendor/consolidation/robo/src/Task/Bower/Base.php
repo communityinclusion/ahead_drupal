@@ -8,14 +8,7 @@ abstract class Base extends BaseTask
 {
     use \Robo\Common\ExecOneCommand;
 
-    /**
-     * @var array
-     */
     protected $opts = [];
-
-    /**
-     * @var string
-     */
     protected $action = '';
 
     /**

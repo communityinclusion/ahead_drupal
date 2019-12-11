@@ -6,7 +6,7 @@ trait loadTasks
     /**
      * @param string $filename
      *
-     * @return \Robo\Task\Development\Changelog|\Robo\Collection\CollectionBuilder
+     * @return Changelog
      */
     protected function taskChangelog($filename = 'CHANGELOG.md')
     {
@@ -16,7 +16,7 @@ trait loadTasks
     /**
      * @param string $filename
      *
-     * @return \Robo\Task\Development\GenerateMarkdownDoc|\Robo\Collection\CollectionBuilder
+     * @return GenerateMarkdownDoc
      */
     protected function taskGenDoc($filename)
     {
@@ -27,7 +27,7 @@ trait loadTasks
      * @param string $className
      * @param string $wrapperClassName
      *
-     * @return \Robo\Task\Development\GenerateTask|\Robo\Collection\CollectionBuilder
+     * @return \Robo\Task\Development\GenerateTask
      */
     protected function taskGenTask($className, $wrapperClassName = '')
     {
@@ -37,7 +37,7 @@ trait loadTasks
     /**
      * @param string $pathToSemVer
      *
-     * @return \Robo\Task\Development\SemVer|\Robo\Collection\CollectionBuilder
+     * @return SemVer
      */
     protected function taskSemVer($pathToSemVer = '.semver')
     {
@@ -47,7 +47,7 @@ trait loadTasks
     /**
      * @param int $port
      *
-     * @return \Robo\Task\Development\PhpServer|\Robo\Collection\CollectionBuilder
+     * @return PhpServer
      */
     protected function taskServer($port = 8000)
     {
@@ -57,7 +57,7 @@ trait loadTasks
     /**
      * @param string $filename
      *
-     * @return \Robo\Task\Development\PackPhar|\Robo\Collection\CollectionBuilder
+     * @return PackPhar
      */
     protected function taskPackPhar($filename)
     {
@@ -67,7 +67,7 @@ trait loadTasks
     /**
      * @param string $tag
      *
-     * @return \Robo\Task\Development\GitHubRelease|\Robo\Collection\CollectionBuilder
+     * @return GitHubRelease
      */
     protected function taskGitHubRelease($tag)
     {
@@ -77,7 +77,7 @@ trait loadTasks
     /**
      * @param string|array $url
      *
-     * @return \Robo\Task\Development\OpenBrowser|\Robo\Collection\CollectionBuilder
+     * @return OpenBrowser
      */
     protected function taskOpenBrowser($url)
     {

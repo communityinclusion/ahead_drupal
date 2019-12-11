@@ -50,7 +50,6 @@ class Address extends WebformCompositeBase {
       // Form display.
       'title_display' => 'invisible',
       'description_display' => '',
-      'help_display' => '',
       // Form validation.
       'required' => FALSE,
       // Submission display.
@@ -75,32 +74,22 @@ class Address extends WebformCompositeBase {
   public function prepare(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
     parent::prepare($element, $webform_submission);
 
+    // Wrap the 'Address' element which contain multiple input in a fieldset.
+    // This accessibility improvements make sense for the Webform module
+    // but not for the core Address module.
+    // @see https://www.w3.org/WAI/tutorials/forms/grouping/
+    $this->setElementDefaultCallback($element, 'pre_render');
+    // Replace 'form_element' theme wrapper with composite form element.
+    // @see \Drupal\Core\Render\Element\PasswordConfirm
+    $element['#pre_render'] = [[get_called_class(), 'preRenderWebformCompositeFormElement']];
     $element['#theme_wrappers'] = [];
 
     // #title display defaults to invisible.
     $element += [
       '#title_display' => 'invisible',
     ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function prepareElementValidateCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
-    parent::prepareElementValidateCallbacks($element, $webform_submission);
 
     $element['#element_validate'][] = [get_class($this), 'validateAddress'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function prepareElementPreRenderCallbacks(array &$element, WebformSubmissionInterface $webform_submission = NULL) {
-    parent::prepareElementPreRenderCallbacks($element, $webform_submission);
-
-    // Replace 'form_element' theme wrapper with composite form element.
-    // @see \Drupal\Core\Render\Element\PasswordConfirm
-    $element['#pre_render'] = [[get_called_class(), 'preRenderWebformCompositeFormElement']];
   }
 
   /**
@@ -281,7 +270,7 @@ class Address extends WebformCompositeBase {
         '#type' => 'html_tag',
         '#tag' => 'span',
         '#attributes' => ['class' => [$class]],
-        '#value' => (!empty($value[$property])) ? Html::escape($value[$property]) : '',
+        '#value' => Html::escape($value[$property]),
         '#placeholder' => '%' . $field,
       ];
     }
@@ -410,10 +399,11 @@ class Address extends WebformCompositeBase {
    * Form API callback. Make sure address element value includes a country code.
    */
   public static function validateAddress(array &$element, FormStateInterface $form_state, array &$completed_form) {
-    $value = $element['#value'];
+    $name = $element['#name'];
+    $value = $form_state->getValue($name);
     if (empty($element['#multiple'])) {
       if (empty($value['country_code'])) {
-        $form_state->setValueForElement($element, NULL);
+        $form_state->setValue($name, NULL);
       }
     }
     else {
@@ -423,7 +413,7 @@ class Address extends WebformCompositeBase {
         }
       }
       $value = array_values($value);
-      $form_state->setValueForElement($element, $value ?: NULL);
+      $form_state->setValue($name, $value ?: NULL);
     }
   }
 

@@ -1,6 +1,6 @@
 services:
   webform_scheduled_email.manager.commands:
     class: \Drupal\webform_scheduled_email\Commands\WebformScheduledEmailCommands
-    arguments: ['@webform_scheduled_email.manager']
+    arguments: ['@webform.cli_service']
     tags:
       - { name: drush.command }

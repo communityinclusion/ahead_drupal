@@ -54,7 +54,7 @@ class Commit extends Base
     }
 
     /**
-     * @param string $name
+     * @param $name
      *
      * @return $this
      */

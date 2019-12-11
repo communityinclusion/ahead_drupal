@@ -167,6 +167,3 @@ $foo = $bar ?? $baz ?? '';
 $foo = $myString{-1};
 
 $value = (binary) $blah + b"binary $foo";
-
-$test = (1 * static::TEST);
-$test = myfunc(1 * static::TEST);

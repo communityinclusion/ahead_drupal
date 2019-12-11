@@ -22,12 +22,11 @@ class ReRankQuery implements ComponentRequestBuilderInterface
     public function buildComponent(ConfigurableInterface $component, Request $request): Request
     {
         $subRequest = new SubRequest();
-        $subRequest->addParam('reRankQuery', '$rqq');
+        $subRequest->addParam('reRankQuery', $component->getQuery());
         $subRequest->addParam('reRankDocs', $component->getDocs());
         $subRequest->addParam('reRankWeight', $component->getWeight());
 
         $request->addParam('rq', $subRequest->getSubQuery());
-        $request->addParam('rqq', $component->getQuery());
 
         return $request;
     }

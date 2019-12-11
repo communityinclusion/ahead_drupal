@@ -39,17 +39,16 @@ abstract class GeofieldProximitySourceBase extends PluginBase implements Geofiel
   protected $origin;
 
   /**
-   * {@inheritdoc}
+   * Check if Origin is empty.
+   *
+   * @param array $origin
+   *   The origin array.
+   *
+   * @return bool
+   *   The bool result.
    */
-  public function isValidLocation($lat, $lon) {
-    return is_numeric($lat) && is_numeric($lon);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isEmptyLocation($lat, $lon) {
-    return (empty($lat) && empty($lon));
+  protected function originIsValidButEmpty(array $origin) {
+    return (isset($origin['lat']) && isset($origin['lon']) && empty($origin['lat']) && empty($origin['lon']));
   }
 
   /**
@@ -126,7 +125,7 @@ abstract class GeofieldProximitySourceBase extends PluginBase implements Geofiel
    * {@inheritdoc}
    */
   public function getProximity($lat, $lon) {
-    if (!$this->isValidLocation($lat, $lon)) {
+    if (!$this->validLocation($lat, $lon)) {
       throw new InvalidPointException($this->t('@proximity_handler reports Invalid Point coordinates', [
         '@proximity_handler' => get_class($this),
       ]));
@@ -137,8 +136,10 @@ abstract class GeofieldProximitySourceBase extends PluginBase implements Geofiel
     $radius = constant($this->units);
 
     $origin = $this->getOrigin();
-    if (!isset($origin['lat']) || !isset($origin['lon']) || $this->isEmptyLocation($origin['lat'], $origin['lon'])) {
-      return NULL;
+    if (empty($origin) || !is_numeric($origin['lat']) || !is_numeric($origin['lon'])) {
+      throw new ProximityUnavailableException($this->t('@proximity_handler not able to get the Proximity value, due to invalid Origin', [
+        '@proximity_handler' => get_class($this),
+      ]));
     }
 
     // Convert degrees to radians.
@@ -159,7 +160,7 @@ abstract class GeofieldProximitySourceBase extends PluginBase implements Geofiel
     if (!is_numeric($proximity) || !abs($proximity) > 0) {
       throw new ProximityUnavailableException($this->t('@proximity_handler not able to calculate valid Proximity value', [
         '@proximity_handler' => get_class($this),
-      ]));
+      ]));;
     }
 
     return $proximity;
@@ -172,10 +173,10 @@ abstract class GeofieldProximitySourceBase extends PluginBase implements Geofiel
   public function getHaversineOptions() {
 
     $origin = $this->getOrigin();
-    if ($this->isEmptyLocation($origin['lat'], $origin['lon'])) {
+    if ($this->originIsValidButEmpty($origin)) {
       return NULL;
     }
-    if (!$origin || !$this->isValidLocation($origin['lat'], $origin['lon'])) {
+    if (!$origin || !is_numeric($origin['lat']) || !is_numeric($origin['lon'])) {
       throw new HaversineUnavailableException('Not able to calculate Haversine Options due to invalid Proximity origin location.');
     }
 
@@ -185,6 +186,28 @@ abstract class GeofieldProximitySourceBase extends PluginBase implements Geofiel
       'earth_radius' => constant($this->units),
     ];
 
+  }
+
+  /**
+   * Test the given latitude and longitude values.
+   *
+   * @param float $lat
+   *   The latitude value.
+   * @param float $lon
+   *   The longitude value.
+   *
+   * @return bool
+   *   The flag indicates whether location is valid.
+   *
+   * @todo: add more tests, particularly around max/min values.
+   */
+  protected function validLocation($lat, $lon) {
+    if (!is_numeric($lat) || !is_numeric($lon)) {
+      $message = t('Invalid location supplied, latitude and longitude must be numerical values.');
+      \Drupal::logger('geofield')->error($message);
+      return FALSE;
+    }
+    return TRUE;
   }
 
 }

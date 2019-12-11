@@ -48,7 +48,6 @@ abstract class RulesComponentFormBase extends EntityForm {
 
     $form['settings']['label'] = [
       '#type' => 'textfield',
-      '#description' => $this->t('Enter a name to be used to identify your component in the administrative interface.'),
       '#title' => $this->t('Label'),
       '#default_value' => $this->entity->label(),
       '#required' => TRUE,
@@ -56,7 +55,7 @@ abstract class RulesComponentFormBase extends EntityForm {
 
     $form['settings']['id'] = [
       '#type' => 'machine_name',
-      '#description' => $this->t('A unique machine-readable name for your component. Can only contain lowercase letters, numbers, and underscores.'),
+      '#description' => $this->t('A unique machine-readable name. Can only contain lowercase letters, numbers, and underscores.'),
       '#disabled' => !$this->entity->isNew(),
       '#default_value' => $this->entity->id(),
       '#machine_name' => [
@@ -67,19 +66,19 @@ abstract class RulesComponentFormBase extends EntityForm {
       ],
     ];
 
-    // @todo Enter a real tag field here.
+    // @todo enter a real tag field here.
     $form['settings']['tags'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Tags'),
       '#default_value' => implode(', ', $this->entity->getTags()),
-      '#description' => $this->t('Enter a list of comma-separated tags here; e.g., "notification, publishing". Tags are used for filtering available components in the administration interface.'),
+      '#description' => $this->t('Enter a list of comma-separated tags here; e.g., "notification, publishing".'),
       '#required' => FALSE,
     ];
 
     $form['settings']['description'] = [
       '#type' => 'textarea',
       '#default_value' => $this->entity->getDescription(),
-      '#description' => $this->t('Enter a description for this component, to help document what this component is indended to do.'),
+      '#description' => $this->t('Enter a description for this component.'),
       '#title' => $this->t('Description'),
     ];
 
@@ -91,10 +90,7 @@ abstract class RulesComponentFormBase extends EntityForm {
    */
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $entity = parent::buildEntity($form, $form_state);
-    $tags = [];
-    if (trim($entity->get('tags')) != '') {
-      $tags = array_map('trim', explode(',', $entity->get('tags')));
-    }
+    $tags = array_map('trim', explode(',', $entity->get('tags')));
     $entity->set('tags', $tags);
     return $entity;
   }

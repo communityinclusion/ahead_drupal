@@ -1,7 +1,5 @@
 <?php
 
-// @codingStandardsIgnoreFile
-
 /*~ class.phpmailer.php
 Orginal release information:
 .---------------------------------------------------------------------------.
@@ -34,7 +32,7 @@ Orginal release information:
 namespace Drupal\smtp\PHPMailer;
 
 use Drupal\smtp\PHPMailer\SMTP;
-use Drupal\smtp\Exception\PHPMailerException;
+use Drupal\smtp\Plugin\Exception\PHPMailerException;
 
 /**
  * PHPMailer - PHP email transport class
@@ -462,12 +460,11 @@ class PHPMailer {
     $address = trim($address);
     $name = trim(preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
     if (!self::ValidateAddress($address)) {
-      $invalidAddress = t('Invalid address: @address', ['@address' => $address]);
-      $this->SetError($invalidAddress);
+      $this->SetError(t('Invalid address') . ': ' . $address);
       if ($this->exceptions) {
-        throw new PHPMailerException($invalidAddress);
+        throw new phpmailerException(t('Invalid address') . ': ' . $address);
       }
-      echo $invalidAddress;
+      echo t('Invalid address') . ': ' . $address;
       return FALSE;
     }
     if ($kind != 'ReplyTo') {
@@ -496,12 +493,11 @@ class PHPMailer {
     $address = trim($address);
     $name = trim(preg_replace('/[\r\n]+/', '', $name)); //Strip breaks and trim
     if (!self::ValidateAddress($address)) {
-      $invalidAddress = t('Invalid address: @address', ['@address' => $address]);
-      $this->SetError($invalidAddress);
+      $this->SetError(t('Invalid address') . ': ' . $address);
       if ($this->exceptions) {
-        throw new PHPMailerException($invalidAddress);
+        throw new phpmailerException(t('Invalid address') . ': ' . $address);
       }
-      echo $invalidAddress;
+      echo t('Invalid address') . ': ' . $address;
       return FALSE;
     }
     $this->From = $address;
@@ -555,7 +551,7 @@ class PHPMailer {
   public function Send() {
     try {
       if ((count($this->to) + count($this->cc) + count($this->bcc)) < 1) {
-        throw new PHPMailerException(t('You must provide at least one recipient email address.'), self::STOP_CRITICAL);
+        throw new phpmailerException(t('You must provide at least one recipient email address.'), self::STOP_CRITICAL);
       }
 
       // Set whether the message is multipart/alternative
@@ -569,7 +565,7 @@ class PHPMailer {
       $body = $this->CreateBody();
 
       if (empty($this->Body)) {
-        throw new PHPMailerException(t('Message body empty'), self::STOP_CRITICAL);
+        throw new phpmailerException(t('Message body empty'), self::STOP_CRITICAL);
       }
 
       // digitally sign with DKIM if enabled
@@ -588,7 +584,7 @@ class PHPMailer {
           return $this->MailSend($header, $body);
       }
 
-    } catch (PHPMailerException $e) {
+    } catch (phpmailerException $e) {
       $this->SetError($e->getMessage());
       if ($this->exceptions) {
         throw $e;
@@ -615,7 +611,7 @@ class PHPMailer {
     if ($this->SingleTo === TRUE) {
       foreach ($this->SingleToArray as $key => $val) {
         if (!@$mail = popen($sendmail, 'w')) {
-          throw new PHPMailerException(t('Could not execute: @smail', array('@smail' => $this->Sendmail)), self::STOP_CRITICAL);
+          throw new phpmailerException(t('Could not execute: !smail', array('!smail' => $this->Sendmail)), self::STOP_CRITICAL);
         }
         fputs($mail, "To: " . $val . "\n");
         fputs($mail, $header);
@@ -625,13 +621,13 @@ class PHPMailer {
         $isSent = ($result == 0) ? 1 : 0;
         $this->doCallback($isSent, $val, $this->cc, $this->bcc, $this->Subject, $body);
         if ($result != 0) {
-          throw new PHPMailerException(t('Could not execute: @smail', array('@smail' => $this->Sendmail)), self::STOP_CRITICAL);
+          throw new phpmailerException(t('Could not execute: !smail', array('!smail' => $this->Sendmail)), self::STOP_CRITICAL);
         }
       }
     }
     else {
       if (!@$mail = popen($sendmail, 'w')) {
-        throw new PHPMailerException(t('Could not execute: @smail', array('@smail' => $this->Sendmail)), self::STOP_CRITICAL);
+        throw new phpmailerException(t('Could not execute: !smail', array('!smail' => $this->Sendmail)), self::STOP_CRITICAL);
       }
       fputs($mail, $header);
       fputs($mail, $body);
@@ -640,7 +636,7 @@ class PHPMailer {
       $isSent = ($result == 0) ? 1 : 0;
       $this->doCallback($isSent, $this->to, $this->cc, $this->bcc, $this->Subject, $body);
       if ($result != 0) {
-        throw new PHPMailerException(t('Could not execute: @smail', array('@smail' => $this->Sendmail)), self::STOP_CRITICAL);
+        throw new phpmailerException(t('Could not execute: !smail', array('!smail' => $this->Sendmail)), self::STOP_CRITICAL);
       }
     }
     return TRUE;
@@ -699,7 +695,7 @@ class PHPMailer {
       ini_set('sendmail_from', $old_from);
     }
     if (!$rt) {
-      throw new PHPMailerException(t('Could not instantiate mail function.'), self::STOP_CRITICAL);
+      throw new phpmailerException(t('Could not instantiate mail function.'), self::STOP_CRITICAL);
     }
     return TRUE;
   }
@@ -717,11 +713,11 @@ class PHPMailer {
     $bad_rcpt = array();
 
     if (!$this->SmtpConnect()) {
-      throw new PHPMailerException(t('SMTP Error: Could not connect to SMTP host.'), self::STOP_CRITICAL);
+      throw new phpmailerException(t('SMTP Error: Could not connect to SMTP host.'), self::STOP_CRITICAL);
     }
     $smtp_from = ($this->Sender == '') ? $this->From : $this->Sender;
     if (!$this->smtp->Mail($smtp_from)) {
-      throw new PHPMailerException(t('The following From address failed: @from', array('@from' => $smtp_from)), self::STOP_CRITICAL);
+      throw new phpmailerException(t('The following From address failed: !from', array('!from' => $smtp_from)), self::STOP_CRITICAL);
     }
 
     // Attempt to send attach all recipients
@@ -768,10 +764,10 @@ class PHPMailer {
 
     if (count($bad_rcpt) > 0 ) { //Create error message for any bad addresses
       $badaddresses = implode(', ', $bad_rcpt);
-      $this->SetError(t('SMTP Error: The following recipients failed: @bad', array('@bad' => $badaddresses)));
+      throw new phpmailerException(t('SMTP Error: The following recipients failed: @bad', array('@bad' => $badaddresses)));
     }
     if (!$this->smtp->Data($header . $body)) {
-      throw new PHPMailerException(t('SMTP Error: Data not accepted.'), self::STOP_CRITICAL);
+      throw new phpmailerException(t('SMTP Error: Data not accepted.'), self::STOP_CRITICAL);
     }
     if ($this->SMTPKeepAlive == TRUE) {
       $this->smtp->Reset();
@@ -819,7 +815,7 @@ class PHPMailer {
 
           if ($tls) {
             if (!$this->smtp->StartTLS()) {
-              throw new PHPMailerException(t('StartTLS not supported by server or could not initiate session.'));
+              throw new phpmailerException(t('StartTLS not supported by server or could not initiate session.'));
             }
 
             //We must resend HELO after tls negotiation
@@ -829,16 +825,16 @@ class PHPMailer {
           $connection = TRUE;
           if ($this->SMTPAuth) {
             if (!$this->smtp->Authenticate($this->Username, $this->Password)) {
-              throw new PHPMailerException(t('SMTP Error: Could not authenticate.'));
+              throw new phpmailerException(t('SMTP Error: Could not authenticate.'));
             }
           }
         }
         $index++;
         if (!$connection) {
-          throw new PHPMailerException(t('SMTP Error: Could not connect to SMTP host.'));
+          throw new phpmailerException(t('SMTP Error: Could not connect to SMTP host.'));
         }
       }
-    } catch (PHPMailerException $e) {
+    } catch (phpmailerException $e) {
       $this->smtp->Reset();
       throw $e;
     }
@@ -1240,9 +1236,9 @@ class PHPMailer {
         else {
           @unlink($file);
           @unlink($signed);
-          throw new PHPMailerException(t('Signing Error: @err', array('@err' => openssl_error_string())));
+          throw new phpmailerException(t('Signing Error: !err', array('!err' => openssl_error_string())));
         }
-      } catch (PHPMailerException $e) {
+      } catch (phpmailerException $e) {
         $body = '';
         if ($this->exceptions) {
           throw $e;
@@ -1342,7 +1338,7 @@ class PHPMailer {
   public function AddAttachment($path, $name = '', $encoding = 'base64', $type = 'application/octet-stream') {
     try {
       if ( !@is_file($path) ) {
-        throw new PHPMailerException(t('Could not access file: @nofile', array('@nofile' => $path)), self::STOP_CONTINUE);
+        throw new phpmailerException(t('Could not access file: @nofile', array('@nofile' => $path)), self::STOP_CONTINUE);
       }
       $filename = basename($path);
       if ( $name == '' ) {
@@ -1360,7 +1356,7 @@ class PHPMailer {
         7 => 0
       );
 
-    } catch (PHPMailerException $e) {
+    } catch (phpmailerException $e) {
       $this->SetError($e->getMessage());
       if ($this->exceptions) {
         throw $e;
@@ -1466,7 +1462,7 @@ class PHPMailer {
   private function EncodeFile($path, $encoding = 'base64') {
     try {
       if (!is_readable($path)) {
-        throw new PHPMailerException(t('File Error: Could not open file: @nofile', array('@nofile' => $path)), self::STOP_CONTINUE);
+        throw new phpmailerException(t('File Error: Could not open file: @nofile', array('@nofile' => $path)), self::STOP_CONTINUE);
       }
       if (function_exists('get_magic_quotes')) {
         function get_magic_quotes() {
@@ -1665,7 +1661,7 @@ class PHPMailer {
     $eol = "\r\n";
     $escape = '=';
     $output = '';
-    foreach ($lines as $line) {
+    while ( list(, $line) = each($lines) ) {
       $linlen = strlen($line);
       $newline = '';
       for ($i = 0; $i < $linlen; $i++) {
@@ -2167,7 +2163,7 @@ class PHPMailer {
         $this->$name = $value;
       }
       else {
-        throw new PHPMailerException(t('Cannot set or reset variable: @name', array('@name' => $name)) , self::STOP_CRITICAL);
+        throw new phpmailerException(t('Cannot set or reset variable: @name', array('@name' => $name)) , self::STOP_CRITICAL);
       }
     } catch (Exception $e) {
       $this->SetError($e->getMessage());

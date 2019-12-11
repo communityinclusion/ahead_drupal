@@ -153,28 +153,8 @@ class DisallowMultipleAssignmentsSniff implements Sniff
             return;
         }
 
-        $error     = 'Assignments must be the first block of code on a line';
-        $errorCode = 'Found';
-
-        if (isset($nested) === true) {
-            $controlStructures = [
-                T_IF     => T_IF,
-                T_ELSEIF => T_ELSEIF,
-                T_SWITCH => T_SWITCH,
-                T_CASE   => T_CASE,
-                T_FOR    => T_FOR,
-            ];
-            foreach ($nested as $opener => $closer) {
-                if (isset($tokens[$opener]['parenthesis_owner']) === true
-                    && isset($controlStructures[$tokens[$tokens[$opener]['parenthesis_owner']]['code']]) === true
-                ) {
-                    $errorCode .= 'InControlStructure';
-                    break;
-                }
-            }
-        }
-
-        $phpcsFile->addError($error, $stackPtr, $errorCode);
+        $error = 'Assignments must be the first block of code on a line';
+        $phpcsFile->addError($error, $stackPtr, 'Found');
 
     }//end process()
 

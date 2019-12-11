@@ -2,10 +2,8 @@
 
 namespace Drupal\viewfield\Plugin\Field\FieldType;
 
-use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Field\FieldFilteredMarkup;
@@ -32,7 +30,7 @@ class ViewfieldItem extends EntityReferenceItem {
   public static function defaultStorageSettings() {
     return [
       'target_type' => 'view',
-    ];
+    ] + parent::defaultStorageSettings();
   }
 
   /**
@@ -51,6 +49,7 @@ class ViewfieldItem extends EntityReferenceItem {
    */
   public static function schema(FieldStorageDefinitionInterface $field_definition) {
     $schema = parent::schema($field_definition);
+    $schema['columns']['target_id']['description'] = 'The ID of the view.';
 
     $schema['columns']['display_id'] = [
       'description' => 'The ID of the view display.',
@@ -60,12 +59,6 @@ class ViewfieldItem extends EntityReferenceItem {
 
     $schema['columns']['arguments'] = [
       'description' => 'Arguments to be passed to the display.',
-      'type' => 'varchar',
-      'length' => 255,
-    ];
-
-    $schema['columns']['items_to_display'] = [
-      'description' => 'Items to display.',
       'type' => 'varchar',
       'length' => 255,
     ];
@@ -87,10 +80,6 @@ class ViewfieldItem extends EntityReferenceItem {
     $properties['arguments'] = DataDefinition::create('string')
       ->setLabel(t('Arguments'))
       ->setDescription(t('An optional comma-delimited list of arguments for the display'));
-
-    $properties['items_to_display'] = DataDefinition::create('string')
-      ->setLabel(t('Items to display'))
-      ->setDescription(t('Override the number of displayed items.'));
 
     return $properties;
   }
@@ -141,7 +130,7 @@ class ViewfieldItem extends EntityReferenceItem {
   }
 
   /**
-   * Form API callback.
+   * Form API callback
    *
    * Requires that field defaults be supplied when the 'force_default' option
    * is checked.
@@ -163,16 +152,9 @@ class ViewfieldItem extends EntityReferenceItem {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public static function getPreconfiguredOptions() {
-    return [];
-  }
-
-  /**
    * Get an options array of views.
    *
-   * @param bool $filter
+   * @param boolean $filter
    *   (optional) Flag to filter the output using the 'allowed_views' setting.
    *
    * @return array
@@ -196,7 +178,7 @@ class ViewfieldItem extends EntityReferenceItem {
    *
    * @param string $entity_id
    *   The entity_id of the view.
-   * @param bool $filter
+   * @param boolean $filter
    *   (optional) Flag to filter the output using the 'allowed_display_types'
    *   setting.
    *
@@ -236,5 +218,4 @@ class ViewfieldItem extends EntityReferenceItem {
 
     return $display_type_options;
   }
-
 }

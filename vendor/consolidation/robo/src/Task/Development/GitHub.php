@@ -86,7 +86,7 @@ abstract class GitHub extends BaseTask
     }
 
     /**
-     * @param string $password
+     * @param $password
      *
      * @return $this
      */
@@ -97,7 +97,7 @@ abstract class GitHub extends BaseTask
     }
 
     /**
-     * @param string $token
+     * @param $accessToken
      *
      * @return $this
      */

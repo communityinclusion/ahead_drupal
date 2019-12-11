@@ -1,14 +1,11 @@
 Features
 --------
 
-<table class="views-view-grid" width="100%">
-<tr>
-<td>
-<blockquote>The Webform module for Drupal provides all the features expected from an enterprise proprietary form builder combined with the flexibility and openness of Drupal.</blockquote>
-</td>
-<td width="100"><img src="/files/webform_stacked-logo_256.png" width="256" alt="Webform logo"></td>
-</tr>
-</table>
+
+<blockquote>
+The Webform module provides all the features expected from an enterprise 
+proprietary form builder combined with the flexibility and openness of Drupal
+</blockquote>
 
 The Webform module allows you to build any type of form that can collect any
 type of data, which can be submitted to any application or system.
@@ -635,3 +632,8 @@ Drush commands are provided to:
 - Download and manage third-party libraries
 - Generate a composer.js file for third-party libraries
 - Tidy YAML configuration files
+
+
+
+
+

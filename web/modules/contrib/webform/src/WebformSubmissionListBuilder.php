@@ -253,8 +253,8 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     return new static(
       $entity_type,
-      $container->get('entity_type.manager')->getStorage($entity_type->id()),
-      $container->get('entity_type.manager'),
+      $container->get('entity.manager')->getStorage($entity_type->id()),
+      $container->get('entity.manager'),
       $container->get('current_route_match'),
       $container->get('request_stack'),
       $container->get('current_user'),
@@ -848,11 +848,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       case 'created':
       case 'completed':
       case 'changed':
-        /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
-        $date_formatter = \Drupal::service('date.formatter');
-        return ($is_raw ? $entity->{$name}->value :
-          ($entity->{$name}->value ? $date_formatter->format($entity->{$name}->value) : '')
-        );
+        return ($is_raw) ? $entity->{$name}->value : $entity->{$name}->value ? \Drupal::service('date.formatter')->format($entity->{$name}->value) : '';
 
       case 'entity':
         $source_entity = $entity->getSourceEntity();
@@ -996,9 +992,9 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
    */
   public function buildOperations(EntityInterface $entity) {
     return parent::buildOperations($entity) + [
-      '#prefix' => '<div class="webform-dropbutton">',
-      '#suffix' => '</div>',
-    ];
+        '#prefix' => '<div class="webform-dropbutton">',
+        '#suffix' => '</div>',
+      ];
   }
 
   /**
@@ -1294,7 +1290,8 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
       return $result;
     }
     else {
-      if ($order && $order['sql']) {
+      $order = $this->request->query->get('order', '');
+      if ($order) {
         $query->tableSort($header);
       }
       else {
@@ -1411,8 +1408,7 @@ class WebformSubmissionListBuilder extends EntityListBuilder {
 
     // Filter by draft. (Only applies to user submissions and drafts)
     if (isset($this->draft)) {
-      // Cast boolean to integer to support SQLite.
-      $query->condition('in_draft', (int) $this->draft);
+      $query->condition('in_draft', $this->draft);
     }
 
     return $query;

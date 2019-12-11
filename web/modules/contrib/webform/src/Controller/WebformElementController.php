@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Provides route responses for Webform elements.
+ * Provides route responses for webform element.
  */
 class WebformElementController extends ControllerBase {
 

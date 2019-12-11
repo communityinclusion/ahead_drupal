@@ -19,7 +19,7 @@ namespace Robo\Task\Npm;
 class Update extends Base
 {
     /**
-     * {@inheritdoc}
+     * @var string
      */
     protected $action = 'update';
 

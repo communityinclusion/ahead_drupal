@@ -7,11 +7,9 @@ use Drupal\devel\DevelDumperManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class DumperTestController.
- *
- * @package Drupal\devel_dumper_test\Controller
+ * Class DumperTestController
  */
-class DumperTestController extends ControllerBase {
+class DumperTestController  extends ControllerBase {
 
   /**
    * The dumper manager.
@@ -40,10 +38,7 @@ class DumperTestController extends ControllerBase {
   }
 
   /**
-   * Returns the dump output to test.
-   *
    * @return array
-   *   The render array output.
    */
   public function dump() {
     $this->dumper->dump('Test output');
@@ -54,10 +49,7 @@ class DumperTestController extends ControllerBase {
   }
 
   /**
-   * Returns the message output to test.
-   *
    * @return array
-   *   The render array output.
    */
   public function message() {
     $this->dumper->message('Test output');
@@ -68,10 +60,7 @@ class DumperTestController extends ControllerBase {
   }
 
   /**
-   * Returns the debug output to test.
-   *
    * @return array
-   *   The render array output.
    */
   public function debug() {
     $this->dumper->debug('Test output');
@@ -82,10 +71,7 @@ class DumperTestController extends ControllerBase {
   }
 
   /**
-   * Returns the export output to test.
-   *
    * @return array
-   *   The render array output.
    */
   public function export() {
     return [
@@ -94,10 +80,7 @@ class DumperTestController extends ControllerBase {
   }
 
   /**
-   * Returns the renderable export output to test.
-   *
    * @return array
-   *   The render array output.
    */
   public function exportRenderable() {
     return $this->dumper->exportAsRenderable('Test output');

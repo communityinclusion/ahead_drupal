@@ -7,19 +7,19 @@
 
 namespace Drupal\Console\Command\Generate;
 
-use Drupal\Console\Core\Command\Command;
-use Drupal\Console\Generator\PluginMigrateProcessGenerator;
 use Drupal\Console\Utils\Validator;
-use Drupal\Console\Command\Shared\ConfirmationTrait;
-use Drupal\Console\Command\Shared\ModuleTrait;
-use Drupal\Console\Extension\Manager;
-use Drupal\Console\Core\Utils\ChainQueue;
-use Drupal\Console\Core\Utils\StringConverter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Drupal\Console\Core\Command\ContainerAwareCommand;
+use Drupal\Console\Generator\PluginMigrateProcessGenerator;
+use Drupal\Console\Command\Shared\ModuleTrait;
+use Drupal\Console\Command\Shared\ConfirmationTrait;
+use Drupal\Console\Extension\Manager;
+use Drupal\Console\Core\Utils\StringConverter;
+use Drupal\Console\Core\Utils\ChainQueue;
 
-class PluginMigrateProcessCommand extends Command
+class PluginMigrateProcessCommand extends ContainerAwareCommand
 {
     use ModuleTrait;
     use ConfirmationTrait;
@@ -109,7 +109,7 @@ class PluginMigrateProcessCommand extends Command
             return 1;
         }
 
-        $module = $this->validateModule($input->getOption('module'));
+        $module = $input->getOption('module');
         $class_name = $this->validator->validateClassName($input->getOption('class'));
         $plugin_id = $input->getOption('plugin-id');
 

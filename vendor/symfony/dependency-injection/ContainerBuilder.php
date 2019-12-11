@@ -354,14 +354,14 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     public function getReflectionClass($class, $throw = true)
     {
         if (!$class = $this->getParameterBag()->resolveValue($class)) {
-            return null;
+            return;
         }
 
         if (isset(self::$internalTypes[$class])) {
             return null;
         }
 
-        $resource = $classReflector = null;
+        $resource = null;
 
         try {
             if (isset($this->classReflectors[$class])) {
@@ -376,6 +376,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             if ($throw) {
                 throw $e;
             }
+            $classReflector = false;
         }
 
         if ($this->trackResources) {
@@ -518,8 +519,8 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     /**
      * Sets a service.
      *
-     * @param string      $id      The service identifier
-     * @param object|null $service The service instance
+     * @param string $id      The service identifier
+     * @param object $service The service instance
      *
      * @throws BadMethodCallException When this ContainerBuilder is compiled
      */
@@ -570,7 +571,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      * @param string $id              The service identifier
      * @param int    $invalidBehavior The behavior when the service does not exist
      *
-     * @return object|null The associated service
+     * @return object The associated service
      *
      * @throws InvalidArgumentException          when no definitions are available
      * @throws ServiceCircularReferenceException When a circular reference is detected
@@ -620,7 +621,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             $definition = $this->getDefinition($id);
         } catch (ServiceNotFoundException $e) {
             if (ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE !== $invalidBehavior) {
-                return null;
+                return;
             }
 
             throw $e;
@@ -814,11 +815,13 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Gets all service ids.
+     *
+     * @return array An array of all defined service ids
      */
     public function getServiceIds()
     {
-        return array_map('strval', array_unique(array_merge(array_keys($this->getDefinitions()), array_keys($this->aliasDefinitions), parent::getServiceIds())));
+        return array_unique(array_merge(array_keys($this->getDefinitions()), array_keys($this->aliasDefinitions), parent::getServiceIds()));
     }
 
     /**
@@ -945,8 +948,8 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      * This methods allows for simple registration of service definition
      * with a fluid interface.
      *
-     * @param string      $id    The service identifier
-     * @param string|null $class The service class
+     * @param string $id         The service identifier
+     * @param string $class|null The service class
      *
      * @return Definition A Definition instance
      */
@@ -1103,7 +1106,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      * @param string     $id         The service identifier
      * @param bool       $tryProxy   Whether to try proxying the service with a lazy proxy
      *
-     * @return mixed The service described by the service definition
+     * @return object The service described by the service definition
      *
      * @throws RuntimeException         When the factory definition is incomplete
      * @throws RuntimeException         When the service is a synthetic service
@@ -1524,13 +1527,13 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     }
 
     /**
-     * Removes bindings for a service.
+     * Adds a removed binding id.
      *
-     * @param string $id The service identifier
+     * @param int $id
      *
      * @internal
      */
-    public function removeBindings($id)
+    public function addRemovedBindingIds($id)
     {
         if ($this->hasDefinition($id)) {
             foreach ($this->getDefinition($id)->getBindings() as $key => $binding) {
@@ -1649,7 +1652,8 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     /**
      * Shares a given service in the container.
      *
-     * @param mixed       $service
+     * @param Definition  $definition
+     * @param object      $service
      * @param string|null $id
      */
     private function shareService(Definition $definition, $service, $id, array &$inlineServices)

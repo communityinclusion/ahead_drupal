@@ -6,7 +6,7 @@ trait loadTasks
     /**
      * @param string|\Robo\Contract\CommandInterface $command
      *
-     * @return \Robo\Task\Base\Exec|\Robo\Collection\CollectionBuilder
+     * @return Exec
      */
     protected function taskExec($command)
     {
@@ -14,7 +14,7 @@ trait loadTasks
     }
 
     /**
-     * @return \Robo\Task\Base\ExecStack|\Robo\Collection\CollectionBuilder
+     * @return ExecStack
      */
     protected function taskExecStack()
     {
@@ -22,7 +22,7 @@ trait loadTasks
     }
 
     /**
-     * @return \Robo\Task\Base\ParallelExec|\Robo\Collection\CollectionBuilder
+     * @return ParallelExec
      */
     protected function taskParallelExec()
     {
@@ -30,9 +30,8 @@ trait loadTasks
     }
 
     /**
-     * @param \Symfony\Component\Console\Command\Command $command
-     *
-     * @return \Robo\Task\Base\SymfonyCommand|\Robo\Collection\CollectionBuilder
+     * @param $command
+     * @return SymfonyCommand
      */
     protected function taskSymfonyCommand($command)
     {
@@ -40,7 +39,7 @@ trait loadTasks
     }
 
     /**
-     * @return \Robo\Task\Base\Watch|\Robo\Collection\CollectionBuilder
+     * @return Watch
      */
     protected function taskWatch()
     {

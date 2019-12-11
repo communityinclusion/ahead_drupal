@@ -165,7 +165,7 @@ class BufferedAdd extends AbstractPlugin
         $this->buffer[] = $document;
 
         $event = new AddDocumentEvent($document);
-        $this->client->getEventDispatcher()->dispatch($event, Events::ADD_DOCUMENT);
+        $this->client->getEventDispatcher()->dispatch(Events::ADD_DOCUMENT, $event);
 
         if (count($this->buffer) == $this->options['buffersize']) {
             $this->flush();
@@ -234,14 +234,14 @@ class BufferedAdd extends AbstractPlugin
         $commitWithin = null === $commitWithin ? $this->getCommitWithin() : $commitWithin;
 
         $event = new PreFlushEvent($this->buffer, $overwrite, $commitWithin);
-        $this->client->getEventDispatcher()->dispatch($event, Events::PRE_FLUSH);
+        $this->client->getEventDispatcher()->dispatch(Events::PRE_FLUSH, $event);
 
         $this->updateQuery->addDocuments($event->getBuffer(), $event->getOverwrite(), $event->getCommitWithin());
         $result = $this->client->update($this->updateQuery, $this->getEndpoint());
         $this->clear();
 
         $event = new PostFlushEvent($result);
-        $this->client->getEventDispatcher()->dispatch($event, Events::POST_FLUSH);
+        $this->client->getEventDispatcher()->dispatch(Events::POST_FLUSH, $event);
 
         return $result;
     }
@@ -251,17 +251,17 @@ class BufferedAdd extends AbstractPlugin
      *
      * Any remaining documents in the buffer will also be flushed
      *
-     * @param bool|null $overwrite
-     * @param bool|null $softCommit
-     * @param bool|null $waitSearcher
-     * @param bool|null $expungeDeletes
+     * @param bool $overwrite
+     * @param bool $softCommit
+     * @param bool $waitSearcher
+     * @param bool $expungeDeletes
      *
      * @return UpdateResult
      */
-    public function commit(?bool $overwrite = null, ?bool $softCommit = null, ?bool $waitSearcher = null, ?bool $expungeDeletes = null)
+    public function commit(bool $overwrite = null, bool $softCommit = null, bool $waitSearcher = null, bool $expungeDeletes = null)
     {
         $event = new PreCommitEvent($this->buffer, $overwrite, $softCommit, $waitSearcher, $expungeDeletes);
-        $this->client->getEventDispatcher()->dispatch($event, Events::PRE_COMMIT);
+        $this->client->getEventDispatcher()->dispatch(Events::PRE_COMMIT, $event);
 
         $this->updateQuery->addDocuments($this->buffer, $event->getOverwrite());
         $this->updateQuery->addCommit($event->getSoftCommit(), $event->getWaitSearcher(), $event->getExpungeDeletes());
@@ -269,7 +269,7 @@ class BufferedAdd extends AbstractPlugin
         $this->clear();
 
         $event = new PostCommitEvent($result);
-        $this->client->getEventDispatcher()->dispatch($event, Events::POST_COMMIT);
+        $this->client->getEventDispatcher()->dispatch(Events::POST_COMMIT, $event);
 
         return $result;
     }

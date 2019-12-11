@@ -219,7 +219,7 @@ EOF;
                 foreach ($ids as $id) {
                     $c .= '    '.$this->doExport($id)." => true,\n";
                 }
-                $files['removed-ids.php'] = $c."];\n";
+                $files['removed-ids.php'] = $c .= "];\n";
             }
 
             foreach ($this->generateServiceFiles() as $file => $c) {
@@ -302,10 +302,10 @@ EOF;
         return $this->proxyDumper;
     }
 
-    private function analyzeCircularReferences($sourceId, array $edges, &$checkedNodes, &$currentPath = [], $byConstructor = true)
+    private function analyzeCircularReferences($sourceId, array $edges, &$checkedNodes, &$currentPath = [])
     {
         $checkedNodes[$sourceId] = true;
-        $currentPath[$sourceId] = $byConstructor;
+        $currentPath[$sourceId] = $sourceId;
 
         foreach ($edges as $edge) {
             $node = $edge->getDestNode();
@@ -314,52 +314,44 @@ EOF;
             if (!$node->getValue() instanceof Definition || $sourceId === $id || $edge->isLazy() || $edge->isWeak()) {
                 // no-op
             } elseif (isset($currentPath[$id])) {
-                $this->addCircularReferences($id, $currentPath, $edge->isReferencedByConstructor());
+                $currentId = $id;
+                foreach (array_reverse($currentPath) as $parentId) {
+                    $this->circularReferences[$parentId][$currentId] = $currentId;
+                    if ($parentId === $id) {
+                        break;
+                    }
+                    $currentId = $parentId;
+                }
             } elseif (!isset($checkedNodes[$id])) {
-                $this->analyzeCircularReferences($id, $node->getOutEdges(), $checkedNodes, $currentPath, $edge->isReferencedByConstructor());
+                $this->analyzeCircularReferences($id, $node->getOutEdges(), $checkedNodes, $currentPath);
             } elseif (isset($this->circularReferences[$id])) {
-                $this->connectCircularReferences($id, $currentPath, $edge->isReferencedByConstructor());
+                $this->connectCircularReferences($id, $currentPath);
             }
         }
         unset($currentPath[$sourceId]);
     }
 
-    private function connectCircularReferences($sourceId, &$currentPath, $byConstructor, &$subPath = [])
+    private function connectCircularReferences($sourceId, &$currentPath, &$subPath = [])
     {
-        $currentPath[$sourceId] = $subPath[$sourceId] = $byConstructor;
+        $subPath[$sourceId] = $sourceId;
+        $currentPath[$sourceId] = $sourceId;
 
-        foreach ($this->circularReferences[$sourceId] as $id => $byConstructor) {
+        foreach ($this->circularReferences[$sourceId] as $id) {
             if (isset($currentPath[$id])) {
-                $this->addCircularReferences($id, $currentPath, $byConstructor);
+                $currentId = $id;
+                foreach (array_reverse($currentPath) as $parentId) {
+                    $this->circularReferences[$parentId][$currentId] = $currentId;
+                    if ($parentId === $id) {
+                        break;
+                    }
+                    $currentId = $parentId;
+                }
             } elseif (!isset($subPath[$id]) && isset($this->circularReferences[$id])) {
-                $this->connectCircularReferences($id, $currentPath, $byConstructor, $subPath);
+                $this->connectCircularReferences($id, $currentPath, $subPath);
             }
         }
-        unset($currentPath[$sourceId], $subPath[$sourceId]);
-    }
-
-    private function addCircularReferences($id, $currentPath, $byConstructor)
-    {
-        $currentPath[$id] = $byConstructor;
-        $circularRefs = [];
-
-        foreach (array_reverse($currentPath) as $parentId => $v) {
-            $byConstructor = $byConstructor && $v;
-            $circularRefs[] = $parentId;
-
-            if ($parentId === $id) {
-                break;
-            }
-        }
-
-        $currentId = $id;
-        foreach ($circularRefs as $parentId) {
-            if (empty($this->circularReferences[$parentId][$currentId])) {
-                $this->circularReferences[$parentId][$currentId] = $byConstructor;
-            }
-
-            $currentId = $parentId;
-        }
+        unset($currentPath[$sourceId]);
+        unset($subPath[$sourceId]);
     }
 
     private function collectLineage($class, array &$lineage)
@@ -470,8 +462,9 @@ EOF;
     /**
      * Generates the service instance.
      *
-     * @param string $id
-     * @param bool   $isSimpleInstance
+     * @param string     $id
+     * @param Definition $definition
+     * @param bool       $isSimpleInstance
      *
      * @return string
      *
@@ -507,6 +500,8 @@ EOF;
 
     /**
      * Checks if the definition is a trivial instance.
+     *
+     * @param Definition $definition
      *
      * @return bool
      */
@@ -551,7 +546,8 @@ EOF;
     /**
      * Adds method calls to a service definition.
      *
-     * @param string $variableName
+     * @param Definition $definition
+     * @param string     $variableName
      *
      * @return string
      */
@@ -583,7 +579,8 @@ EOF;
     /**
      * Adds configurator definition.
      *
-     * @param string $variableName
+     * @param Definition $definition
+     * @param string     $variableName
      *
      * @return string
      */
@@ -619,8 +616,9 @@ EOF;
     /**
      * Adds a service.
      *
-     * @param string $id
-     * @param string &$file
+     * @param string     $id
+     * @param Definition $definition
+     * @param string     &$file
      *
      * @return string
      */
@@ -663,6 +661,7 @@ EOF;
         $autowired = $definition->isAutowired() ? ' autowired' : '';
 
         if ($definition->isLazy()) {
+            unset($this->circularReferences[$id]);
             $lazyInitialization = '$lazyLoad = true';
         } else {
             $lazyInitialization = '';
@@ -737,11 +736,11 @@ EOF;
 
     private function addInlineReference($id, Definition $definition, $targetId, $forConstructor)
     {
+        list($callCount, $behavior) = $this->serviceCalls[$targetId];
+
         while ($this->container->hasAlias($targetId)) {
             $targetId = (string) $this->container->getAlias($targetId);
         }
-
-        list($callCount, $behavior) = $this->serviceCalls[$targetId];
 
         if ($id === $targetId) {
             return $this->addInlineService($id, $definition, $definition);
@@ -751,13 +750,9 @@ EOF;
             return '';
         }
 
-        $hasSelfRef = isset($this->circularReferences[$id][$targetId]) && !isset($this->definitionVariables[$definition]);
-
-        if ($hasSelfRef && !$forConstructor && !$forConstructor = !$this->circularReferences[$id][$targetId]) {
-            $code = $this->addInlineService($id, $definition, $definition);
-        } else {
-            $code = '';
-        }
+        $hasSelfRef = isset($this->circularReferences[$id][$targetId]);
+        $forConstructor = $forConstructor && !isset($this->definitionVariables[$definition]);
+        $code = $hasSelfRef && !$forConstructor ? $this->addInlineService($id, $definition, $definition) : '';
 
         if (isset($this->referenceVariables[$targetId]) || (2 > $callCount && (!$hasSelfRef || !$forConstructor))) {
             return $code;
@@ -790,23 +785,15 @@ EOTXT
 
     private function addInlineService($id, Definition $definition, Definition $inlineDef = null, $forConstructor = true)
     {
-        $code = '';
-
-        if ($isSimpleInstance = $isRootInstance = null === $inlineDef) {
-            foreach ($this->serviceCalls as $targetId => list($callCount, $behavior, $byConstructor)) {
-                if ($byConstructor && isset($this->circularReferences[$id][$targetId]) && !$this->circularReferences[$id][$targetId]) {
-                    $code .= $this->addInlineReference($id, $definition, $targetId, $forConstructor);
-                }
-            }
-        }
+        $isSimpleInstance = $isRootInstance = null === $inlineDef;
 
         if (isset($this->definitionVariables[$inlineDef = $inlineDef ?: $definition])) {
-            return $code;
+            return '';
         }
 
         $arguments = [$inlineDef->getArguments(), $inlineDef->getFactory()];
 
-        $code .= $this->addInlineVariables($id, $definition, $arguments, $forConstructor);
+        $code = $this->addInlineVariables($id, $definition, $arguments, $forConstructor);
 
         if ($arguments = array_filter([$inlineDef->getProperties(), $inlineDef->getMethodCalls(), $inlineDef->getConfigurator()])) {
             $isSimpleInstance = false;
@@ -963,7 +950,7 @@ $bagClass
  */
 class $class extends $baseClass
 {
-    private \$parameters = [];
+    private \$parameters;
     private \$targetDirs = [];
 
     public function __construct()
@@ -1465,6 +1452,7 @@ EOF;
     /**
      * Exports parameters.
      *
+     * @param array  $parameters
      * @param string $path
      * @param int    $indent
      *
@@ -1562,7 +1550,7 @@ EOF;
         return implode(' && ', $conditions);
     }
 
-    private function getDefinitionsFromArguments(array $arguments, \SplObjectStorage $definitions = null, array &$calls = [], $byConstructor = null)
+    private function getDefinitionsFromArguments(array $arguments, \SplObjectStorage $definitions = null, array &$calls = [])
     {
         if (null === $definitions) {
             $definitions = new \SplObjectStorage();
@@ -1570,16 +1558,12 @@ EOF;
 
         foreach ($arguments as $argument) {
             if (\is_array($argument)) {
-                $this->getDefinitionsFromArguments($argument, $definitions, $calls, $byConstructor);
+                $this->getDefinitionsFromArguments($argument, $definitions, $calls);
             } elseif ($argument instanceof Reference) {
                 $id = $this->container->normalizeId($argument);
 
-                while ($this->container->hasAlias($id)) {
-                    $id = (string) $this->container->getAlias($id);
-                }
-
                 if (!isset($calls[$id])) {
-                    $calls[$id] = [0, $argument->getInvalidBehavior(), $byConstructor];
+                    $calls[$id] = [0, $argument->getInvalidBehavior()];
                 } else {
                     $calls[$id][1] = min($calls[$id][1], $argument->getInvalidBehavior());
                 }
@@ -1591,10 +1575,8 @@ EOF;
                 $definitions[$argument] = 1 + $definitions[$argument];
             } else {
                 $definitions[$argument] = 1;
-                $arguments = [$argument->getArguments(), $argument->getFactory()];
-                $this->getDefinitionsFromArguments($arguments, $definitions, $calls, null === $byConstructor || $byConstructor);
-                $arguments = [$argument->getProperties(), $argument->getMethodCalls(), $argument->getConfigurator()];
-                $this->getDefinitionsFromArguments($arguments, $definitions, $calls, null !== $byConstructor && $byConstructor);
+                $arguments = [$argument->getArguments(), $argument->getFactory(), $argument->getProperties(), $argument->getMethodCalls(), $argument->getConfigurator()];
+                $this->getDefinitionsFromArguments($arguments, $definitions, $calls);
             }
         }
 
@@ -1735,11 +1717,6 @@ EOF;
             return '$'.$value;
         } elseif ($value instanceof Reference) {
             $id = $this->container->normalizeId($value);
-
-            while ($this->container->hasAlias($id)) {
-                $id = (string) $this->container->getAlias($id);
-            }
-
             if (null !== $this->referenceVariables && isset($this->referenceVariables[$id])) {
                 return $this->dumpValue($this->referenceVariables[$id], $interpolate);
             }

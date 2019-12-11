@@ -2,11 +2,11 @@
 
 namespace Drupal\mailgun;
 
-use Drupal\Component\Utility\EmailValidatorInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Egulias\EmailValidator\EmailLexer;
 use Egulias\EmailValidator\EmailParser;
+use Egulias\EmailValidator\EmailValidator;
 use Psr\Log\LoggerInterface;
 use Mailgun\Mailgun;
 use Mailgun\Exception;
@@ -45,13 +45,6 @@ class MailgunHandler implements MailgunHandlerInterface {
   protected $messenger;
 
   /**
-   * The email validator.
-   *
-   * @var \Drupal\Component\Utility\EmailValidatorInterface
-   */
-  protected $emailValidator;
-
-  /**
    * Constructs a new \Drupal\mailgun\MailHandler object.
    *
    * @param \Mailgun\Mailgun $mailgun_client
@@ -63,12 +56,11 @@ class MailgunHandler implements MailgunHandlerInterface {
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger.
    */
-  public function __construct(Mailgun $mailgun_client, ConfigFactoryInterface $configFactory, LoggerInterface $logger, MessengerInterface $messenger, EmailValidatorInterface $emailValidator) {
+  public function __construct(Mailgun $mailgun_client, ConfigFactoryInterface $configFactory, LoggerInterface $logger, MessengerInterface $messenger) {
     $this->mailgunConfig = $configFactory->get(MAILGUN_CONFIG_NAME);
     $this->logger = $logger;
     $this->mailgun = $mailgun_client;
     $this->messenger = $messenger;
-    $this->emailValidator = $emailValidator;
   }
 
   /**
@@ -159,7 +151,9 @@ class MailgunHandler implements MailgunHandlerInterface {
     }
 
     $emailParser = new EmailParser(new EmailLexer());
-    if ($this->emailValidator->isValid($email)) {
+    $emailValidator = new EmailValidator();
+
+    if ($emailValidator->isValid($email) === TRUE) {
       return $emailParser->parse($email)['domain'];
     }
 

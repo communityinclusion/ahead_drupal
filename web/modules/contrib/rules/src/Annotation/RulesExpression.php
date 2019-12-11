@@ -28,6 +28,13 @@ class RulesExpression extends Plugin {
   public $label;
 
   /**
+   * The rules type, either "action" or "condition".
+   *
+   * @var string
+   */
+  public $type = '';
+
+  /**
    * The class name of the form for displaying/editing this expression.
    *
    * @var string

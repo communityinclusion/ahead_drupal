@@ -10,19 +10,6 @@ use Drupal\Core\Form\FormStateInterface;
 interface WebformSubmissionConditionsValidatorInterface {
 
   /**
-   * Apply states (aka conditional logic) to wizard pages.
-   *
-   * @param array $pages
-   *   An associative array of webform wizard pages.
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
-   *   A webform submission.
-   *
-   * @return array
-   *   An associative array of webform wizard pages with hidden pages removed.
-   */
-  public function buildPages(array $pages, WebformSubmissionInterface $webform_submission);
-
-  /**
    * Apply form #states to visible elements.
    *
    * @param array $form
@@ -102,18 +89,5 @@ interface WebformSubmissionConditionsValidatorInterface {
    *   TRUE if the element is visible.
    */
   public function isElementVisible(array $element, WebformSubmissionInterface $webform_submission);
-
-  /**
-   * Determine if an element is enabled.
-   *
-   * @param array $element
-   *   An element.
-   * @param \Drupal\webform\WebformSubmissionInterface $webform_submission
-   *   A webform submission.
-   *
-   * @return bool
-   *   TRUE if the element is enabled.
-   */
-  public function isElementEnabled(array $element, WebformSubmissionInterface $webform_submission);
 
 }

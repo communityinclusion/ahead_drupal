@@ -3,9 +3,7 @@
 namespace Drupal\devel;
 
 /**
- * Interface DevelDumperManagerInterface.
- *
- * @package Drupal\devel
+ * Interface DevelDumperManagerInterface
  */
 interface DevelDumperManagerInterface {
 

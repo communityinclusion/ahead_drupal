@@ -2,9 +2,7 @@
 
 /**
  * @file
- * This file is only used by Drush8.
- *
- * Drush9 discovers its commands via tagged
+ * This file is only used by Drush8. Drush9 discovers its commands via tagged
  * service(s) in devel.services.yml. Also see classes in src/Commands.
  */
 
@@ -14,95 +12,95 @@ use Drupal\Component\Uuid\Php;
  * Implements hook_drush_command().
  */
 function devel_drush_command() {
-  $items['devel-reinstall'] = [
+  $items['devel-reinstall'] = array(
     'description' => dt('Uninstall, and Install a list of projects.'),
-    'drush dependencies' => ['pm'],
-    'arguments' => [
+    'drush dependencies' => array('pm'),
+    'arguments' => array(
       'projects' => dt('A space-separated list of project names.'),
-    ],
-    'allow-additional-options' => ['pm-uninstall', 'pm-enable'],
+    ),
+    'allow-additional-options' => array('pm-uninstall', 'pm-enable'),
     'required-arguments' => 1,
-    'aliases' => ['dre'],
-  ];
-  $items['fn-hook'] = [
+    'aliases' => array('dre'),
+  );
+  $items['fn-hook'] = array(
     'description' => 'List implementations of a given hook and explore the source of the selected one.',
-    'arguments' => [
-      'hook' => 'The name of the hook to explore (e.g. "menu" for hook_menu()).',
-    ],
-    'examples' => [
+    'arguments' => array(
+      'hook' => 'The name of the hook to explore (e.g. "menu" for hook_menu()).'
+    ),
+    'examples' => array(
       'fn-hook cron' => 'List implementations of hook_cron().',
-    ],
-    'allow-additional-options' => ['fn-view'],
+    ),
+    'allow-additional-options' => array('fn-view'),
     'required-arguments' => 1,
-    'aliases' => ['fnh', 'hook'],
-  ];
-  $items['fn-event'] = [
+    'aliases' => array('fnh', 'hook'),
+  );
+  $items['fn-event'] = array(
     'description' => 'List implementations of a given event and explore source of specified one.',
-    'arguments' => [
-      'event' => 'The name of the event to explore. If omitted, a list of events is shown.',
-    ],
-    'examples' => [
+    'arguments' => array(
+      'event' => 'The name of the event to explore. If omitted, a list of events is shown.'
+    ),
+    'examples' => array(
       'fn-event' => 'Pick a Kernel event, then pick an implementation, and then view its source code.',
       'fn-event kernel.terminate' => 'Pick a terminate subscribers and view its source code.',
-    ],
-    'allow-additional-options' => ['fn-view'],
-    'aliases' => ['fne', 'event'],
-  ];
-  $items['fn-view'] = [
+    ),
+    'allow-additional-options' => array('fn-view'),
+    'aliases' => array('fne', 'event'),
+  );
+  $items['fn-view'] = array(
     'description' => 'Show the source of specified function or method.',
-    'arguments' => [
+    'arguments' => array(
       'function' => 'The name of the function or method to view.',
-    ],
-    'options' => [
+    ),
+    'options' => array(
       'pipe' => 'Output just the filename of the function or method',
       'format' => 'Specify how the filename should be printed. Available placeholders are @startline, @endline and @file',
-    ],
-    'examples' => [
+    ),
+    'examples' => array(
       'fn-view drupal_set_breadcrumb' => 'View the source code for function "drupal_set_breadcrumb"',
       'vi `drush --pipe fn-view user_access --format=\'+@startline @file\'`' => 'Edit the file that contains the function "user_access"',
-      'fn-view NodeController::load' => 'View the source code for method load in the class NodeController',
-    ],
-    'aliases' => ['fnv'],
+      'fn-view NodeController::load' => 'View the source code for method load in the class NodeController'
+    ),
+    'aliases' => array('fnv'),
     'required-arguments' => 1,
-  ];
-  $items['devel-token'] = [
+  );
+  $items['devel-token'] = array(
     'description' => dt('List available tokens'),
-    'aliases' => ['token'],
-    // @todo support --format option for json, csv, etc.
-  ];
+    'aliases' => array('token'),
+    //@todo support --format option for json, csv, etc.
+  );
 
-  $items['devel-container-services'] = [
+  $items['devel-container-services'] = array(
     'description' => 'Get a list of available container services.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_FULL,
-    'core' => ['8+'],
-    'aliases' => ['dcs'],
-    'options' => [
+    'core' => array('8+'),
+    'aliases' => array('dcs'),
+    'options' => array(
       'format' => 'Format to output. Allowed values are: json, export, html.',
-    ],
-    'arguments' => [
+    ),
+    'arguments' => array(
       'prefix' => 'A prefix to filter the service list by.',
-    ],
-    'examples' => [
+    ),
+    'examples' => array(
       'drush container-services' => 'Gets a list of all available container services',
       'drush container-services plugin.manager' => 'Get all services containing "plugin.manager"',
-    ],
-    'outputformat' => [
+    ),
+    'outputformat' => array(
       'default' => 'list',
       'pipe-format' => 'export',
-    ],
-  ];
+    ),
+  );
 
-  $items['devel-generate-uuid'] = [
+  $items['devel-generate-uuid'] = array(
     'description' => 'Generate a UUID.',
-    'core' => ['8+'],
-    'examples' => [
+    'core' => array('8+'),
+    'examples' => array(
       "drush devel-generate-uuid" => "Outputs a Universally Unique IDentifier.",
-    ],
-    'aliases' => ['uuid'],
-    'outputformat' => [
+    ),
+    'aliases' => array('uuid'),
+    'outputformat' => array(
       'default' => 'string',
-    ],
-  ];
+    ),
+  );
 
   return $items;
 }
@@ -113,10 +111,10 @@ function devel_drush_command() {
 function drush_devel_reinstall() {
   $projects = func_get_args();
 
-  $args = array_merge(['pm-uninstall'], $projects);
+  $args = array_merge(array('pm-uninstall'), $projects);
   call_user_func_array('drush_invoke', $args);
 
-  $args = array_merge(['pm-enable'], $projects);
+  $args = array_merge(array('pm-enable'), $projects);
   call_user_func_array('drush_invoke', $args);
 }
 
@@ -144,10 +142,7 @@ function drush_devel_fn_hook($hook) {
 function drush_devel_fn_event($event = NULL) {
   $dispatcher = Drupal::service('event_dispatcher');
   if (empty($event)) {
-    $events = [
-      'kernel.controller', 'kernel.exception', 'kernel.request',
-      'kernel.response', 'kernel.terminate', 'kernel.view',
-    ];
+    $events = array('kernel.controller', 'kernel.exception', 'kernel.request', 'kernel.response', 'kernel.terminate', 'kernel.view');
     $events = array_combine($events, $events);
     if (!$event = drush_choice($events, 'Enter the event you wish to explore.')) {
       return drush_user_abort();
@@ -188,11 +183,7 @@ function drush_devel_fn_view($function_name) {
     }
     $reflect = new ReflectionMethod($class, $method);
   }
-  $func_info = [
-    '@file' => $reflect->getFileName(),
-    '@startline' => $reflect->getStartLine(),
-    '@endline' => $reflect->getEndLine(),
-  ];
+  $func_info = array('@file' => $reflect->getFileName(), '@startline' => $reflect->getStartLine(), '@endline' => $reflect->getEndLine());
   $format = drush_get_option('format', '@file');
   drush_print_pipe(dt($format, $func_info));
   drush_print(dt("// file: @file, lines @startline-@endline", $func_info));
@@ -204,11 +195,11 @@ function drush_devel_fn_view($function_name) {
  * Command callback. List available tokens.
  */
 function drush_devel_token() {
-  $rows[] = [dt('Group'), dt('Token'), dt('Name')];
+  $rows[] = array(dt('Group'), dt('Token'), dt('Name'));
   $all = \Drupal::token()->getInfo();
   foreach ($all['tokens'] as $group => $tokens) {
     foreach ($tokens as $key => $token) {
-      $rows[] = [$group, $key, $token['name']];
+      $rows[] = array($group, $key, $token['name']);
     }
   }
   drush_print_table($rows, TRUE);
@@ -226,21 +217,19 @@ function drush_devel_generate_uuid() {
 }
 
 /**
- * Print the specified function.
- *
  * Print the specified function, including any
  * doxygen-style comments that come before it.
  */
 function _drush_devel_print_function($file, $start_line, $end_line) {
   $line_num = 0;
   $doxygen = NULL;
-  $fp = fopen($file, 'r');
+  $fp = fopen( $file, 'r' );
 
   while (!feof($fp) && ($line_num < ($start_line - 1))) {
     $line = fgets($fp);
     ++$line_num;
 
-    if (substr($line, 0, 3) == '/**') {
+    if (substr($line,0,3) == '/**') {
       $doxygen = $line;
     }
     elseif (isset($doxygen)) {

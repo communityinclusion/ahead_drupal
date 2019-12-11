@@ -47,15 +47,7 @@ webform_multiple_no_add_more:
   - One
   - Two
   - Three
-webform_multiple_no_add_more_input:
-  - One
-  - Two
-  - Three
 webform_multiple_custom_label:
-  - One
-  - Two
-  - Three
-webform_multiple_required:
   - One
   - Two
   - Three
@@ -112,14 +104,13 @@ webform_multiple_elements_flattened:
   - value: two
     text: Two
     description: 'This is the number 2.'
-webform_multiple_no_items: {  }
-webform_multiple_custom_attributes: {  }");
+webform_multiple_no_items: {  }");
 
     /**************************************************************************/
     // Rendering.
     /**************************************************************************/
 
-    $this->drupalGet('/webform/test_element_multiple');
+    $this->drupalGet('webform/test_element_multiple');
 
     // Check first tr.
     $this->assertRaw('<tr class="draggable odd" data-drupal-selector="edit-webform-multiple-default-items-0">');
@@ -138,12 +129,7 @@ webform_multiple_custom_attributes: {  }");
 
     // Check that add more is removed.
     $this->assertFieldByName('webform_multiple_no_operations[add][more_items]', '1');
-    $this->assertNoFieldByName('webform_multiple_no_add_more_table_add', 'Add');
     $this->assertNoFieldByName('webform_multiple_no_add_more[add][more_items]', '1');
-
-    // Check that add more input is removed.
-    $this->assertFieldByName('webform_multiple_no_add_more_input_table_add', 'Add');
-    $this->assertNoFieldByName('webform_multiple_no_add_more_input[add][more_items]', '1');
 
     // Check custom labels.
     $this->assertRaw('<input data-drupal-selector="edit-webform-multiple-custom-label-add-submit" formnovalidate="formnovalidate" type="submit" id="edit-webform-multiple-custom-label-add-submit" name="webform_multiple_custom_label_table_add" value="{add_more_button_label}" class="button js-form-submit form-submit" />');
@@ -154,16 +140,6 @@ webform_multiple_custom_attributes: {  }");
 
     // Check no items message.
     $this->assertRaw('No items entered. Please add items below.');
-
-    // Check that required does not include any empty elements.
-    $this->assertFieldByName('webform_multiple_required[items][2][_item_]');
-    $this->assertNoFieldByName('webform_multiple_required[items][3][_item_]');
-
-    // Check custom label, wrapper, and element attributes.
-    $this->assertRaw('<th class="custom-label webform_multiple_custom_attributes-table--textfield webform-multiple-table--textfield">textfield</th>');
-    $this->assertRaw('<label class="custom-label visually-hidden"');
-    $this->assertRaw('<div class="custom-wrapper js-form-item form-item');
-    $this->assertRaw('<input class="custom-element form-text"');
 
     /**************************************************************************/
     // Validation.
@@ -231,7 +207,7 @@ webform_multiple_custom_attributes: {  }");
     // Check no items message is never displayed when #required.
     $webform->setElementProperties('webform_multiple_no_items', ['#type' => 'webform_multiple', '#title' => 'webform_multiple_no_items', '#required' => TRUE]);
     $webform->save();
-    $this->drupalGet('/webform/test_element_multiple');
+    $this->drupalGet('webform/test_element_multiple');
     $this->assertNoRaw('No items entered. Please add items below.');
     $this->drupalPostAjaxForm(NULL, $edit, 'webform_multiple_default_table_remove_0');
     $this->assertNoRaw('No items entered. Please add items below.');

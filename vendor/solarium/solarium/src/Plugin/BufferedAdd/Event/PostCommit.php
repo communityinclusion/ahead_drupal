@@ -3,7 +3,7 @@
 namespace Solarium\Plugin\BufferedAdd\Event;
 
 use Solarium\QueryType\Update\Result;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * PostCommit event, see Events for details.

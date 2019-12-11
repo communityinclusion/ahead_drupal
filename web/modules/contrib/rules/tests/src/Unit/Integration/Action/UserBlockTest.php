@@ -49,7 +49,7 @@ class UserBlockTest extends RulesEntityIntegrationTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->enableModule('user');
 

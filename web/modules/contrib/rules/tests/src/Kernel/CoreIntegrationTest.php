@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\rules\Kernel;
 
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\node\Entity\Node;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinition;
@@ -14,8 +13,11 @@ use Drupal\user\Entity\User;
  * Test using Drupal core integration of Rules API.
  *
  * @group Rules
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class CoreIntegrationTest extends RulesKernelTestBase {
+class CoreIntegrationTest extends RulesDrupalTestBase {
 
   /**
    * Modules to enable.
@@ -27,7 +29,7 @@ class CoreIntegrationTest extends RulesKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
 
     $this->installSchema('system', ['sequences']);
@@ -157,8 +159,8 @@ class CoreIntegrationTest extends RulesKernelTestBase {
       ->setContextValue('type', 'status')
       ->execute();
 
-    $messages = $this->messenger->all();
-    $this->assertEquals((string) $messages[MessengerInterface::TYPE_STATUS][0], 'Hello klausi!');
+    $messages = drupal_set_message();
+    $this->assertEquals((string) $messages['status'][0], 'Hello klausi!');
   }
 
   /**
@@ -200,8 +202,8 @@ class CoreIntegrationTest extends RulesKernelTestBase {
       ->setContextValue('type', 'status')
       ->execute();
 
-    $messages = $this->messenger->all();
-    $this->assertEquals((string) $messages[MessengerInterface::TYPE_STATUS][0], 'The node was created in the year 1970');
+    $messages = drupal_set_message();
+    $this->assertEquals((string) $messages['status'][0], 'The node was created in the year 1970');
   }
 
   /**
@@ -313,8 +315,8 @@ class CoreIntegrationTest extends RulesKernelTestBase {
 
     // Test using global context during execution.
     $component->execute();
-    $messages = $this->messenger->all();
-    $this->assertEquals((string) $messages[MessengerInterface::TYPE_STATUS][0], 'hubert');
+    $messages = drupal_set_message();
+    $this->assertEquals((string) $messages['status'][0], 'hubert');
   }
 
 }

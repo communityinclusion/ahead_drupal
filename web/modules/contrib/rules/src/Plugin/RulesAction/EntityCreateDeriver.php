@@ -68,7 +68,7 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
       }
 
       $this->derivatives[$entity_type_id] = [
-        'label' => $this->t('Create a new @entity_type', ['@entity_type' => $entity_type->getSingularLabel()]),
+        'label' => $this->t('Create a new @entity_type', ['@entity_type' => $entity_type->getLowercaseLabel()]),
         'category' => $entity_type->getLabel(),
         'entity_type_id' => $entity_type_id,
         'context' => [],
@@ -102,8 +102,7 @@ class EntityCreateDeriver extends DeriverBase implements ContainerDeriverInterfa
 
         $type_definition = $item_definition->getPropertyDefinition($main_property_name);
 
-        // Get around types which don't properly define their main property
-        // or lack a main property entirely.
+        // Get around types which don't properly define their main property (or lack of one)
         if (is_null($type_definition)) {
           continue;
         }

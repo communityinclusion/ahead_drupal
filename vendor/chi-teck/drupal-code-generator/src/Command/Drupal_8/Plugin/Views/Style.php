@@ -6,7 +6,6 @@ use DrupalCodeGenerator\Command\BaseGenerator;
 use DrupalCodeGenerator\Utils;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Implements d8:plugin:views:style command.
@@ -21,10 +20,10 @@ class Style extends BaseGenerator {
    * {@inheritdoc}
    */
   protected function interact(InputInterface $input, OutputInterface $output) {
-    $questions = Utils::moduleQuestions() + Utils::pluginQuestions();
-    $questions['configurable'] = new ConfirmationQuestion('Make the plugin configurable?', TRUE);
+    $questions = Utils::defaultPluginQuestions();
 
-    $vars = $this->collectVars($input, $output, $questions);
+    $vars = &$this->collectVars($input, $output, $questions);
+    $vars['class'] = Utils::camelize($vars['plugin_label']);
 
     $this->addFile()
       ->path('src/Plugin/views/style/{class}.php')
@@ -41,13 +40,10 @@ class Style extends BaseGenerator {
       ->action('append')
       ->headerSize(7);
 
-    if ($vars['configurable']) {
-      $this->addFile()
-        ->path('config/schema/{machine_name}.schema.yml')
-        ->template('d8/plugin/views/style-schema.twig')
-        ->action('append');
-    }
-
+    $this->addFile()
+      ->path('config/schema/{machine_name}.schema.yml')
+      ->template('d8/plugin/views/style-schema.twig')
+      ->action('append');
   }
 
 }

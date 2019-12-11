@@ -1,7 +1,5 @@
 <?php
 
-// @codingStandardsIgnoreFile
-
 /*~ class.smtp.php
 Orginal release information:
 .---------------------------------------------------------------------------.
@@ -197,19 +195,12 @@ class SMTP {
       return FALSE;
     }
 
-    // Allow the best TLS version(s) we can
-    $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
-    // PHP 5.6.7 dropped inclusion of TLS 1.1 and 1.2 in STREAM_CRYPTO_METHOD_TLS_CLIENT
-    // so add them back in manually if we can
-    if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
-      $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
-      $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
+    // Begin encrypted connection
+    if (!stream_socket_enable_crypto($this->smtp_conn, TRUE, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+      return FALSE;
     }
 
-    // Begin encrypted connection
-    $crypto_ok = stream_socket_enable_crypto($this->smtp_conn, TRUE, $crypto_method);
-
-    return (bool) $crypto_ok;
+    return TRUE;
   }
 
   /**
@@ -396,7 +387,7 @@ class SMTP {
 
     $max_line_length = 998; // used below; set here for ease in change
 
-    foreach ($lines as $line) {
+    while (list(, $line) = @each($lines)) {
       $lines_out = NULL;
       if ($line == "" && $in_headers) {
         $in_headers = FALSE;
@@ -426,7 +417,7 @@ class SMTP {
       $lines_out[] = $line;
 
       // send the lines to the server
-      foreach ($lines_out as $line_out) {
+      while (list(, $line_out) = @each($lines_out)) {
         if (strlen($line_out) > 0) {
           if (substr($line_out, 0, 1) == ".") {
             $line_out = "." . $line_out;

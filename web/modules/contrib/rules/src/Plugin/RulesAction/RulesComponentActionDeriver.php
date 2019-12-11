@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Derives Rules component action plugin definitions from config entities.
  *
- * @see \Drupal\rules\Plugin\RulesAction\RulesComponentAction
+ * @see RulesComponentAction
  */
 class RulesComponentActionDeriver extends DeriverBase implements ContainerDeriverInterface {
   use StringTranslationTrait;
@@ -32,7 +32,7 @@ class RulesComponentActionDeriver extends DeriverBase implements ContainerDerive
   protected $expressionManager;
 
   /**
-   * Constructor.
+   * Contructor.
    */
   public function __construct(EntityStorageInterface $storage, ExpressionManagerInterface $expression_manager) {
     $this->storage = $storage;

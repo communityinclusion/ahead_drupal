@@ -10,8 +10,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Test for the Symfony event mapping to Rules events.
  *
  * @group RulesEvent
+ * @group legacy
+ * @todo Remove the 'legacy' tag when Rules no longer uses deprecated code.
+ * @see https://www.drupal.org/project/rules/issues/2922757
  */
-class EventIntegrationTest extends RulesKernelTestBase {
+class EventIntegrationTest extends RulesDrupalTestBase {
 
   /**
    * The entity storage for Rules config entities.
@@ -30,18 +33,18 @@ class EventIntegrationTest extends RulesKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  public function setUp() {
     parent::setUp();
     $this->storage = $this->container->get('entity_type.manager')->getStorage('rules_reaction_rule');
-
-    $this->installEntitySchema('user');
-    $this->installEntitySchema('node');
 
     $this->installConfig(['system']);
     $this->installConfig(['field']);
     $this->installConfig(['node']);
     $this->installSchema('node', ['node_access']);
     $this->installSchema('system', ['sequences']);
+
+    $this->installEntitySchema('user');
+    $this->installEntitySchema('node');
   }
 
   /**

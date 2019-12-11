@@ -16,6 +16,7 @@ use PHP_CodeSniffer\Util\Tokens;
 class OpeningFunctionBraceKernighanRitchieSniff implements Sniff
 {
 
+
     /**
      * Should this sniff check function braces?
      *

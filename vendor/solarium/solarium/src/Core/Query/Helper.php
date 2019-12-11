@@ -101,8 +101,7 @@ class Helper
      *
      * @see http://lucene.apache.org/solr/api/org/apache/solr/schema/DateField.html
      *
-     * @param int|string|\DateTimeInterface $input accepted formats: timestamp, date string, DateTime or
-     *                                             DateTimeImmutable
+     * @param int|string|\DateTimeInterface $input accepted formats: timestamp, date string or DateTime / DateTimeImmutable
      *
      * @return string|bool false is returned in case of invalid input
      */
@@ -142,8 +141,6 @@ class Helper
             // when we get here the input is always a datetime object
             $input = $input->setTimezone(new \DateTimeZone('UTC'));
             // Solr seems to require the format PHP erroneously declares as ISO8601.
-            // @todo use DateTimeInterface as soon as we require PHP 7.2 at least:
-            // $iso8601 = $input->format(\DateTimeInterface::ISO8601);
             /** @noinspection DateTimeConstantsUsageInspection */
             $iso8601 = $input->format(\DateTime::ISO8601);
             $iso8601 = strstr($iso8601, '+', true); //strip timezone

@@ -15,7 +15,6 @@ use Consolidation\SiteAlias\SiteAliasManager;
 use Drush\Command\DrushCommandInfoAlterer;
 use Consolidation\Config\Util\ConfigOverlay;
 use Drush\Config\DrushConfig;
-use Drush\SiteAlias\ProcessManager;
 
 /**
  * Prepare our Dependency Injection Container
@@ -110,9 +109,13 @@ class DependencyInjection
         $container->share('bootstrap.hook', 'Drush\Boot\BootstrapHook')
           ->withArgument('bootstrap.manager');
         $container->share('tildeExpansion.hook', 'Drush\Runtime\TildeExpansionHook');
-        $container->share('process.manager', ProcessManager::class)
+        $container->share('ssh.transport', \Consolidation\SiteProcess\Factory\SshTransportFactory::class);
+        $container->share('docker-compose.transport', \Consolidation\SiteProcess\Factory\DockerComposeTransportFactory::class);
+        $container->share('process.manager', 'Drush\SiteAlias\ProcessManager')
             ->withMethodCall('setConfig', ['config'])
-            ->withMethodCall('setConfigRuntime', ['config.runtime']);
+            ->withMethodCall('setConfigRuntime', ['config.runtime'])
+            ->withMethodCall('add', ['ssh.transport'])
+            ->withMethodCall('add', ['docker-compose.transport']);
         $container->share('redispatch.hook', 'Drush\Runtime\RedispatchHook')
             ->withArgument('process.manager');
 
@@ -159,8 +162,6 @@ class DependencyInjection
 
         $commandProcessor = $container->get('commandProcessor');
         $commandProcessor->setPassExceptions(true);
-
-        ProcessManager::addTransports($container->get('process.manager'));
     }
 
     protected function injectApplicationServices(ContainerInterface $container, Application $application)

@@ -3,7 +3,7 @@
 namespace Solarium\Plugin\BufferedAdd\Event;
 
 use Solarium\Core\Query\DocumentInterface;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * PreCommit event, see Events for details.

@@ -50,6 +50,9 @@ class Exec extends BaseTask implements CommandInterface, PrintedInterface, Simul
         $this->command = $this->receiveCommand($command);
     }
 
+    /**
+     *
+     */
     public function __destruct()
     {
         $this->stop();
@@ -57,8 +60,6 @@ class Exec extends BaseTask implements CommandInterface, PrintedInterface, Simul
 
     /**
      * Executes command in background mode (asynchronously)
-     *
-     * @param bool $arg
      *
      * @return $this
      */

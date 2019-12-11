@@ -9,9 +9,3 @@ devel-toolbar:
   css:
     component:
       css/devel.toolbar.css: {}
-
-devel-table-filter:
-  version: VERSION
-  js: {}
-  dependencies:
-    - system/drupal.system.modules

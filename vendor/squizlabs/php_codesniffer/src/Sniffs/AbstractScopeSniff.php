@@ -66,8 +66,7 @@ abstract class AbstractScopeSniff implements Sniff
      *                               processTokenOutsideScope method.
      *
      * @see    PHP_CodeSniffer.getValidScopeTokeners()
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified tokens arrays are empty
-     *                                                      or invalid.
+     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified tokens array is empty.
      */
     public function __construct(
         array $scopeTokens,

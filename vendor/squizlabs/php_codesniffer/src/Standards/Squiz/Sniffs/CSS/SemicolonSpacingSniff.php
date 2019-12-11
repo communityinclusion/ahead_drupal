@@ -54,13 +54,7 @@ class SemicolonSpacingSniff implements Sniff
             return;
         }
 
-        $ignore = Tokens::$emptyTokens;
-        if ($tokens[$nextStatement]['code'] === T_STYLE) {
-            // Allow for star-prefix hack.
-            $ignore[] = T_MULTIPLY;
-        }
-
-        $endOfThisStatement = $phpcsFile->findPrevious($ignore, ($nextStatement - 1), null, true);
+        $endOfThisStatement = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($nextStatement - 1), null, true);
         if ($tokens[$endOfThisStatement]['code'] !== T_SEMICOLON) {
             $error = 'Style definitions must end with a semicolon';
             $phpcsFile->addError($error, $endOfThisStatement, 'NotAtEnd');

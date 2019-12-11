@@ -19,7 +19,7 @@ use Robo\Result;
  * Use the following scss compiler in your project:
  *
  * ```
- * "scssphp/scssphp ": "~1.0.0",
+ * "leafo/scssphp": "~0.1",
  * ```
  *
  * You can implement additional compilers by extending this task and adding a
@@ -34,12 +34,12 @@ class Scss extends CssPreprocessor
      * @var string[]
      */
     protected $compilers = [
-        'scssphp', // https://github.com/scssphp/scssphp
+        'scssphp', // https://github.com/leafo/scssphp
     ];
 
     /**
      * scssphp compiler
-     * @link https://github.com/scssphp/scssphp
+     * @link https://github.com/leafo/scssphp
      *
      * @param string $file
      *
@@ -47,12 +47,12 @@ class Scss extends CssPreprocessor
      */
     protected function scssphp($file)
     {
-        if (!class_exists('\ScssPhp\ScssPhp\Compiler')) {
-            return Result::errorMissingPackage($this, 'scssphp', 'scssphp/scssphp');
+        if (!class_exists('\Leafo\ScssPhp\Compiler')) {
+            return Result::errorMissingPackage($this, 'scssphp', 'leafo/scssphp');
         }
 
         $scssCode = file_get_contents($file);
-        $scss = new \ScssPhp\ScssPhp\Compiler();
+        $scss = new \Leafo\ScssPhp\Compiler();
 
         // set options for the scssphp compiler
         if (isset($this->compilerOptions['importDirs'])) {
@@ -71,16 +71,16 @@ class Scss extends CssPreprocessor
      *
      * The method setFormatter($formatterName) sets the current formatter to $formatterName,
      * the name of a class as a string that implements the formatting interface. See the source
-     * for ScssPhp\ScssPhp\Formatter\Expanded for an example.
+     * for Leafo\ScssPhp\Formatter\Expanded for an example.
      *
-     * Five formatters are included with scssphp/scssphp:
-     * - ScssPhp\ScssPhp\Formatter\Expanded
-     * - ScssPhp\ScssPhp\Formatter\Nested (default)
-     * - ScssPhp\ScssPhp\Formatter\Compressed
-     * - ScssPhp\ScssPhp\Formatter\Compact
-     * - ScssPhp\ScssPhp\Formatter\Crunched
+     * Five formatters are included with leafo/scssphp:
+     * - Leafo\ScssPhp\Formatter\Expanded
+     * - Leafo\ScssPhp\Formatter\Nested (default)
+     * - Leafo\ScssPhp\Formatter\Compressed
+     * - Leafo\ScssPhp\Formatter\Compact
+     * - Leafo\ScssPhp\Formatter\Crunched
      *
-     * @link https://scssphp.github.io/scssphp/docs/#output-formatting
+     * @link http://leafo.github.io/scssphp/docs/#output-formatting
      *
      * @param string $formatterName
      *

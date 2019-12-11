@@ -2,6 +2,7 @@
 
 namespace Drupal\ds\Plugin\views\Entity\Render;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\views\Entity\Render\EntityTranslationRendererBase;
 
 /**
@@ -120,15 +121,13 @@ abstract class RendererBase extends EntityTranslationRendererBase {
           // New way of creating the alias.
           if (strpos($group_field, '|') !== FALSE) {
             list(, $ffield) = explode('|', $group_field);
-            if (isset($this->view->sort[$ffield]->realField)) {
-              $group_field = $this->view->sort[$ffield]->tableAlias . '_' . $this->view->sort[$ffield]->realField;
-            }
+            $group_field = $this->view->sort[$ffield]->tableAlias . '_' . $this->view->sort[$ffield]->realField;
           }
 
           // Note, the keys in the $row object are cut of at 60 chars.
           // see views_plugin_query_default.inc.
-          if (mb_strlen($group_field) > 60) {
-            $group_field = mb_substr($group_field, 0, 60);
+          if (Unicode::strlen($group_field) > 60) {
+            $group_field = Unicode::substr($group_field, 0, 60);
           }
 
           $raw_group_value = isset($row->{$group_field}) ? $row->{$group_field} : '';

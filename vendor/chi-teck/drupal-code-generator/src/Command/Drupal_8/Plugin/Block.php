@@ -22,9 +22,7 @@ class Block extends BaseGenerator {
    * {@inheritdoc}
    */
   protected function interact(InputInterface $input, OutputInterface $output) {
-
-    $questions = Utils::moduleQuestions();
-    $questions += Utils::pluginQuestions('Block');
+    $questions = Utils::defaultPluginQuestions();
     $questions['plugin_label'] = new Question('Block admin label', 'Example');
     $questions['plugin_label']->setValidator([Utils::class, 'validateRequired']);
     $questions['category'] = new Question('Block category', 'Custom');
@@ -38,7 +36,9 @@ class Block extends BaseGenerator {
     }
 
     $access_question = new ConfirmationQuestion('Create access callback?', FALSE);
-    $vars = $this->collectVars($input, $output, ['access' => $access_question]);
+    $vars = &$this->collectVars($input, $output, ['access' => $access_question]);
+
+    $vars['class'] = Utils::camelize($vars['plugin_label']) . 'Block';
 
     $this->addFile()
       ->path('src/Plugin/Block/{class}.php')

@@ -104,15 +104,12 @@ class Soap extends DataParserPluginBase implements ContainerFactoryPluginInterfa
         $xml = simplexml_load_string($response_value);
         $this->iterator = new \ArrayIterator($xml->xpath($this->itemSelector));
         break;
-
       case 'object':
         $this->iterator = new \ArrayIterator($response_value->{$this->itemSelector});
         break;
-
       case 'array':
         $this->iterator = new \ArrayIterator($response_value[$this->itemSelector]);
         break;
-
     }
     return TRUE;
   }

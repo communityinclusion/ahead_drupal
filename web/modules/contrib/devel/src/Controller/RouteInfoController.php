@@ -2,7 +2,6 @@
 
 namespace Drupal\devel\Controller;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Routing\RouteProviderInterface;
@@ -84,11 +83,11 @@ class RouteInfoController extends ControllerBase {
     foreach ($this->routeProvider->getAllRoutes() as $route_name => $route) {
       $row['name'] = [
         'data' => $route_name,
-        'filter' => TRUE,
+        'class' => 'table-filter-text-source',
       ];
       $row['path'] = [
         'data' => $route->getPath(),
-        'filter' => TRUE,
+        'class' => 'table-filter-text-source',
       ];
       $row['methods']['data'] = [
         '#theme' => 'item_list',
@@ -113,14 +112,6 @@ class RouteInfoController extends ControllerBase {
           'devel' => [
             'title' => $this->t('Devel'),
             'url' => Url::fromRoute('devel.route_info.item', [], $parameters),
-            'attributes' => [
-              'class' => ['use-ajax'],
-              'data-dialog-type' => 'modal',
-              'data-dialog-options' => Json::encode([
-                'width' => 700,
-                'minHeight' => 500,
-              ]),
-            ],
           ],
         ],
       ];
@@ -128,17 +119,34 @@ class RouteInfoController extends ControllerBase {
       $rows[] = $row;
     }
 
+    $output['#attached']['library'][] = 'system/drupal.system.modules';
+
+    $output['filters'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['table-filter', 'js-show'],
+      ],
+    ];
+    $output['filters']['name'] = [
+      '#type' => 'search',
+      '#title' => $this->t('Search'),
+      '#size' => 30,
+      '#placeholder' => $this->t('Enter route name or path'),
+      '#attributes' => [
+        'class' => ['table-filter-text'],
+        'data-table' => '.devel-filter-text',
+        'autocomplete' => 'off',
+        'title' => $this->t('Enter a part of the route name or path to filter by.'),
+      ],
+    ];
     $output['routes'] = [
-      '#type' => 'devel_table_filter',
-      '#filter_label' => $this->t('Search'),
-      '#filter_placeholder' => $this->t('Enter route name or path'),
-      '#filter_description' => $this->t('Enter a part of the route name or path to filter by.'),
+      '#type' => 'table',
       '#header' => $headers,
       '#rows' => $rows,
       '#empty' => $this->t('No routes found.'),
       '#sticky' => TRUE,
       '#attributes' => [
-        'class' => ['devel-route-list'],
+        'class' => ['devel-route-list', 'devel-filter-text'],
       ],
     ];
 
@@ -169,7 +177,7 @@ class RouteInfoController extends ControllerBase {
         $route = $this->router->match($path);
       }
       catch (\Exception $e) {
-        $this->messenger()->addWarning($this->t("Unable to load route for url '%url'", ['%url' => $path]));
+        drupal_set_message($this->t("Unable to load route for url '%url'", ['%url' => $path]), 'warning');
       }
     }
 
@@ -180,7 +188,7 @@ class RouteInfoController extends ControllerBase {
         $route = $this->routeProvider->getRouteByName($route_name);
       }
       catch (\Exception $e) {
-        $this->messenger()->addWarning($this->t("Unable to load route '%name'", ['%name' => $route_name]));
+        drupal_set_message($this->t("Unable to load route '%name'", ['%name' => $route_name]), 'warning');
       }
     }
 

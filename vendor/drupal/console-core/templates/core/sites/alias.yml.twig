@@ -10,14 +10,9 @@
 {% if user %}
   user: {{ user }}
 {% endif %}
-{% if uri or drupal_console_binary %}
-  options:
 {% if uri %}
+  options:
     uri: {{ uri }}
-{% endif %}
-{% if drupal_console_binary %}
-    drupal-console-binary: {{ drupal_console_binary }}
-{% endif %}
 {% else %}
 #  options:
 {% endif %}

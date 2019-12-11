@@ -14,14 +14,13 @@ use Drupal\rules\Core\RulesConditionBase;
  *   category = @Translation("Node"),
  *   context = {
  *     "node" = @ContextDefinition("entity:node",
- *       label = @Translation("Node"),
- *       assignment_restriction = "selector"
+ *       label = @Translation("Node")
  *     ),
  *     "types" = @ContextDefinition("string",
  *       label = @Translation("Content types"),
- *       description = @Translation("Check for the allowed node types."),
+ *       description = @Translation("Check for the the allowed node types."),
  *       multiple = TRUE
- *     ),
+ *     )
  *   }
  * )
  */

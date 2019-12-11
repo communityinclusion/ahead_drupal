@@ -15,7 +15,7 @@ abstract class Base extends BaseTask implements CommandInterface
     protected $command = '';
 
     /**
-     * @var bool
+     * @var boolena
      */
     protected $built = false;
 
@@ -65,8 +65,6 @@ abstract class Base extends BaseTask implements CommandInterface
     /**
      * adds `prefer-dist` option to composer
      *
-     * @param bool $preferDist
-     *
      * @return $this
      */
     public function preferDist($preferDist = true)
@@ -91,8 +89,6 @@ abstract class Base extends BaseTask implements CommandInterface
 
     /**
      * adds `dev` option to composer
-     *
-     * @param bool $dev
      *
      * @return $this
      */
@@ -119,8 +115,6 @@ abstract class Base extends BaseTask implements CommandInterface
     /**
      * adds `ansi` option to composer
      *
-     * @param bool $ansi
-     *
      * @return $this
      */
     public function ansi($ansi = true)
@@ -143,11 +137,6 @@ abstract class Base extends BaseTask implements CommandInterface
         return $this;
     }
 
-    /**
-     * @param bool $interaction
-     *
-     * @return $this
-     */
     public function interaction($interaction = true)
     {
         if (!$interaction) {
@@ -170,8 +159,6 @@ abstract class Base extends BaseTask implements CommandInterface
     /**
      * adds `optimize-autoloader` option to composer
      *
-     * @param bool $optimize
-     *
      * @return $this
      */
     public function optimizeAutoloader($optimize = true)
@@ -185,8 +172,6 @@ abstract class Base extends BaseTask implements CommandInterface
     /**
      * adds `ignore-platform-reqs` option to composer
      *
-     * @param bool $ignore
-     *
      * @return $this
      */
     public function ignorePlatformRequirements($ignore = true)
@@ -197,8 +182,6 @@ abstract class Base extends BaseTask implements CommandInterface
 
     /**
      * disable plugins
-     *
-     * @param bool $disable
      *
      * @return $this
      */
@@ -213,8 +196,6 @@ abstract class Base extends BaseTask implements CommandInterface
     /**
      * skip scripts
      *
-     * @param bool $disable
-     *
      * @return $this
      */
     public function noScripts($disable = true)
@@ -227,8 +208,6 @@ abstract class Base extends BaseTask implements CommandInterface
 
     /**
      * adds `--working-dir $dir` option to composer
-     *
-     * @param string $dir
      *
      * @return $this
      */

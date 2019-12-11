@@ -43,7 +43,7 @@ class DevelController extends ControllerBase {
    */
   public function cacheClear() {
     drupal_flush_all_caches();
-    $this->messenger()->addMessage($this->t('Cache cleared.'));
+    drupal_set_message('Cache cleared.');
     return $this->redirect('<front>');
   }
 
@@ -94,54 +94,73 @@ class DevelController extends ControllerBase {
    *   Array of page elements to render.
    */
   public function stateSystemPage() {
+    $output['#attached']['library'][] = 'system/drupal.system.modules';
+
+    $output['filters'] = array(
+      '#type' => 'container',
+      '#attributes' => array(
+        'class' => array('table-filter', 'js-show'),
+      ),
+    );
+
+    $output['filters']['text'] = array(
+      '#type' => 'search',
+      '#title' => $this->t('Search'),
+      '#size' => 30,
+      '#placeholder' => $this->t('Enter state name'),
+      '#attributes' => array(
+        'class' => array('table-filter-text'),
+        'data-table' => '.devel-state-list',
+        'autocomplete' => 'off',
+        'title' => $this->t('Enter a part of the state name to filter by.'),
+      ),
+    );
+
     $can_edit = $this->currentUser()->hasPermission('administer site configuration');
 
-    $header = [
+    $header = array(
       'name' => $this->t('Name'),
       'value' => $this->t('Value'),
-    ];
+    );
 
     if ($can_edit) {
       $header['edit'] = $this->t('Operations');
     }
 
-    $rows = [];
+    $rows = array();
     // State class doesn't have getAll method so we get all states from the
     // KeyValueStorage.
     foreach ($this->keyValue('state')->getAll() as $state_name => $state) {
-      $rows[$state_name] = [
-        'name' => [
+      $rows[$state_name] = array(
+        'name' => array(
           'data' => $state_name,
           'class' => 'table-filter-text-source',
-        ],
-        'value' => [
+        ),
+        'value' => array(
           'data' => $this->dumper->export($state),
-        ],
-      ];
+        ),
+      );
 
       if ($can_edit) {
-        $operations['edit'] = [
+        $operations['edit'] = array(
           'title' => $this->t('Edit'),
-          'url' => Url::fromRoute('devel.system_state_edit', ['state_name' => $state_name]),
-        ];
-        $rows[$state_name]['edit'] = [
-          'data' => ['#type' => 'operations', '#links' => $operations],
-        ];
+          'url' => Url::fromRoute('devel.system_state_edit', array('state_name' => $state_name)),
+        );
+        $rows[$state_name]['edit'] = array(
+          'data' => array('#type' => 'operations', '#links' => $operations),
+        );
       }
     }
 
-    $output['states'] = [
-      '#type' => 'devel_table_filter',
-      '#filter_label' => $this->t('Search'),
-      '#filter_placeholder' => $this->t('Enter state name'),
-      '#filter_title' => $this->t('Enter a part of the state name to filter by.'),
+    $output['states'] = array(
+      '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
       '#empty' => $this->t('No state variables found.'),
-      '#attributes' => [
-        'class' => ['devel-state-list'],
-      ],
-    ];
+      '#attributes' => array(
+        'class' => array('devel-state-list'),
+      ),
+    );
 
     return $output;
   }

@@ -168,11 +168,10 @@ class PluginFieldCommand extends Command
             return 1;
         }
 
-        $module = $this->validateModule($input->getOption('module'));
         $this->chainQueue
             ->addCommand(
                 'generate:plugin:fieldtype', [
-                '--module' => $module,
+                '--module' => $input->getOption('module'),
                 '--class' => $this->validator->validateClassName($input->getOption('type-class')),
                 '--label' => $input->getOption('type-label'),
                 '--plugin-id' => $input->getOption('type-plugin-id'),
@@ -186,7 +185,7 @@ class PluginFieldCommand extends Command
         $this->chainQueue
             ->addCommand(
                 'generate:plugin:fieldwidget', [
-                '--module' => $module,
+                '--module' => $input->getOption('module'),
                 '--class' => $this->validator->validateClassName($input->getOption('widget-class')),
                 '--label' => $input->getOption('widget-label'),
                 '--plugin-id' => $input->getOption('widget-plugin-id'),
@@ -197,7 +196,7 @@ class PluginFieldCommand extends Command
         $this->chainQueue
             ->addCommand(
                 'generate:plugin:fieldformatter', [
-                '--module' => $module,
+                '--module' => $input->getOption('module'),
                 '--class' => $this->validator->validateClassName($input->getOption('formatter-class')),
                 '--label' => $input->getOption('formatter-label'),
                 '--plugin-id' => $input->getOption('formatter-plugin-id'),
