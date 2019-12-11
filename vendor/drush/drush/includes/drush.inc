@@ -188,7 +188,7 @@ function drush_op($callable) {
   $args = func_get_args();
   array_shift($args); // Skip function name
   foreach ($args as $arg) {
-    $args_printed[] = is_scalar($arg) ? $arg : (is_array($arg) ? 'Array' : 'Object');
+    $args_printed[] = is_scalar($arg) ? $arg : (is_object($arg) ? get_class($arg) : gettype($arg));
   }
 
   if (!is_array($callable)) {
@@ -204,7 +204,7 @@ function drush_op($callable) {
   }
 
   if (\Drush\Drush::verbose() || \Drush\Drush::simulate()) {
-    Drush::logger()->debug('Calling %s(%s)', [$callable_string, implode(", ", $args_printed)]);
+    Drush::logger()->debug('Calling {method}({args})', ['method' => $callable_string, 'args' => implode(", ", $args_printed)]);
   }
 
   if (\Drush\Drush::simulate()) {

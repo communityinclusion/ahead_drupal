@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 class LowercasePHPFunctionsSniff implements Sniff
@@ -117,7 +117,9 @@ class LowercasePHPFunctionsSniff implements Sniff
 
         if ($tokens[$prev]['code'] === T_NS_SEPARATOR) {
             if ($pprev !== false
-                && ($tokens[$pprev]['code'] === T_STRING || $tokens[$pprev]['code'] === T_NAMESPACE)
+                && ($tokens[$pprev]['code'] === T_STRING
+                || $tokens[$pprev]['code'] === T_NAMESPACE
+                || $tokens[$pprev]['code'] === T_NEW)
             ) {
                 // Namespaced class/function, not an inbuilt function.
                 // Could potentially give false negatives for non-namespaced files

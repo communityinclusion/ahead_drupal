@@ -13,8 +13,8 @@ test_dependencies:
   - block_field:block_field
   - dynamic_entity_reference:dynamic_entity_reference
 
-# Information added by Drupal.org packaging script on 2018-11-09
-version: '8.x-2.0-alpha8'
+# Information added by Drupal.org packaging script on 2019-06-24
+version: '8.x-2.0-beta1'
 core: '8.x'
 project: 'entity_usage'
-datestamp: 1541781788
+datestamp: 1561364888

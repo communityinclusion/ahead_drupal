@@ -2,9 +2,11 @@
 
 namespace Drupal\geofield\Plugin\views\filter;
 
+use Drupal\Core\Database\Query\Condition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\geofield\Plugin\GeofieldProximitySourceManager;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\views\Plugin\views\filter\NumericFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -44,6 +46,13 @@ class GeofieldProximityFilter extends NumericFilter {
    * @var \Drupal\geofield\Plugin\GeofieldProximitySourceInterface
    */
   protected $sourcePlugin;
+
+  /**
+   * The current request.
+   *
+   * @var null|\Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
 
   /**
    * {@inheritdoc}
@@ -87,19 +96,22 @@ class GeofieldProximityFilter extends NumericFilter {
    *   The renderer.
    * @param \Drupal\geofield\Plugin\GeofieldProximitySourceManager $proximity_source_manager
    *   The Geofield Proximity Source manager service.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack.
    */
   public function __construct(
     array $configuration,
     $plugin_id,
     $plugin_definition,
     RendererInterface $renderer,
-    GeofieldProximitySourceManager $proximity_source_manager
+    GeofieldProximitySourceManager $proximity_source_manager,
+    RequestStack $request_stack
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->renderer = $renderer;
     $this->proximitySourceManager = $proximity_source_manager;
     $this->geofieldRadiusOptions = geofield_radius_options();
-
+    $this->request = $request_stack;
   }
 
   /**
@@ -111,7 +123,8 @@ class GeofieldProximityFilter extends NumericFilter {
       $plugin_id,
       $plugin_definition,
       $container->get('renderer'),
-      $container->get('plugin.manager.geofield_proximity_source')
+      $container->get('plugin.manager.geofield_proximity_source'),
+      $container->get('request_stack')
     );
   }
 
@@ -181,6 +194,12 @@ class GeofieldProximityFilter extends NumericFilter {
     $lat_alias = $this->realField . '_lat';
     $lon_alias = $this->realField . '_lon';
 
+    /** @var \Drupal\views\Plugin\views\query\Sql $query */
+    $query = $this->query;
+    /** @var \Symfony\Component\HttpFoundation\Request $request */
+    $request = $this->request->getCurrentRequest();
+    $proximity_filter_get = $request->get($this->options['expose']['identifier']);
+
     try {
       /** @var \Drupal\geofield\Plugin\GeofieldProximitySourceInterface $source_plugin */
       $this->sourcePlugin = $this->proximitySourceManager->createInstance($this->options['source'], $this->options['source_configuration']);
@@ -188,10 +207,20 @@ class GeofieldProximityFilter extends NumericFilter {
       $this->sourcePlugin->setUnits($this->options['units']);
       $info = $this->operators();
 
+      // Add query condition in case of valid proximity filter options.
       if ($haversine_options = $this->sourcePlugin->getHaversineOptions()) {
         $haversine_options['destination_latitude'] = $this->tableAlias . '.' . $lat_alias;
         $haversine_options['destination_longitude'] = $this->tableAlias . '.' . $lon_alias;
         $this->{$info[$this->operator]['method']}($haversine_options);
+
+        // Ensure that destination is valid.
+        $condition = (new Condition('AND'))->isNotNull($haversine_options['destination_latitude'])->isNotNull($haversine_options['destination_longitude']);
+        $query->addWhere($this->options['group'], $condition);
+      }
+      // Otherwise output empty result in case of unexposed proximity filter.
+      elseif (!$this->isExposed()) {
+        // Origin is not valid so return no results (if not exposed filter).
+        $query->addWhereExpression($this->options['group'], '1=0');
       }
     }
     catch (\Exception $e) {
@@ -301,6 +330,22 @@ class GeofieldProximityFilter extends NumericFilter {
     if (isset($form_values[$identifier]['min']) && isset($form_values[$identifier]['max'])
       && ($form_values[$identifier]['min'] > $form_values[$identifier]['max'])) {
       $form_state->setError($form[$identifier]['min'], t('The Min value should be smaller than the Max value.'));
+    }
+
+    // Validate the Origin (not null) value, when the filter is required.
+    if ($this->options['expose']['required'] == TRUE) {
+      if (isset($form_values[$identifier]['source_configuration']['origin_address'])) {
+        $input_address = $form_values[$identifier]['source_configuration']['origin_address'];
+        if (empty($input_address)) {
+          $form_state->setError($form[$identifier]['source_configuration']['origin_address'], t('The Origin Address is required'));
+        }
+      }
+      elseif (isset($form_values[$identifier]['source_configuration']['origin'])) {
+        $input_origin = $form_values[$identifier]['source_configuration']['origin'];
+        if ($this->sourcePlugin->isEmptyLocation($input_origin['lat'], $input_origin['lon'])) {
+          $form_state->setError($form[$identifier]['source_configuration']['origin'], t('The Origin (Lat/Lon) is required'));
+        }
+      }
     }
   }
 

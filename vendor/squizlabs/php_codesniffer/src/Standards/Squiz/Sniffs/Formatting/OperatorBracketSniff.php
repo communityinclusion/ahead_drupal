@@ -9,8 +9,8 @@
 
 namespace PHP_CodeSniffer\Standards\Squiz\Sniffs\Formatting;
 
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 class OperatorBracketSniff implements Sniff
@@ -138,6 +138,7 @@ class OperatorBracketSniff implements Sniff
             T_NS_SEPARATOR,
             T_THIS,
             T_SELF,
+            T_STATIC,
             T_OBJECT_OPERATOR,
             T_DOUBLE_COLON,
             T_OPEN_SQUARE_BRACKET,
@@ -280,6 +281,7 @@ class OperatorBracketSniff implements Sniff
             T_NS_SEPARATOR             => true,
             T_THIS                     => true,
             T_SELF                     => true,
+            T_STATIC                   => true,
             T_OBJECT_OPERATOR          => true,
             T_DOUBLE_COLON             => true,
             T_MODULUS                  => true,

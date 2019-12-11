@@ -11,8 +11,8 @@
 
 namespace PHP_CodeSniffer;
 
-use PHP_CodeSniffer\Util;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
+use PHP_CodeSniffer\Util;
 
 class Ruleset
 {
@@ -122,6 +122,7 @@ class Ruleset
      * @param \PHP_CodeSniffer\Config $config The config data for the run.
      *
      * @return void
+     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If no sniffs were registered.
      */
     public function __construct(Config $config)
     {
@@ -304,7 +305,8 @@ class Ruleset
      *                            is only used for debug output.
      *
      * @return string[]
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the ruleset path is invalid.
+     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException - If the ruleset path is invalid.
+     *                                                      - If a specified autoload file could not be found.
      */
     public function processRuleset($rulesetPath, $depth=0)
     {
@@ -467,7 +469,7 @@ class Ruleset
                     } else {
                         $excludedSniffs = array_merge(
                             $excludedSniffs,
-                            $this->expandRulesetReference($exclude['name'], $rulesetDir, ($depth + 1))
+                            $this->expandRulesetReference((string) $exclude['name'], $rulesetDir, ($depth + 1))
                         );
                     }
                 }//end foreach
