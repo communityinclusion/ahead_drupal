@@ -1,0 +1,8 @@
+cedartheme_clock:
+  version: 1.x
+  js:
+    js/cedartheme_clock.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once

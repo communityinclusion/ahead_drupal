@@ -131,7 +131,7 @@ class DataUriNormalizerTest extends TestCase
     {
         return [
             ['dataxbase64'],
-            ['data:HelloWorld'],
+            ['data:CedarTheme'],
             ['data:text/html;charset=,%3Ch1%3EHello!%3C%2Fh1%3E'],
             ['data:text/html;charset,%3Ch1%3EHello!%3C%2Fh1%3E'],
             ['data:base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC'],

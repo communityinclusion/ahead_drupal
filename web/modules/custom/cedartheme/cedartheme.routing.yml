@@ -1,0 +1,22 @@
+cedartheme.hello:
+  path: '/hello'
+  defaults:
+    _controller: Drupal\cedartheme\Controller\CedarThemeController::helloWorld
+    _title: 'Our first route'
+  requirements:
+    _cedartheme_access_check: 'TRUE'
+
+cedartheme.greeting_form:
+  path: '/admin/config/salutation-configuration'
+  defaults:
+    _form: '\Drupal\cedartheme\Form\SalutationConfigurationForm'
+    _title: 'Salutation configuration'
+  requirements:
+    _permission: 'administer site configuration'
+
+cedartheme.hide_block:
+  path: '/hide-block'
+  defaults:
+    _controller: '\Drupal\cedartheme\Controller\CedarThemeController::hideBlock'
+  requirements:
+    _permission: 'access content'

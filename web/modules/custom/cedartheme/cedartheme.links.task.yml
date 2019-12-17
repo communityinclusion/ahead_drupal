@@ -1,0 +1,9 @@
+cedartheme.page:
+  route_name: cedartheme.hello
+  title: 'Hello World'
+  base_route: cedartheme.hello
+cedartheme.config:
+  route_name: cedartheme.greeting_form
+  title: 'Configuration'
+  base_route: cedartheme.hello
+  weight: 100

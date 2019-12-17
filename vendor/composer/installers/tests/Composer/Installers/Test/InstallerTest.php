@@ -352,7 +352,7 @@ class InstallerTest extends TestCase
             array('phpbb-style', 'styles/foo/', 'test/foo'),
             array('phpbb-language', 'language/foo/', 'test/foo'),
             array('pimcore-plugin', 'plugins/MyPlugin/', 'ubikz/my_plugin'),
-            array('plentymarkets-plugin', 'HelloWorld/', 'plugin-hello-world'),
+            array('plentymarkets-plugin', 'CedarTheme/', 'plugin-hello-world'),
             array('ppi-module', 'modules/foo/', 'test/foo'),
             array('puppet-module', 'modules/puppet-name/', 'puppet/puppet-name'),
             array('porto-container', 'app/Containers/container-name/', 'test/container-name'),

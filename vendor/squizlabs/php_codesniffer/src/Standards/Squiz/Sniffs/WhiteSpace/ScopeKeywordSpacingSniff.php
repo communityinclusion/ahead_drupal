@@ -60,7 +60,7 @@ class ScopeKeywordSpacingSniff implements Sniff
         }
 
         if ($tokens[$prevToken]['code'] === T_AS) {
-            // Trait visibility change, e.g., "use HelloWorld { sayHello as private; }".
+            // Trait visibility change, e.g., "use CedarTheme { sayHello as private; }".
             return;
         }
 

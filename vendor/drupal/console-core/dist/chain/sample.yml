@@ -14,7 +14,7 @@ commands:
   - command: generate:controller
     options:
       module: example
-      class: HelloWorldController
+      class: CedarThemeController
       routes:
         - title: 'Hello World'
           name: 'example.hello_name'

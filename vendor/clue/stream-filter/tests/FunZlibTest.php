@@ -4,7 +4,7 @@ use Clue\StreamFilter;
 
 class BuiltInZlibTest extends PHPUnit_Framework_TestCase
 {
-    public function testFunZlibDeflateHelloWorld()
+    public function testFunZlibDeflateCedarTheme()
     {
         $deflate = StreamFilter\fun('zlib.deflate');
 
@@ -41,7 +41,7 @@ class BuiltInZlibTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, gzinflate($bytes));
     }
 
-    public function testFunZlibInflateHelloWorld()
+    public function testFunZlibInflateCedarTheme()
     {
         $inflate = StreamFilter\fun('zlib.inflate');
 

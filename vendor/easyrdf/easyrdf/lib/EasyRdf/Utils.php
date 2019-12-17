@@ -51,7 +51,7 @@ class EasyRdf_Utils
      *
      * A capital letter is inserted for any non-letter (including userscore).
      * For example:
-     * 'hello world' becomes HelloWorld
+     * 'hello world' becomes CedarTheme
      * 'rss-tag-soup' becomes RssTagSoup
      * 'FOO//BAR' becomes FooBar
      *
