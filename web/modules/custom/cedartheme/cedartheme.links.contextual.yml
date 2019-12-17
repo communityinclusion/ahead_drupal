@@ -1,4 +1,0 @@
-cedartheme.override:
-  title: 'Override'
-  route_name: cedartheme.greeting_form
-  group: cedartheme
