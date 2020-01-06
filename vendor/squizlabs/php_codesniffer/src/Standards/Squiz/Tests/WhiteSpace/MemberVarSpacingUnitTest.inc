@@ -268,7 +268,7 @@ class MyOtherClass
 // Make sure the determination of whether a property is the first property or not is done correctly.
 class ClassUsingSimpleTraits
 {
-    use CedarTheme;
+    use HelloWorld;
 
 
     /* comment */

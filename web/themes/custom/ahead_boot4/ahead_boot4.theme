@@ -32,3 +32,14 @@ function ahead_boot4_form_system_theme_settings_alter(&$form, FormStateInterface
       'bg-transparent' => t('Transparent'),
   );
 }
+function ahead_boot4_preprocess_node(array &$variables) {
+  $node = $variables['node'];
+  $example_class = '';
+  if (
+    $node->hasField('field_academics_other_specify')
+    && !$node->field_academics_other_specify->isEmpty()
+  ) {
+    $variables['field_academics_other_specify'] = strtolower($node->field_academics_other_specify->value);
+  }
+  $variables['field_academics_other_specify'] = $example_class;
+}

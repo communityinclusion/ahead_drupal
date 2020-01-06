@@ -40,7 +40,7 @@ if ($geometry instanceof static      || $geometry instanceof static) {
 }
 
 class MyClass1 {
-    use CedarTheme { sayHello as private; }
+    use HelloWorld { sayHello as private; }
 }
 
 abstract class Foo

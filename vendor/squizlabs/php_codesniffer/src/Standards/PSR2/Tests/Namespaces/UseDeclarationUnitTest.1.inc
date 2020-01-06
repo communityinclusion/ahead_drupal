@@ -25,7 +25,7 @@ class Container extends Component implements IContainer
     use TContainer;
 }
 
-trait CedarTheme
+trait HelloWorld
 {
     use Hello, World;
 }
