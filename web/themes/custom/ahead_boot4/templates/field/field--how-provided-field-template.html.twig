@@ -95,8 +95,14 @@
       
     {% for item in items %}
       {% if multiple %}
-         <li{{ item.attributes.addClass('field__item') }}>
-        {{ item.content }}
+        {% set other_field = item.content|render|striptags|trim %}
+        {% if other_field starts with 'Other' %}
+         
+        {% else %}
+          <li{{ item.attributes.addClass('field__item') }}>
+          {{ item.content }}
+         {% endif %}
+        
       {% else %}
         <div{{ title_attributes.addClass(title_classes).addClass('leftTable') }}>{{ label }}</div>
         <div{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
@@ -120,7 +126,11 @@
         
       {% endif %}
         {% if multiple %}
-          </li>
+          {% if other_field starts with 'Other' %}
+
+          {% else %}
+            </li>
+          {% endif %}
         {% else %}
           </div>
         {% endif %}
