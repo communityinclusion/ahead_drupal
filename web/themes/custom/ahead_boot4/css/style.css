@@ -26,7 +26,7 @@
       .paragraph--type--d-o-contacts > div > .field__label { font-weight: bold; float: left; width: 30%; }
       .paragraph--type--d-o-contacts > div > .field__item { float: left; width: 70%; }
       .paragraph--type--disability-office-address-es- > div > .field__label {font-weight: bold;}
-      .field--name-field-d-o-city,.field--name-field-d-o-state {white-space: nowrap; }
+      .field--name-field-d-o-city,.field--name-field-d-o-state,.field--name-field-col-u-city, .field--name-field-college-university-state {white-space: nowrap; }
       .paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-phone .field__label,.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-email-ad .field__label, .paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-website .field__label { float: left; width: 30%;}
       .paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-phone .field__item, .paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-email-ad .field__item,.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-website .field__item { float: left; width: 70%; }
       ul.minusTop {margin-top: -1rem;}
