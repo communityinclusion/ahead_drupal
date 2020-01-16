@@ -769,13 +769,4 @@ $settings['entity_update_batch_size'] = 50;
    include $app_root . '/' . $site_path . '/settings.local.php';
  }
 $config_directories['sync'] = '../config/sync';
-$databases['default']['default'] = array (
-  'database' => 'ahead',
-  'username' => 'ahead_user',
-  'password' => 'R97b#D4f',
-  'prefix' => '',
-  'host' => 'localhost',
-  'port' => '3306',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
-  'driver' => 'mysql',
-);
+

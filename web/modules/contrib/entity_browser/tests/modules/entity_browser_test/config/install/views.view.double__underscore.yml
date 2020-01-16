@@ -2,12 +2,11 @@ langcode: en
 status: true
 dependencies:
   module:
-    - views
     - entity_browser
     - node
     - user
-id: nodes_entity_browser
-label: 'Nodes entity browser'
+id: double__underscore
+label: double__underscore
 module: views
 description: ''
 tag: ''
@@ -147,7 +146,6 @@ display:
           empty_zero: false
           hide_alter_empty: true
           entity_type: node
-          use_field_cardinality: false
           plugin_id: entity_browser_select
         title:
           id: title
@@ -446,7 +444,7 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       cacheable: false
-      max-age: 0
+      max-age: -1
       tags: {  }
   entity_browser_1:
     display_plugin: entity_browser
@@ -466,5 +464,5 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       cacheable: false
-      max-age: 0
+      max-age: -1
       tags: {  }
