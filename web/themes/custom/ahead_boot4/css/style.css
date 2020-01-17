@@ -1,4 +1,4 @@
-/** Just testing Jenkins for Rackspace II
+/** Just testing Jenkins for Rackspace III
 
  * @file
  * Subtheme specific CSS.
@@ -37,4 +37,6 @@
       #sidebar_first .facets-widget-checkbox ul {list-style-type:none;}
      #block-disabilityrelatedprogramsandcourses .facet-item label, #block-disabilityrelatedservices .facet-item label { padding-left: 22px;margin-top: -24px;} 
      #block-disabilityrelatedprogramsandcourses .facet-item {margin-bottom:14px;}
+     legend.legendDescrip {font-size: 125%; }
+     fieldset#group-specific-population-ques fieldset legend {font-size: 105%; }
       
