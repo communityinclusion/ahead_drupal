@@ -32,6 +32,7 @@ class ComposerStaticInit72a7cc6b2745ccfc584ace454091d2f2
         '8cff32064859f4559445b89279f3199c' => __DIR__ . '/..' . '/php-http/message/src/filters.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         '952683d815ff0a7bf322b93c0be7e4e4' => __DIR__ . '/..' . '/chi-teck/drupal-code-generator/src/bootstrap.php',
+        'a16312f9300fed4a097923eacb0ba814' => __DIR__ . '/..' . '/igorw/get-in/src/get_in.php',
         '5a12a5271c58108e0aa33355e6ac54ea' => __DIR__ . '/..' . '/drupal/console-core/src/functions.php',
         'd511210698f02d87ca48e3972f64323e' => __DIR__ . '/../..' . '/load.environment.php',
     );
@@ -145,6 +146,7 @@ class ComposerStaticInit72a7cc6b2745ccfc584ace454091d2f2
         ),
         'I' => 
         array (
+            'Ivory\\HttpAdapter\\' => 18,
             'Interop\\Container\\' => 18,
         ),
         'H' => 
@@ -497,6 +499,10 @@ class ComposerStaticInit72a7cc6b2745ccfc584ace454091d2f2
         array (
             0 => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src',
         ),
+        'Ivory\\HttpAdapter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/egeloen/http-adapter/src',
+        ),
         'Interop\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
@@ -764,6 +770,13 @@ class ComposerStaticInit72a7cc6b2745ccfc584ace454091d2f2
             'Mailgun' => 
             array (
                 0 => __DIR__ . '/..' . '/mailgun/mailgun-php/src',
+            ),
+        ),
+        'G' => 
+        array (
+            'Geocoder' => 
+            array (
+                0 => __DIR__ . '/..' . '/willdurand/geocoder/src',
             ),
         ),
         'E' => 
