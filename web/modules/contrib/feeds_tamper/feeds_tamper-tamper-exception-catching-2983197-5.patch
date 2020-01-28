@@ -1,0 +1,200 @@
+diff --git a/src/EventSubscriber/FeedsSubscriber.php b/src/EventSubscriber/FeedsSubscriber.php
+index 5d39637..af448fd 100644
+--- a/src/EventSubscriber/FeedsSubscriber.php
++++ b/src/EventSubscriber/FeedsSubscriber.php
+@@ -2,13 +2,16 @@
+ 
+ namespace Drupal\feeds_tamper\EventSubscriber;
+ 
++use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\feeds\Event\FeedsEvents;
+ use Drupal\feeds\Event\ParseEvent;
+ use Drupal\feeds\Feeds\Item\ItemInterface;
++use Drupal\feeds\StateInterface;
+ use Drupal\feeds_tamper\Adapter\TamperableFeedItemAdapter;
+ use Drupal\feeds_tamper\FeedTypeTamperManagerInterface;
+ use Drupal\tamper\Exception\SkipTamperDataException;
+ use Drupal\tamper\Exception\SkipTamperItemException;
++use Exception;
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+ 
+ /**
+@@ -20,6 +23,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+  */
+ class FeedsSubscriber implements EventSubscriberInterface {
+ 
++  use StringTranslationTrait;
++
+   /**
+    * A feed type meta object.
+    *
+@@ -130,6 +135,20 @@ class FeedsSubscriber implements EventSubscriberInterface {
+         // with ItemInterface.
+         $item->set($source, NULL);
+       }
++      catch (SkipTamperItemException $e) {
++        // Should be catched by ::afterParse().
++        throw $e;
++      }
++      catch (Exception $e) {
++        // An error happened. Catch exception and set a message on the feed.
++        /** @var \Drupal\feeds\StateInterface $state */
++        $state = $event->getFeed()->getState(StateInterface::PARSE);
++        $state->setMessage($this->t('Tampering failed for source %source when trying to applying the tamper %label: @exception', [
++          '%label' => $tamper->getSetting('label') ? $tamper->getSetting('label') : $tamper->getPluginId(),
++          '%source' => $source,
++          '@exception' => $e->getMessage(),
++        ]), 'warning');
++      }
+     }
+   }
+ 
+diff --git a/tests/src/Unit/EventSubscriber/FeedsSubscriberTest.php b/tests/src/Unit/EventSubscriber/FeedsSubscriberTest.php
+index 3771905..e852860 100644
+--- a/tests/src/Unit/EventSubscriber/FeedsSubscriberTest.php
++++ b/tests/src/Unit/EventSubscriber/FeedsSubscriberTest.php
+@@ -2,14 +2,17 @@
+ 
+ namespace Drupal\Tests\feeds_tamper\Unit\EventSubscriber;
+ 
++use Drupal\Core\StringTranslation\TranslationInterface;
+ use Drupal\feeds\Event\ParseEvent;
+ use Drupal\feeds\Feeds\Item\DynamicItem;
+ use Drupal\feeds\Result\FetcherResultInterface;
+ use Drupal\feeds\Result\ParserResult;
++use Drupal\feeds\StateInterface;
+ use Drupal\feeds_tamper\Adapter\TamperableFeedItemAdapter;
+ use Drupal\feeds_tamper\EventSubscriber\FeedsSubscriber;
+ use Drupal\feeds_tamper\FeedTypeTamperManagerInterface;
+ use Drupal\feeds_tamper\FeedTypeTamperMetaInterface;
++use Drupal\tamper\Exception\TamperException;
+ use Drupal\tamper\Exception\SkipTamperDataException;
+ use Drupal\tamper\Exception\SkipTamperItemException;
+ use Drupal\tamper\TamperInterface;
+@@ -29,6 +32,13 @@ class FeedsSubscriberTest extends FeedsTamperTestCase {
+    */
+   protected $subscriber;
+ 
++  /**
++   * The feed.
++   *
++   * @var \Drupal\feeds\FeedInterface
++   */
++  protected $feed;
++
+   /**
+    * The parse event.
+    *
+@@ -49,8 +59,11 @@ class FeedsSubscriberTest extends FeedsTamperTestCase {
+   public function setUp() {
+     parent::setUp();
+ 
++    // Create a feed.
++    $this->feed = $this->getMockFeed();
++
+     // Create parse event.
+-    $this->event = new ParseEvent($this->getMockFeed(), $this->getMock(FetcherResultInterface::class));
++    $this->event = new ParseEvent($this->feed, $this->getMock(FetcherResultInterface::class));
+     $this->event->setParserResult(new ParserResult());
+ 
+     // Create tamper meta.
+@@ -64,6 +77,7 @@ class FeedsSubscriberTest extends FeedsTamperTestCase {
+ 
+     // And finally, create the subscriber to test.
+     $this->subscriber = new FeedsSubscriber($tamper_manager);
++    $this->subscriber->setStringTranslation($this->getMock(TranslationInterface::class));
+   }
+ 
+   /**
+@@ -372,4 +386,91 @@ class FeedsSubscriberTest extends FeedsTamperTestCase {
+     }
+   }
+ 
++  /**
++   * Tests catching of tamper exceptions.
++   */
++  public function testTamperExceptionCatching() {
++    // Create a tamper plugin that adds a value.
++    $tamper1 = $this->getMock(TamperInterface::class);
++    $tamper1->expects($this->exactly(4))
++      ->method('tamper')
++      ->will($this->returnCallback([$this, 'callbackTamperAddValue']));
++
++    // Create a tamper plugin that will throw a TamperException for some
++    // values.
++    $tamper2 = $this->getMock(TamperInterface::class);
++    $tamper2->expects($this->exactly(4))
++      ->method('tamper')
++      ->will($this->returnCallback([$this, 'callbackTamperException']));
++
++    // Create a tamper plugin that sets the value to 'Baz'.
++    $tamper3 = $this->getMock(TamperInterface::class);
++    $tamper3->expects($this->once())
++      ->method('tamper')
++      ->will($this->returnValue('Baz'));
++
++    $this->tamperMeta->expects($this->once())
++      ->method('getTampersGroupedBySource')
++      ->will($this->returnValue([
++        'alpha' => [$tamper1, $tamper2, $tamper3],
++        'beta' => [$tamper1, $tamper2],
++      ]));
++
++    // Since one tamper will fail apply, a message is expected to be set on
++    // the feeds state.
++    $state = $this->getMock(StateInterface::class);
++    $state->expects($this->once())
++      ->method('setMessage');
++
++    $this->feed->expects($this->once())
++      ->method('getState')
++      ->with(StateInterface::PARSE)
++      ->willReturn($state);
++
++    // Create two items. The first item should get the value unset.
++    $item1 = new DynamicItem();
++    $item1->set('alpha', 'Foo');
++    $item1->set('beta', 'Bar');
++    $this->event->getParserResult()->addItem($item1);
++    $item2 = new DynamicItem();
++    $item2->set('alpha', 'Bar');
++    $item2->set('beta', 'Qux');
++    $this->event->getParserResult()->addItem($item2);
++
++    $this->subscriber->afterParse($this->event);
++
++    // Assert that 2 items still exist.
++    $this->assertEquals(2, $this->event->getParserResult()->count());
++    // And assert expected values.
++    $this->assertEquals('Foo', $item1->get('alpha'));
++    $this->assertEquals('Bar1', $item1->get('beta'));
++    $this->assertEquals('Baz', $item2->get('alpha'));
++    $this->assertEquals('Qux1', $item2->get('beta'));
++  }
++
++  /**
++   * Callback for testTamperExceptionCatching().
++   *
++   * Adds a '1' to the data.
++   *
++   * @return string
++   *   The tampered data.
++   */
++  public function callbackTamperAddValue($data, TamperableFeedItemAdapter $item) {
++    return $data . '1';
++  }
++
++  /**
++   * Callback for testTamperExceptionCatching().
++   *
++   * @throws \Drupal\tamper\TamperException
++   *   In case the data is 'Foo1'.
++   */
++  public function callbackTamperException($data, TamperableFeedItemAdapter $item) {
++    if ($data == 'Foo1') {
++      throw new TamperException('Invalid data');
++    }
++    return $data;
++  }
++
+ }
