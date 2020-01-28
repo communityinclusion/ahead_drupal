@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /** Just testing Jenkins for Rackspace III
+=======
+/** Just testing Jenkins for Rackspace IV
+>>>>>>> devel
 
  * @file
  * Subtheme specific CSS.
@@ -35,7 +39,15 @@
       .field--name-field-level-of-degree-offered .field__items { display: inline-block; width:40%;}
       .field--name-field-type-of-institution {margin-left: 51%}
       #sidebar_first .facets-widget-checkbox ul {list-style-type:none;}
+<<<<<<< HEAD
       input#disability_related_services-2, label[for="disability_related_services-2"],input#disability_related_services-4,label[for="disability_related_services-4"],input#disability_related_services-5,label[for="disability_related_services-5"],input#disability_related_services-6,label[for="disability_related_services-6"],input#disability_related_services-8,label[for="disability_related_services-8"],input#disability_related_services-9,label[for="disability_related_services-9"],input#disability_related_services-10,label[for="disability_related_services-10"],
       input#disability_related_programs_and_courses-5,label[for="disability_related_programs_and_courses-5"], input#disability_related_programs_and_courses-6,label[for="disability_related_programs_and_courses-6"]{display: none;}
       
+=======
+     #block-disabilityrelatedprogramsandcourses .facet-item label, #block-disabilityrelatedservices .facet-item label { padding-left: 22px;margin-top: -24px;} 
+     #block-disabilityrelatedprogramsandcourses .facet-item {margin-bottom:14px;}
+     legend.legendDescrip {font-size: 125%; }
+     fieldset#group-specific-population-ques fieldset legend {font-size: 105%; }
+     #block-ahead-boot4-content .views-field.views-field-title, .view-general-search .views-field.views-field-title { min-width: 450px;}
+>>>>>>> devel
       
