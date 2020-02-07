@@ -1,0 +1,7 @@
+aheadtasks:
+  version: 1.x
+  css:
+    base:
+      css/aheadtasks.css: {}
+  js:
+    js/aheadtasks.js: {}

@@ -2,6 +2,9 @@ global-styling:
   version: VERSION
   js:
     js/global.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
   css:
     component:
       css/style.css: {}
@@ -29,12 +32,3 @@ color.preview:
     color/preview.js: {}
   dependencies:
     - color/drupal.color
-mpte_jq:
-  version: VERSION
-  css:
-    theme:
-      css/style.css: {}
-  js:
-    js/mptejq.js: {}
-  dependencies:
-    - core/jquery

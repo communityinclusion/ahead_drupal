@@ -3946,8 +3946,7 @@
             ],
             "support": {
                 "source": "https://git.drupalcode.org/project/csv_importer"
-            },
-            "time": "2019-11-24T06:22:21+00:00"
+            }
         },
         {
             "name": "drupal/csv_serialization",
@@ -4812,8 +4811,7 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/feeds",
                 "issues": "https://www.drupal.org/project/issues/feeds"
-            },
-            "time": "2019-11-23T16:33:04+00:00"
+            }
         },
         {
             "name": "drupal/feeds_para_mapper",
@@ -4856,8 +4854,7 @@
             "homepage": "https://www.drupal.org/project/feeds_para_mapper",
             "support": {
                 "source": "https://git.drupalcode.org/project/feeds_para_mapper"
-            },
-            "time": "2019-07-01T00:37:13+00:00"
+            }
         },
         {
             "name": "drupal/feeds_tamper",
@@ -4925,8 +4922,7 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/feeds_tamper",
                 "issues": "http://drupal.org/project/issues/feeds_tamper"
-            },
-            "time": "2019-06-20T16:42:57+00:00"
+            }
         },
         {
             "name": "drupal/field_display_label",
@@ -5028,8 +5024,7 @@
             "homepage": "https://www.drupal.org/project/field_group",
             "support": {
                 "source": "https://git.drupalcode.org/project/field_group"
-            },
-            "time": "2019-11-20T20:48:44+00:00"
+            }
         },
         {
             "name": "drupal/force_password_change",
@@ -7213,8 +7208,7 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/tamper",
                 "issues": "http://drupal.org/project/issues/tamper"
-            },
-            "time": "2019-11-07T17:43:58+00:00"
+            }
         },
         {
             "name": "drupal/taxonomy_import",
