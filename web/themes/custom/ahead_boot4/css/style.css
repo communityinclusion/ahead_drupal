@@ -44,5 +44,6 @@
      #block-ahead-boot4-content .views-field.views-field-title, .view-general-search .views-field.views-field-title { min-width: 450px;}
      .node--type-cedar-record .leaflet-container {height: 350px; width: 400px;}
      .initHidden {display: none;}
-     .sidebar .block#block-yoursearch, .sidebar .block#block-exposedformgeneral-searchpage-1, .sidebar .block#block-state {margin-bottom: 0; padding-bottom: 0; }
+     .sidebar .block#block-yoursearch, .sidebar .block#block-exposedformgeneral-searchpage-1, .sidebar .block#block-state,  .sidebar .block#block-degreetype, .sidebar .block#block-publicorprivate, .sidebar .block#block-advancedshowhide, .sidebar .block#block-institutionsize, .sidebar .block#block-disabilityrelatedprogramsandcourses, .sidebar .block#block-disabilityrelatedservices, .sidebar .block#block-minorityserving, .sidebar .block#block-coursesordegreeprogramsintheareaofdisability {margin-bottom: 0; padding-bottom: 0; }
+  
       
