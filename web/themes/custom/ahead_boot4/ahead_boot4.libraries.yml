@@ -4,6 +4,9 @@ global-styling:
     js/global.js: {}
   dependencies:
     - core/jquery
+    - core/drupal.ajax
+    - core/drupal
+    - core/drupalSettings
     - core/jquery.once
   css:
     component:
