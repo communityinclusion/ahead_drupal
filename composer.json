@@ -112,7 +112,7 @@
         "drupal/token_custom": "^1.0@alpha",
         "drupal/token_filter": "^1.1",
         "drupal/viewfield": "^3.0@alpha",
-        "drupal/views_bulk_operations": "^2.5",
+        "drupal/views_bulk_operations": "^2.6",
         "drupal/views_data_export": "^1.0@beta",
         "drupal/webform": "^5.1",
         "drupal/workflow": "^1.1",
