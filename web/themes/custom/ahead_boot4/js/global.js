@@ -11,10 +11,13 @@
     attach: function (context, settings) {
 
       $( "#advButton",context ).once('advButton').click(function() {
+        if(!$('#firstb').hasClass('withCheck'))$('#firstb').addClass('withCheck');
+        else if ($('#firstb').hasClass('withCheck'))$('#firstb').removeClass('withCheck');
         
-        $('#block-institutionsize').toggle( "slow", function() {
+        //$('#firstb').toggle( "slow", function() {
           // Animation complete.
-        });
+        
+        /*
         $('#block-disabilityrelatedprogramsandcourses').toggle( "slow", function() {
           // Animation complete.
         });
@@ -26,13 +29,40 @@
         });
         $('#block-coursesordegreeprogramsintheareaofdisability').toggle( "slow", function() {
           // Animation complete.
-        });
-      });
-      
-        /* $(context).find('#sidebar_first').once('#advButton').each( function() {
-
-          if($('#advButton').length ) { $('#advButton').remove();}
         }); */
+      });
+      $('#sidebar_first div',context).once('initHidden').each( function() {
+        //$(this).closest('div.initHidden').addClass('withCheck');
+        
+        }
+      );
+      
+     
+     /* $('#firstb',context).once('checkboxes').each(function(){
+        $('#firstb').removeClass('initHidden');
+        $('#firstb input').each(function(){
+          
+          console.log('loaded');
+          if ($(this).is(':checked')) {
+        
+        
+          if(!$('#firstb').hasClass('withCheck')) $("#firstb").addClass('initHidden').addClass('withCheck');
+        
+          
+            return;
+
+
+         
+          } 
+          else {
+                if(!$('#firstb').hasClass('initHidden')) $("#firstb").addClass('initHidden');
+          }
+          });
+      
+        
+      
+      
+      }); */
         
       
      

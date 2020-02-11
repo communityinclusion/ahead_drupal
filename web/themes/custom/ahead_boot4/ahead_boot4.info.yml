@@ -23,6 +23,7 @@ regions:
   breadcrumb: Breadcrumb
   content: Content
   sidebar_first: 'Sidebar first'
+  sidebar_firstb: 'Sidebar firstb'
   sidebar_second: 'Sidebar second'
   featured_bottom_first: 'Featured bottom first'
   featured_bottom_second: 'Featured bottom second'
