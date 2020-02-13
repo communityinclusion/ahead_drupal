@@ -101,6 +101,7 @@
         "drupal/search_api": "^1.14",
         "drupal/search_api_db": "^1.14",
         "drupal/search_api_page": "^1.0",
+        "drupal/search_api_saved_searches": "^1.0",
         "drupal/search_api_solr": "^3.7",
         "drupal/simple_mail": "^1.1",
         "drupal/smtp": "^1.0@beta",

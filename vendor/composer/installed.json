@@ -7032,6 +7032,66 @@
         }
     },
     {
+        "name": "drupal/search_api_saved_searches",
+        "version": "1.0.0-alpha2",
+        "version_normalized": "1.0.0.0-alpha2",
+        "source": {
+            "type": "git",
+            "url": "https://git.drupalcode.org/project/search_api_saved_searches.git",
+            "reference": "8.x-1.0-alpha2"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://ftp.drupal.org/files/projects/search_api_saved_searches-8.x-1.0-alpha2.zip",
+            "reference": "8.x-1.0-alpha2",
+            "shasum": "a163fb24d28ef4f42c70446c92f833fada7cb355"
+        },
+        "require": {
+            "drupal/core": "*",
+            "drupal/search_api": "^1.8"
+        },
+        "require-dev": {
+            "drupal/facets": "@dev",
+            "drupal/search_api_page": "@dev"
+        },
+        "type": "drupal-module",
+        "extra": {
+            "branch-alias": {
+                "dev-1.x": "1.x-dev"
+            },
+            "drupal": {
+                "version": "8.x-1.0-alpha2",
+                "datestamp": "1573121888",
+                "security-coverage": {
+                    "status": "not-covered",
+                    "message": "Alpha releases are not covered by Drupal security advisories."
+                }
+            }
+        },
+        "installation-source": "dist",
+        "notification-url": "https://packages.drupal.org/8/downloads",
+        "license": [
+            "GPL-2.0+"
+        ],
+        "authors": [
+            {
+                "name": "Thomas Seidl",
+                "homepage": "https://www.drupal.org/u/drunken-monkey"
+            },
+            {
+                "name": "See other contributors",
+                "homepage": "https://www.drupal.org/node/1142202/committers"
+            }
+        ],
+        "description": "Allows visitors to bookmark searches and get notifications for new results.",
+        "homepage": "https://www.drupal.org/project/search_api_saved_searches",
+        "support": {
+            "source": "http://git.drupal.org/project/search_api_saved_searches.git",
+            "issues": "https://www.drupal.org/project/issues/search_api_saved_searches",
+            "irc": "irc://irc.freenode.org/drupal-search-api"
+        }
+    },
+    {
         "name": "drupal/search_api_solr",
         "version": "3.7.0",
         "version_normalized": "3.7.0.0",
