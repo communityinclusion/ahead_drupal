@@ -47,4 +47,4 @@
      .initHidden.withCheck {display: block;}
      .sidebar .block#block-yoursearch, .sidebar .block#block-exposedformgeneral-searchpage-1, .sidebar .block#block-state,  .sidebar .block#block-degreetype, .sidebar .block#block-publicorprivate, .sidebar .block#block-advancedshowhide, .sidebar .block#block-institutionsize, .sidebar .block#block-disabilityrelatedprogramsandcourses, .sidebar .block#block-disabilityrelatedservices, .sidebar .block#block-minorityserving, .sidebar .block#block-coursesordegreeprogramsintheareaofdisability {margin-bottom: 0; padding-bottom: 0; }
   
-      
+      #edit-search-api-fulltext { max-width: 240px; }
