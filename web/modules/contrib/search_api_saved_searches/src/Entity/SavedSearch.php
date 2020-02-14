@@ -83,7 +83,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
     $fields['langcode']->setDisplayConfigurable('form', TRUE);
 
     $fields['label'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Label'))
+      ->setLabel(t('Name of your saved search'))
       ->setDescription(t('The label for the saved search.'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 255)
