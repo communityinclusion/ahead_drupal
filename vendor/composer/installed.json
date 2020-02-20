@@ -6575,21 +6575,15 @@
     },
     {
         "name": "drupal/profile",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
+        "version": "dev-1.x",
+        "version_normalized": "dev-1.x",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/profile.git",
-            "reference": "8.x-1.0"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/profile-8.x-1.0.zip",
-            "reference": "8.x-1.0",
-            "shasum": "45f5ad7f274d5e1e7ec8b72d98f9a20136073112"
+            "reference": "ed144eb75ff15bfaa6c3653d82763daad426ccc2"
         },
         "require": {
-            "drupal/core": "^8.6",
+            "drupal/core": "^8.7.7 || ^9",
             "drupal/entity": "^1.0-rc2"
         },
         "require-dev": {
@@ -6601,15 +6595,15 @@
                 "dev-1.x": "1.x-dev"
             },
             "drupal": {
-                "version": "8.x-1.0",
-                "datestamp": "1567007888",
+                "version": "8.x-1.0+2-dev",
+                "datestamp": "1578488587",
                 "security-coverage": {
-                    "status": "covered",
-                    "message": "Covered by Drupal's security advisory policy"
+                    "status": "not-covered",
+                    "message": "Dev releases are not covered by Drupal security advisories."
                 }
             }
         },
-        "installation-source": "dist",
+        "installation-source": "source",
         "notification-url": "https://packages.drupal.org/8/downloads",
         "license": [
             "GPL-2.0+"

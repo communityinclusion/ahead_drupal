@@ -94,7 +94,7 @@
         "drupal/panels": "^4.3",
         "drupal/paragraphs": "^1.9",
         "drupal/pathauto": "^1.6",
-        "drupal/profile": "^1.0@RC",
+        "drupal/profile": "^1.1",
         "drupal/recaptcha": "^2.4",
         "drupal/rules": "^3.0@alpha",
         "drupal/scheduler": "^1.0",
