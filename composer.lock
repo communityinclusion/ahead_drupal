@@ -6451,8 +6451,7 @@
             "homepage": "http://drupal.org/project/profile",
             "support": {
                 "source": "https://git.drupalcode.org/project/profile"
-            },
-            "time": "2020-01-08T13:03:06+00:00"
+            }
         },
         {
             "name": "drupal/recaptcha",

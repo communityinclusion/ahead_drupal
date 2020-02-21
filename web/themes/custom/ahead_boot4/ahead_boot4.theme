@@ -5,6 +5,8 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Implements hook_form_system_theme_settings_alter() for settings form.
@@ -42,4 +44,36 @@ function ahead_boot4_preprocess_node(array &$variables) {
     $variables['field_academics_other_specify'] = strtolower($node->field_academics_other_specify->value);
   }
   $variables['field_academics_other_specify'] = $example_class;
+  
+
+  
+
+}
+function ahead_boot4_preprocess_breadcrumb(&$variables) {
+  $variables['cedar_search_last'] = $_SESSION['cedar_search_last'];
+  $currenturl = Url::fromRoute('<current>')->toString();
+  if (stripos($currenturl, 'solr-search') !== false) {
+    unset($_SESSION['cedar_search_last']);
+    $_SESSION['cedar_search_last'] = $_SERVER['REQUEST_URI'];
+    $variables['cedar_search_last'] = $_SESSION['cedar_search_last'];
+
+  }
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if ($node instanceof \Drupal\node\NodeInterface) {
+      $variables['ntype'] = $node->type->entity->label();
+  }
+  if($variables['ntype'] && $variables['ntype'] == 'CEDAR record') {$variables['backlink'] = $variables['cedar_search_last']; }
+  else { unset($variables['backlink']); }
+  if (($node = \Drupal::routeMatch()->getParameter('node')) && $variables['breadcrumb']) {
+    $variables['breadcrumb'][] = array(
+      'text' => $node->getTitle(),
+      
+      //'url'  => $node->URL(),
+    );
+  }
+
+  $variables['#cache'] = [
+    'max-age'  => 0
+  ];
+
 }
