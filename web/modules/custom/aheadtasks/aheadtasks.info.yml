@@ -1,0 +1,5 @@
+name: 'AheadTasks'
+type: module
+description: 'Style and form tweaks'
+core: 8.x
+package: 'AHEAD'

@@ -87,7 +87,9 @@ function recaptcha_captcha($op, $captcha_type = '') {
 
           // As the validate callback does not depend on sid or solution, this
           // captcha type can be displayed on cached pages.
-          $captcha['cacheable'] = TRUE;
+          //$captcha['cacheable'] = TRUE;  Hack PF from this issue: https://www.drupal.org/project/recaptcha/issues/3035883  see patch file
+          $captcha['cacheable'] = FALSE;
+          \Drupal::service('page_cache_kill_switch')->trigger();
 
           // Check if reCAPTCHA use globally is enabled.
           $recaptcha_src = 'https://www.google.com/recaptcha/api.js';

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "573bd46b20c73c26b30fcb7b6c5d6794",
+    "content-hash": "0b377e3914a5c27fbbadf3473e25330a",
     "packages": [
         {
             "name": "alchemy/zippy",
@@ -3946,8 +3946,7 @@
             ],
             "support": {
                 "source": "https://git.drupalcode.org/project/csv_importer"
-            },
-            "time": "2019-11-24T06:22:21+00:00"
+            }
         },
         {
             "name": "drupal/csv_serialization",
@@ -4812,8 +4811,7 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/feeds",
                 "issues": "https://www.drupal.org/project/issues/feeds"
-            },
-            "time": "2019-11-23T16:33:04+00:00"
+            }
         },
         {
             "name": "drupal/feeds_para_mapper",
@@ -4856,8 +4854,7 @@
             "homepage": "https://www.drupal.org/project/feeds_para_mapper",
             "support": {
                 "source": "https://git.drupalcode.org/project/feeds_para_mapper"
-            },
-            "time": "2019-07-01T00:37:13+00:00"
+            }
         },
         {
             "name": "drupal/feeds_tamper",
@@ -4925,8 +4922,7 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/feeds_tamper",
                 "issues": "http://drupal.org/project/issues/feeds_tamper"
-            },
-            "time": "2019-06-20T16:42:57+00:00"
+            }
         },
         {
             "name": "drupal/field_display_label",
@@ -5028,8 +5024,7 @@
             "homepage": "https://www.drupal.org/project/field_group",
             "support": {
                 "source": "https://git.drupalcode.org/project/field_group"
-            },
-            "time": "2019-11-20T20:48:44+00:00"
+            }
         },
         {
             "name": "drupal/force_password_change",
@@ -6395,20 +6390,14 @@
         },
         {
             "name": "drupal/profile",
-            "version": "1.0.0",
+            "version": "dev-1.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/profile.git",
-                "reference": "8.x-1.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/profile-8.x-1.0.zip",
-                "reference": "8.x-1.0",
-                "shasum": "45f5ad7f274d5e1e7ec8b72d98f9a20136073112"
+                "reference": "ed144eb75ff15bfaa6c3653d82763daad426ccc2"
             },
             "require": {
-                "drupal/core": "^8.6",
+                "drupal/core": "^8.7.7 || ^9",
                 "drupal/entity": "^1.0-rc2"
             },
             "require-dev": {
@@ -6420,11 +6409,11 @@
                     "dev-1.x": "1.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-1.0",
-                    "datestamp": "1567007888",
+                    "version": "8.x-1.0+2-dev",
+                    "datestamp": "1578488587",
                     "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -6839,6 +6828,64 @@
             }
         },
         {
+            "name": "drupal/search_api_saved_searches",
+            "version": "1.0.0-alpha2",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/search_api_saved_searches.git",
+                "reference": "8.x-1.0-alpha2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/search_api_saved_searches-8.x-1.0-alpha2.zip",
+                "reference": "8.x-1.0-alpha2",
+                "shasum": "a163fb24d28ef4f42c70446c92f833fada7cb355"
+            },
+            "require": {
+                "drupal/core": "*",
+                "drupal/search_api": "^1.8"
+            },
+            "require-dev": {
+                "drupal/facets": "@dev",
+                "drupal/search_api_page": "@dev"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.x": "1.x-dev"
+                },
+                "drupal": {
+                    "version": "8.x-1.0-alpha2",
+                    "datestamp": "1573121888",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Alpha releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Seidl",
+                    "homepage": "https://www.drupal.org/u/drunken-monkey"
+                },
+                {
+                    "name": "See other contributors",
+                    "homepage": "https://www.drupal.org/node/1142202/committers"
+                }
+            ],
+            "description": "Allows visitors to bookmark searches and get notifications for new results.",
+            "homepage": "https://www.drupal.org/project/search_api_saved_searches",
+            "support": {
+                "source": "http://git.drupal.org/project/search_api_saved_searches.git",
+                "issues": "https://www.drupal.org/project/issues/search_api_saved_searches",
+                "irc": "irc://irc.freenode.org/drupal-search-api"
+            }
+        },
+        {
             "name": "drupal/search_api_solr",
             "version": "3.7.0",
             "source": {
@@ -7213,8 +7260,7 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/tamper",
                 "issues": "http://drupal.org/project/issues/tamper"
-            },
-            "time": "2019-11-07T17:43:58+00:00"
+            }
         },
         {
             "name": "drupal/taxonomy_import",
@@ -7589,20 +7635,20 @@
         },
         {
             "name": "drupal/views_bulk_operations",
-            "version": "2.5.0",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/views_bulk_operations.git",
-                "reference": "8.x-2.5"
+                "reference": "8.x-2.6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/views_bulk_operations-8.x-2.5.zip",
-                "reference": "8.x-2.5",
-                "shasum": "3ec848b4f235720d05cb9713ea80a86415b6909f"
+                "url": "https://ftp.drupal.org/files/projects/views_bulk_operations-8.x-2.6.zip",
+                "reference": "8.x-2.6",
+                "shasum": "517b671adb55c3ad023032607d360dab77db9f22"
             },
             "require": {
-                "drupal/core": "^8.4"
+                "drupal/core": "~8.5"
             },
             "type": "drupal-module",
             "extra": {
@@ -7610,8 +7656,8 @@
                     "dev-2.x": "2.x-dev"
                 },
                 "drupal": {
-                    "version": "8.x-2.5",
-                    "datestamp": "1550740384",
+                    "version": "8.x-2.6",
+                    "datestamp": "1580924749",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7652,7 +7698,7 @@
             "description": "Adds an ability to perform bulk operations on selected entities from view results. Provides an API to create such operations.",
             "homepage": "https://www.drupal.org/project/views_bulk_operations",
             "support": {
-                "source": "http://cgit.drupalcode.org/views_bulk_operations",
+                "source": "https://git.drupalcode.org/project/views_bulk_operations",
                 "issues": "https://www.drupal.org/project/issues/views_bulk_operations?version=8.x",
                 "docs": "https://www.drupal.org/docs/8/modules/views-bulk-operations-vbo"
             }
@@ -14956,7 +15002,6 @@
         "drupal/mailgun": 10,
         "drupal/nodeaccess": 10,
         "drupal/page_manager": 10,
-        "drupal/profile": 5,
         "drupal/rules": 15,
         "drupal/smtp": 10,
         "drupal/tamper": 20,
