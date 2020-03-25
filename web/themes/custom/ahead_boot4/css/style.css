@@ -49,3 +49,17 @@
   
       #edit-search-api-fulltext { max-width: 240px; }
       fieldset.form-item-notify-interval {display: none; }
+      .field-group-accordion-wrapper h3#ui-id-3 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900;content: '\f2b5';}
+      .field-group-accordion-wrapper h3#ui-id-1 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f05a";}
+      .field-group-accordion-wrapper h3#ui-id-5 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f479";}
+      .field-group-accordion-wrapper h3#ui-id-7 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f368";}
+      .field-group-accordion-wrapper h3#ui-id-9 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f19c";}
+      .field-group-accordion-wrapper h3 a::before {
+        display: inline-block;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        margin-right: 10px;
+        font-size: 150%;
+      }

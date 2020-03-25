@@ -10,13 +10,15 @@
 
   Drupal.behaviors.ahead_boot4 = {
     attach: function (context, settings) {
-
+     
       $( "#advButton",context ).once('advButton').click(function() {
         if(!$('#firstb').hasClass('withCheck'))$('#firstb').addClass('withCheck');
         else if ($('#firstb').hasClass('withCheck'))$('#firstb').removeClass('withCheck');
         
         
       });
+      
+
       $('#firstb',context).once('initHidden').each( function() {
           var m = window.location.search.indexOf("institution_size");
           var n = window.location.search.indexOf("disability_related");
