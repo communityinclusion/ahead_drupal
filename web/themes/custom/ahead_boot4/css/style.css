@@ -70,3 +70,10 @@
       .field-group-accordion-wrapper h3.ui-accordion, .field-group-accordion-wrapper h3.ui-accordion-header {margin: 11px 0;}
       .field-group-accordion-wrapper h3,.field-group-accordion-wrapper h3.ui-state-default a,.field-group-accordion-wrapper h3.ui-state-active a, .field-group-accordion-wrapper h3.ui-state-active:hover a { color: #2980B9; background-color: #f2f2f2; }
       .node--type-cedar-record h1 {border-bottom: 1px solid #333; font-size: 2rem;}
+      footer {color: #fff; background-color: #6c757d !important;}
+      footer .site-footer__top .region.region-footer-first {width: 100%;}
+     .site-footer #block-footerlogo.block, .site-footer #block-footertext.block { float: left; border: none;}
+     .site-footer #block-footerlogo.block {width: 35%;}
+     .site-footer #block-footerlogo.block img {width: 100%;}
+     .site-footer #block-footertext.block { width: 62%}
+     
