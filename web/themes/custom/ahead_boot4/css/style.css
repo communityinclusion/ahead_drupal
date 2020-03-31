@@ -10,8 +10,8 @@
      background-color: #fff;
     }
     #block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent{ height: 4em; }
-   div.field__label.leftTable {float: left;display: block; width: 75%; border: 1px #ccc solid; height: 69px;padding-top: 18px; border-width: 1px 1px 0 1px; }
-    div.field__item.rightTable {float: left; display: block; width: 24%; border: 1px #ccc solid; border-width: 1px 1px 0 0;}
+   div.field__label.leftTable {float: left;display: block; width: 85%; border: 1px #ccc solid; height: 69px;padding-top: 18px; border-width: 1px 1px 0 1px; }
+    div.field__item.rightTable {float: left; display: block; width: 14%; border: 1px #ccc solid; border-width: 1px 1px 0 0;}
     h3.field__label {font-size: 120%;}
     .floatLeft {float:left;
         width: min-content;
@@ -80,3 +80,4 @@
      #sidebar_first h2 {text-transform: uppercase;}
      #sidebar_first.sidebar .block {background-color: #fff;}
      ul.js-facets-checkbox-links {padding-left: 12px;}
+     .field__item.rightTable img {width: 55px; margin-left: 15px;}
