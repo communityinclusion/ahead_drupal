@@ -43,7 +43,7 @@
 
      fieldset#group-specific-population-ques fieldset legend {font-size: 105%; }
      #block-ahead-boot4-content .views-field.views-field-title, .view-general-search .views-field.views-field-title { min-width: 450px;}
-     .node--type-cedar-record .leaflet-container {height: 350px; width: 400px;}
+     .node--type-cedar-record .leaflet-container {height: 300px; width: 350px;}
      .initHidden {display: none;}
      .initHidden.withCheck {display: block;}
      .sidebar .block#block-yoursearch, .sidebar .block#block-exposedformgeneral-searchpage-1, .sidebar .block#block-state,  .sidebar .block#block-degreetype, .sidebar .block#block-publicorprivate, .sidebar .block#block-advancedshowhide, .sidebar .block#block-institutionsize, .sidebar .block#block-disabilityrelatedprogramsandcourses, .sidebar .block#block-disabilityrelatedservices, .sidebar .block#block-minorityserving, .sidebar .block#block-coursesordegreeprogramsintheareaofdisability {margin-bottom: 0; padding-bottom: 0; }
@@ -82,3 +82,12 @@
      ul.js-facets-checkbox-links {padding-left: 12px;}
      .field__item.rightTable img {width: 55px; margin-left: 15px;}
      #block-ahead-boot4-breadcrumbs nav ol {background-color: #fff;}
+     #mapdiv {width: 350px; height: 300px; float: right; position: relative;margin-right: 40px;}
+     .node--type-cedar-record .field--name-field-institution-map {width: 350px; height: 300px;position: relative;}
+     .node--type-cedar-record .field-group-accordion-wrapper.ui-accordion {clear: both;padding-top: 15px;}
+     .view-solr-search-content h3 {margin-bottom: 0;background-color: rgba(0,0,0,.03);padding: 14px 5px 0 14px;}
+     .view-solr-search-content .views-field-field-college-university-state {background-color: rgba(0,0,0,.03);
+     border-bottom: 1px solid rgba(0,0,0,.125);padding:0 5px 14px 14px;}
+     .view-solr-search-content .views-field-field-disability-office-addr {margin-bottom: 12px;}
+     .view-solr-search-content .item-list > ul > li { border: 1px solid rgba(0,0,0,.125); padding: 0.2em 0.5em 0 0.5em; border-top: 4px solid #2980B9;border-radius: 4px;margin-bottom: 12px;}
+    
