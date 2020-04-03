@@ -31,8 +31,12 @@
         caption-side: top;
         font-size: 150%;
         color: #333;
+        padding: 0;
       }
-      ul.tableKey { list-style: none; }
+
+      ul.tableKey { list-style: none; margin-bottom: 0; }
+      ul.tableKey li { float: left; width: 210px; font-size: .7em;padding: 5px; border: 1px solid #ccc; }
+      .ratingKey {font-size: .7em; }
       .paragraph--type--d-o-contacts > div > .field__label { font-weight: bold; float: left; width: 30%; }
       .paragraph--type--d-o-contacts > div > .field__item { float: left; width: 70%; }
       .paragraph--type--disability-office-address-es- > div > .field__label {font-weight: bold;}

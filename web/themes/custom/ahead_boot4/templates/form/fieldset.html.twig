@@ -44,7 +44,7 @@
     <span{{ legend_span.attributes.addClass(legend_span_classes).addClass('legendDescrip') }}>
       {{ description.content }}
   {% else %}
-      <legend{{ legend.attributes }}>
+       <legend{{ legend.attributes.addClass('legendDescrip') }}>
       <span{{ legend_span.attributes.addClass(legend_span_classes) }}>
       {{ legend.title }}
   {% endif %}
