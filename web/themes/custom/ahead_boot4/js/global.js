@@ -24,11 +24,11 @@
           var n = window.location.search.indexOf("disability_related");
           var o = window.location.search.indexOf("minority_serving");
           var p = window.location.search.indexOf("courses_or_degree_programs");
-          if(m > -1 || n > -1 || o > -1 || p > -1) { console.log("it's there");
+          if(m > -1 || n > -1 || o > -1 || p > -1) { 
                   if(!$('#firstb').hasClass('withCheck'))$('#firstb').addClass('withCheck');
         
             } 
-          else { console.log("Not there"); 
+          else {  
             if ($('#firstb').hasClass('withCheck'))$('#firstb').removeClass('withCheck');
           }
       
@@ -36,6 +36,10 @@
         
         }
         );
+        $('legend.legendDescrip',context).once('initHidden').each( function() {
+          $(this).append('<p>Response key:</p><ul class="tableKey"><li><img src="/sites/default/files/cedar_imgs/commonly_provided.png" style="width:18px" alt="Commonly provided in the last three years" />&nbsp;&nbsp;Commonly provided in the last three years</li><li><img src="/sites/default/files/cedar_imgs/occasionally_provided.png" style="width:18px" alt="Occasionally provided in the last three years" />&nbsp;&nbsp;Occasionally provided in the last three years</li><li><img src="/sites/default/files/cedar_imgs/not_provided.png" style="width:18px" alt="Not provided in the last three years" />&nbsp;&nbsp;Not provided in the last three years</li></ul>');
+
+        });
         
       
      

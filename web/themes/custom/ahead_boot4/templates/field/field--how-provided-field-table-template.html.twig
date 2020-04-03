@@ -104,8 +104,8 @@
          {% endif %}
         
       {% else %}
-        <div{{ attributes.addClass('quesContainer') }}><span{{ title_attributes.addClass(title_classes).addClass('leftTable') }}>{{ label }}</span>
-        <span{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
+        <tr><td{{ title_attributes.addClass(title_classes).addClass('leftTable') }}>{{ label }}</td>
+        <td{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
         {% set raw_field = item.content|render|striptags|trim %}
         {% if raw_field starts with 'Not provided' %}
           <img src="/sites/default/files/cedar_imgs/not_provided.png" title="Not provided in the last three years" alt="Not provided in the last three years" />
@@ -132,7 +132,7 @@
             </li>
           {% endif %}
         {% else %}
-          </span></div>
+          </td></tr>
         {% endif %}
     {% endfor %}
     {% if multiple %}

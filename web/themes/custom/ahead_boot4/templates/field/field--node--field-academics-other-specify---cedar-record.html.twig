@@ -1,1 +1,145 @@
-{% include 'field--how-provided-field-template.html.twig' %}
+{#
+/**
+ * @file
+ * Theme override for a field.
+ *
+ * To override output, copy the "field.html.twig" from the templates directory
+ * to your theme's directory and customize it, just like customizing other
+ * Drupal templates such as page.html.twig or node.html.twig.
+ *
+ * Instead of overriding the theming for all fields, you can also just override
+ * theming for a subset of fields using
+ * @link themeable Theme hook suggestions. @endlink For example,
+ * here are some theme hook suggestions that can be used for a field_foo field
+ * on an article node type:
+ * - field--node--field-foo--article.html.twig
+ * - field--node--field-foo.html.twig
+ * - field--node--article.html.twig
+ * - field--field-foo.html.twig
+ * - field--text-with-summary.html.twig
+ * - field.html.twig
+ *
+ * Available variables:
+ * - attributes: HTML attributes for the containing element.
+ * - label_hidden: Whether to show the field label or not.
+ * - title_attributes: HTML attributes for the title.
+ * - label: The label for the field.
+ * - multiple: TRUE if a field can contain multiple items.
+ * - items: List of all the field items. Each item contains:
+ *   - attributes: List of HTML attributes for each item.
+ *   - content: The field item's content.
+ * - entity_type: The entity type to which the field belongs.
+ * - field_name: The name of the field.
+ * - field_type: The type of the field.
+ * - label_display: The display settings for the label.
+ *
+ *
+ * @see template_preprocess_field()
+ */
+#}
+{%
+  set classes = [
+    'field',
+    'field--name-' ~ field_name|clean_class,
+    'field--type-' ~ field_type|clean_class,
+    'field--label-' ~ label_display,
+    'clearfix',
+  ]
+%}
+{%
+  set title_classes = [
+    'field__label',
+    label_display == 'visually_hidden' ? 'visually-hidden',
+  ]
+%}
+
+{% if label_hidden %}
+  {% if multiple %}
+    <div{{ attributes.addClass(classes, 'field__items') }}>
+      {% for item in items %}
+        <div{{ item.attributes.addClass('field__item') }}>lkjljkj{{ item.content }}</div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {% for item in items %}
+    
+      {% set raw_field = item.content|render|striptags|trim %}
+      {% if raw_field starts with 'Not provided' %}
+      <div{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
+        <img src="/sites/default/files/cedar_imgs/not_provided.png" alt="Not provided in the last three years" title="Not provided in the last three years" />
+      {% elseif raw_field starts with 'Provided occasionally' %}
+        <div{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
+        <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Provide occasionally in the last three years" alt="Provide occasionally in the last three years" />
+      {% elseif raw_field starts with 'Commonly provided' %}
+        <div{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
+        <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Commonly provided in the last three years" alt="Commonly provided in the last three years" />
+      {% else %}
+        <div{{ item.attributes.addClass('field__label').addClass('leftTable') }}>
+        Other: {{ item.content }}
+  {% endif %}
+
+
+    
+      
+      
+    </div>
+    {% endfor %}
+  {% endif %}
+{% else %}
+  <div{{ attributes.addClass(classes) }}>
+    
+    {% if multiple %}
+      <h3{{ title_attributes.addClass(title_classes) }}>{{ label }}</h3>
+      <div class='field__items'><ul>
+    {% endif %}
+      
+    {% for item in items %}
+      {% if multiple %}
+        {% set other_field = item.content|render|striptags|trim %}
+        {% if other_field starts with 'Other' %}
+         
+        {% else %}
+          <li{{ item.attributes.addClass('field__item') }}>
+          {{ item.content }}
+         {% endif %}
+        
+      {% else %}
+        {% set freq_value = element['#object'].field_academic_other_frequency.value %}
+        <tr><td{{ title_attributes.addClass(title_classes).addClass('leftTable') }}>Other: {{ item.content  }}</td>
+        <td{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
+        {% set raw_field = freq_value|render|striptags|trim %}
+        {% if raw_field starts with '1' %}
+          <img src="/sites/default/files/cedar_imgs/not_provided.png" title="Not provided in the last three years" alt="Not provided in the last three years" />
+        {% elseif raw_field starts with '2' %}
+          <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Provide occasionally in the last three years" alt="Provide occasionally in the last three years" />
+        {% elseif raw_field starts with '3' %}
+          <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Commonly provided in the last three years" alt="Commonly provided in the last three years" />
+        {% elseif raw_field starts with 'Generally not' %}
+          <img src="/sites/default/files/cedar_imgs/not_provided.png" title="Generally not accessible" alt="Generally not accessible" />
+        {% elseif raw_field starts with 'Somewhat' %}
+          <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Somewhat accessible" alt="Somewhat accessible" />
+        {% elseif raw_field starts with 'Completely' %}
+          <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Completely accessible" alt="Completely accessible" />
+        {% elseif raw_field starts with 'Not applicable' %}
+          <img src="/sites/default/files/cedar_imgs/not_applicable.png" title="Not applicable to this institution" alt="Not applicable to this institution" />
+        {% else %}
+        
+        {% endif %}
+        
+      {% endif %}
+        {% if multiple %}
+          {% if other_field starts with 'Other' %}
+
+          {% else %}
+            </li>
+          {% endif %}
+        {% else %}
+          </td></div>
+        {% endif %}
+    {% endfor %}
+    {% if multiple %}
+      </ul>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
