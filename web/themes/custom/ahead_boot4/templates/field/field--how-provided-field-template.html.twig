@@ -66,13 +66,13 @@
       {% set raw_field = item.content|render|striptags|trim %}
       {% if raw_field starts with 'Not provided' %}
       <div{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
-        <img src="/sites/default/files/cedar_imgs/not_provided.png" alt="Not provided in the last three years" title="Not provided in the last three years" />
+        <img src="/sites/default/files/cedar_imgs/not_provided.png" alt="Not provided in the last three years" title="Not provided in the last three years" /><br /><span class="iconLegend">Not provided</span>
       {% elseif raw_field starts with 'Provided occasionally' %}
         <div{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
-        <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Provide occasionally in the last three years" alt="Provide occasionally in the last three years" />
+        <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Provided occasionally in the last three years" alt="Provided occasionally in the last three years" /><br /><span class="iconLegend">Provided occasionally</span>
       {% elseif raw_field starts with 'Commonly provided' %}
         <div{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
-        <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Commonly provided in the last three years" alt="Commonly provided in the last three years" />
+        <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Commonly provided in the last three years" alt="Commonly provided in the last three years" /><br /><span class="iconLegend">Commonly provided</span>
       {% else %}
         <div{{ item.attributes.addClass('field__label').addClass('leftTable') }}>
         Other: {{ item.content }}
@@ -108,19 +108,19 @@
         <span{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
         {% set raw_field = item.content|render|striptags|trim %}
         {% if raw_field starts with 'Not provided' %}
-          <img src="/sites/default/files/cedar_imgs/not_provided.png" title="Not provided in the last three years" alt="Not provided in the last three years" />
+          <img src="/sites/default/files/cedar_imgs/not_provided.png" title="Not provided in the last three years" alt="Not provided in the last three years" /><br /><span class="iconLegend">Not provided</span>
         {% elseif raw_field starts with 'Provided occasionally' %}
-          <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Provide occasionally in the last three years" alt="Provide occasionally in the last three years" />
+          <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Provided occasionally in the last three years" alt="Provided occasionally in the last three years" /><br /><span class="iconLegend">Provided occasionally</span>
         {% elseif raw_field starts with 'Commonly provided' %}
-          <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Commonly provided in the last three years" alt="Commonly provided in the last three years" />
+          <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Commonly provided in the last three years" alt="Commonly provided in the last three years" /><br /><span class="iconLegend">Commonly provided</span>
         {% elseif raw_field starts with 'Generally not' %}
-          <img src="/sites/default/files/cedar_imgs/not_provided.png" title="Generally not accessible" alt="Generally not accessible" />
+          <img src="/sites/default/files/cedar_imgs/not_provided.png" title="Generally not accessible" alt="Generally not accessible" /><br /><span class="iconLegend">Not accessible</span>
         {% elseif raw_field starts with 'Somewhat' %}
-          <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Somewhat accessible" alt="Somewhat accessible" />
+          <img src="/sites/default/files/cedar_imgs/occasionally_provided.png" title="Somewhat accessible" alt="Somewhat accessible" /><br /><span class="iconLegend">Somewhat accessible</span>
         {% elseif raw_field starts with 'Completely' %}
-          <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Completely accessible" alt="Completely accessible" />
+          <img src="/sites/default/files/cedar_imgs/commonly_provided.png" title="Completely accessible" alt="Completely accessible" /><br /><span class="iconLegend">Completely accessible</span>
         {% elseif raw_field starts with 'Not applicable' %}
-          <img src="/sites/default/files/cedar_imgs/not_applicable.png" title="Not applicable to this institution" alt="Not applicable to this institution" />
+          <img src="/sites/default/files/cedar_imgs/not_applicable.png" title="Not applicable to this institution" alt="Not applicable to this institution" /><br /><span class="iconLegend">Not applicable</span>
         {% else %}
         {% endif %}
         
