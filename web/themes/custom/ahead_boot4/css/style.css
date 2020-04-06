@@ -33,10 +33,10 @@
         color: #333;
         padding: 0;
       }
-      span.iconLegend {font-size: .75em; color: #757575;}
+      table.quesTable tr {background: #fff;}
 
       ul.tableKey { list-style: none; margin-bottom: 0; }
-      ul.tableKey li { float: left; width: 210px; font-size: .7em;padding: 5px; border: 1px solid #ccc; }
+      ul.tableKey li { float: left; width: 210px; font-size: .7em;padding: 5px; border: 1px solid #ccc;  background-color: #fff;}
       .ratingKey {font-size: .7em; }
       .paragraph--type--d-o-contacts > div > .field__label { font-weight: bold; float: left; width: 30%; }
       .paragraph--type--d-o-contacts > div > .field__item { float: left; width: 70%; }
@@ -53,8 +53,11 @@
      #block-disabilityrelatedprogramsandcourses .facet-item label, #block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label { padding-left: 22px;margin-top: -24px;} 
      #block-disabilityrelatedprogramsandcourses .facet-item label, #block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label { padding-left: 22px;margin-top: -24px;} 
      #block-disabilityrelatedprogramsandcourses .facet-item,#block-coursesordegreeprogramsintheareaofdisability .facet-item {margin-bottom:14px;}
-     legend.legendDescrip {font-size: 125%; }
-
+     legend.legendDescrip {font-size: 125%;float:left; }
+     
+     fieldset#group-specific-population-ques,fieldset#accomdis,div#campusacc {border-radius: 8px;background-color:#f2f2f2;}
+     div#campusacc {padding: 10px 18px;}
+     span.iconLegend {font-size: .75em; color: #757575;}
      fieldset#group-specific-population-ques fieldset legend {font-size: 105%; }
      #block-ahead-boot4-content .views-field.views-field-title, .view-general-search .views-field.views-field-title { min-width: 450px;}
      .node--type-cedar-record .leaflet-container {height: 300px; width: 350px;}
