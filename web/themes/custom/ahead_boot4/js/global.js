@@ -17,6 +17,24 @@
         
         
       });
+      $('#instaddress',context).once('initHidden').each( function() {
+          $(this).append('<div id="showAll" class="allHidden"><span>Open all sections below.</span></div>');
+        
+      });
+
+      $( "#showAll",context ).once('showAll').click(function() {
+        if($(this).hasClass('allHidden')) {$(".ui-accordion-content").show();
+        $(this).removeClass('allHidden');
+        $(this).html('<span>Hide all sections.</span>');
+        } else
+        {$(".ui-accordion-content").hide();
+          $(this).addClass('allHidden');
+          $(this).html('<span>Open all sections.</span>');
+        }
+
+        
+        
+      });
       
 
       $('#firstb',context).once('initHidden').each( function() {
