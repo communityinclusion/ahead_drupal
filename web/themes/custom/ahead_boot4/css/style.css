@@ -107,7 +107,7 @@
      border-bottom: 1px solid rgba(0,0,0,.125);padding:0 5px 14px 14px;}
      .view-solr-search-content .views-field-field-disability-office-addr {margin-bottom: 12px;}
      .view-solr-search-content .item-list > ul > li { border: 1px solid rgba(0,0,0,.125); padding: 0.2em 0.5em 0 0.5em; border-top: 4px solid #2980B9;border-radius: 4px;margin-bottom: 12px;}
-     #printButt {width: 100px; height: 30px; color: #fff; background-color: #333; font-size:.9em;border-radius: 4px; float: right; margin-right: 15px;cursor: pointer;}
+     #printButt {width: 100px; height: 30px; color: #fff; background-color: #7d7d7d; font-size:.9em;border-radius: 4px; float: right; margin-right: 15px;cursor: pointer;}
      #printButt span {padding: 14px 0 0 8px;}
 #showAll {width: 170px; height: 30px; color: #fff; background-color: #2980b9; font-size:.9em; position: absolute; bottom: 0px;border-radius: 4px;cursor: pointer; }
 #showAll span {padding: 14px 0 0 8px;}
