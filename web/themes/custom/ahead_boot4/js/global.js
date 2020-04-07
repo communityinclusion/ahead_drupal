@@ -18,7 +18,8 @@
         
       });
       $('#instaddress',context).once('initHidden').each( function() {
-          $(this).append('<div id="showAll" class="allHidden"><span>Open all sections below.</span></div>');
+        $(this).prepend('<div id="printButt" class="printThis"><span>Print page</span></div>');
+          $(this).append('<div id="showAll" class="allHidden"><span>Open all sections.</span></div>');
         
       });
 
@@ -31,6 +32,14 @@
           $(this).addClass('allHidden');
           $(this).html('<span>Open all sections.</span>');
         }
+
+        
+        
+      });
+      $( "#printButt",context ).once('printButt').click(function() {
+        $(".ui-accordion-content").show();
+          window.print();
+          return false;
 
         
         
