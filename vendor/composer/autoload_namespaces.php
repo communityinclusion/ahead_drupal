@@ -11,6 +11,7 @@ return array(
     'Twig_' => array($vendorDir . '/twig/twig/lib'),
     'Stack' => array($vendorDir . '/stack/builder/src'),
     'Smalot\\PdfParser\\' => array($vendorDir . '/smalot/pdfparser/src'),
+    'Sabberworm\\CSS' => array($vendorDir . '/sabberworm/php-css-parser/lib'),
     'Mailgun' => array($vendorDir . '/mailgun/mailgun-php/src'),
     'Geocoder' => array($vendorDir . '/willdurand/geocoder/src'),
     'EasyRdf_' => array($vendorDir . '/easyrdf/easyrdf/lib'),

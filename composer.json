@@ -97,6 +97,7 @@
         "drupal/panels": "^4.3",
         "drupal/paragraphs": "^1.9",
         "drupal/pathauto": "^1.6",
+        "drupal/pdf_api": "1.x-dev",
         "drupal/profile": "^1.1",
         "drupal/recaptcha": "^2.4",
         "drupal/rules": "^3.0@alpha",
