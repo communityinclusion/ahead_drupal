@@ -21,8 +21,8 @@
       .node--type-cedar-record fieldset.js-form-item.form-item.js-form-wrapper > div:last-child {border-bottom: 1px #ccc solid;}
       .field--name-field-d-o-office-name {font-weight: bold; font-size: 110%;}
       .field--name-field-other-contacts > .field__label {font-weight: bold; font-size: 110%; margin-top: 18px; }
-      .paragraph--type--d-o-contacts {margin: 18px 0;}
-      .paragraph--type--d-o-contacts::after,.paragraph--type--disability-office-address-es-::after {
+      .node--view-mode-teaser .field--name-field-disability-office-addr,.paragraph--type--d-o-contacts {margin: 18px 0;}
+      .node--view-mode-teaser .field--name-field-disability-office-addr,.paragraph--type--d-o-contacts::after,.paragraph--type--disability-office-address-es-::after {
         content: "";
         clear: both;
         display: table;
@@ -101,11 +101,21 @@
      #block-ahead-boot4-breadcrumbs nav ol {background-color: #fff;}
      #mapdiv {width: 350px; height: 250px; float: right; position: relative;margin-right: 40px;}
      .node--type-cedar-record .field--name-field-institution-map {width: 350px; height: 300px;position: relative;}
+     .node--type-cedar-record.node--view-mode-teaser {
+
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 5px;
+  
+  }
      .node--type-cedar-record .field-group-accordion-wrapper.ui-accordion {clear: both;padding-top: 15px;}
-     .view-solr-search-content h3 {margin-bottom: 0;background-color: rgba(0,0,0,.03);padding: 14px 5px 0 14px; font-size: 1.4em;}
-     .view-solr-search-content .views-field-field-college-university-state {background-color: rgba(0,0,0,.03);
+     .node--view-mode-teaser h2.node__title, .view-solr-search-content h3 {margin-bottom: 0;background-color: rgba(0,0,0,.03);padding: 14px 5px 0 14px; font-size: 1.4em;}
+     .node--view-mode-teaser h2 a { color:#0071b3; ;}
+     .node--view-mode-teaser .node__content {margin-top: 0; font-size: 1rem;font-weight: 400; line-height: 1.5;}
+     .node--view-mode-teaser .citystate,.view-solr-search-content .views-field-field-college-university-state {background-color: rgba(0,0,0,.03);
      border-bottom: 1px solid rgba(0,0,0,.125);padding:0 5px 14px 14px;}
      .view-solr-search-content .views-field-field-disability-office-addr {margin-bottom: 12px;}
+     .node--view-mode-teaser .field--name-field-disability-office-addr {margin-bottom: 4px;margin-top:0; width: 100%;}
      .view-solr-search-content .item-list > ul > li { border: 1px solid rgba(0,0,0,.125); padding: 0.2em 0.5em 0 0.5em; border-top: 4px solid #2980B9;border-radius: 4px;margin-bottom: 12px;}
      #printButt {width: 100px; height: 30px; color: #fff; background-color: #7d7d7d; font-size:.9em;border-radius: 4px; float: right; margin-right: 15px;cursor: pointer;}
      #printButt span {padding: 14px 0 0 8px;}

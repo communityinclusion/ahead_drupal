@@ -76,6 +76,7 @@
         "drupal/feeds_tamper": "2.x-dev",
         "drupal/field_display_label": "1.x-dev",
         "drupal/field_group": "3.x-dev",
+        "drupal/flag": "^4.0",
         "drupal/fontawesome": "^2.15",
         "drupal/fontyourface": "^3.2",
         "drupal/force_password_change": "^1.3",
