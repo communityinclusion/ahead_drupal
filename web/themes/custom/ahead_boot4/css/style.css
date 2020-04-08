@@ -59,7 +59,8 @@
      div#campusacc {padding: 10px 18px;}
      span.iconLegend {font-size: .75em; color: #757575;}
      fieldset#group-specific-population-ques fieldset legend {font-size: 105%; }
-     #block-ahead-boot4-content .views-field.views-field-title, .view-general-search .views-field.views-field-title { min-width: 450px;}
+     .node--view-mode-teaser h2.node__title,#block-ahead-boot4-content .views-field.views-field-title, .view-general-search .views-field.views-field-title { min-width: 450px;}
+     #block-views-block-flag-bookmark-block-1 .item-list ul li {margin: 8px 2px;}
      .node--type-cedar-record .leaflet-container {height: 300px; width: 350px;}
      .initHidden {display: none;}
      .initHidden.withCheck {display: block;}

@@ -10,6 +10,7 @@
 
   Drupal.behaviors.ahead_boot4 = {
     attach: function (context, settings) {
+      
      
       $( "#advButton",context ).once('advButton').click(function() {
         if(!$('#firstb').hasClass('withCheck'))$('#firstb').addClass('withCheck');
@@ -73,7 +74,14 @@
         $('div#campus-access',context).once('initHidden').each( function() {
           $(this).prepend('<div><p class="ratingKey">Rating key:</p><ul class="tableKey clearfix"><li><img src="/sites/default/files/cedar_imgs/commonly_provided.png" style="width:18px" alt="Completely accessible" />&nbsp;&nbsp;Completely accessible</li><li><img src="/sites/default/files/cedar_imgs/occasionally_provided.png" style="width:18px" alt="Somewhat accessible" />&nbsp;&nbsp;Somewhat accessible</li><li><img src="/sites/default/files/cedar_imgs/not_provided.png" style="width:18px" alt="Generally not accessible" />&nbsp;&nbsp;Generally not accessible</li></ul></div>');
 
-        });      
+        });  
+        $('a', context).once('flag-bookmark').click(function(){
+          console.log('view name: ');
+            
+
+         setTimeout(function(){ $('.view-flag-bookmark').trigger('RefreshView');},2000);
+      
+        });    
      
     
 
