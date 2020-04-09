@@ -62,9 +62,9 @@ function ahead_boot4_preprocess_breadcrumb(&$variables) {
   if ($node instanceof \Drupal\node\NodeInterface) {
       $variables['ntype'] = $node->type->entity->label();
   }
-  if(($variables['ntype'] && $variables['ntype'] == 'CEDAR record') || (stripos($currenturl, 'bookmarks') !== false)) {$variables['backlink'] = $variables['cedar_search_last']; }
+  if(($variables['ntype'] && $variables['ntype'] == 'CEDAR record') || (stripos($currenturl, 'bookmarks') !== false  || stripos($currenturl, 'glossary') !== false)) {$variables['backlink'] = $variables['cedar_search_last']; }
   else { unset($variables['backlink']); }
-  if ((($node = \Drupal::routeMatch()->getParameter('node')) && $variables['breadcrumb']) || stripos($currenturl, 'bookmarks') !== false) {
+  if ((($node = \Drupal::routeMatch()->getParameter('node')) && $variables['breadcrumb']) || (stripos($currenturl, 'bookmarks') !== false || stripos($currenturl, 'glossary') !== false )) {
     $variables['breadcrumb'][] = array(
       'text' => $node ? $node->getTitle() : 'My favorites',
 
