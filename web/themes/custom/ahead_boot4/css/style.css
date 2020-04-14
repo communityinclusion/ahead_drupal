@@ -65,6 +65,18 @@
      .initHidden {display: none;}
      .initHidden.withCheck {display: block;}
      .sidebar .block#block-yoursearch, .sidebar .block#block-exposedformgeneral-searchpage-1, .sidebar .block#block-state,  .sidebar .block#block-degreetype, .sidebar .block#block-publicorprivate, .sidebar .block#block-advancedshowhide, .sidebar .block#block-institutionsize, .sidebar .block#block-disabilityrelatedprogramsandcourses, .sidebar .block#block-disabilityrelatedservices, .sidebar .block#block-minorityserving, .sidebar .block#block-coursesordegreeprogramsintheareaofdisability {margin-bottom: 0; padding-bottom: 0; }
+     #block-views-block-flag-bookmark-block-1 {position: absolute; width: 250px;z-index: 400;background-color: #fff;right: 300px;}
+     
+     #block-views-block-flag-bookmark-block-1 .form-group,#block-views-block-flag-bookmark-block-1 .form-control { display: block; width: 220px;}
+     #block-views-block-flag-bookmark-block-1 .content { display: none;}
+     #block-views-block-flag-bookmark-block-1 .view-content.row {width: 225px; margin: 0;}
+     #block-views-block-flag-bookmark-block-1.toggled .content { display: block;}
+      #block-views-block-flag-bookmark-block-1 .content .col-auto {padding: 5px; }
+      #block-views-block-flag-bookmark-block-1 h2 {width: 200px;font-size: 1.2em; text-decoration: underline;border: 1px solid #333;border-radius: 4px;text-align: center;}
+      #block-views-block-flag-bookmark-block-1 h2:hover {font-size: 1.2em; text-decoration: none;}
+      .region-header-form #block-views-block-flag-bookmark-block-1 .content {border: 2px solid #333;border-radius: 6px;}
+
+
      #block-savesearch  {position: absolute; width: 250px;z-index: 400;background-color: #fff; right: 40px;}
      #block-savesearch .form-group,#block-savesearch .form-control { display: block; width: 220px;}
      #block-savesearch .content { display: none;}
