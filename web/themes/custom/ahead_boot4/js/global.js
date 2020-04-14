@@ -97,7 +97,25 @@
           if(!$('#block-views-block-flag-bookmark-block-1').hasClass('toggled')) { $('#block-views-block-flag-bookmark-block-1').addClass('toggled');}
           else { $('#block-views-block-flag-bookmark-block-1').removeClass('toggled'); }
 
-        });   
+        }); 
+        $(document,context).once('autoClose').mouseup(function(e) {
+          var container = $("#block-views-block-flag-bookmark-block-1");
+
+          // if the target of the click isn't the container nor a descendant of the container
+          if (!container.is(e.target) && container.has(e.target).length === 0) 
+          {
+            container.removeClass('toggled');
+          }
+        }); 
+        $(document,context).once('autoClose2').mouseup(function(e) {
+          var container = $('#block-savesearch');
+
+          // if the target of the click isn't the container nor a descendant of the container
+          if (!container.is(e.target) && container.has(e.target).length === 0) 
+          {
+            container.removeClass('toggled');
+          }
+        }); 
      
     
 
