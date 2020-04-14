@@ -81,7 +81,13 @@
 
          setTimeout(function(){ $('.view-flag-bookmark').trigger('RefreshView');},2000);
       
-        });    
+        }); 
+        $('h2',context).once('toggleSearch').click( function() {
+          console.log('click!');
+          if(!$('#block-savesearch').hasClass('toggled')) { $('#block-savesearch').addClass('toggled');}
+          else { $('#block-savesearch').removeClass('toggled'); }
+
+        });   
      
     
 

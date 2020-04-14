@@ -65,9 +65,16 @@
      .initHidden {display: none;}
      .initHidden.withCheck {display: block;}
      .sidebar .block#block-yoursearch, .sidebar .block#block-exposedformgeneral-searchpage-1, .sidebar .block#block-state,  .sidebar .block#block-degreetype, .sidebar .block#block-publicorprivate, .sidebar .block#block-advancedshowhide, .sidebar .block#block-institutionsize, .sidebar .block#block-disabilityrelatedprogramsandcourses, .sidebar .block#block-disabilityrelatedservices, .sidebar .block#block-minorityserving, .sidebar .block#block-coursesordegreeprogramsintheareaofdisability {margin-bottom: 0; padding-bottom: 0; }
-  
+     #block-savesearch  {position: absolute; width: 250px;z-index: 400;background-color: #fff; right: 40px;}
+     #block-savesearch .form-group,#block-savesearch .form-control { display: block; width: 220px;}
+     #block-savesearch .content { display: none;}
+     #block-savesearch.toggled .content { display: block;}
       #edit-search-api-fulltext { max-width: 240px; }
-      fieldset.form-item-notify-interval {display: none; }
+      #block-savesearch .content .col-auto {padding: 5px; }
+      #block-savesearch h2 {width: 200px;font-size: 1.2em; text-decoration: underline;border: 1px solid #333;border-radius: 4px;text-align: center;}
+      #block-savesearch h2:hover {font-size: 1.2em; text-decoration: none;}
+      .region-header-form #block-savesearch .content {border: 2px solid #333;border-radius: 6px;}
+      #block-savesearch fieldset.form-item-notify-interval.form-group {display: none; }
       .field-group-accordion-wrapper h3#ui-id-3 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900;content: '\f2b5';}
       .field-group-accordion-wrapper h3#ui-id-1 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f05a";}
       .field-group-accordion-wrapper h3#ui-id-5 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f479";}
@@ -128,4 +135,7 @@
      border-bottom: 1px solid rgba(0,0,0,.125);padding:0 5px 14px 14px;}
      .view-general-search .views-field-field-disability-office-addr {margin-bottom: 12px;}
      .view-general-search .views-row { border: 1px solid rgba(0,0,0,.125); padding: 0.2em 0.5em 0 0.5em; border-top: 4px solid #2980B9;border-radius: 4px;margin-bottom: 12px;}
+     
+
+
     
