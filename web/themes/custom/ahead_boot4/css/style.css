@@ -115,6 +115,23 @@
      .site-footer #block-footertext.block { width: 62%}
      #block-ahead-boot4-main-menu .navbar-nav .nav-link { color: #333;}
      #sidebar_first h2 {text-transform: uppercase;}
+     .sidebar h2 {
+      -moz-user-select:none;
+      -ms-user-select:none;
+      -webkit-user-select:none;
+      border-bottom:#ccc 1px solid;
+      color:#9a9a9a;
+      font-size:1.3rem;
+      font-weight:700;
+      margin-bottom:.2em;
+      padding:10px 0 10px 10px;
+      position:relative;
+      text-transform:uppercase;
+      user-select:none;}
+      #main {
+        margin-top:20px;
+      }
+      
      #sidebar_first.sidebar .block {background-color: #fff;}
      ul.js-facets-checkbox-links {padding-left: 12px;}
      .field__item.rightTable img {width: 35px; margin-left: 15px;}
