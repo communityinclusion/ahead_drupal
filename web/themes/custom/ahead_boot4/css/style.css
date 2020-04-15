@@ -3,129 +3,524 @@
  * @file
  * Subtheme specific CSS.
  */
- html,body {font-family: 'Lato', sans-serif;}
- #block-mainnavigation-2 ul#superfish-main {width: 72em; }
- #block-mainnavigation-2 ul#superfish-main > li { width: 14em; }
- #block-mainnavigation-2 ul#superfish-main > li,#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent ul,#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent ul li {
-     background-color: #fff;
-    }
-    #block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent{ height: 4em; }
-   span.field__label.leftTable {float: left;display: block; width: 85%; border: 1px #ccc solid; height: 69px;padding-top: 18px; border-width: 1px 1px 0 1px; }
-    span.field__item.rightTable {float: left; display: block; width: 14%; border: 1px #ccc solid; border-width: 1px 1px 0 0;}
-    td.field__label.leftTable {width: 85%;border: 1px #ccc solid; height: 69px;padding-top: 18px;  }
-    td.field__item.rightTable { width: 14%;border: 1px #ccc solid; border-width: 1px 1px 0 0;}
-    h3.field__label {font-size: 120%;}
-    .floatLeft {float:left;
-        width: min-content;
-      }
-      .node--type-cedar-record fieldset.js-form-item.form-item.js-form-wrapper > div:last-child {border-bottom: 1px #ccc solid;}
-      .field--name-field-d-o-office-name {font-weight: bold; font-size: 110%;}
-      .field--name-field-other-contacts > .field__label {font-weight: bold; font-size: 110%; margin-top: 18px; }
-      .node--view-mode-teaser .field--name-field-disability-office-addr,.paragraph--type--d-o-contacts {margin: 18px 0;}
-      .node--view-mode-teaser .field--name-field-disability-office-addr,.paragraph--type--d-o-contacts::after,.paragraph--type--disability-office-address-es-::after {
-        content: "";
-        clear: both;
-        display: table;
-      }
-      table.quesTable caption {
-        caption-side: top;
-        font-size: 150%;
-        color: #333;
-        padding: 0;
-      }
-      table.quesTable tr {background: #fff;}
+html,body {
+	font-family:'Lato',sans-serif;
+}
 
-      ul.tableKey { list-style: none; margin-bottom: 0; }
-      ul.tableKey li { float: left; width: 210px; font-size: .7em;padding: 5px; border: 1px solid #ccc;  background-color: #fff;}
-      .ratingKey {font-size: .7em; }
-      .paragraph--type--d-o-contacts > div > .field__label { font-weight: bold; float: left; width: 30%; }
-      .paragraph--type--d-o-contacts > div > .field__item { float: left; width: 70%; }
-      .paragraph--type--disability-office-address-es- > div > .field__label {font-weight: bold;}
-      .field--name-field-d-o-city,.field--name-field-d-o-state,.field--name-field-col-u-city, .field--name-field-college-university-state {white-space: nowrap; }
-      .paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-phone .field__label,.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-email-ad .field__label, .paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-website .field__label { float: left; width: 30%;}
-      .paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-phone .field__item, .paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-email-ad .field__item,.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-website .field__item { float: left; width: 70%; }
-      ul.minusTop {margin-top: -1rem;}
-      .field--name-field-2-or-4-year-institution .field__label,.field--name-field-level-of-degree-offered .field__label,.field--name-field-student-population .field__label,.field--name-field-student-population-undergr .field__label,.field--name-field-number-of-stud-exact .field__label,.field--name-field-minority-serving- .field__label,.field--name-field-primarily-online- .field__label,.field--name-field-online-serving-only .field__label {font-weight: bold; width:50%;}
-      .field--name-field-2-or-4-year-institution .field__item,.field--name-field-student-population .field__item,.field--name-field-student-population-undergr .field__item,.field--name-field-number-of-stud-exact .field__item,.field--name-field-minority-serving- .field__item,.field--name-field-primarily-online- .field__item, .field--name-field-online-serving-only .field__item { width:35%;}
-      .field--name-field-level-of-degree-offered .field__items { display: inline-block; width:40%;}
-      .field--name-field-type-of-institution {margin-left: 51%}
-      #sidebar_first .facets-widget-checkbox ul {list-style-type:none;}
-     #block-disabilityrelatedprogramsandcourses .facet-item label, #block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label { padding-left: 22px;margin-top: -24px;} 
-     #block-disabilityrelatedprogramsandcourses .facet-item label, #block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label { padding-left: 22px;margin-top: -24px;} 
-     #block-disabilityrelatedprogramsandcourses .facet-item,#block-coursesordegreeprogramsintheareaofdisability .facet-item {margin-bottom:14px;}
-     legend.legendDescrip {font-size: 125%;float:left; }
-     
-     fieldset#group-specific-population-ques,fieldset#accomdis,div#campusacc {border-radius: 8px;background-color:#f2f2f2;}
-     div#campusacc {padding: 10px 18px;}
-     span.iconLegend {font-size: .75em; color: #757575;}
-     fieldset#group-specific-population-ques fieldset legend {font-size: 105%; }
-     .node--view-mode-teaser h2.node__title,#block-ahead-boot4-content .views-field.views-field-title, .view-general-search .views-field.views-field-title { min-width: 450px;}
-     #block-views-block-flag-bookmark-block-1 .item-list ul li {margin: 8px 2px;}
-     .node--type-cedar-record .leaflet-container {height: 300px; width: 350px;}
-     .initHidden {display: none;}
-     .initHidden.withCheck {display: block;}
-     .sidebar .block#block-yoursearch, .sidebar .block#block-exposedformgeneral-searchpage-1, .sidebar .block#block-state,  .sidebar .block#block-degreetype, .sidebar .block#block-publicorprivate, .sidebar .block#block-advancedshowhide, .sidebar .block#block-institutionsize, .sidebar .block#block-disabilityrelatedprogramsandcourses, .sidebar .block#block-disabilityrelatedservices, .sidebar .block#block-minorityserving, .sidebar .block#block-coursesordegreeprogramsintheareaofdisability {margin-bottom: 0; padding-bottom: 0; }
-  
-      #edit-search-api-fulltext { max-width: 240px; }
-      fieldset.form-item-notify-interval {display: none; }
-      .field-group-accordion-wrapper h3#ui-id-3 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900;content: '\f2b5';}
-      .field-group-accordion-wrapper h3#ui-id-1 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f05a";}
-      .field-group-accordion-wrapper h3#ui-id-5 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f479";}
-      .field-group-accordion-wrapper h3#ui-id-7 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f193";}
-      .field-group-accordion-wrapper h3#ui-id-9 a::before {font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f19c";}
-      .field-group-accordion-wrapper h3 a::before {
-        display: inline-block;
-        font-style: normal;
-        font-variant: normal;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        margin-right: 10px;
-        font-size: 150%;
-      }
-      header#header { text-align: center; border-bottom: #2980B9 solid 3px; }
-      #navbar-main { max-width: 1140px; text-align: left; margin: 0 auto;}
-      #navbar-main .img-fluid { max-width: 300px; }
-      .field-group-accordion-wrapper h3.ui-accordion, .field-group-accordion-wrapper h3.ui-accordion-header {margin: 11px 0;}
-      .field-group-accordion-wrapper h3.ui-accordion-header,.field-group-accordion-wrapper h3.ui-state-default a,.field-group-accordion-wrapper h3.ui-state-active a, .field-group-accordion-wrapper h3.ui-state-active:hover a { color: #2980B9; background-color: #f2f2f2; }
-      .node--type-cedar-record h1 {border-bottom: 1px solid #333; font-size: 2rem;}
-      footer {color: #fff; background-color: #6c757d !important;}
-      footer .site-footer__top .region.region-footer-first {width: 100%;}
-     .site-footer #block-footerlogo.block, .site-footer #block-footertext.block { float: left; border: none;}
-     .site-footer #block-footerlogo.block {width: 35%;}
-     .site-footer #block-footerlogo.block img {width: 100%;}
-     .site-footer #block-footertext.block { width: 62%}
-     #block-ahead-boot4-main-menu .navbar-nav .nav-link { color: #333;}
-     #sidebar_first h2 {text-transform: uppercase;}
-     #sidebar_first.sidebar .block {background-color: #fff;}
-     ul.js-facets-checkbox-links {padding-left: 12px;}
-     .field__item.rightTable img {width: 35px; margin-left: 15px;}
-     #block-ahead-boot4-breadcrumbs nav ol {background-color: #fff;}
-     #mapdiv {width: 350px; height: 250px; float: right; position: relative;margin-right: 40px;}
-     .node--type-cedar-record .field--name-field-institution-map {width: 350px; height: 300px;position: relative;}
-     .node--type-cedar-record.node--view-mode-teaser {
+#block-mainnavigation-2 ul#superfish-main {
+	width:72em;
+}
 
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 5px;
-  
-  }
-     .node--type-cedar-record .field-group-accordion-wrapper.ui-accordion {clear: both;padding-top: 15px;}
-     .node--view-mode-teaser h2.node__title, .view-solr-search-content h3 {margin-bottom: 0;background-color: rgba(0,0,0,.03);padding: 14px 5px 0 14px; font-size: 1.4em;}
-     .node--view-mode-teaser h2 a { color:#0071b3; ;}
-     .node--view-mode-teaser .node__content {margin-top: 0; font-size: 1rem;font-weight: 400; line-height: 1.5;}
-     .node--view-mode-teaser .citystate,.view-solr-search-content .views-field-field-college-university-state {background-color: rgba(0,0,0,.03);
-     border-bottom: 1px solid rgba(0,0,0,.125);padding:0 5px 14px 14px;}
-     .view-solr-search-content .views-field-field-disability-office-addr {margin-bottom: 12px;}
-     .node--view-mode-teaser .field--name-field-disability-office-addr {margin-bottom: 4px;margin-top:0; width: 100%;}
-     .view-solr-search-content .item-list > ul > li { border: 1px solid rgba(0,0,0,.125); padding: 0.2em 0.5em 0 0.5em; border-top: 4px solid #2980B9;border-radius: 4px;margin-bottom: 12px;}
-     #printButt {width: 100px; height: 30px; color: #fff; background-color: #7d7d7d; font-size:.9em;border-radius: 4px; float: right; margin-right: 15px;cursor: pointer;}
-     #printButt span {padding: 14px 0 0 8px;}
-#showAll {width: 170px; height: 30px; color: #fff; background-color: #2980b9; font-size:.9em; position: absolute; bottom: 0px;border-radius: 4px;cursor: pointer; }
-#showAll span {padding: 14px 0 0 8px;}
-     .view-general-search h3 {margin-bottom: 0;background-color: rgba(0,0,0,.03);padding: 14px 5px 0 14px;}
-     #instaddress {height: 250px; position: relative;}
-     .view-general-search .views-field-field-college-university-state {background-color: rgba(0,0,0,.03);
-     border-bottom: 1px solid rgba(0,0,0,.125);padding:0 5px 14px 14px;}
-     .view-general-search .views-field-field-disability-office-addr {margin-bottom: 12px;}
-     .view-general-search .views-row { border: 1px solid rgba(0,0,0,.125); padding: 0.2em 0.5em 0 0.5em; border-top: 4px solid #2980B9;border-radius: 4px;margin-bottom: 12px;}
-    
+#block-mainnavigation-2 ul#superfish-main > li {
+	width:14em;
+}
+
+#block-mainnavigation-2 ul#superfish-main > li,#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent ul,#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent ul li {
+	background-color:#fff;
+}
+
+#block-mainnavigation-2 ul#superfish-main li.sf-depth-1.menuparent {
+	height:4em;
+}
+
+span.field__label.leftTable {
+	float:left;
+	display:block;
+	width:85%;
+	border:1px #ccc solid;
+	height:69px;
+	padding-top:18px;
+	border-width:1px 1px 0;
+}
+
+span.field__item.rightTable {
+	float:left;
+	display:block;
+	width:14%;
+	border:1px #ccc solid;
+	border-width:1px 1px 0 0;
+}
+
+td.field__label.leftTable {
+	width:85%;
+	border:1px #ccc solid;
+	height:69px;
+	padding-top:18px;
+}
+
+td.field__item.rightTable {
+	width:14%;
+	border:1px #ccc solid;
+	border-width:1px 1px 0 0;
+}
+
+h3.field__label {
+	font-size:120%;
+}
+
+.floatLeft {
+	float:left;
+	width:min-content;
+}
+
+.node--type-cedar-record fieldset.js-form-item.form-item.js-form-wrapper > div:last-child {
+	border-bottom:1px #ccc solid;
+}
+
+.field--name-field-d-o-office-name {
+	font-weight:700;
+	font-size:110%;
+}
+
+.field--name-field-other-contacts > .field__label {
+	font-weight:700;
+	font-size:110%;
+	margin-top:18px;
+}
+
+.node--view-mode-teaser .field--name-field-disability-office-addr,.paragraph--type--d-o-contacts {
+	margin:18px 0;
+}
+
+.node--view-mode-teaser .field--name-field-disability-office-addr,.paragraph--type--d-o-contacts::after,.paragraph--type--disability-office-address-es-::after {
+	content:"";
+	clear:both;
+	display:table;
+}
+
+table.quesTable caption {
+	caption-side:top;
+	font-size:150%;
+	color:#333;
+	padding:0;
+}
+
+table.quesTable tr {
+	background:#fff;
+}
+
+ul.tableKey {
+	list-style:none;
+	margin-bottom:0;
+}
+
+ul.tableKey li {
+	float:left;
+	width:210px;
+	font-size:.7em;
+	padding:5px;
+	border:1px solid #ccc;
+	background-color:#fff;
+}
+
+.ratingKey {
+	font-size:.7em;
+}
+
+.paragraph--type--d-o-contacts > div > .field__label {
+	font-weight:700;
+	float:left;
+	width:30%;
+}
+
+.paragraph--type--d-o-contacts > div > .field__item {
+	float:left;
+	width:70%;
+}
+
+.paragraph--type--disability-office-address-es- > div > .field__label {
+	font-weight:700;
+}
+
+.field--name-field-d-o-city,.field--name-field-d-o-state,.field--name-field-col-u-city,.field--name-field-college-university-state {
+	white-space:nowrap;
+}
+
+.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-phone .field__label,.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-email-ad .field__label,.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-website .field__label {
+	float:left;
+	width:30%;
+}
+
+.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-phone .field__item,.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-email-ad .field__item,.paragraph--type--disability-office-address-es- > div.field--name-field-disability-office-website .field__item {
+	float:left;
+	width:70%;
+}
+
+ul.minusTop {
+	margin-top:-1rem;
+}
+
+.field--name-field-2-or-4-year-institution .field__label,.field--name-field-level-of-degree-offered .field__label,.field--name-field-student-population .field__label,.field--name-field-student-population-undergr .field__label,.field--name-field-number-of-stud-exact .field__label,.field--name-field-minority-serving- .field__label,.field--name-field-primarily-online- .field__label,.field--name-field-online-serving-only .field__label {
+	font-weight:700;
+	width:50%;
+}
+
+.field--name-field-2-or-4-year-institution .field__item,.field--name-field-student-population .field__item,.field--name-field-student-population-undergr .field__item,.field--name-field-number-of-stud-exact .field__item,.field--name-field-minority-serving- .field__item,.field--name-field-primarily-online- .field__item,.field--name-field-online-serving-only .field__item {
+	width:35%;
+}
+
+.field--name-field-level-of-degree-offered .field__items {
+	display:inline-block;
+	width:40%;
+}
+
+.field--name-field-type-of-institution {
+	margin-left:51%;
+}
+
+#sidebar_first .facets-widget-checkbox ul {
+	list-style-type:none;
+}
+
+#sidebar_first input.facets-checkbox {
+	margin-right:3px;
+}
+
+/* jr add */
+#block-disabilityrelatedprogramsandcourses .facet-item label,#block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label {
+	padding-left:22px;
+	margin-top:-24px;
+}
+
+#block-disabilityrelatedprogramsandcourses .facet-item label,#block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label {
+	padding-left:22px;
+	margin-top:-24px;
+}
+
+#block-disabilityrelatedprogramsandcourses .facet-item,#block-coursesordegreeprogramsintheareaofdisability .facet-item {
+	margin-bottom:14px;
+}
+
+legend.legendDescrip {
+	font-size:125%;
+	float:left;
+}
+
+fieldset#group-specific-population-ques,fieldset#accomdis,div#campusacc {
+	border-radius:8px;
+	background-color:#f2f2f2;
+}
+
+div#campusacc {
+	padding:10px 18px;
+}
+
+span.iconLegend {
+	font-size:.75em;
+	color:#757575;
+}
+
+fieldset#group-specific-population-ques fieldset legend {
+	font-size:105%;
+}
+
+.node--view-mode-teaser h2.node__title,#block-ahead-boot4-content .views-field.views-field-title,.view-general-search .views-field.views-field-title {
+	min-width:450px;
+}
+
+#block-views-block-flag-bookmark-block-1 .item-list ul li {
+	margin:8px 2px;
+}
+
+.node--type-cedar-record .leaflet-container {
+	height:300px;
+	width:350px;
+}
+
+.initHidden {
+	display:none;
+}
+
+.initHidden.withCheck {
+	display:block;
+}
+
+.sidebar .block#block-yoursearch,.sidebar .block#block-exposedformgeneral-searchpage-1,.sidebar .block#block-state,.sidebar .block#block-degreetype,.sidebar .block#block-publicorprivate,.sidebar .block#block-advancedshowhide,.sidebar .block#block-institutionsize,.sidebar .block#block-disabilityrelatedprogramsandcourses,.sidebar .block#block-disabilityrelatedservices,.sidebar .block#block-minorityserving,.sidebar .block#block-coursesordegreeprogramsintheareaofdisability {
+	margin-bottom:0;
+	padding-bottom:0;
+}
+
+#edit-search-api-fulltext {
+	max-width:240px;
+}
+
+fieldset.form-item-notify-interval {
+	display:none;
+}
+
+.field-group-accordion-wrapper h3#ui-id-3 a::before {
+	font-family:"Font Awesome 5 Free";
+	font-weight:900;
+	content:'\f2b5';
+}
+
+.field-group-accordion-wrapper h3#ui-id-1 a::before {
+	font-family:"Font Awesome 5 Free";
+	font-weight:900;
+	content:"\f05a";
+}
+
+.field-group-accordion-wrapper h3#ui-id-5 a::before {
+	font-family:"Font Awesome 5 Free";
+	font-weight:900;
+	content:"\f479";
+}
+
+.field-group-accordion-wrapper h3#ui-id-7 a::before {
+	font-family:"Font Awesome 5 Free";
+	font-weight:900;
+	content:"\f193";
+}
+
+.field-group-accordion-wrapper h3#ui-id-9 a::before {
+	font-family:"Font Awesome 5 Free";
+	font-weight:900;
+	content:"\f19c";
+}
+
+.field-group-accordion-wrapper h3 a::before {
+	display:inline-block;
+	font-style:normal;
+	font-variant:normal;
+	text-rendering:auto;
+	-webkit-font-smoothing:antialiased;
+	margin-right:10px;
+	font-size:150%;
+}
+
+header#header {
+	text-align:center;
+	border-bottom:#2980B9 solid 3px;
+}
+
+#navbar-main {
+	max-width:1140px;
+	text-align:left;
+	margin:0 auto;
+}
+
+#navbar-main .img-fluid {
+	max-width:300px;
+}
+
+.field-group-accordion-wrapper h3.ui-accordion,.field-group-accordion-wrapper h3.ui-accordion-header {
+	margin:11px 0;
+}
+
+.field-group-accordion-wrapper h3.ui-accordion-header,.field-group-accordion-wrapper h3.ui-state-default a,.field-group-accordion-wrapper h3.ui-state-active a,.field-group-accordion-wrapper h3.ui-state-active:hover a {
+	color:#2980B9;
+	background-color:#f2f2f2;
+}
+
+.node--type-cedar-record h1 {
+	border-bottom:1px solid #333;
+	font-size:2rem;
+}
+
+footer {
+	color:#fff;
+	background-color:#6c757d!important;
+}
+
+footer .site-footer__top .region.region-footer-first {
+	width:100%;
+}
+
+.site-footer #block-footerlogo.block,.site-footer #block-footertext.block {
+	float:left;
+	border:none;
+}
+
+.site-footer #block-footerlogo.block {
+	width:35%;
+}
+
+.site-footer #block-footerlogo.block img {
+	width:100%;
+}
+
+.site-footer #block-footertext.block {
+	width:62%;
+}
+
+#block-ahead-boot4-main-menu .navbar-nav .nav-link {
+	color:#333;
+}
+
+#sidebar_first h2 {
+	text-transform:uppercase;
+}
+
+#sidebar_first.sidebar .block {
+	background-color:#fff;
+}
+
+ul.js-facets-checkbox-links {
+	padding-left:0;
+}
+
+/* changed from padding-left: 12px;*/
+.field__item.rightTable img {
+	width:35px;
+	margin-left:15px;
+}
+
+#block-ahead-boot4-breadcrumbs nav ol {
+	background-color:#fff;
+}
+
+#mapdiv {
+	width:350px;
+	height:250px;
+	float:right;
+	position:relative;
+	margin-right:40px;
+}
+
+.node--type-cedar-record .field--name-field-institution-map {
+	width:350px;
+	height:300px;
+	position:relative;
+}
+
+.node--type-cedar-record.node--view-mode-teaser {
+	border-bottom:none;
+	margin-bottom:0;
+	padding-bottom:5px;
+}
+
+.node--type-cedar-record .field-group-accordion-wrapper.ui-accordion {
+	clear:both;
+	padding-top:15px;
+}
+
+.node--view-mode-teaser h2.node__title,.view-solr-search-content h3 {
+	margin-bottom:0;
+	background-color:rgba(0,0,0,.03);
+	padding:14px 5px 0 14px;
+	font-size:1.4em;
+}
+
+.node--view-mode-teaser h2 a {
+	color:#0071b3;
+}
+
+.node--view-mode-teaser .node__content {
+	margin-top:0;
+	font-size:1rem;
+	font-weight:400;
+	line-height:1.5;
+}
+
+.node--view-mode-teaser .citystate,.view-solr-search-content .views-field-field-college-university-state {
+	background-color:rgba(0,0,0,.03);
+	border-bottom:1px solid rgba(0,0,0,.125);
+	padding:0 5px 14px 14px;
+}
+
+.view-solr-search-content .views-field-field-disability-office-addr {
+	margin-bottom:12px;
+}
+
+.node--view-mode-teaser .field--name-field-disability-office-addr {
+	margin-bottom:4px;
+	margin-top:0;
+	width:100%;
+}
+
+.view-solr-search-content .item-list > ul > li {
+	border:1px solid rgba(0,0,0,.125);
+	/* padding:.2em .5em 0; */
+	padding:0;
+	border-top:4px solid #2980B9;
+	border-radius:4px;
+	margin-bottom:12px;
+}
+
+#printButt {
+	width:100px;
+	/* height:30px; */
+	color:#fff;
+	background-color:#7d7d7d;
+	font-size:.9em;
+	border-radius:4px;
+	float:right;
+	margin-right:15px;
+	overflow: hidden;
+	padding:7px;
+	cursor:pointer;
+}
+
+#printButt span {
+	padding:14px 0 0 8px;
+}
+
+#showAll {
+	width:170px;
+	/* height:30px; */
+	overflow: hidden;
+    text-align: center;
+    padding:7px;
+	color:#fff;
+	background-color:#2980b9;
+	font-size:.9em;
+	position:absolute;
+	bottom:0;
+	border-radius:4px;
+	cursor:pointer;
+}
+
+#showAll span {
+	padding:14px 0 0 8px;
+}
+
+.view-general-search h3 {
+	margin-bottom:0;
+	background-color:rgba(0,0,0,.03);
+	padding:14px 5px 0 14px;
+}
+
+#instaddress {
+	height:250px;
+	position:relative;
+}
+
+.view-general-search .views-field-field-college-university-state {
+	background-color:rgba(0,0,0,.03);
+	border-bottom:1px solid rgba(0,0,0,.125);
+	padding:0 5px 14px 14px;
+}
+
+.view-general-search .views-field-field-disability-office-addr {
+	margin-bottom:12px;
+}
+
+.view-general-search .views-row {
+	border:1px solid rgba(0,0,0,.125);
+	padding:.2em .5em 0;
+	border-top:4px solid #2980B9;
+	border-radius:4px;
+	margin-bottom:12px;
+}
+
+/* jr */
+
+
+#main {
+	margin-top:20px;
+}
+
+.sidebar h2 {
+	-moz-user-select:none;
+	-ms-user-select:none;
+	-webkit-user-select:none;
+	border-bottom:#ccc 1px solid;
+	color:#9a9a9a;
+	font-size:1.3rem;
+	font-weight:700;
+	margin-bottom:.2em;
+	padding:10px 0 10px 10px;
+	position:relative;
+	text-transform:uppercase;
+	user-select:none;
+}
