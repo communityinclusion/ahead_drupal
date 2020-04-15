@@ -48,6 +48,7 @@
       
 
       $('#firstb',context).once('initHidden').each( function() {
+        if(!$('#block-savesearch h2').hasClass('toggler')) $('#block-savesearch h2').addClass('toggler');
           var m = window.location.search.indexOf("institution_size");
           var n = window.location.search.indexOf("disability_related");
           var o = window.location.search.indexOf("minority_serving");
@@ -72,16 +73,49 @@
         
 
         $('div#campus-access',context).once('initHidden').each( function() {
+          if(!$('#block-savesearch h2').hasClass('toggler')) $('#block-savesearch h2').addClass('toggler');
           $(this).prepend('<div><p class="ratingKey">Rating key:</p><ul class="tableKey clearfix"><li><img src="/sites/default/files/cedar_imgs/commonly_provided.png" style="width:18px" alt="Completely accessible" />&nbsp;&nbsp;Completely accessible</li><li><img src="/sites/default/files/cedar_imgs/occasionally_provided.png" style="width:18px" alt="Somewhat accessible" />&nbsp;&nbsp;Somewhat accessible</li><li><img src="/sites/default/files/cedar_imgs/not_provided.png" style="width:18px" alt="Generally not accessible" />&nbsp;&nbsp;Generally not accessible</li></ul></div>');
 
         });  
-        $('a', context).once('flag-bookmark').click(function(){
+        $('a.use-ajax', context).once('flag-bookmark').click(function(){
           console.log('view name: ');
             
 
          setTimeout(function(){ $('.view-flag-bookmark').trigger('RefreshView');},2000);
       
-        });    
+        }); 
+
+
+       
+        $('h2.searchToggle',context).once('toggleSearch').click( function() {
+          if(!$('#block-savesearch').hasClass('toggled')) { $('#block-savesearch').addClass('toggled');}
+          else { $('#block-savesearch').removeClass('toggled'); }
+
+        });
+         
+        $('h2.favToggle',context).once('toggleSearch2').click( function() {
+          if(!$('#block-views-block-flag-bookmark-block-1').hasClass('toggled')) { $('#block-views-block-flag-bookmark-block-1').addClass('toggled');}
+          else { $('#block-views-block-flag-bookmark-block-1').removeClass('toggled'); }
+
+        }); 
+        $(document,context).once('autoClose').mouseup(function(e) {
+          var container = $("#block-views-block-flag-bookmark-block-1");
+
+          // if the target of the click isn't the container nor a descendant of the container
+          if (!container.is(e.target) && container.has(e.target).length === 0) 
+          {
+            container.removeClass('toggled');
+          }
+        }); 
+        $(document,context).once('autoClose2').mouseup(function(e) {
+          var container = $('#block-savesearch');
+
+          // if the target of the click isn't the container nor a descendant of the container
+          if (!container.is(e.target) && container.has(e.target).length === 0) 
+          {
+            container.removeClass('toggled');
+          }
+        }); 
      
     
 
