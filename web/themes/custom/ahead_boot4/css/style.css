@@ -208,7 +208,7 @@ fieldset#group-specific-population-ques fieldset legend {
 }
 
 .node--view-mode-teaser h2.node__title,#block-ahead-boot4-content .views-field.views-field-title,.view-general-search .views-field.views-field-title {
-	min-width:550px;
+	min-width:100%;
 }
 
 #block-views-block-flag-bookmark-block-1 .item-list ul li {
