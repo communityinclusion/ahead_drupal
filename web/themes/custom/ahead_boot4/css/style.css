@@ -170,15 +170,13 @@ ul.minusTop {
 
 
 
-#block-disabilityrelatedprogramsandcourses .facet-item label,#block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label {
+#block-disabilityrelatedprogramsandcourses .facet-item label,#block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label, #block-institutionprovideddisabilityinformation .facet-item label {
 	padding-left:22px;
 	margin-top:-24px;
 }
-
-#block-disabilityrelatedprogramsandcourses .facet-item label,#block-disabilityrelatedservices .facet-item label,#block-coursesordegreeprogramsintheareaofdisability .facet-item label {
-	padding-left:22px;
-	margin-top:-24px;
-}
+.sidebar #block-institutionprovideddisabilityinformation.block {padding: 0 15px; margin: 0; }
+.sidebar #block-institutionprovideddisabilityinformation.block ul {margin-bottom: 2px;}
+.sidebar #block-institutionprovideddisabilityinformation.block ul li label {font-weight: bold; }
 
 #block-disabilityrelatedprogramsandcourses .facet-item,#block-coursesordegreeprogramsintheareaofdisability .facet-item {
 	margin-bottom:14px;
