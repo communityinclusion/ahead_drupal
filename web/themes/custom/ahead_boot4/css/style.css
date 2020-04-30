@@ -658,4 +658,6 @@ ul.js-facets-checkbox-links {
 	margin-bottom:0;
 	padding-bottom:0;
 }
+div.flag-bookmark { padding-left: 15px; }
+#block-views-block-flag-bookmark-block-1 ul li .views-field-title {font-size: 105%; font-weight: bold;}
 
