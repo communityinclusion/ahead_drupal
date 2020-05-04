@@ -45,6 +45,32 @@
         
         
       });
+
+      $('.view-solr-search-content',context).once('solr-search-content').each(function(){
+          var m = window.location.search.indexOf("institution_size");
+          var n = window.location.search.indexOf("disability_related");
+          var o = window.location.search.indexOf("minority_serving");
+          var p = window.location.search.indexOf("courses_or_degree_programs");
+          var q = window.location.search.indexOf("primarily_online");
+          var r = window.location.search.indexOf("search_api_fulltext");
+          var s = window.location.search.indexOf("state");
+          var t = window.location.search.indexOf("degree_type");
+          var u = window.location.search.indexOf("public_or_private");
+          if(m > -1 || n > -1 || o > -1 || p > -1 || q > -1 || r > -1 || s > -1 || t > -1 || u > -1 ) { 
+              if ($('#home_header').hasClass('homeShow'))$('#firstb').removeClass('homeShow');
+              console.log("variables present");
+               
+        
+            } 
+          else {  
+            if(!$('#home_header').hasClass('homeShow'))$('#home_header').addClass('homeShow');
+            console.log("variables not present");
+          }
+      
+       
+        
+        }
+        );
       
 
       $('#firstb',context).once('initHidden').each( function() {
@@ -53,7 +79,8 @@
           var n = window.location.search.indexOf("disability_related");
           var o = window.location.search.indexOf("minority_serving");
           var p = window.location.search.indexOf("courses_or_degree_programs");
-          if(m > -1 || n > -1 || o > -1 || p > -1) { 
+          var q = window.location.search.indexOf("primarily_online");
+          if(m > -1 || n > -1 || o > -1 || p > -1 || q > -1) { 
                   if(!$('#firstb').hasClass('withCheck'))$('#firstb').addClass('withCheck');
         
             } 

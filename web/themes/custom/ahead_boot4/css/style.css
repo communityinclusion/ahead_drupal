@@ -660,4 +660,6 @@ ul.js-facets-checkbox-links {
 }
 div.flag-bookmark { padding-left: 15px; }
 #block-views-block-flag-bookmark-block-1 ul li .views-field-title {font-size: 105%; font-weight: bold;}
+#home_header {display: none;} 
+#home_header.homeShow {display:block;}
 
