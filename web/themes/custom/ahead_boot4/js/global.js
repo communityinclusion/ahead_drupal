@@ -57,14 +57,16 @@
           var t = window.location.search.indexOf("degree_type");
           var u = window.location.search.indexOf("public_or_private");
           if(m > -1 || n > -1 || o > -1 || p > -1 || q > -1 || r > -1 || s > -1 || t > -1 || u > -1 ) { 
-              if ($('#home_header').hasClass('homeShow'))$('#firstb').removeClass('homeShow');
-              console.log("variables present");
-               
+              if ($('.view-header').hasClass('homeShow'))$('.view-header').removeClass('homeShow');
+              if ($('.view-content.row').hasClass('hideRow'))$('.view-content.row').removeClass('hideRow');
+              if ($('nav').hasClass('hideRow'))$('nav').removeClass('hideRow');
         
             } 
           else {  
-            if(!$('#home_header').hasClass('homeShow'))$('#home_header').addClass('homeShow');
-            console.log("variables not present");
+            if(!$('.view-header').hasClass('homeShow'))$('.view-header').addClass('homeShow');
+            if(!$('.view-content.row').hasClass('hideRow'))$('.view-content.row').addClass('hideRow');
+            if(!$('.view-content.row').hasClass('hideRow'))$('.view-content.row').addClass('hideRow');
+            if(!$('nav').hasClass('hideRow'))$('nav').addClass('hideRow');
           }
       
        

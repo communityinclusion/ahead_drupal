@@ -660,6 +660,13 @@ ul.js-facets-checkbox-links {
 }
 div.flag-bookmark { padding-left: 15px; }
 #block-views-block-flag-bookmark-block-1 ul li .views-field-title {font-size: 105%; font-weight: bold;}
-#home_header {display: none;} 
-#home_header.homeShow {display:block;}
+.view-solr-search-content .view-header #home_header {display: none;} 
+.view-solr-search-content .view-header .resultCount {display: block;}
+.view-solr-search-content .view-header.homeShow #home_header {display:block;}
+.view-solr-search-content .view-header.homeShow .resultCount {display:none;}
+.view-solr-search-content .view-content.row { display: block;}
+
+.view-solr-search-content .view-content.row.hideRow { display: none;}
+.view-solr-search-content nav {display: block;}
+.view-solr-search-content nav.hideRow {display: none;}
 
