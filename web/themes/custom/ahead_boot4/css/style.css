@@ -669,4 +669,6 @@ div.flag-bookmark { padding-left: 15px; }
 .view-solr-search-content .view-content.row.hideRow { display: none;}
 .view-solr-search-content nav {display: block;}
 .view-solr-search-content nav.hideRow {display: none;}
+.sidebar #block-exposedformsolr-search-contentpage-1.block { margin-bottom: 0; padding-bottom: 0; }
+.sidebar #block-state.block {padding-top: 0; }
 
