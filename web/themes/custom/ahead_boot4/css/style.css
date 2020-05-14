@@ -4,9 +4,14 @@
  * @file
  * Subtheme specific CSS.
  */
-html,body {
+html,body, * {
 	font-family:'Lato',sans-serif;
 }
+#page .ui-widget {
+	font-family:'Lato',sans-serif;
+}
+
+
 
 #block-mainnavigation-2 ul#superfish-main {
 	width:72em;
@@ -88,6 +93,11 @@ h3.field__label {
 	clear:both;
 	display:table;
 }
+
+.field.field--name-field-d-o-zip-code.field--type-string.field--label-hidden.field__item {
+    padding-bottom: 15px;
+}
+
 
 table.quesTable caption {
 	caption-side:top;
@@ -189,7 +199,7 @@ legend.legendDescrip {
 }
 
 fieldset#group-specific-population-ques,fieldset#accomdis,div#campusacc {
-	border-radius:8px;
+	/* border-radius:8px; */
 	background-color:#f2f2f2;
 }
 
@@ -210,9 +220,7 @@ fieldset#group-specific-population-ques fieldset legend {
 	min-width:100%;
 }
 
-#block-views-block-flag-bookmark-block-1 .item-list ul li {
-	margin:8px 2px;
-}
+
 
 .node--type-cedar-record .leaflet-container {
 	height:300px;
@@ -235,11 +243,17 @@ fieldset#group-specific-population-ques fieldset legend {
 
 #block-views-block-flag-bookmark-block-1 {
 	position:absolute;
-	width:250px;
+	/*width:250px; */
 	z-index:400;
 	background-color:#fff;
-	right:300px;
+	right:230px;
+	top:30px;
 }
+
+#block-views-block-flag-bookmark-block-1 .item-list ul li {
+	margin:8px 2px;
+}
+
 
 #block-views-block-flag-bookmark-block-1 .form-group,#block-views-block-flag-bookmark-block-1 .form-control {
 	display:block;
@@ -264,17 +278,19 @@ fieldset#group-specific-population-ques fieldset legend {
 }
 
 #block-views-block-flag-bookmark-block-1 h2 {
-	width:200px;
+	/* width:200px; */
 	font-size:1.2em;
-	text-decoration:underline;
 	border:1px solid #333;
 	border-radius:4px;
 	text-align:center;
+	    padding: 10px;
 }
 
 #block-views-block-flag-bookmark-block-1 h2:hover {
 	font-size:1.2em;
 	text-decoration:none;
+	background-color: #0071b3;
+	color:#fff;
 }
 
 .region-header-form #block-views-block-flag-bookmark-block-1 .content {
@@ -284,10 +300,11 @@ fieldset#group-specific-population-ques fieldset legend {
 
 #block-savesearch {
 	position:absolute;
-	width:250px;
+	/* width:250px; */
 	z-index:400;
 	background-color:#fff;
 	right:40px;
+	top:30px;
 }
 
 #block-savesearch .form-group,#block-savesearch .form-control {
@@ -304,7 +321,7 @@ fieldset#group-specific-population-ques fieldset legend {
 }
 
 #edit-search-api-fulltext {
-	max-width:240px;
+	max-width:100%;
 }
 
 #block-savesearch .content .col-auto {
@@ -312,17 +329,19 @@ fieldset#group-specific-population-ques fieldset legend {
 }
 
 #block-savesearch h2 {
-	width:200px;
+	/* width:200px; */
 	font-size:1.2em;
-	text-decoration:underline;
 	border:1px solid #333;
 	border-radius:4px;
 	text-align:center;
+	padding:10px;
 }
 
 #block-savesearch h2:hover {
 	font-size:1.2em;
 	text-decoration:none;
+	background-color: #0071b3;
+	color:#fff;
 }
 
 .region-header-form #block-savesearch .content {
@@ -349,19 +368,19 @@ fieldset#group-specific-population-ques fieldset legend {
 .field-group-accordion-wrapper h3#ui-id-5 a::before {
 	font-family:"Font Awesome 5 Free";
 	font-weight:900;
-	content:"\f479";
+	content:"\f193";
 }
 
 .field-group-accordion-wrapper h3#ui-id-7 a::before {
 	font-family:"Font Awesome 5 Free";
 	font-weight:900;
-	content:"\f193";
+	content:"\f19c";
 }
 
 .field-group-accordion-wrapper h3#ui-id-9 a::before {
 	font-family:"Font Awesome 5 Free";
 	font-weight:900;
-	content:"\f19c";
+	content:"\f02d";
 }
 
 .field-group-accordion-wrapper h3 a::before {
@@ -403,14 +422,17 @@ header#header {
 	font-size:2rem;
 }
 
-
+.field-group-format-wrapper.ui-accordion-content .field {padding-bottom: 10px;}
 
 
 /* Footer */
 footer {
 	color:#fff;
-	background-color:#6c757d!important;
+	background-color:#778899!important;
+	margin-top:20px;
 }
+
+footer .site-footer a {color:#fff;}
 
 footer .site-footer__top .region.region-footer-first {
 	width:100%;
@@ -433,6 +455,23 @@ footer .site-footer__top .region.region-footer-first {
 	width:62%;
 }
 
+.site-footer__bottom {
+    margin-top: 0;
+}
+
+.site-footer__bottom .block {
+	    margin-top: 0;
+}
+
+.site-footer__bottom a {
+    color: #fff;
+
+}
+
+.site-footer__bottom a:hover {
+    color: #fff;
+    font-weight: 700;
+}
 
 /* end Footer */
 
@@ -461,7 +500,7 @@ ul.js-facets-checkbox-links {
 }
 
 #block-ahead-boot4-breadcrumbs nav ol {
-	background-color:#fff;
+	background-color:#eee;
 }
 
 #mapdiv {
@@ -479,9 +518,15 @@ ul.js-facets-checkbox-links {
 }
 
 .node--type-cedar-record.node--view-mode-teaser {
-	border-bottom:none;
+
 	margin-bottom:0;
 	padding-bottom:5px;
+	  -webkit-box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  -moz-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  -ms-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  -o-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .node--type-cedar-record .field-group-accordion-wrapper.ui-accordion {
@@ -491,8 +536,8 @@ ul.js-facets-checkbox-links {
 
 .node--view-mode-teaser h2.node__title,.view-solr-search-content h3 {
 	margin-bottom:0;
-	background-color:rgba(0,0,0,.03);
-	padding:14px 5px 0 14px;
+	background-color:#f7f7f7;
+	padding:14px 5px 0 15px;
 	font-size:1.4em;
 }
 
@@ -508,9 +553,9 @@ ul.js-facets-checkbox-links {
 }
 
 .node--view-mode-teaser .citystate,.view-solr-search-content .views-field-field-college-university-state {
-	background-color:rgba(0,0,0,.03);
+	background-color:#f7f7f7;
 	border-bottom:1px solid rgba(0,0,0,.125);
-	padding:0 5px 14px 14px;
+	padding:0 5px 14px 15px;
 }
 
 .view-solr-search-content .views-field-field-disability-office-addr {
@@ -521,8 +566,7 @@ ul.js-facets-checkbox-links {
 	margin-bottom:4px;
 	margin-top:0;
 	width:100%;
-	padding-left: 10px;
-    padding-top: 5px;
+	padding: 15px;
 }
 
 
@@ -530,7 +574,7 @@ ul.js-facets-checkbox-links {
 
 
 #printButt {
-	width:100px;
+	max-width:100px;
 	/* height:30px; jr*/
 	color:#fff;
 	background-color:#7d7d7d;
@@ -539,14 +583,17 @@ ul.js-facets-checkbox-links {
 	float:right;
 	margin-right:15px;
 	cursor:pointer;
+	padding:5px 10px;
 }
 
+/* jr
 #printButt span {
 	padding:14px 0 0 8px;
 }
+*/
 
 #showAll {
-	width:170px;
+	max-width:170px;
 /*	height:30px; jr*/
 	color:#fff;
 	background-color:#2980b9;
@@ -555,11 +602,14 @@ ul.js-facets-checkbox-links {
 	bottom:0;
 	border-radius:4px;
 	cursor:pointer;
+	padding:5px 10px;
 }
 
+/* jr
 #showAll span {
 	padding:14px 0 0 8px;
 }
+*/
 
 .view-general-search h3 {
 	margin-bottom:0;
@@ -603,7 +653,7 @@ ul.js-facets-checkbox-links {
 	/* padding:.2em .5em 0; jr */
 	border-top:4px solid #2980B9;
 	border-radius:4px;
-	margin-bottom:12px;
+	margin-bottom:20px;
 }
 
 .item-list ul li {
@@ -619,7 +669,7 @@ ul.js-facets-checkbox-links {
 /* Sidebar */
 
 #sidebar_first.sidebar .block {
-	background-color: #fcfbfb;
+	background-color: #f7f7f7;
 	width: 100%;
 }
 
@@ -659,9 +709,10 @@ ul.js-facets-checkbox-links {
 	margin-bottom:0;
 	padding-bottom:0;
 }
-div.flag-bookmark { padding-left: 15px; }
+div.flag-bookmark { padding-left: 15px;
+	padding-bottom:15px; }
 #block-views-block-flag-bookmark-block-1 ul li .views-field-title {font-size: 105%; font-weight: bold;}
-.view-solr-search-content .view-header #home_header {display: none;} 
+.view-solr-search-content .view-header #home_header {display: none;}
 .view-solr-search-content .view-header .resultCount {display: block;}
 .view-solr-search-content .view-header.homeShow #home_header {display:block;}
 .view-solr-search-content .view-header.homeShow .resultCount {display:none;}
@@ -672,4 +723,4 @@ div.flag-bookmark { padding-left: 15px; }
 .view-solr-search-content nav.hideRow {display: none;}
 .sidebar #block-exposedformsolr-search-contentpage-1.block { margin-bottom: 0; padding-bottom: 0; }
 .sidebar #block-state.block {padding-top: 0; }
-
+.form-row>fieldset, .form-row>div {max-width: 100%!important;} /* override to make search field in sidebar resposnive */
