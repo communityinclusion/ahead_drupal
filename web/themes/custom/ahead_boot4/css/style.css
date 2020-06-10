@@ -7,6 +7,11 @@
 html,body, * {
 	font-family:'Lato',sans-serif;
 }
+a:hover, a:focus, .link:hover, .link:focus {
+    color: #23527c;
+}
+
+
 #page .ui-widget {
 	font-family:'Lato',sans-serif;
 }
@@ -113,11 +118,14 @@ table.quesTable tr {
 ul.tableKey {
 	list-style:none;
 	margin-bottom:0;
+	display: flex;
+	padding-left: 0;
 }
 
 ul.tableKey li {
-	float:left;
-	width:210px;
+	/*float:left;
+	width:210px;*/
+	flex: 1 1 auto;
 	font-size:.7em;
 	padding:5px;
 	border:1px solid #ccc;
@@ -161,12 +169,30 @@ ul.minusTop {
 	margin-top:-1rem;
 }
 
-.field--name-field-2-or-4-year-institution .field__label,.field--name-field-level-of-degree-offered .field__label,.field--name-field-student-population .field__label,.field--name-field-student-population-undergr .field__label,.field--name-field-number-of-stud-exact .field__label,.field--name-field-minority-serving- .field__label,.field--name-field-primarily-online- .field__label,.field--name-field-online-serving-only .field__label {
-	font-weight:700;
+.field--name-field-2-or-4-year-institution .field__label,
+.field--name-field-level-of-degree-offered .field__label,
+.field--name-field-student-population .field__label,
+.field--name-field-student-population-undergr .field__label,
+.field--name-field-number-of-stud-exact .field__label,
+.field--name-field-minority-serving- .field__label,
+.field--name-field-primarily-online- .field__label,
+.field--name-field-online-serving-only .field__label,
+.field--name-field-number-of-staff-exact .field__label,
+.field--name-field-number-of-stud-exact .field__label,
+.field--name-field-percent-of-students-eligib .field__label{
 	width:50%;
 }
 
-.field--name-field-2-or-4-year-institution .field__item,.field--name-field-student-population .field__item,.field--name-field-student-population-undergr .field__item,.field--name-field-number-of-stud-exact .field__item,.field--name-field-minority-serving- .field__item,.field--name-field-primarily-online- .field__item,.field--name-field-online-serving-only .field__item {
+.field--name-field-2-or-4-year-institution .field__item,
+.field--name-field-student-population .field__item,
+.field--name-field-student-population-undergr .field__item,
+.field--name-field-number-of-stud-exact .field__item,
+.field--name-field-minority-serving- .field__item,
+.field--name-field-primarily-online- .field__item,
+.field--name-field-online-serving-only .field__item,
+.field--name-field-number-of-staff-exact .field__item,
+.field--name-field-number-of-stud-exact .field__item,
+.field--name-field-percent-of-students-eligib .field__item{
 	width:35%;
 }
 
@@ -178,6 +204,10 @@ ul.minusTop {
 .field--name-field-type-of-institution {
 	margin-left:51%;
 }
+
+
+
+
 
 
 
@@ -387,6 +417,7 @@ fieldset#group-specific-population-ques fieldset legend {
 	display:inline-block;
 	font-style:normal;
 	font-variant:normal;
+	margin-left: 20px;
 	text-rendering:auto;
 	-webkit-font-smoothing:antialiased;
 	margin-right:10px;
@@ -422,8 +453,10 @@ header#header {
 	font-size:2rem;
 }
 
-.field-group-format-wrapper.ui-accordion-content .field {padding-bottom: 10px;}
 
+/*
+.field-group-format-wrapper.ui-accordion-content .field {padding-bottom: 10px;}
+*/
 
 /* Footer */
 footer {
@@ -500,7 +533,7 @@ ul.js-facets-checkbox-links {
 }
 
 #block-ahead-boot4-breadcrumbs nav ol {
-	background-color:#eee;
+	background-color:#f7f7f7;
 }
 
 #mapdiv {
@@ -724,3 +757,42 @@ div.flag-bookmark { padding-left: 15px;
 .sidebar #block-exposedformsolr-search-contentpage-1.block { margin-bottom: 0; padding-bottom: 0; }
 .sidebar #block-state.block {padding-top: 0; }
 .form-row>fieldset, .form-row>div {max-width: 100%!important;} /* override to make search field in sidebar resposnive */
+
+
+
+/* Details Page jr */
+
+
+
+
+
+
+
+
+.site-footer__bottom .region {
+    justify-content: flex-end
+    }
+
+.site-footer__bottom .region ul.navbar-nav {flex-direction: row;-ms-flex-direction: row;}
+
+
+.site-footer__bottom .region ul.navbar-nav li.nav-item {
+    padding-left: 10px;
+    flex-grow: 1;
+    flex-basis: auto;
+    margin: .25em 0;
+    padding: 0 1em;
+    text-align: center;
+    border-right: 1px solid #ccc;
+}
+
+
+.site-footer__bottom .region ul.navbar-nav li.nav-item:last-child  { border: 0; }
+
+
+
+
+
+.ui-state-active .ui-icon, .ui-button:active .ui-icon {
+    background-image: url("/core/assets/vendor/jquery.ui/themes/base/images/ui-icons_444444_256x240.png")!important;
+}
