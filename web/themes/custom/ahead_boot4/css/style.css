@@ -580,7 +580,9 @@ ul.js-facets-checkbox-links {
 	background-color:#7d7d7d;
 	font-size:.9em;
 	border-radius:4px;
-	float:right;
+	position:absolute;
+	left: 200px;
+	bottom:0;
 	margin-right:15px;
 	cursor:pointer;
 	padding:5px 10px;
@@ -604,6 +606,32 @@ ul.js-facets-checkbox-links {
 	cursor:pointer;
 	padding:5px 10px;
 }
+@media (min-width: 681px)  {
+#instaddress {
+	height:250px;
+	position:relative;
+}
+#printButt {
+	position:absolute;
+	bottom:0;
+}
+
+}
+
+@media (min-width: 320px) and (max-width: 680px) {
+    #showAll {
+        position:relative;
+	}
+
+	#instaddress {
+		height:450px;
+		position:relative;
+	}
+	#printButt {
+		bottom:30px;
+	
+	}
+}
 
 /* jr
 #showAll span {
@@ -617,10 +645,6 @@ ul.js-facets-checkbox-links {
 	padding:14px 5px 0 14px;
 }
 
-#instaddress {
-	height:250px;
-	position:relative;
-}
 
 .view-general-search .views-field-field-college-university-state {
 	background-color:rgba(0,0,0,.03);
