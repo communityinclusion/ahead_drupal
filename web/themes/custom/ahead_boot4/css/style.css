@@ -1,4 +1,4 @@
-/** Just testing Jenkins for Rackspace VI
+/** Just testing Jenkins for Rackspace VII
 
 
  * @file
@@ -272,18 +272,18 @@ fieldset#group-specific-population-ques fieldset legend {
 .btnToggle {padding:5px;}
 
 #block-views-block-flag-bookmark-block-1 {
-	position:absolute;
-	width: 160px;
-	z-index:400;
+	position:relative;
+	z-index:500;
 	background-color:#fff;
-	right:230px;
-	top:30px;
+	width: 170px;
+	height: 45px;
+	overflow: visible;
+	margin: 0 12px 6px 0;
 }
-
 #block-views-block-flag-bookmark-block-1 .item-list ul li {
 	margin:8px 2px;
 }
-
+.navbar-toggler-right .navbar-toggler-icon {background-color: #ccc;}
 
 #block-views-block-flag-bookmark-block-1 .form-group,#block-views-block-flag-bookmark-block-1 .form-control {
 	display:block;
@@ -301,6 +301,8 @@ fieldset#group-specific-population-ques fieldset legend {
 
 #block-views-block-flag-bookmark-block-1.toggled .content {
 	display:block;
+	width: 250px;
+	background-color: #fff;
 }
 
 #block-views-block-flag-bookmark-block-1 .content .col-auto {
@@ -308,7 +310,7 @@ fieldset#group-specific-population-ques fieldset legend {
 }
 
 #block-views-block-flag-bookmark-block-1 h2 {
-	/* width:200px; */
+	width:170px;
 	font-size:1.2em;
 	border:1px solid #333;
 	border-radius:4px;
@@ -323,23 +325,30 @@ fieldset#group-specific-population-ques fieldset legend {
 	color:#fff;
 }
 
-.region-header-form #block-views-block-flag-bookmark-block-1 .content {
+#block-views-block-flag-bookmark-block-1 .content {
 	border:2px solid #333;
 	border-radius:6px;
 }
 
 #block-savesearch {
-	position:absolute;
-	/* width:250px; */
-	z-index:400;
+	position:relative;
 	background-color:#fff;
-	right:40px;
-	top:30px;
+	z-index:400;
+	height: 45px;
+	width: 170px;
+	overflow: visible;
+	
+	margin: 0 12px 6px 0;
+}
+#block-savesearch .content {
+	min-width: 256px;
+	background-color: #fff;
 }
 
 #block-savesearch .form-group,#block-savesearch .form-control {
 	display:block;
 	width:220px;
+	background-color: #fff;
 }
 
 #block-savesearch .content {
@@ -360,12 +369,14 @@ fieldset#group-specific-population-ques fieldset legend {
 
 #block-savesearch h2 {
 	/* width:200px; */
+	width: 170px;
 	font-size:1.2em;
 	border:1px solid #333;
 	border-radius:4px;
 	text-align:center;
 	padding:10px;
 }
+
 
 #block-savesearch h2:hover {
 	font-size:1.2em;
@@ -374,7 +385,7 @@ fieldset#group-specific-population-ques fieldset legend {
 	color:#fff;
 }
 
-.region-header-form #block-savesearch .content {
+ #block-savesearch .content {
 	border:2px solid #333;
 	border-radius:6px;
 }
@@ -675,6 +686,12 @@ ul.js-facets-checkbox-links {
 	height:250px;
 	position:relative;
 }
+
+header > .featured-top { 
+	max-width: 380px;
+	float: right;
+	margin-right: 75px;
+	margin-top: -45px;}
 #printButt {
 	position:absolute;
 	bottom:0;
@@ -686,6 +703,12 @@ ul.js-facets-checkbox-links {
     #showAll {
         position:relative;
 	}
+
+header > .featured-top { 
+	max-width: 250px;
+	float: right;
+	margin-right: 12px;
+	margin-top:0;}
 
 	#instaddress {
 		height:450px;
