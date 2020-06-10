@@ -36,14 +36,14 @@
     'block-' ~ plugin_id|clean_class,
   ]
 %}
-<div{{ attributes.addClass(classes) }}>
+<div{{ attributes.addClass(classes) }} tabindex="0">
   {{ title_prefix }}
   {% if label %}
     <h2{{ title_attributes.addClass('favToggle btnToggle') }}  tabindex="0" role="button" aria-pressed="false">{{ label }}</h2>
   {% endif %}
   {{ title_suffix }}
   {% block content %}
-    <div{{ content_attributes.addClass('content') }}>
+    <div{{ content_attributes.addClass('content') }} tabindex="0">
       {{ content }}
     </div>
   {% endblock %}

@@ -278,10 +278,8 @@ fieldset#group-specific-population-ques fieldset legend {
 	width: 170px;
 	height: 45px;
 	overflow: visible;
-	margin-right: 12px;
+	margin: 0 12px 6px 0;
 }
-header > .featured-top { max-width: 380px;
-	float: right;}
 #block-views-block-flag-bookmark-block-1 .item-list ul li {
 	margin:8px 2px;
 }
@@ -339,7 +337,8 @@ header > .featured-top { max-width: 380px;
 	height: 45px;
 	width: 170px;
 	overflow: visible;
-	margin-right: 12px;
+	
+	margin: 0 12px 6px 0;
 }
 #block-savesearch .content {
 	min-width: 256px;
@@ -687,6 +686,12 @@ ul.js-facets-checkbox-links {
 	height:250px;
 	position:relative;
 }
+
+header > .featured-top { 
+	max-width: 380px;
+	float: right;
+	margin-right: 75px;
+	margin-top: -45px;}
 #printButt {
 	position:absolute;
 	bottom:0;
@@ -698,6 +703,12 @@ ul.js-facets-checkbox-links {
     #showAll {
         position:relative;
 	}
+
+header > .featured-top { 
+	max-width: 250px;
+	float: right;
+	margin-right: 12px;
+	margin-top:0;}
 
 	#instaddress {
 		height:450px;
