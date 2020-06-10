@@ -62,7 +62,7 @@
     </div>
   {% else %}
     {% for item in items %}
-    
+
       {% set raw_field = item.content|render|striptags|trim %}
       {% if raw_field starts with 'Not provided' %}
       <div{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
@@ -79,30 +79,30 @@
   {% endif %}
 
 
-    
-      
-      
+
+
+
     </div>
     {% endfor %}
   {% endif %}
 {% else %}
   <div{{ attributes.addClass(classes) }}>
-    
+
     {% if multiple %}
-      <h3{{ title_attributes.addClass(title_classes) }}>{{ label }}</h3>
+      <p{{ title_attributes.addClass(title_classes) }}>{{ label }}</p>
       <div class='field__items'><ul>
     {% endif %}
-      
+
     {% for item in items %}
       {% if multiple %}
         {% set other_field = item.content|render|striptags|trim %}
         {% if other_field starts with 'Other' %}
-         
+
         {% else %}
           <li{{ item.attributes.addClass('field__item') }}>
           {{ item.content }}
          {% endif %}
-        
+
       {% else %}
         <div{{ attributes.addClass('quesContainer') }}><span{{ title_attributes.addClass(title_classes).addClass('leftTable') }}>{{ label }}</span>
         <span{{ item.attributes.addClass('field__item').addClass('rightTable') }}>
@@ -123,7 +123,7 @@
           <img src="/sites/default/files/cedar_imgs/not_applicable.png" title="Not applicable to this institution" alt="Not applicable to this institution" /><br /><span class="iconLegend">Not applicable</span>
         {% else %}
         {% endif %}
-        
+
       {% endif %}
         {% if multiple %}
           {% if other_field starts with 'Other' %}
