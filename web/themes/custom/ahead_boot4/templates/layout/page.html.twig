@@ -1,5 +1,3 @@
-{% extends "@bootstrap_barrio/layout/page.html.twig" %}
-
 {#
 /**
  * @file
@@ -62,14 +60,17 @@
  * - content_attributes: Items for the header region.
  * - sidebar_first_attributes: Items for the highlighted region.
  * - sidebar_second_attributes: Items for the primary menu region.
+ * - sidebar_collapse: If the sidebar_first will collapse.
  *
  * @see template_preprocess_page()
  * @see bootstrap_barrio_preprocess_page()
  * @see html.html.twig
  */
 #}
-
-{% block head %}
+<div id="page-wrapper">
+  <div id="page">
+    <header id="header" class="header clearfix" role="banner" aria-label="{{ 'Site header'|t}}">
+      {% block head %}
         {% if page.secondary_menu or page.top_header or page.top_header_form %}
           <nav{{ navbar_top_attributes }}>
           {% if container_navbar %}
@@ -110,9 +111,27 @@
           </div>
           {% endif %}
         </nav>
-{% endblock %}
-
-{% block content %}
+      {% endblock %}
+       {% if page.featured_top %}
+      {% block featured %}
+        <div class="featured-top">
+          <aside class="featured-top__inner section {{ container }} clearfix" role="complementary">
+            {{ page.featured_top }}
+          </aside>
+        </div>
+      {% endblock %}
+    {% endif %}
+    </header>
+    {% if page.highlighted %}
+      <div class="highlighted">
+        <aside class="{{ container }} section clearfix" role="complementary">
+          {{ page.highlighted }}
+        </aside>
+      </div>
+    {% endif %}
+   
+    <div id="main-wrapper" class="layout-main-wrapper clearfix">
+      {% block content %}
         <div id="main" class="{{ container }}">
           {{ page.breadcrumb }}
           <div class="row row-offcanvas row-offcanvas-left clearfix">
@@ -126,12 +145,6 @@
               <div{{ sidebar_first_attributes }}>
                 <aside class="section" role="complementary">
                   {{ page.sidebar_first }}
-                  {% if page.sidebar_firstb %}
-                    <div id="firstb" class="initHidden">
-                    {{ page.sidebar_firstb }}
-                    </div>
-                  {% endif %}
-
                 </aside>
               </div>
             {% endif %}
@@ -144,9 +157,19 @@
             {% endif %}
           </div>
         </div>
-{% endblock %}
-
-{% block footer %}
+      {% endblock %}
+    </div>
+    {% if page.featured_bottom_first or page.featured_bottom_second or page.featured_bottom_third %}
+      <div class="featured-bottom">
+        <aside class="{{ container }} clearfix" role="complementary">
+          {{ page.featured_bottom_first }}
+          {{ page.featured_bottom_second }}
+          {{ page.featured_bottom_third }}
+        </aside>
+      </div>
+    {% endif %}
+    <footer class="site-footer">
+      {% block footer %}
         <div class="{{ container }}">
           {% if page.footer_first or page.footer_second or page.footer_third or page.footer_fourth %}
             <div class="site-footer__top clearfix">
@@ -162,4 +185,7 @@
             </div>
           {% endif %}
         </div>
-{% endblock %}
+      {% endblock %}
+    </footer>
+  </div>
+</div>
