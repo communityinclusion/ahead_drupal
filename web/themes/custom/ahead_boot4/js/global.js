@@ -10,8 +10,13 @@
 
   Drupal.behaviors.ahead_boot4 = {
     attach: function (context, settings) {
+      $('.view-solr-search-content',context).once('initFadein').each(function() {
+          // When the page has loaded
+          $('.view-solr-search-content').addClass('loaded');
+        });
 
       $('body',context).once('initHidden').each(function() {
+        
         var beforePrint = function() {
           $(".ui-accordion-content").show();
         };

@@ -873,3 +873,14 @@ div.flag-bookmark { padding-left: 15px;
 .ui-state-active .ui-icon, .ui-button:active .ui-icon {
     background-image: url("/core/assets/vendor/jquery.ui/themes/base/images/ui-icons_444444_256x240.png")!important;
 }
+.view-solr-search-content {display: none;}
+.view-solr-search-content.loaded {display:block;}
+
+@media print {
+	
+
+	.site-footer #block-footerlogo.block,.site-footer #block-footertext.block,span.field__item.rightTable,span.field__label.leftTable,.floatLeft {
+	float:none;
+}
+
+  }
