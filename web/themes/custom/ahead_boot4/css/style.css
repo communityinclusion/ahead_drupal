@@ -105,6 +105,10 @@ h3.field__label {
 }
 
 
+table.quesTable {
+    margin-bottom: 20px;
+}
+
 table.quesTable caption {
 	caption-side:top;
 	font-size:150%;
@@ -487,25 +491,12 @@ footer .site-footer__top .region.region-footer-first {
 }
 
 
-/*
+
 .site-footer #block-footerlogo.block,.site-footer #block-footertext.block {
-	float:left;
 	border:none;
 }
 
-.site-footer #block-footerlogo.block {
-	width:35%;
-}
 
-.site-footer #block-footerlogo.block img {
-	width:100%;
-}
-
-.site-footer #block-footertext.block {
-	width:62%;
-}
-
-*/
 
 .site-footer__bottom {
     margin-top: 0;
@@ -566,6 +557,8 @@ ul.js-facets-checkbox-links {
 	position:relative;
 	margin-right:40px;
 }
+
+
 
 .node--type-cedar-record .field--name-field-institution-map {
 	width:350px;
@@ -876,7 +869,7 @@ div.flag-bookmark { padding-left: 15px;
 }
 
 
-.site-footer__bottom .region ul.navbar-nav li.nav-item:last-child  { border: 0; }
+.site-footer__bottom .region ul.navbar-nav li.nav-item:last-child  { border: none; }
 
 
 
