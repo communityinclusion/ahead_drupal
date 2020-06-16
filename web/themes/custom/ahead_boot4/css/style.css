@@ -105,6 +105,10 @@ h3.field__label {
 }
 
 
+table.quesTable {
+    margin-bottom: 20px;
+}
+
 table.quesTable caption {
 	caption-side:top;
 	font-size:150%;
@@ -487,25 +491,12 @@ footer .site-footer__top .region.region-footer-first {
 }
 
 
-/*
+
 .site-footer #block-footerlogo.block,.site-footer #block-footertext.block {
-	float:left;
 	border:none;
 }
 
-.site-footer #block-footerlogo.block {
-	width:35%;
-}
 
-.site-footer #block-footerlogo.block img {
-	width:100%;
-}
-
-.site-footer #block-footertext.block {
-	width:62%;
-}
-
-*/
 
 .site-footer__bottom {
     margin-top: 0;
@@ -566,6 +557,8 @@ ul.js-facets-checkbox-links {
 	position:relative;
 	margin-right:40px;
 }
+
+
 
 .node--type-cedar-record .field--name-field-institution-map {
 	width:350px;
@@ -875,11 +868,8 @@ div.flag-bookmark { padding-left: 15px;
     border-right: 1px solid #ccc;
 }
 
+
 .site-footer__bottom .region ul.navbar-nav li.nav-item:last-child  { border: 0; }
-
-
-
-
 
 .ui-state-active .ui-icon, .ui-button:active .ui-icon {
     background-image: url("/core/assets/vendor/jquery.ui/themes/base/images/ui-icons_444444_256x240.png")!important;
@@ -888,7 +878,7 @@ div.flag-bookmark { padding-left: 15px;
 .view-solr-search-content.loaded {display:block;}
 
 @media print {
-	
+
 
 	.site-footer #block-footerlogo.block,.site-footer #block-footertext.block,span.field__item.rightTable,span.field__label.leftTable,.floatLeft {
 	float:none;
