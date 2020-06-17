@@ -687,20 +687,34 @@ ul.js-facets-checkbox-links {
 	padding:5px 10px;
 }
 @media (min-width: 681px)  {
-#instaddress {
-	height:250px;
-	position:relative;
-}
+	#instaddress {
+		height:250px;
+		position:relative;
+	}
 
-header > .featured-top {
-	max-width: 380px;
-	float: right;
-	margin-right: 95px;
-	margin-top: -35px;}
-#printButt {
-	position:absolute;
-	bottom:0;
-}
+	header > .featured-top {
+		max-width: 380px;
+		float: right;
+		margin-right: 95px;
+		margin-top: -35px;}
+	#printButt {
+		position:absolute;
+		bottom:0;
+	}
+	a.searchJump {
+	position: absolute !important;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	width: 1px;
+	height: 1px;
+	word-wrap: normal;
+
+	}
+
+	a.searchJump.homeShow {
+		display:none;
+		
+		}
 
 }
 
@@ -723,6 +737,19 @@ header > .featured-top {
 		bottom:30px;
 
 	}
+
+a.searchJump {
+	position: relative;
+	overflow:visible;
+	width: 200px;
+	height: 20px;
+	word-wrap: normal;
+	
+	}
+	a.searchJump.homeShow {
+		display:none;
+		
+		}
 }
 
 /* jr
@@ -868,12 +895,8 @@ div.flag-bookmark { padding-left: 15px;
     border-right: 1px solid #ccc;
 }
 
-<<<<<<< HEAD
-.site-footer__bottom .region ul.navbar-nav li.nav-item:last-child  { border: 0; }
-=======
 
 .site-footer__bottom .region ul.navbar-nav li.nav-item:last-child  { border: none; }
->>>>>>> 2af8d9fa27aecba432817aedb8740d4e78d62339
 
 
 
