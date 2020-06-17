@@ -88,10 +88,12 @@
               if ($('.view-header').hasClass('homeShow'))$('.view-header').removeClass('homeShow');
               if ($('.view-content.row').hasClass('hideRow'))$('.view-content.row').removeClass('hideRow');
               if ($('nav').hasClass('hideRow'))$('nav').removeClass('hideRow');
+              if ($('.searchJump').hasClass('searchJump'))$('.view-header').removeClass('searchJump');
 
             }
           else {
             if(!$('.view-header').hasClass('homeShow'))$('.view-header').addClass('homeShow');
+            if(!$('.searchJump').hasClass('homeShow'))$('.searchJump').addClass('homeShow');
             if(!$('.view-content.row').hasClass('hideRow'))$('.view-content.row').addClass('hideRow');
             if(!$('.view-content.row').hasClass('hideRow'))$('.view-content.row').addClass('hideRow');
             if(!$('nav').hasClass('hideRow'))$('nav').addClass('hideRow');
