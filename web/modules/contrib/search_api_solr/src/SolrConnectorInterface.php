@@ -2,20 +2,25 @@
 
 namespace Drupal\search_api_solr;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\QueryInterface;
-use Solarium\Exception\OutOfBoundsException;
 use Solarium\QueryType\Extract\Result as ExtractResult;
-use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Select\Query\Query;
+use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 
 /**
  * The Solr connector interface.
  */
-interface SolrConnectorInterface extends ConfigurablePluginInterface {
+interface SolrConnectorInterface extends ConfigurableInterface {
+
+  const QUERY_TIMEOUT = 'query_timeout';
+  const INDEX_TIMEOUT = 'index_timeout';
+  const OPTIMIZE_TIMEOUT = 'optimize_timeout';
+  const FINALIZE_TIMEOUT = 'finalize_timeout';
 
   /**
    * Returns TRUE for Cloud.
@@ -61,7 +66,7 @@ interface SolrConnectorInterface extends ConfigurablePluginInterface {
    * @return int
    *   The Solr major version.
    */
-  public function getSolrMajorVersion($version = '');
+  public function getSolrMajorVersion($version = ''): int;
 
   /**
    * Gets the current Solr branch name.
@@ -146,6 +151,19 @@ interface SolrConnectorInterface extends ConfigurablePluginInterface {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function getSchemaVersion($reset = FALSE);
+
+  /**
+   * Gets the Solr branch trageted by the schema.
+   *
+   * @param bool $reset
+   *   If TRUE the server will be asked regardless if a previous call is cached.
+   *
+   * @return string
+   *   The targeted Solr branch.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function getSchemaTargetedSolrBranch($reset = FALSE);
 
   /**
    * Pings the Solr core to tell whether it can be accessed.
@@ -355,6 +373,21 @@ interface SolrConnectorInterface extends ConfigurablePluginInterface {
   public function update(UpdateQuery $query, ?Endpoint $endpoint = NULL);
 
   /**
+   * Executes a search query and returns the raw response.
+   *
+   * @param \Drupal\search_api_solr\Solarium\Autocomplete\Query $query
+   *   The Solarium select query object.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
+   * @return \Solarium\Core\Client\Response
+   *   The Solarium response object.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function autocomplete(AutocompleteQuery $query, ?Endpoint $endpoint = NULL);
+
+  /**
    * Executes any query.
    *
    * @param \Solarium\Core\Query\QueryInterface $query
@@ -433,7 +466,7 @@ interface SolrConnectorInterface extends ConfigurablePluginInterface {
    * @return \Solarium\Core\Client\Endpoint
    *   The Solarium endpoint object.
    *
-   * @throws OutOfBoundsException
+   * @throws \Solarium\Exception\OutOfBoundsException
    */
   public function getEndpoint($key = 'search_api_solr');
 
@@ -508,8 +541,10 @@ interface SolrConnectorInterface extends ConfigurablePluginInterface {
    *
    * @return int
    *   The previous query timeout value.
+   *
+   * @deprecated use useTim
    */
-  public function adjustTimeout(int $timeout, ?Endpoint $endpoint = NULL);
+  public function adjustTimeout(int $timeout, ?Endpoint &$endpoint = NULL);
 
   /**
    * Get the query timeout.
@@ -525,26 +560,35 @@ interface SolrConnectorInterface extends ConfigurablePluginInterface {
   /**
    * Get the index timeout.
    *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
    * @return int
    *   The current index timeout value.
    */
-  public function getIndexTimeout();
+  public function getIndexTimeout(?Endpoint $endpoint = NULL);
 
   /**
    * Get the optimize timeout.
    *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
    * @return int
    *   The current optimize timeout value.
    */
-  public function getOptimizeTimeout();
+  public function getOptimizeTimeout(?Endpoint $endpoint = NULL);
 
   /**
    * Get the finalize timeout.
    *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
    * @return int
    *   The current finalize timeout value.
    */
-  public function getFinalizeTimeout();
+  public function getFinalizeTimeout(?Endpoint $endpoint = NULL);
 
   /**
    * Alter the newly assembled Solr configuration files.

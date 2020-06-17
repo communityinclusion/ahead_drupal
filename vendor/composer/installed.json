@@ -7618,37 +7618,36 @@
     },
     {
         "name": "drupal/search_api_solr",
-        "version": "3.7.0",
-        "version_normalized": "3.7.0.0",
+        "version": "4.0.1",
+        "version_normalized": "4.0.1.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/search_api_solr.git",
-            "reference": "8.x-3.7"
+            "reference": "4.0.1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/search_api_solr-8.x-3.7.zip",
-            "reference": "8.x-3.7",
-            "shasum": "573e18996ab6448a92d32aebcf3d760f5cea2fca"
+            "url": "https://ftp.drupal.org/files/projects/search_api_solr-4.0.1.zip",
+            "reference": "4.0.1",
+            "shasum": "8c5b89633d15c0ec2e7f9e9b2f8df7281e36beed"
         },
         "require": {
-            "consolidation/annotated-command": "^2.12",
-            "drupal/core": "^8.6",
-            "drupal/search_api": "~1.14",
+            "consolidation/annotated-command": "^2.12|^4.1",
+            "drupal/core": "^8.8 || ^9",
+            "drupal/search_api": "~1.15",
             "ext-dom": "*",
             "ext-json": "*",
             "ext-simplexml": "*",
-            "maennchen/zipstream-php": "^1.2.0",
+            "laminas/laminas-stdlib": "^3.2",
+            "maennchen/zipstream-php": "^1.2|^2.0",
             "php": "^7.1.3",
-            "solarium/solarium": "~5.0.3|~5.1.4",
-            "zendframework/zend-stdlib": "^3.0.1"
+            "solarium/solarium": "~5.0.3|~5.1.5|~5.2.0|~6.0.0"
         },
         "conflict": {
-            "drupal/core": "<8.6",
             "drupal/search_api_solr_multilingual": "<3.0.0"
         },
         "require-dev": {
-            "drupal/devel": "2.x-dev",
+            "drupal/devel": "3.x-dev",
             "drupal/facets": "1.x-dev",
             "drupal/geofield": "1.x-dev",
             "drupal/search_api_autocomplete": "1.x-dev",
@@ -7665,12 +7664,9 @@
         },
         "type": "drupal-module",
         "extra": {
-            "branch-alias": {
-                "dev-3.x": "3.x-dev"
-            },
             "drupal": {
-                "version": "8.x-3.7",
-                "datestamp": "1570049584",
+                "version": "4.0.1",
+                "datestamp": "1589886627",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -7685,7 +7681,7 @@
         "installation-source": "dist",
         "notification-url": "https://packages.drupal.org/8/downloads",
         "license": [
-            "GPL-2.0+"
+            "GPL-2.0-or-later"
         ],
         "authors": [
             {
@@ -7718,7 +7714,7 @@
         "support": {
             "source": "http://git.drupal.org/project/search_api_solr.git",
             "issues": "https://www.drupal.org/project/issues/search_api_solr",
-            "irc": "https://drupalchat.me/channel/search"
+            "chat": "https://drupalchat.me/channel/search"
         }
     },
     {
@@ -9859,6 +9855,112 @@
         "keywords": [
             "json",
             "schema"
+        ]
+    },
+    {
+        "name": "laminas/laminas-stdlib",
+        "version": "3.2.1",
+        "version_normalized": "3.2.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/laminas/laminas-stdlib.git",
+            "reference": "2b18347625a2f06a1a485acfbc870f699dbe51c6"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/laminas/laminas-stdlib/zipball/2b18347625a2f06a1a485acfbc870f699dbe51c6",
+            "reference": "2b18347625a2f06a1a485acfbc870f699dbe51c6",
+            "shasum": ""
+        },
+        "require": {
+            "laminas/laminas-zendframework-bridge": "^1.0",
+            "php": "^5.6 || ^7.0"
+        },
+        "replace": {
+            "zendframework/zend-stdlib": "self.version"
+        },
+        "require-dev": {
+            "laminas/laminas-coding-standard": "~1.0.0",
+            "phpbench/phpbench": "^0.13",
+            "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.2"
+        },
+        "time": "2019-12-31T17:51:15+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.2.x-dev",
+                "dev-develop": "3.3.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Laminas\\Stdlib\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": "SPL extensions, array utilities, error handlers, and more",
+        "homepage": "https://laminas.dev",
+        "keywords": [
+            "laminas",
+            "stdlib"
+        ]
+    },
+    {
+        "name": "laminas/laminas-zendframework-bridge",
+        "version": "1.0.4",
+        "version_normalized": "1.0.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/laminas/laminas-zendframework-bridge.git",
+            "reference": "fcd87520e4943d968557803919523772475e8ea3"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/laminas/laminas-zendframework-bridge/zipball/fcd87520e4943d968557803919523772475e8ea3",
+            "reference": "fcd87520e4943d968557803919523772475e8ea3",
+            "shasum": ""
+        },
+        "require": {
+            "php": "^5.6 || ^7.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^5.7 || ^6.5 || ^7.5 || ^8.1",
+            "squizlabs/php_codesniffer": "^3.5"
+        },
+        "time": "2020-05-20T16:45:56+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev",
+                "dev-develop": "1.1.x-dev"
+            },
+            "laminas": {
+                "module": "Laminas\\ZendFrameworkBridge"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/autoload.php"
+            ],
+            "psr-4": {
+                "Laminas\\ZendFrameworkBridge\\": "src//"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": "Alias legacy ZF class names to Laminas Project equivalents.",
+        "keywords": [
+            "ZendFramework",
+            "autoloading",
+            "laminas",
+            "zf"
         ]
     },
     {
@@ -16460,54 +16562,5 @@
             "zf"
         ],
         "abandoned": "laminas/laminas-feed"
-    },
-    {
-        "name": "zendframework/zend-stdlib",
-        "version": "3.2.1",
-        "version_normalized": "3.2.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/zendframework/zend-stdlib.git",
-            "reference": "66536006722aff9e62d1b331025089b7ec71c065"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/zendframework/zend-stdlib/zipball/66536006722aff9e62d1b331025089b7ec71c065",
-            "reference": "66536006722aff9e62d1b331025089b7ec71c065",
-            "shasum": ""
-        },
-        "require": {
-            "php": "^5.6 || ^7.0"
-        },
-        "require-dev": {
-            "phpbench/phpbench": "^0.13",
-            "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.2",
-            "zendframework/zend-coding-standard": "~1.0.0"
-        },
-        "time": "2018-08-28T21:34:05+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "3.2.x-dev",
-                "dev-develop": "3.3.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Zend\\Stdlib\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "description": "SPL extensions, array utilities, error handlers, and more",
-        "keywords": [
-            "ZendFramework",
-            "stdlib",
-            "zf"
-        ],
-        "abandoned": "laminas/laminas-stdlib"
     }
 ]

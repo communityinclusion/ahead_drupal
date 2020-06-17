@@ -48,8 +48,8 @@ class SolrFieldTypeTest extends KernelTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->configNames = array_keys(file_scan_directory(drupal_get_path('module', 'search_api_solr') . '/config', '/search_api_solr.solr_field_type.text_/', ['key' => 'name']));
-
+    $fileSystem = \Drupal::service('file_system');
+    $this->configNames = array_keys(\Drupal::service('file_system')->scanDirectory(__DIR__ . '/../../../config', '/search_api_solr.solr_field_type.text_/', ['key' => 'name']));
     foreach ($this->configNames as $config_name) {
       preg_match('/search_api_solr.solr_field_type.text_(.*)_\d+_\d+_\d+/', $config_name, $matches);
       $this->languageIds[] = $matches[1];
