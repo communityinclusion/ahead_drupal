@@ -1,4 +1,4 @@
-/** Just testing Jenkins for Rackspace VII
+/** Just testing Jenkins for Rackspace IX
 
 
  * @file
@@ -901,6 +901,7 @@ div.flag-bookmark { padding-left: 15px;
 
 
 
+.site-footer__bottom .region ul.navbar-nav li.nav-item:last-child  { border: 0; }
 
 .ui-state-active .ui-icon, .ui-button:active .ui-icon {
     background-image: url("/core/assets/vendor/jquery.ui/themes/base/images/ui-icons_444444_256x240.png")!important;
@@ -909,7 +910,7 @@ div.flag-bookmark { padding-left: 15px;
 .view-solr-search-content.loaded {display:block;}
 
 @media print {
-	
+
 
 	.site-footer #block-footerlogo.block,.site-footer #block-footertext.block,span.field__item.rightTable,span.field__label.leftTable,.floatLeft {
 	float:none;
