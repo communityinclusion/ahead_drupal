@@ -922,5 +922,6 @@ div.field--name-field-completed-survey { width: 192px; height: 42px; float: righ
 div.field--name-field-completed-survey div.field__label {width: 150px; height: 42px; float: left; font-size: 80%;}
 div.field--name-field-completed-survey div.field__item {width: 42px; height: 42px; float: left;}
 @media (min-width: 770px) {
+	
     div.field--name-field-completed-survey { margin-top: -25px;}
 	}
