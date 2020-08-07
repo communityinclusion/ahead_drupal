@@ -917,3 +917,11 @@ div.flag-bookmark { padding-left: 15px;
 }
 
   }
+img.greenCheck {width: 40px; height:40px;}
+div.field--name-field-completed-survey { width: 192px; height: 42px; float: right;margin-top:0;}
+div.field--name-field-completed-survey div.field__label {width: 150px; height: 42px; float: left; font-size: 80%;}
+div.field--name-field-completed-survey div.field__item {width: 42px; height: 42px; float: left;}
+@media (min-width: 770px) {
+	
+    div.field--name-field-completed-survey { margin-top: -25px;}
+	}
