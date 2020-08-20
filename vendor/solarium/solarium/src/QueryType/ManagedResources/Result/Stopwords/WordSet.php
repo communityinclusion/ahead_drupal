@@ -19,7 +19,7 @@ class WordSet extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Whether or not to ignore the case.
      *
-     * @var bool
+     * @var bool|null
      */
     protected $ignoreCase;
 
@@ -33,7 +33,7 @@ class WordSet extends BaseResult implements \IteratorAggregate, \Countable
     /**
      * Datetime when the resource was last updated.
      *
-     * @var string
+     * @var string|null
      */
     protected $updatedSinceInit;
 
@@ -100,9 +100,9 @@ class WordSet extends BaseResult implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function isIgnoreCase(): bool
+    public function isIgnoreCase(): ?bool
     {
         $this->parseResponse();
         return $this->ignoreCase;
@@ -115,5 +115,14 @@ class WordSet extends BaseResult implements \IteratorAggregate, \Countable
     {
         $this->parseResponse();
         return $this->initializedOn;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUpdatedSinceInit(): ?string
+    {
+        $this->parseResponse();
+        return $this->updatedSinceInit;
     }
 }

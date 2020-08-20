@@ -153,7 +153,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function getSchemaVersion($reset = FALSE);
 
   /**
-   * Gets the Solr branch trageted by the schema.
+   * Gets the Solr branch targeted by the schema.
    *
    * @param bool $reset
    *   If TRUE the server will be asked regardless if a previous call is cached.
@@ -164,6 +164,19 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function getSchemaTargetedSolrBranch($reset = FALSE);
+
+  /**
+   * Indicates if the Solr config-set is our jum-start config-set.
+   *
+   * @param bool $reset
+   *   If TRUE the server will be asked regardless if a previous call is cached.
+   *
+   * @return bool
+   *   The targeted Solr branch.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function isJumpStartConfigSet(bool $reset = FALSE): bool;
 
   /**
    * Pings the Solr core to tell whether it can be accessed.
@@ -189,6 +202,19 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function pingServer();
 
   /**
+   * Pings the Solr endpoint to tell whether it can be accessed.
+   *
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   * @param array $options
+   *   (optional) An array of options.
+   *
+   * @return mixed
+   *   The latency in milliseconds if the endpoint can be accessed,
+   *   otherwise FALSE.
+   */
+  public function pingEndpoint(?Endpoint $endpoint = NULL, array $options = []);
+
+  /**
    * Gets summary information about the Solr Core.
    *
    * @return array
@@ -203,13 +229,14 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *
    * @param string $path
    *   The path to append to the base URI.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *
    * @return string
    *   The decoded response.
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function coreRestGet($path);
+  public function coreRestGet($path, ?Endpoint $endpoint = NULL);
 
   /**
    * Sends a REST POST request to the Solr core and returns the result.
@@ -218,13 +245,14 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   The path to append to the base URI.
    * @param string $command_json
    *   The command to send encoded as JSON.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *
    * @return string
    *   The decoded response.
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function coreRestPost($path, $command_json = '');
+  public function coreRestPost($path, $command_json = '', ?Endpoint $endpoint = NULL);
 
   /**
    * Sends a REST GET request to the Solr server and returns the result.

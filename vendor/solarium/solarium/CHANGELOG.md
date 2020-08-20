@@ -4,6 +4,95 @@ All notable changes to the solarium library will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.0.1]
+### Added
+- Solarium\Component\Result\Facet\JsonRange::getBefore()
+- Solarium\Component\Result\Facet\JsonRange::getAfter()
+- Solarium\Component\Result\Facet\JsonRange::getBetween()
+
+### Changed
+ - Json range facet result now returns Solarium\Component\Result\Facet\JsonRange
+ 
+
+## [6.0.0]
+### Added
+- \Solarium\Component\Result\Facet\Buckets::getNumBuckets()
+
+### Changed
+- Thrown exceptions always implement Solarium\Exception\ExceptionInterface
+
+
+## [6.0.0-rc.1]
+### Added
+- \Solarium\Support\Utility::getXmlEncoding()
+
+### Fixed
+- MoreLikeThis result parsing fails on Solr Cloud
+- MinimumScoreFilter plugin might fail on Solr 7 in cloud mode
+
+
+## [6.0.0-beta.1]
+### Changed
+- PostBigRequest plugin now acts on PRE_EXECUTE_REQUEST event instead of POST_CREATE_REQUEST
+- CustomizeRequest plugin now acts on POST_CREATE_REQUEST event instead of PRE_EXECUTE_REQUEST
+
+### Removed
+- PHP 7.1 support
+
+
+## [6.0.0-alpha.1]
+### Added
+- Raw XML commands to update query
+- Raw XML from file in update query
+- Set input encoding for select and update queries
+- Create and configure Managed Resources
+
+### Changed
+- More strict types and type hinting
+- `AdapterInterface` does not extend `ConfigurableInterface` anymore
+- `Http` Adapter does not implement `ConfigurableInterface` anymore
+- `Psr18Adapter` does not implement `ConfigurableInterface` anymore
+- Solarium Client now accepts any PSR-15 compatible event dispatcher (previously it had to be symfony's event dispatcher)
+
+### Removed
+- Zend2HttpAdapter
+- GuzzleAdapter
+- Guzzle3Adapter
+- Endpoint::setTimeout and Endpoint::getTimeout
+- Passing local parameter options (e.g. ``key``, ``tag``, ``exclude``) without the ``local_`` prefix 
+- Support for Solr versions before 7.7
+
+
+## [5.2.0]
+### Added
+- PSR-18 http adapter
+
+### Fixed
+- PUT requests against Solr 8.5.0 using the Zend2Http and Http adapters
+
+### Deprecated
+- Zend2HttpAdapter, use PSR-18 http adapter instead
+- GuzzleAdapter, use PSR-18 http adapter instead
+- Guzzle3Adapter, use PSR-18 http adapter instead
+- Endpoint::setTimeout and Endpoint::getTimeout, configure the timeout on the http adapter instead
+
+
+## [5.1.6]
+### Added
+- Range facet pivot support
+- Support for useConfiguredElevatedOrder
+- FilterQuery::setCache and FilterQuery::setCost()
+
+### Fixed
+- Setting limit for pivot facets
+
+### Changed
+- Internal handling of Solr local parameters
+
+### Deprecated
+- Helper::cacheControl(). Use FilterQuery::setCache() and FilterQuery::setCost() instead
+
+
 ## [5.1.5]
 ### Security
 - Remove explicit requirements for symfony/cache because of CVE-2019-18889

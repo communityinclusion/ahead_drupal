@@ -27,8 +27,15 @@ class Stopwords extends ResponseParserAbstract implements ResponseParserInterfac
 
         if (null !== $wordSet && !empty($wordSet)) {
             $parsed['items'] = $wordSet['managedList'];
-            $parsed['ignoreCase'] = $wordSet['initArgs']['ignoreCase'];
             $parsed['initializedOn'] = $wordSet['initializedOn'];
+
+            if (isset($wordSet['initArgs']['ignoreCase'])) {
+                $parsed['ignoreCase'] = $wordSet['initArgs']['ignoreCase'];
+            }
+
+            if (isset($wordSet['updatedSinceInit'])) {
+                $parsed['updatedSinceInit'] = $wordSet['updatedSinceInit'];
+            }
         }
 
         $this->addHeaderInfo($data, $parsed);

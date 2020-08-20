@@ -100,6 +100,7 @@ class ComposerStaticInit72a7cc6b2745ccfc584ace454091d2f2
             'Symfony\\Polyfill\\Iconv\\' => 23,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Contracts\\EventDispatcher\\' => 34,
+            'Symfony\\Contracts\\' => 18,
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\VarDumper\\' => 28,
             'Symfony\\Component\\Validator\\' => 28,
@@ -141,6 +142,8 @@ class ComposerStaticInit72a7cc6b2745ccfc584ace454091d2f2
             'Psy\\' => 4,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
+            'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'Prophecy\\' => 9,
             'PhpParser\\' => 10,
@@ -354,6 +357,10 @@ class ComposerStaticInit72a7cc6b2745ccfc584ace454091d2f2
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
+        'Symfony\\Contracts\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/contracts',
+        ),
         'Symfony\\Component\\Yaml\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
@@ -494,6 +501,14 @@ class ComposerStaticInit72a7cc6b2745ccfc584ace454091d2f2
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
+        'Psr\\EventDispatcher\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
         ),
         'Psr\\Container\\' => 
         array (

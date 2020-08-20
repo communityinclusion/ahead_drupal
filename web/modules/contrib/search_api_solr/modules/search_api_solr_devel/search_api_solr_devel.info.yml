@@ -7,7 +7,7 @@ dependencies:
   - devel:devel
   - search_api_solr:search_api_solr
 
-# Information added by Drupal.org packaging script on 2020-05-19
-version: '4.0.1'
+# Information added by Drupal.org packaging script on 2020-07-07
+version: '4.1.4'
 project: 'search_api_solr'
-datestamp: 1589886630
+datestamp: 1594115653

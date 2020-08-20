@@ -33,6 +33,7 @@ abstract class AbstractRequestBuilder implements RequestBuilderInterface
         $request->addParam('timeAllowed', $query->getTimeAllowed());
         $request->addParam('NOW', $query->getNow());
         $request->addParam('TZ', $query->getTimeZone());
+        $request->addParam('ie', $query->getInputEncoding());
         $request->addParams($query->getParams());
 
         $request->addParam('wt', $query->getResponseWriter());
@@ -52,7 +53,7 @@ abstract class AbstractRequestBuilder implements RequestBuilderInterface
      *
      * LocalParams can be use in various Solr GET params.
      *
-     * @see http://wiki.apache.org/solr/LocalParams
+     * @see https://lucene.apache.org/solr/guide/local-parameters-in-queries.html
      *
      * @param string $value
      * @param array  $localParams in key => value format

@@ -7,12 +7,10 @@ use Solarium\Component\FacetSetInterface;
 /**
  * Facet query.
  *
- * @see http://wiki.apache.org/solr/SimpleFacetParameters#Field_Value_Faceting_Parameters
+ * @see https://lucene.apache.org/solr/guide/faceting.html#field-value-faceting-parameters
  */
-class Field extends AbstractField implements ExcludeTagsInterface
+class Field extends AbstractField
 {
-    use ExcludeTagsTrait;
-
     /**
      * Facet method enum.
      */
@@ -43,6 +41,7 @@ class Field extends AbstractField implements ExcludeTagsInterface
     public function setContains(string $contains): self
     {
         $this->setOption('contains', $contains);
+
         return $this;
     }
 
@@ -66,6 +65,7 @@ class Field extends AbstractField implements ExcludeTagsInterface
     public function setContainsIgnoreCase($containsIgnoreCase): self
     {
         $this->setOption('containsignorecase', $containsIgnoreCase);
+
         return $this;
     }
 
