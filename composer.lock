@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0dbed5f3430f1c05089316700ee948bc",
+    "content-hash": "084017e9c8d94ae083f719215ab38a89",
     "packages": [
         {
             "name": "alchemy/zippy",
@@ -2803,6 +2803,7 @@
                 "GPL-2.0-or-later"
             ],
             "description": "Composer Plugin for updating the Drupal scaffold files when using drupal/core",
+            "abandoned": "drupal / core-composer-scaffold",
             "time": "2019-03-30T10:41:38+00:00"
         },
         {
@@ -8150,17 +8151,11 @@
         },
         {
             "name": "drupal/vde_drush",
-            "version": "1.0.0-beta2",
+            "version": "dev-1.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/vde_drush.git",
-                "reference": "8.x-1.0-beta2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/vde_drush-8.x-1.0-beta2.zip",
-                "reference": "8.x-1.0-beta2",
-                "shasum": "aee618b006946c51c6f3f43395b81999c237babd"
+                "reference": "d457de87b0ead1f397e4b04fffc478cca7b2be86"
             },
             "require": {
                 "drupal/core": "~8.0",
@@ -8169,9 +8164,12 @@
             },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-1.x": "1.x-dev"
+                },
                 "drupal": {
-                    "version": "8.x-1.0-beta2",
-                    "datestamp": "1538032980",
+                    "version": "8.x-1.0-beta2+0-dev",
+                    "datestamp": "1538032685",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
@@ -8218,7 +8216,8 @@
             "homepage": "https://www.drupal.org/project/vde_drush",
             "support": {
                 "source": "https://git.drupalcode.org/project/vde_drush"
-            }
+            },
+            "time": "2018-09-27T07:14:47+00:00"
         },
         {
             "name": "drupal/viewfield",
@@ -16394,6 +16393,7 @@
         "drupal/smtp": 10,
         "drupal/tamper": 20,
         "drupal/token_custom": 15,
+        "drupal/vde_drush": 20,
         "drupal/viewfield": 15,
         "drupal/views_data_export": 10
     },
