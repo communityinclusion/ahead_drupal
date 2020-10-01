@@ -74,7 +74,7 @@
 
       });
 
-      $('.view-solr-search-content',context).once('solr-search-content').each(function(){
+      $('.view-display-id-page_1',context).once('solr-search-content').each(function(){
           var m = window.location.search.indexOf("institution_size");
           var n = window.location.search.indexOf("disability_related");
           var o = window.location.search.indexOf("minority_serving");
