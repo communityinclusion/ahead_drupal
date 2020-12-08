@@ -1,32 +1,17 @@
-# Schema for the views style plugins.
+# Schema for the configuration files of the Leaflet module.
 
-views.style.leaflet_map:
-  type: views_style
-  label: 'Leaflet map'
+field.formatter.settings.leaflet_formatter_default:
+  type: mapping
+  label: 'Leaflet format settings'
   mapping:
-    data_source:
-      type: string
-      label: 'Data source'
-    entity_source:
-      type: string
-      label: 'Entity source'
-    entity_source_submit:
-      type: string
-      label: 'Submit label for entity source'
-    name_field:
-      type: string
-      label: 'Name field'
-    description_field:
-      type: string
-      label: 'Description field'
-    view_mode:
-      type: string
-      label: 'View mode'
+    multiple_map:
+      type: boolean
+      label: 'Multiple map'
     leaflet_map:
       type: string
       label: 'Leaflet map'
     height:
-      type: string
+      type: integer
       label: 'Map height'
     height_unit:
       type: string
@@ -39,7 +24,7 @@ views.style.leaflet_map:
       label: 'Disable wheel'
     fullscreen_control:
       type: boolean
-      label: 'Fulllscreen control'
+      label: 'Fullscreen control'
     gesture_handling:
       type: boolean
       label: 'Gesture handling'
@@ -53,35 +38,41 @@ views.style.leaflet_map:
         position:
           type: string
           label: 'Position'
+    popup:
+      type: boolean
+      label: 'Popup'
+    popup_content:
+      type: text
+      label: 'Popup Content'
     map_position:
       type: mapping
-      label: 'Map position'
+      label: 'Map Position'
       mapping:
         force:
           type: boolean
-          label: 'Force map center & zoom'
+          label: 'Force'
         center:
           type: mapping
-          label: 'Centre'
+          label: 'Center'
           mapping:
             lat:
-              type: integer
-              label: 'Lattitude'
+              type: float
+              label: 'Lat'
             lon:
-              type: integer
-              label: 'Longitude'
+              type: float
+              label: 'Lon'
         zoom:
           type: integer
           label: 'Zoom'
         minZoom:
           type: integer
-          label: 'Minimum zoom'
+          label: 'Min zoom'
         maxZoom:
           type: integer
-          label: 'Maximum zoom'
+          label: 'Max zoom'
         zoomFiner:
           type: integer
-          label: 'Zoomfiner'
+          label: 'Zoom finer'
     weight:
       type: string
       label: 'Weight'
@@ -171,22 +162,22 @@ views.style.leaflet_map:
           type: text
           label: 'Options'
     path:
-      type: string
+      type: text
       label: 'Path'
     geocoder:
       type: mapping
-      label: 'Geocoder'
+      label: 'Gecoder map control'
       mapping:
         control:
           type: boolean
-          label: 'Control'
+          label: 'Enable Geocoder map control'
         settings:
           type: mapping
-          label: 'Geocoder'
+          label: 'Gecoder settings'
           mapping:
             position:
               type: string
-              label: 'Path'
+              label: 'Position'
             input_size:
               type: integer
               label: 'Input size'
@@ -195,12 +186,13 @@ views.style.leaflet_map:
               label: 'Providers'
               sequence:
                 type: mapping
+                label: 'Provider'
                 mapping:
                   weight:
-                    type: string
+                    type: integer
                     label: 'Weight'
                   checked:
-                    type: integer
+                    type: boolean
                     label: 'Checked'
             min_terms:
               type: integer

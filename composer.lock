@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "17d7ade0ec431b9e7f81f243f4400f04",
+    "content-hash": "74e6c016f7fbb6e6f349227f454b847b",
     "packages": [
         {
             "name": "alchemy/zippy",
@@ -5827,30 +5827,27 @@
         },
         {
             "name": "drupal/leaflet",
-            "version": "1.25.0",
+            "version": "2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/leaflet.git",
-                "reference": "8.x-1.25"
+                "reference": "2.1.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/leaflet-8.x-1.25.zip",
-                "reference": "8.x-1.25",
-                "shasum": "593eeee163b41fc9ae1d3c5d556899dfa1c3b01e"
+                "url": "https://ftp.drupal.org/files/projects/leaflet-2.1.5.zip",
+                "reference": "2.1.5",
+                "shasum": "28e37842a0afbe32da4f4da33b6210eacfe0b180"
             },
             "require": {
-                "drupal/core": "~8.0",
+                "drupal/core": "^8.8 || ^9",
                 "drupal/geofield": "^1.0"
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-1.x": "1.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-1.25",
-                    "datestamp": "1578485587",
+                    "version": "2.1.5",
+                    "datestamp": "1605734713",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"

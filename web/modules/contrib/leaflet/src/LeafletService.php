@@ -83,13 +83,20 @@ class LeafletService {
    */
   public function leafletRenderMap(array $map, array $features = [], $height = '400px') {
     $map_id = isset($map['id']) ? $map['id'] : Html::getUniqueId('leaflet_map');
-    $attached_libraries = ['leaflet/leaflet-drupal', 'leaflet/general'];
+
+    $attached_libraries = ['leaflet/general', 'leaflet/leaflet-drupal'];
 
     // Add the Leaflet Fullscreen library, if requested.
-    if (isset($map['settings']['fullscreen_control'])) {
+    if (!empty($map['settings']['fullscreen_control'])) {
       $attached_libraries[] = 'leaflet/leaflet.fullscreen';
     }
-    // Add the Leaflet Markecluster library and functionalities, if requested.
+
+    // Add the Leaflet Gesture Handling library, if requested.
+    if (!empty($map['settings']['gestureHandling'])) {
+      $attached_libraries[] = 'leaflet/leaflet.gesture_handling';
+    }
+
+    // Add the Leaflet Markercluster library and functionalities, if requested.
     if ($this->moduleHandler->moduleExists('leaflet_markercluster') && isset($map['settings']['leaflet_markercluster']) && $map['settings']['leaflet_markercluster']['control']) {
       $attached_libraries[] = 'leaflet_markercluster/leaflet-markercluster';
       $attached_libraries[] = 'leaflet_markercluster/leaflet-markercluster-drupal';
@@ -97,24 +104,8 @@ class LeafletService {
 
     // Add the Leaflet Geocoder library and functionalities, if requested,
     // and the user has access to Geocoder Api Enpoints.
-    if ($this->moduleHandler->moduleExists('geocoder')
-      && class_exists('\Drupal\geocoder\Controller\GeocoderApiEnpoints')
-      && isset($map['settings']['geocoder'])
-      && $map['settings']['geocoder']['control']
-      && $this->currentUser->hasPermission('access geocoder api endpoints')) {
-      $attached_libraries[] = 'leaflet/leaflet.geocoder';
-
-      // Set the $map['settings']['geocoder']['providers'] as the enabled ones.
-      $enabled_providers = [];
-      foreach ($map['settings']['geocoder']['settings']['providers'] as $plugin_id => $plugin) {
-        if (!empty($plugin['checked'])) {
-          $enabled_providers[] = $plugin_id;
-        }
-      }
-      $map['settings']['geocoder']['settings']['providers'] = $enabled_providers;
-      $map['settings']['geocoder']['settings']['options'] = [
-        'options' => JSON::decode($map['settings']['geocoder']['settings']['options']),
-      ];
+    if (!empty($map['settings']['geocoder']['control'])) {
+      $this->setGeocoderControlSettings($map['settings']['geocoder'], $attached_libraries);
     }
 
     $settings[$map_id] = [
@@ -314,24 +305,6 @@ class LeafletService {
   }
 
   /**
-   * Pre Process the MapSettings.
-   *
-   * Performs some preprocess on the maps settings before sending to js.
-   *
-   * @param array $map_settings
-   *   The map settings.
-   */
-  public function preProcessMapSettings(array &$map_settings) {
-    // Generate correct Absolute iconUrl & shadowUrl, if not external.
-    if (!empty($map_settings['icon']['iconUrl'])) {
-      $map_settings['icon']['iconUrl'] = $this->pathToAbsolute($map_settings['icon']['iconUrl']);
-    }
-    if (!empty($map_settings['icon']['shadowUrl'])) {
-      $map_settings['icon']['shadowUrl'] = $this->pathToAbsolute($map_settings['icon']['shadowUrl']);
-    }
-  }
-
-  /**
    * Leaflet Icon Documentation Link.
    *
    * @return \Drupal\Core\GeneratedLink
@@ -361,6 +334,48 @@ class LeafletService {
   }
 
   /**
+   * Set Feature Icon Size & Shadow Size If Empty or Invalid.
+   *
+   * @param array $feature
+   *   The feature array.
+   */
+  public function setFeatureIconSizesIfEmptyOrInvalid(array &$feature): void {
+    if (isset($feature["icon"]["iconSize"])
+      && (empty(intval($feature["icon"]["iconSize"]["x"])) && empty(intval($feature["icon"]["iconSize"]["y"])))
+      && (!empty($feature["icon"]["iconUrl"]) && $this->fileExists($feature["icon"]["iconUrl"]))) {
+      $iconSize = getimagesize($feature["icon"]["iconUrl"]);
+      $feature["icon"]["iconSize"]["x"] = $iconSize[0];
+      $feature["icon"]["iconSize"]["y"] = $iconSize[1];
+    }
+
+    if (isset($feature["icon"]["shadowSize"])
+      && (empty(intval($feature["icon"]["shadowSize"]["x"])) && empty(intval($feature["icon"]["shadowSize"]["y"])))
+      && (!empty($feature["icon"]["shadowUrl"]) && $this->fileExists($feature["icon"]["shadowUrl"]))) {
+      $shadowSize = getimagesize($feature["icon"]["iconUrl"]);
+      $feature["icon"]["shadowSize"]["x"] = $shadowSize[0];
+      $feature["icon"]["shadowSize"]["y"] = $shadowSize[1];
+    }
+  }
+
+  /**
+   * Check if a file exists.
+   *
+   * @param string $fileUrl
+   *   The file url.
+   *
+   * @return bool
+   *   The bool result.
+   */
+  public function fileExists($fileUrl) {
+    $file_headers = @get_headers($fileUrl);
+    if ((stripos($file_headers[0], "404 Not Found") == 0)
+      && (stripos($file_headers[0], "302 Found") == 0 && stripos($file_headers[7], "404 Not Found") == 0)) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+
+  /**
    * Check if an array has all values empty.
    *
    * @param array $array
@@ -379,6 +394,35 @@ class LeafletService {
       }
     }
     return TRUE;
+  }
+
+  /**
+   * Set Geocoder Controls Settings.
+   *
+   * @param array $geocoder_settings
+   *   The geocoder settings.
+   * @param array $attached_libraries
+   *   The attached libraries.
+   */
+  public function setGeocoderControlSettings(array &$geocoder_settings, array &$attached_libraries): void {
+    if ($this->moduleHandler->moduleExists('geocoder')
+      && class_exists('\Drupal\geocoder\Controller\GeocoderApiEnpoints')
+      && $geocoder_settings['control']
+      && $this->currentUser->hasPermission('access geocoder api endpoints')) {
+      $attached_libraries[] = 'leaflet/leaflet.geocoder';
+
+      // Set the geocoder settings ['providers'] as the enabled ones.
+      $enabled_providers = [];
+      foreach ($geocoder_settings['settings']['providers'] as $plugin_id => $plugin) {
+        if (!empty($plugin['checked'])) {
+          $enabled_providers[] = $plugin_id;
+        }
+      }
+      $geocoder_settings['settings']['providers'] = $enabled_providers;
+      $geocoder_settings['settings']['options'] = [
+        'options' => Json::decode($geocoder_settings['settings']['options']) ?? '',
+      ];
+    }
   }
 
 }
