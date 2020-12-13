@@ -49,10 +49,24 @@ function ahead_boot4_preprocess_node(array &$variables) {
   
 
 }
+function ahead_boot4_preprocess_views_view(&$variables) {
+  $currenturl =  Url::fromRoute('<current>')->toString();
+  \Drupal::logger('surveycampaign alert')->notice('View path: ' . $currenturl);
+  if (stripos($currenturl, 'solr-search') !== false) {
+    
+    unset($_SESSION['cedar_search_last']);
+    $_SESSION['cedar_search_last'] = $_SERVER['REQUEST_URI'];
+    $variables['cedar_search_last'] = $_SESSION['cedar_search_last'];
+
+  }
+  
+}
 function ahead_boot4_preprocess_breadcrumb(&$variables) {
   $variables['cedar_search_last'] = $_SESSION['cedar_search_last'];
   $currenturl = Url::fromRoute('<current>')->toString();
+  //dpm($currenturl);
   if (stripos($currenturl, 'solr-search') !== false) {
+    
     unset($_SESSION['cedar_search_last']);
     $_SESSION['cedar_search_last'] = $_SERVER['REQUEST_URI'];
     $variables['cedar_search_last'] = $_SESSION['cedar_search_last'];
