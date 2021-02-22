@@ -66,12 +66,16 @@
   {% endif %}
 {% else %}
   <div{{ attributes.addClass(classes) }}>
-    <div{{ title_attributes.addClass(title_classes) }}>This institution provided disability information.</div>
+    
     {% if multiple %}
       <div class='field__items'>
     {% endif %}
     {% for item in items %}
+      
+      {% if 'Yes' in item.content %}
+      <div{{ title_attributes.addClass(title_classes) }}>This institution provided disability information.</div>
       <div{{ item.attributes.addClass('field__item') }}><img class="greenCheck" alt ="check, completed survey" src="/themes/custom/ahead_boot4/img/green_check.png" /></div>
+      {% endif %}
     {% endfor %}
     {% if multiple %}
       </div>
