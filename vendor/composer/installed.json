@@ -4939,37 +4939,40 @@
     },
     {
         "name": "drupal/facets",
-        "version": "1.4.0",
-        "version_normalized": "1.4.0.0",
+        "version": "1.8.0",
+        "version_normalized": "1.8.0.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/facets.git",
-            "reference": "8.x-1.4"
+            "reference": "8.x-1.8"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/facets-8.x-1.4.zip",
-            "reference": "8.x-1.4",
-            "shasum": "ee2d584b8a225ab981e313f6050e13bc9c98e40b"
+            "url": "https://ftp.drupal.org/files/projects/facets-8.x-1.8.zip",
+            "reference": "8.x-1.8",
+            "shasum": "f621b84b59c5315db14a0529df5dfc74ca5bc9de"
         },
         "require": {
-            "drupal/core": "~8.0"
+            "drupal/core": "^8.8 || ^9"
+        },
+        "conflict": {
+            "drupal/search_api": "<1.14"
         },
         "require-dev": {
-            "drupal/search_api": "~1.5"
+            "drupal/search_api": "~1.14"
         },
         "type": "drupal-module",
         "extra": {
-            "branch-alias": {
-                "dev-1.x": "1.x-dev"
-            },
             "drupal": {
-                "version": "8.x-1.4",
-                "datestamp": "1556645881",
+                "version": "8.x-1.8",
+                "datestamp": "1620838256",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
                 }
+            },
+            "branch-alias": {
+                "dev-8.x-1.x": "1.x-dev"
             }
         },
         "installation-source": "dist",
@@ -4989,6 +4992,14 @@
             {
                 "name": "borisson_",
                 "homepage": "https://www.drupal.org/user/2393360"
+            },
+            {
+                "name": "drunken monkey",
+                "homepage": "https://www.drupal.org/user/205582"
+            },
+            {
+                "name": "mkalkbrenner",
+                "homepage": "https://www.drupal.org/user/124705"
             }
         ],
         "description": "The Facet module allows site builders to easily create and manage faceted search interfaces.",

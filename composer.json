@@ -72,7 +72,7 @@
         "drupal/entity_browser": "^2.5",
         "drupal/entity_reference_revisions": "^1.8",
         "drupal/entity_usage": "^2.0",
-        "drupal/facets": "^1.4",
+        "drupal/facets": "^1.8",
         "drupal/fapi_validation": "^2.0@alpha",
         "drupal/feeds": "3.x-dev",
         "drupal/feeds_para_mapper": "1.x-dev",
