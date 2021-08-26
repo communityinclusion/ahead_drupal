@@ -49,7 +49,7 @@
         "d3/d3": "3.5.*",
         "drupal-composer/drupal-scaffold": "^2.5",
         "drupal/address": "^1.4",
-        "drupal/admin_toolbar": "^2.0",
+        "drupal/admin_toolbar": "^3.0",
         "drupal/adminimal_admin_toolbar": "^1.9",
         "drupal/adminimal_theme": "^1.4",
         "drupal/auto_entitylabel": "^3.0",

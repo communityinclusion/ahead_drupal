@@ -1,11 +1,10 @@
-name: Admin Toolbar Extra Tools
-description: Adds menu links like Flush cache, Run cron, Run updates, and Logout under Drupal icon.
+name: Admin Toolbar Search
+description: Provides search of Admin Toolbar items.
 package: Administration
-configure: admin_toolbar_tools.settings
 type: module
 core_version_requirement: ^8.8.0 || ^9.0
 dependencies:
-  - admin_toolbar:admin_toolbar
+  - admin_toolbar:admin_toolbar_tools
 
 # Information added by Drupal.org packaging script on 2021-08-25
 version: '3.0.2'
