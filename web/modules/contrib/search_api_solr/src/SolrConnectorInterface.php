@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr;
 
+use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Solarium\Core\Client\Endpoint;
@@ -11,6 +12,7 @@ use Solarium\Core\Query\QueryInterface;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
+use ZipStream\ZipStream;
 
 /**
  * The Solr connector interface.
@@ -21,6 +23,13 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   const INDEX_TIMEOUT = 'index_timeout';
   const OPTIMIZE_TIMEOUT = 'optimize_timeout';
   const FINALIZE_TIMEOUT = 'finalize_timeout';
+
+  /**
+   * Sets the event dispatcher.
+   *
+   * @param \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $eventDispatcher
+   */
+  public function setEventDispatcher(ContainerAwareEventDispatcher $eventDispatcher): SolrConnectorInterface;
 
   /**
    * Returns TRUE for Cloud.
@@ -125,6 +134,14 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function getLuke();
+
+  /**
+   * Gets the name of the used configset.
+   *
+   * @return string|null
+   *   Configset name.
+   */
+  public function getConfigSetName(): ?string;
 
   /**
    * Gets the full schema version string the core is using.
@@ -562,17 +579,17 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * The timeout will not be saved in the configuration of the connector. It
    * will be overwritten for the current request only.
    *
-   * @param int $timeout
+   * @param int $seconds
    *   The new query timeout value to set.
+   * @param string $timeout
+   *   (optional) The configured timeout to use. Default is self::QUERY_TIMEOUT.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *   (optional) The Solarium endpoint object.
    *
    * @return int
    *   The previous query timeout value.
-   *
-   * @deprecated use useTim
    */
-  public function adjustTimeout(int $timeout, ?Endpoint &$endpoint = NULL);
+  public function adjustTimeout(int $seconds, string $timeout = self::QUERY_TIMEOUT, ?Endpoint &$endpoint = NULL): int;
 
   /**
    * Get the query timeout.
@@ -630,5 +647,18 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   empty when the config generation is triggered via UI or drush.
    */
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '');
+
+  /**
+   * Alter the zip archive of newly assembled Solr configuration files.
+   *
+   * @param ZipStream $zip
+   *   Zip archive.
+   * @param string $lucene_match_version
+   *   Lucene (Solr) minor version string.
+   * @param string $server_id
+   *   Optional Search API server id. Will be set in most cases but might be
+   *   empty when the config generation is triggered via UI or drush.
+   */
+  public function alterConfigZip(ZipStream $zip, string $lucene_match_version, string $server_id = '');
 
 }

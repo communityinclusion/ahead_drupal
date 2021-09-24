@@ -20,14 +20,16 @@ backend_config:
     solr_version: ''
     http_method: AUTO
     jmx: false
+    jts: false
     solr_install_dir: ''
+    skip_schema_check: false
   retrieve_data: false
   highlight_data: false
-  skip_schema_check: false
   domain: generic
   site_hash: true
   server_prefix: ''
   optimize: false
+  fallback_multiple: true
 dependencies:
   module:
     - search_api_solr

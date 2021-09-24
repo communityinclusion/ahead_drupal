@@ -152,6 +152,10 @@ function search_api_solr_default_index_third_party_settings() {
       'boost' => FALSE,
       'interestingTerms' => 'none',
     ],
+    'term_modifiers' => [
+      'slop' => 3,
+      'fuzzy' => 1,
+    ],
     'advanced' => [
       'index_prefix' => '',
       'collection' => '',
@@ -463,6 +467,31 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['mlt']['interestingTerms'],
     ];
 
+    $form['third_party_settings']['search_api_solr']['term_modifiers'] = [
+      '#tree' => TRUE,
+      '#type' => 'details',
+      '#title' => t('Term modifiers'),
+      '#collapsed' => TRUE,
+      '#description' => t('Solr supports a variety of term modifiers that add flexibility or precision, as needed, to searches. The Search API Solr provides additional Search API Parse Mode Plugins that make use of these modifiers.'),
+    ];
+
+    $form['third_party_settings']['search_api_solr']['term_modifiers']['slop'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('Proximity search distance (aka "slop")'),
+      '#description' => t('A proximity search looks for terms that are within a specific distance from one another. The distance referred to here is the number of term movements needed to match the specified phrase. Used by the "Phrase search with sloppiness" and "Multiple words with sloppiness" query parsers.'),
+      '#default_value' => $settings['term_modifiers']['slop'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['term_modifiers']['fuzzy'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#max' => 2,
+      '#title' => t('Fuzzy search distance'),
+      '#description' => t('Fuzzy searches discover terms that are similar to a specified term without necessarily being an exact match. The distance parameter specifies the maximum number of edits allowed, between 0 and 2. Used by the "Multiple words with fuzziness" query parser.'),
+      '#default_value' => $settings['term_modifiers']['fuzzy'],
+    ];
+
     $form['third_party_settings']['search_api_solr']['advanced'] = [
       '#tree' => TRUE,
       '#type' => 'details',
@@ -523,35 +552,6 @@ function search_api_solr_form_search_api_index_form_validate_server(&$element, F
 }
 
 /**
- * Implements hook_search_api_views_handler_mapping_alter()
- *
- * @param array $mapping
- *   An associative array with data types as the keys and Views field data
- *   definitions as the values. In addition to all normally defined data types,
- *   keys can also be "options" for any field with an options list, "entity" for
- *   general entity-typed fields or "entity:ENTITY_TYPE" (with "ENTITY_TYPE"
- *   being the machine name of an entity type) for entities of that type.
- *
- * @see _search_api_views_handler_mapping()
- */
-function search_api_solr_search_api_views_handler_mapping_alter(&$mapping) {
-  $mapping['solr_text_omit_norms'] =
-  $mapping['solr_text_suggester'] =
-  $mapping['solr_text_unstemmed'] =
-  $mapping['solr_text_wstoken'] = [
-    'argument' => [
-      'id' => 'search_api',
-    ],
-    'filter' => [
-      'id' => 'search_api_fulltext',
-    ],
-    'sort' => [
-      'id' => 'search_api',
-    ],
-  ];
-}
-
-/**
  * Implements hook_views_data_alter().
  *
  * Remove fields from solr_document datasources from the views data. Datasource
@@ -580,7 +580,7 @@ function search_api_solr_install_missing_field_types() {
  *
  * @param bool $only_active
  *
- * @return \Drupal\search_api\Entity\ServerInterface[]
+ * @return \Drupal\search_api\ServerInterface[]
  *
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -589,7 +589,7 @@ function search_api_solr_install_missing_field_types() {
 function search_api_solr_get_servers($only_active = TRUE) {
   $solr_servers = [];
   $storage = \Drupal::entityTypeManager()->getStorage('search_api_server');
-  /** @var \Drupal\search_api\Entity\ServerInterface[] $servers */
+  /** @var \Drupal\search_api\ServerInterface[] $servers */
   $servers = $only_active ? $storage->loadByProperties(['status' => TRUE]) :
     $storage->loadMultiple();
   foreach ($servers as $server) {

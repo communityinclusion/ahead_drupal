@@ -7693,20 +7693,21 @@
     },
     {
         "name": "drupal/search_api_solr",
-        "version": "4.1.4",
-        "version_normalized": "4.1.4.0",
+        "version": "4.2.1",
+        "version_normalized": "4.2.1.0",
         "source": {
             "type": "git",
             "url": "https://git.drupalcode.org/project/search_api_solr.git",
-            "reference": "4.1.4"
+            "reference": "4.2.1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://ftp.drupal.org/files/projects/search_api_solr-4.1.4.zip",
-            "reference": "4.1.4",
-            "shasum": "1afa5b3388de2bf285a93d9af4960fb4eedaeb13"
+            "url": "https://ftp.drupal.org/files/projects/search_api_solr-4.2.1.zip",
+            "reference": "4.2.1",
+            "shasum": "54e40c7ce41cef8edfb92807f87db06b0b13e9c8"
         },
         "require": {
+            "composer/semver": "^1.0|^3.0",
             "consolidation/annotated-command": "^2.12|^4.1",
             "drupal/core": "^8.8 || ^9",
             "drupal/search_api": "~1.17",
@@ -7715,10 +7716,11 @@
             "ext-simplexml": "*",
             "laminas/laminas-stdlib": "^3.2",
             "maennchen/zipstream-php": "^1.2|^2.0",
-            "php": "^7.2",
-            "solarium/solarium": "^6.0"
+            "php": "^7.3|^8.0",
+            "solarium/solarium": "^6.1.5"
         },
         "conflict": {
+            "drupal/acquia_search_solr": "<1.0.0-beta8",
             "drupal/search_api_solr_multilingual": "<3.0.0"
         },
         "require-dev": {
@@ -7735,13 +7737,14 @@
             "drupal/facets": "Provides facetted search.",
             "drupal/search_api_autocomplete": "Provides auto complete for search boxes.",
             "drupal/search_api_location": "Provides location searches.",
+            "drupal/search_api_solr_nlp": "Highly recommended! Provides Solr field types based on natural language processing (NLP).",
             "drupal/search_api_spellcheck": "Provides spell checking and 'Did You Mean?'."
         },
         "type": "drupal-module",
         "extra": {
             "drupal": {
-                "version": "4.1.4",
-                "datestamp": "1594115649",
+                "version": "4.2.1",
+                "datestamp": "1628871708",
                 "security-coverage": {
                     "status": "covered",
                     "message": "Covered by Drupal's security advisory policy"
@@ -13869,39 +13872,40 @@
     },
     {
         "name": "solarium/solarium",
-        "version": "6.0.1",
-        "version_normalized": "6.0.1.0",
+        "version": "6.1.5",
+        "version_normalized": "6.1.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/solariumphp/solarium.git",
-            "reference": "5b5cee59f3f722d2a380e8f6ee384ccc05ac2a30"
+            "reference": "beec496540c3d227201c556729d2c61d1c1f8ab1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/solariumphp/solarium/zipball/5b5cee59f3f722d2a380e8f6ee384ccc05ac2a30",
-            "reference": "5b5cee59f3f722d2a380e8f6ee384ccc05ac2a30",
+            "url": "https://api.github.com/repos/solariumphp/solarium/zipball/beec496540c3d227201c556729d2c61d1c1f8ab1",
+            "reference": "beec496540c3d227201c556729d2c61d1c1f8ab1",
             "shasum": ""
         },
         "require": {
             "ext-json": "*",
-            "php": "^7.2",
+            "php": "^7.3 || ^8.0",
             "psr/event-dispatcher": "^1.0",
             "psr/http-client": "^1.0",
             "psr/http-factory": "^1.0",
-            "symfony/contracts": "^1.0 || ^2.0"
+            "symfony/event-dispatcher-contracts": "^1.0 || ^2.0"
         },
         "require-dev": {
-            "guzzlehttp/guzzle": "^6.5",
+            "escapestudios/symfony2-coding-standard": "^3.11",
+            "guzzlehttp/guzzle": "^7.2",
             "nyholm/psr7": "^1.2",
-            "php-http/guzzle6-adapter": "^2.0",
+            "php-http/guzzle7-adapter": "^0.1",
             "phpstan/extension-installer": "^1.0",
             "phpstan/phpstan": "^0.12",
             "phpstan/phpstan-phpunit": "^0.12",
-            "phpunit/phpunit": "^8.0",
+            "phpunit/phpunit": "^9.5",
             "roave/security-advisories": "dev-master",
             "symfony/event-dispatcher": "^4.3 || ^5.0"
         },
-        "time": "2020-07-03T12:46:41+00:00",
+        "time": "2021-08-12T15:28:32+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -13916,7 +13920,7 @@
         "authors": [
             {
                 "name": "See GitHub contributors",
-                "homepage": "https://github.com/basdenooijer/solarium/contributors"
+                "homepage": "https://github.com/solariumphp/solarium/contributors"
             }
         ],
         "description": "PHP Solr client",
