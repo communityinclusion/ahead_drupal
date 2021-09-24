@@ -11,19 +11,15 @@ namespace Solarium\QueryType\Server\Collections\Query\Action;
 
 use Solarium\QueryType\Server\Collections\Query\Query as CollectionsQuery;
 use Solarium\QueryType\Server\Collections\Result\CreateResult;
-use Solarium\QueryType\Server\Query\Action\AbstractAsyncAction;
 use Solarium\QueryType\Server\Query\Action\AsyncActionInterface;
-use Solarium\QueryType\Server\Query\Action\NameParameterTrait;
 
 /**
  * Class Create.
  *
  * @see https://lucene.apache.org/solr/guide/collection-management.html#create
  */
-class Create extends AbstractAsyncAction
+class Create extends AbstractCDRAction
 {
-    use NameParameterTrait;
-
     /**
      * Returns the action type of the Collections API action.
      *

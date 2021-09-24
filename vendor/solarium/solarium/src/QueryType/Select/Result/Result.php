@@ -27,7 +27,7 @@ use Solarium\Core\Query\Result\QueryType as BaseResult;
  *
  * This is the standard resulttype for a select query. Example usage:
  * <code>
- * // total Solr results
+ * // total solr results
  * $result->getNumFound();
  *
  * // results fetched

@@ -11,18 +11,14 @@ namespace Solarium\QueryType\Server\Collections\Query\Action;
 
 use Solarium\QueryType\Server\Collections\Query\Query as CollectionsQuery;
 use Solarium\QueryType\Server\Collections\Result\DeleteResult;
-use Solarium\QueryType\Server\Query\Action\AbstractAsyncAction;
-use Solarium\QueryType\Server\Query\Action\NameParameterTrait;
 
 /**
  * Class Delete.
  *
  * @see https://lucene.apache.org/solr/guide/collection-management.html#delete
  */
-class Delete extends AbstractAsyncAction
+class Delete extends AbstractCDRAction
 {
-    use NameParameterTrait;
-
     /**
      * Returns the action type of the Collections API action.
      *

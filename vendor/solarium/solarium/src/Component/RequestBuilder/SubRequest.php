@@ -9,12 +9,10 @@
 
 namespace Solarium\Component\RequestBuilder;
 
-use Solarium\Core\Query\AbstractRequestBuilder as BaseRequestBuilder;
-
 /**
  * Class for describing a sub request.
  */
-class SubRequest extends BaseRequestBuilder implements RequestParamsInterface
+class SubRequest implements RequestParamsInterface
 {
     use RequestParamsTrait;
 
@@ -52,18 +50,18 @@ class SubRequest extends BaseRequestBuilder implements RequestParamsInterface
     /**
      * returns the complete sub request as string.
      *
+     * @param string $separator
+     *
      * @return string
      */
-    public function getSubQuery(): string
+    public function getSubQuery(string $separator = ' '): string
     {
         $queryString = '';
-        $params = $this->getParams();
-
-        if (0 !== \count($params)) {
-            $queryString = $this->getHelper()->qparser(
-                $this->getQueryParser(),
-                $params
-            );
+        foreach ($this->getParams() as $key => $value) {
+            $queryString .= $separator.$key.'='.$value;
+        }
+        if ($queryString) {
+            $queryString = '{!'.$this->getQueryParser().$queryString.'}';
         }
 
         return $queryString;

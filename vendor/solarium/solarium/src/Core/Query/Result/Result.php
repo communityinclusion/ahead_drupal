@@ -11,7 +11,6 @@ namespace Solarium\Core\Query\Result;
 
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\AbstractQuery;
-use Solarium\Core\Query\Status4xxNoExceptionInterface;
 use Solarium\Exception\HttpException;
 use Solarium\Exception\RuntimeException;
 use Solarium\Exception\UnexpectedValueException;
@@ -60,16 +59,8 @@ class Result implements ResultInterface
         $this->query = $query;
         $this->response = $response;
 
-        // by default, a status of 400 or above is considered an error
-        $errorStatus = 400;
-
-        // some query types expect 4xx statuses as a valid response
-        if ($query instanceof Status4xxNoExceptionInterface) {
-            $errorStatus = 500;
-        }
-
-        // check status for error
-        if ($response->getStatusCode() >= $errorStatus) {
+        // check status for error (range of 400 and 500)
+        if ($response->getStatusCode() >= 400) {
             throw new HttpException($response->getStatusMessage(), $response->getStatusCode(), $response->getBody());
         }
     }

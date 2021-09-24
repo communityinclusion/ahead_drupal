@@ -157,6 +157,8 @@ class SolrConfigSetController extends ControllerBase {
    *
    * @return string
    *   XML snippet containing all index settings.
+   *
+   * @throws \Drupal\search_api\SearchApiException
    */
   public function getSolrconfigIndexXml(?ServerInterface $search_api_server = NULL): string {
     // Reserved for future internal use.
@@ -321,8 +323,8 @@ class SolrConfigSetController extends ControllerBase {
         $file_path = $search_api_solr_conf_path . '/' . $file;
         if (file_exists($file_path) && is_readable($file_path)) {
           $files[$file] = str_replace(
-            ['SEARCH_API_SOLR_SCHEMA_VERSION', 'SEARCH_API_SOLR_BRANCH', 'SEARCH_API_SOLR_JUMP_START_CONFIG_SET'],
-            [SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION, $real_solr_branch, SEARCH_API_SOLR_JUMP_START_CONFIG_SET],
+            ['SEARCH_API_SOLR_MIN_SCHEMA_VERSION', 'SEARCH_API_SOLR_BRANCH', 'SEARCH_API_SOLR_JUMP_START_CONFIG_SET'],
+            [SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION, $real_solr_branch, SEARCH_API_SOLR_JUMP_START_CONFIG_SET],
             file_get_contents($search_api_solr_conf_path . '/' . $file)
           );
         }
@@ -428,6 +430,8 @@ class SolrConfigSetController extends ControllerBase {
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *   The HTTP response object.
+   *
+   * @throws \Drupal\search_api\SearchApiException
    */
   public function streamCurrentConfigZip(ServerInterface $search_api_server): Response {
     try {

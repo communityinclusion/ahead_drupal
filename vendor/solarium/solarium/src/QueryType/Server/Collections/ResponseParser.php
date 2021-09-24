@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Solarium\QueryType\Server\Query;
+namespace Solarium\QueryType\Server\Collections;
 
 use Solarium\Core\Query\AbstractResponseParser as ResponseParserAbstract;
 use Solarium\Core\Query\ResponseParserInterface;
@@ -31,6 +31,20 @@ class ResponseParser extends ResponseParserAbstract implements ResponseParserInt
         $data = $result->getData();
         $data = $this->parseStatus($data, $result);
         $data = $this->addHeaderInfo($data, $data);
+
+        return $data;
+    }
+
+    /**
+     * @param array          $data
+     * @param AbstractResult $result
+     *
+     * @return array
+     */
+    protected function parseStatus(array $data, AbstractResult $result): array
+    {
+        $data['wasSuccessful'] = 200 === $result->getResponse()->getStatusCode();
+        $data['statusMessage'] = $result->getResponse()->getStatusMessage();
 
         return $data;
     }

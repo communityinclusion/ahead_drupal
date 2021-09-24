@@ -19,7 +19,7 @@ use Solarium\QueryType\Server\Query\Action\ActionInterface;
 abstract class AbstractServerQuery extends AbstractQuery implements ActionInterface
 {
     /**
-     * Action that should be performed on the CoreAdmin API.
+     * Action that should be performed on the core admin api.
      *
      * @var ActionInterface
      */

@@ -18,13 +18,6 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 interface SolrBackendInterface extends BackendInterface {
 
   /**
-   * The current Solr schema version.
-   *
-   * @todo replace by an automatic detection when core provides module versions.
-   */
-  const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.1';
-
-  /**
    * The minimum required Solr schema version.
    */
   const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.1.1';

@@ -89,14 +89,6 @@ class Grouping implements ComponentParserInterface
                 $start = $result['doclist']['start'] ?? null;
                 $maxScore = $result['doclist']['maxScore'] ?? null;
 
-                /*
-                 * https://issues.apache.org/jira/browse/SOLR-13839
-                 * maxScore is returned as "NaN" when group.query doesn't match any docs
-                 */
-                if ('NaN' === $maxScore) {
-                    $maxScore = null;
-                }
-
                 // create document instances
                 $documentClass = $query->getOption('documentclass');
                 $documents = [];
@@ -119,9 +111,9 @@ class Grouping implements ComponentParserInterface
      * Helper method to extract a ValueGroup object from the given value group result array.
      *
      * @param string        $valueResultClass the grouping resultvaluegroupclass option
-     * @param string        $documentClass    the name of the Solr document class to use
-     * @param array         $valueGroupResult the group result from the Solr response
-     * @param AbstractQuery $query            the current Solr query
+     * @param string        $documentClass    the name of the solr document class to use
+     * @param array         $valueGroupResult the group result from the solr response
+     * @param AbstractQuery $query            the current solr query
      *
      * @return object
      */

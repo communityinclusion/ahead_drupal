@@ -31,11 +31,12 @@ class MoreLikeThis implements ComponentRequestBuilderInterface
         // enable morelikethis
         $request->addParam('mlt', 'true');
 
+        $request->addParam('mlt.interestingTerms', $component->getInterestingTerms());
+        $request->addParam('mlt.match.include', $component->getMatchInclude());
+        $request->addParam('mlt.match.offset', $component->getMatchOffset());
         $request->addParam('mlt.fl', \count($component->getFields()) ? implode(',', $component->getFields()) : null);
         $request->addParam('mlt.mintf', $component->getMinimumTermFrequency());
         $request->addParam('mlt.mindf', $component->getMinimumDocumentFrequency());
-        $request->addParam('mlt.maxdf', $component->getMaximumDocumentFrequency());
-        $request->addParam('mlt.maxdfpct', $component->getMaximumDocumentFrequencyPercentage());
         $request->addParam('mlt.minwl', $component->getMinimumWordLength());
         $request->addParam('mlt.maxwl', $component->getMaximumWordLength());
         $request->addParam('mlt.maxqt', $component->getMaximumQueryTerms());
@@ -46,7 +47,6 @@ class MoreLikeThis implements ComponentRequestBuilderInterface
             \count($component->getQueryFields()) ? $component->getQueryFields() : null
         );
         $request->addParam('mlt.count', $component->getCount());
-        $request->addParam('mlt.interestingTerms', $component->getInterestingTerms());
 
         return $request;
     }

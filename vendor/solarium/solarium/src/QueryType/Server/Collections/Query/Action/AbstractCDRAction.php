@@ -7,12 +7,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Solarium\QueryType\Server\Query\Action;
+namespace Solarium\QueryType\Server\Collections\Query\Action;
+
+use Solarium\QueryType\Server\Query\Action\AbstractAsyncAction;
 
 /**
- * Handling the name parameter which is essential for various actions.
+ * Abstract class for Create, Delete and Reload actions.
  */
-trait NameParameterTrait
+abstract class AbstractCDRAction extends AbstractAsyncAction
 {
     /**
      * Set the name of the collection. This parameter is required.

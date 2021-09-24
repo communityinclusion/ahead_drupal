@@ -10,7 +10,6 @@
 namespace Solarium\QueryType\Server\Collections\Result;
 
 use Solarium\Core\Client\State\ClusterState;
-use Solarium\QueryType\Server\Query\AbstractResult;
 
 /**
  * ClusterStatusResult.

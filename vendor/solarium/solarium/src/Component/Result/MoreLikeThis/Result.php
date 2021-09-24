@@ -54,7 +54,7 @@ class Result implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Get Solr numFound.
+     * get Solr numFound.
      *
      * Returns the number of MLT documents found by Solr (this is NOT the
      * number of documents fetched from Solr!)

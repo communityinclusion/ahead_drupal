@@ -15,7 +15,7 @@ namespace Solarium\Core\Client\Adapter;
 interface TimeoutAwareInterface
 {
     /**
-     * Default timeout that should be respected by adapters implementing this interface.
+     * default timeout that should be respected by adapters implementing this interface.
      */
     public const DEFAULT_TIMEOUT = 5;
 

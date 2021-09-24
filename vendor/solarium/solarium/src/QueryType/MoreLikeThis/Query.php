@@ -9,8 +9,6 @@
 
 namespace Solarium\QueryType\MoreLikeThis;
 
-use Solarium\Component\ComponentTraits\MoreLikeThisTrait;
-use Solarium\Component\MoreLikeThisInterface;
 use Solarium\Core\Client\Client;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Core\Query\ResponseParserInterface;
@@ -26,10 +24,8 @@ use Solarium\QueryType\Select\Result\Document;
  *
  * @see https://lucene.apache.org/solr/guide/other-parsers.html#more-like-this-query-parser
  */
-class Query extends SelectQuery implements MoreLikeThisInterface
+class Query extends SelectQuery
 {
-    use MoreLikeThisTrait;
-
     /**
      * Default options.
      *
@@ -43,9 +39,9 @@ class Query extends SelectQuery implements MoreLikeThisInterface
         'start' => 0,
         'rows' => 10,
         'fields' => '*,score',
+        'interestingTerms' => 'none',
         'matchinclude' => false,
         'matchoffset' => 0,
-        'interestingTerms' => 'none',
         'stream' => false,
         'omitheader' => true,
     ];
@@ -109,10 +105,89 @@ class Query extends SelectQuery implements MoreLikeThisInterface
     }
 
     /**
+     * Set the interestingTerms parameter. Must be one of: none, list, details.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#parameters-for-the-morelikethishandler
+     *
+     * @param string $term
+     *
+     * @return self Provides fluent interface
+     */
+    public function setInterestingTerms(string $term): self
+    {
+        $this->setOption('interestingTerms', $term);
+
+        return $this;
+    }
+
+    /**
+     * Get the interestingTerm parameter.
+     *
+     * @return string|null
+     */
+    public function getInterestingTerms(): ?string
+    {
+        return $this->getOption('interestingTerms');
+    }
+
+    /**
+     * Set the match.include parameter, which is either 'true' or 'false'.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#parameters-for-the-morelikethishandler
+     *
+     * @param bool $include
+     *
+     * @return self Provides fluent interface
+     */
+    public function setMatchInclude(bool $include): self
+    {
+        $this->setOption('matchinclude', $include);
+
+        return $this;
+    }
+
+    /**
+     * Get the match.include parameter.
+     *
+     * @return bool|null
+     */
+    public function getMatchInclude(): ?bool
+    {
+        return $this->getOption('matchinclude');
+    }
+
+    /**
+     * Set the mlt.match.offset parameter, which determines the which result from the query should be used for MLT
+     * For paging of MLT use setStart / setRows.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#parameters-for-the-morelikethishandler
+     *
+     * @param int $offset
+     *
+     * @return self Provides fluent interface
+     */
+    public function setMatchOffset(int $offset): self
+    {
+        $this->setOption('matchoffset', $offset);
+
+        return $this;
+    }
+
+    /**
+     * Get the mlt.match.offset parameter.
+     *
+     * @return int|null
+     */
+    public function getMatchOffset(): ?int
+    {
+        return $this->getOption('matchoffset');
+    }
+
+    /**
      * Set MLT fields option.
      *
      * The fields to use for similarity. NOTE: if possible, these should have a
-     * stored TermVector.
+     * stored TermVector
      *
      * Separate multiple fields with commas if you use string input.
      *
@@ -150,55 +225,243 @@ class Query extends SelectQuery implements MoreLikeThisInterface
     }
 
     /**
-     * Set the match.include parameter, which is either 'true' or 'false'.
+     * Set minimumtermfrequency option.
      *
-     * @see https://lucene.apache.org/solr/guide/morelikethis.html#parameters-for-the-morelikethishandler
+     * Minimum Term Frequency - the frequency below which terms will be ignored
+     * in the source doc.
      *
-     * @param bool $include
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#common-parameters-for-morelikethis
+     *
+     * @param int $minimum
      *
      * @return self Provides fluent interface
      */
-    public function setMatchInclude(bool $include): self
+    public function setMinimumTermFrequency(int $minimum): self
     {
-        $this->setOption('matchinclude', $include);
+        $this->setOption('minimumtermfrequency', $minimum);
 
         return $this;
     }
 
     /**
-     * Get the match.include parameter.
-     *
-     * @return bool|null
-     */
-    public function getMatchInclude(): ?bool
-    {
-        return $this->getOption('matchinclude');
-    }
-
-    /**
-     * Set the mlt.match.offset parameter, which determines on which result from the query MLT should operate.
-     * For paging of MLT use setStart / setRows.
-     *
-     * @see https://lucene.apache.org/solr/guide/morelikethis.html#parameters-for-the-morelikethishandler
-     *
-     * @param int $offset
-     *
-     * @return self Provides fluent interface
-     */
-    public function setMatchOffset(int $offset): self
-    {
-        $this->setOption('matchoffset', $offset);
-
-        return $this;
-    }
-
-    /**
-     * Get the mlt.match.offset parameter.
+     * Get minimumtermfrequency option.
      *
      * @return int|null
      */
-    public function getMatchOffset(): ?int
+    public function getMinimumTermFrequency(): ?int
     {
-        return $this->getOption('matchoffset');
+        return $this->getOption('minimumtermfrequency');
+    }
+
+    /**
+     * Set minimumdocumentfrequency option.
+     *
+     * Minimum Document Frequency - the frequency at which words will be
+     * ignored which do not occur in at least this many docs.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#common-parameters-for-morelikethis
+     *
+     * @param int $minimum
+     *
+     * @return self Provides fluent interface
+     */
+    public function setMinimumDocumentFrequency(int $minimum): self
+    {
+        $this->setOption('minimumdocumentfrequency', $minimum);
+
+        return $this;
+    }
+
+    /**
+     * Get minimumdocumentfrequency option.
+     *
+     * @return int|null
+     */
+    public function getMinimumDocumentFrequency(): ?int
+    {
+        return $this->getOption('minimumdocumentfrequency');
+    }
+
+    /**
+     * Set minimumwordlength option.
+     *
+     * Minimum word length below which words will be ignored.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#common-parameters-for-morelikethis
+     *
+     * @param int $minimum
+     *
+     * @return self Provides fluent interface
+     */
+    public function setMinimumWordLength(int $minimum): self
+    {
+        $this->setOption('minimumwordlength', $minimum);
+
+        return $this;
+    }
+
+    /**
+     * Get minimumwordlength option.
+     *
+     * @return int|null
+     */
+    public function getMinimumWordLength(): ?int
+    {
+        return $this->getOption('minimumwordlength');
+    }
+
+    /**
+     * Set maximumwordlength option.
+     *
+     * Maximum word length above which words will be ignored.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#common-parameters-for-morelikethis
+     *
+     * @param int $maximum
+     *
+     * @return self Provides fluent interface
+     */
+    public function setMaximumWordLength(int $maximum): self
+    {
+        $this->setOption('maximumwordlength', $maximum);
+
+        return $this;
+    }
+
+    /**
+     * Get maximumwordlength option.
+     *
+     * @return int|null
+     */
+    public function getMaximumWordLength(): ?int
+    {
+        return $this->getOption('maximumwordlength');
+    }
+
+    /**
+     * Set maximumqueryterms option.
+     *
+     * Maximum number of query terms that will be included in any generated
+     * query.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#common-parameters-for-morelikethis
+     *
+     * @param int $maximum
+     *
+     * @return self Provides fluent interface
+     */
+    public function setMaximumQueryTerms(int $maximum): self
+    {
+        $this->setOption('maximumqueryterms', $maximum);
+
+        return $this;
+    }
+
+    /**
+     * Get maximumqueryterms option.
+     *
+     * @return int|null
+     */
+    public function getMaximumQueryTerms(): ?int
+    {
+        return $this->getOption('maximumqueryterms');
+    }
+
+    /**
+     * Set maximumnumberoftokens option.
+     *
+     * Maximum number of tokens to parse in each example doc field that is not
+     * stored with TermVector support.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#common-parameters-for-morelikethis
+     *
+     * @param int $maximum
+     *
+     * @return self Provides fluent interface
+     */
+    public function setMaximumNumberOfTokens(int $maximum): self
+    {
+        $this->setOption('maximumnumberoftokens', $maximum);
+
+        return $this;
+    }
+
+    /**
+     * Get maximumnumberoftokens option.
+     *
+     * @return int|null
+     */
+    public function getMaximumNumberOfTokens(): ?int
+    {
+        return $this->getOption('maximumnumberoftokens');
+    }
+
+    /**
+     * Set boost option.
+     *
+     * If true the query will be boosted by the interesting term relevance.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#common-parameters-for-morelikethis
+     *
+     * @param bool $boost
+     *
+     * @return self Provides fluent interface
+     */
+    public function setBoost(bool $boost): self
+    {
+        $this->setOption('boost', $boost);
+
+        return $this;
+    }
+
+    /**
+     * Get boost option.
+     *
+     * @return bool|null
+     */
+    public function getBoost(): ?bool
+    {
+        return $this->getOption('boost');
+    }
+
+    /**
+     * Set queryfields option.
+     *
+     * Query fields and their boosts using the same format as that used in
+     * DisMaxQParserPlugin. These fields must also be specified in fields.
+     *
+     * Separate multiple fields with commas if you use string input.
+     *
+     * @see https://lucene.apache.org/solr/guide/morelikethis.html#common-parameters-for-morelikethis
+     *
+     * @param string|array $queryFields
+     *
+     * @return self Provides fluent interface
+     */
+    public function setQueryFields($queryFields): self
+    {
+        if (\is_string($queryFields)) {
+            $queryFields = explode(',', $queryFields);
+            $queryFields = array_map('trim', $queryFields);
+        }
+
+        $this->setOption('queryfields', $queryFields);
+
+        return $this;
+    }
+
+    /**
+     * Get queryfields option.
+     *
+     * @return array
+     */
+    public function getQueryFields(): array
+    {
+        $value = $this->getOption('queryfields');
+        if (null === $value) {
+            $value = [];
+        }
+
+        return $value;
     }
 }

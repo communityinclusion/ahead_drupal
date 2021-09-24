@@ -58,7 +58,7 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
      *
      * @var int
      */
-    protected $position = 0;
+    protected $position;
 
     /**
      * Cursor mark.
@@ -173,12 +173,9 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
     {
         $this->position = 0;
 
-        // this condition prevents needlessly re-fetching if the iterator hasn't moved past its first set of results yet
-        // (this includes when a count is done before the iterator is used)
-        if ($this->start > $this->options['prefetch']) {
+        // this condition prevent useless re-fetching of data if a count is done before the iterator is used
+        if ($this->start !== $this->options['prefetch']) {
             $this->start = 0;
-            $this->result = null;
-            $this->documents = null;
 
             if (null !== $this->cursormark) {
                 $this->cursormark = '*';
@@ -225,7 +222,7 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
     {
         $adjustedIndex = $this->position % $this->options['prefetch'];
 
-        // this condition prevents erroneously fetching the next set of results if a count is done before the iterator is used
+        // this condition prevent useless re-fetching of data if a count is done before the iterator is used
         if (0 === $adjustedIndex && (0 !== $this->position || null === $this->result)) {
             $this->fetchNext();
         }
@@ -265,7 +262,7 @@ class PrefetchIterator extends AbstractPlugin implements \Iterator, \Countable
      */
     protected function resetData(): self
     {
-        $this->position = 0;
+        $this->position = null;
         $this->result = null;
         $this->documents = null;
         $this->start = 0;

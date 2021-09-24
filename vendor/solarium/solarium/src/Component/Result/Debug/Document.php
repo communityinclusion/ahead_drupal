@@ -24,7 +24,7 @@ class Document extends Detail implements \IteratorAggregate, \Countable
     /**
      * Details.
      *
-     * @var \Solarium\Component\Result\Debug\Detail[]
+     * @var array
      */
     protected $details;
 
@@ -57,7 +57,7 @@ class Document extends Detail implements \IteratorAggregate, \Countable
     /**
      * Get details.
      *
-     * @return \Solarium\Component\Result\Debug\Detail[]
+     * @return array
      */
     public function getDetails(): array
     {
@@ -82,15 +82,5 @@ class Document extends Detail implements \IteratorAggregate, \Countable
     public function count(): int
     {
         return \count($this->details);
-    }
-
-    public function __toString()
-    {
-        $string = '';
-        foreach ($this->getDetails() as $detail) {
-            $string .= '  '.$detail.PHP_EOL;
-        }
-
-        return $string;
     }
 }

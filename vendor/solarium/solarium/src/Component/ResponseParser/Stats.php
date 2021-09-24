@@ -15,14 +15,12 @@ use Solarium\Component\Result\Stats\FacetValue as ResultStatsFacetValue;
 use Solarium\Component\Result\Stats\Result as ResultStatsResult;
 use Solarium\Component\Result\Stats\Stats as ResultStats;
 use Solarium\Component\Stats\Stats as StatsComponent;
-use Solarium\Core\Query\AbstractResponseParser as ResponseParserAbstract;
-use Solarium\Exception\InvalidArgumentException;
 use Solarium\QueryType\Select\Query\Query;
 
 /**
  * Parse select component Stats result from the data.
  */
-class Stats extends ResponseParserAbstract implements ComponentParserInterface
+class Stats implements ComponentParserInterface
 {
     /**
      * Parse result data into result objects.
@@ -31,16 +29,10 @@ class Stats extends ResponseParserAbstract implements ComponentParserInterface
      * @param StatsComponent $statsComponent
      * @param array          $data
      *
-     * @throws InvalidArgumentException
-     *
      * @return ResultStats;
      */
     public function parse(?ComponentAwareQueryInterface $query, ?AbstractComponent $statsComponent, array $data): ResultStats
     {
-        if (!$query) {
-            throw new InvalidArgumentException('A valid query object needs to be provided.');
-        }
-
         $results = [];
         if (isset($data['stats']['stats_fields'])) {
             $statResults = $data['stats']['stats_fields'];
@@ -48,17 +40,9 @@ class Stats extends ResponseParserAbstract implements ComponentParserInterface
                 if (isset($stats['facets'])) {
                     foreach ($stats['facets'] as $facetField => $values) {
                         foreach ($values as $value => $valueStats) {
-                            if ($query->getResponseWriter() === $query::WT_JSON) {
-                                $valueStats = $this->normalizeParsedJsonValues($valueStats);
-                            }
-
                             $stats['facets'][$facetField][$value] = new ResultStatsFacetValue($value, $valueStats);
                         }
                     }
-                }
-
-                if ($query->getResponseWriter() === $query::WT_JSON) {
-                    $stats = $this->normalizeParsedJsonValues($stats);
                 }
 
                 $results[$field] = new ResultStatsResult($field, $stats);
@@ -66,28 +50,5 @@ class Stats extends ResponseParserAbstract implements ComponentParserInterface
         }
 
         return new ResultStats($results);
-    }
-
-    /**
-     * Normalize values that were parsed from JSON.
-     *
-     * - Convert string 'NaN' to float NAN for mean.
-     * - Convert percentiles to associative array.
-     *
-     * @param array $stats
-     *
-     * @return array
-     */
-    protected function normalizeParsedJsonValues(array $stats): array
-    {
-        if (isset($stats['mean']) && 'NaN' === $stats['mean']) {
-            $stats['mean'] = NAN;
-        }
-
-        if (isset($stats['percentiles'])) {
-            $stats['percentiles'] = $this->convertToKeyValueArray($stats['percentiles']);
-        }
-
-        return $stats;
     }
 }

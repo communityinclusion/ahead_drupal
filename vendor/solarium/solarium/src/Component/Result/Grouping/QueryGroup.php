@@ -42,7 +42,7 @@ class QueryGroup implements \IteratorAggregate, \Countable
     /**
      * Maximum score in group.
      *
-     * @var float|null
+     * @var float
      */
     protected $maximumScore;
 
@@ -111,9 +111,9 @@ class QueryGroup implements \IteratorAggregate, \Countable
     /**
      * Get maximumScore value.
      *
-     * @return float|null
+     * @return float
      */
-    public function getMaximumScore(): ?float
+    public function getMaximumScore(): float
     {
         return $this->maximumScore;
     }

@@ -30,21 +30,16 @@ class Synonyms extends ResponseParserAbstract implements ResponseParserInterface
      */
     public function parse(ResultInterface $result): array
     {
+        $data = $result->getData();
         $synonymMappings = null;
-        $data = [];
-        $parsed = ['items' => []];
-        $parsed = $this->parseStatus($parsed, $result);
-
-        if ($parsed['wasSuccessful']) {
-            $data = $result->getData();
-            if (isset($data['synonymMappings'])) {
-                $synonymMappings = $data['synonymMappings'];
-            }
+        if (isset($data['synonymMappings'])) {
+            $synonymMappings = $data['synonymMappings'];
         }
 
-        if (null !== $synonymMappings && !empty($synonymMappings)) {
-            $items = [];
+        $parsed = [];
+        $items = [];
 
+        if (null !== $synonymMappings && !empty($synonymMappings)) {
             foreach ($synonymMappings['managedMap'] as $term => $synonyms) {
                 $items[] = new SynonymResult($term, $synonyms);
             }
@@ -65,7 +60,7 @@ class Synonyms extends ResponseParserAbstract implements ResponseParserInterface
             }
         }
 
-        $parsed = $this->addHeaderInfo($data, $parsed);
+        $this->addHeaderInfo($data, $parsed);
 
         return $parsed;
     }

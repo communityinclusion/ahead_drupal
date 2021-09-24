@@ -7,14 +7,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Solarium\QueryType\ManagedResources\Result;
+namespace Solarium\QueryType\Server\Collections\Result;
 
 use Solarium\Core\Query\Result\QueryType as BaseResult;
 
 /**
- * ManagedResources Command result object.
+ * Collections result object.
  */
-class Command extends BaseResult
+abstract class AbstractResult extends BaseResult
 {
     /**
      * @var bool

@@ -11,18 +11,14 @@ namespace Solarium\QueryType\Server\Collections\Query\Action;
 
 use Solarium\QueryType\Server\Collections\Query\Query as CollectionsQuery;
 use Solarium\QueryType\Server\Collections\Result\ReloadResult;
-use Solarium\QueryType\Server\Query\Action\AbstractAsyncAction;
-use Solarium\QueryType\Server\Query\Action\NameParameterTrait;
 
 /**
  * Class Reload for reloading a collection.
  *
  * @see https://lucene.apache.org/solr/guide/collection-management.html#reload
  */
-class Reload extends AbstractAsyncAction
+class Reload extends AbstractCDRAction
 {
-    use NameParameterTrait;
-
     /**
      * Returns the action type of the Collections API action.
      *

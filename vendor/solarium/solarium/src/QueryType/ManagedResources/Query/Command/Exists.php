@@ -19,11 +19,11 @@ use Solarium\QueryType\ManagedResources\Query\AbstractQuery as Query;
 class Exists extends AbstractCommand
 {
     /**
-     * Name of the child resource to be checked if exists.
+     * Term to be checked if exists.
      *
-     * @var string|null
+     * @var string
      */
-    protected $term = null;
+    protected $term = '';
 
     /**
      * Returns command type, for use in adapters.
@@ -42,28 +42,31 @@ class Exists extends AbstractCommand
      */
     public function getRequestMethod(): string
     {
-        $method = Request::METHOD_HEAD;
-
-        // there's a bug since Solr 8.7 with HEAD requests if a term is set (SOLR-15116)
-        if (null !== $this->getTerm()) {
-            $method = Request::METHOD_GET;
-        }
-
-        return $method;
+        return Request::METHOD_GET;
     }
 
     /**
-     * Returns the name of the child resource to be checked if exists.
+     * Empty.
      *
-     * @return string|null
+     * @return string
      */
-    public function getTerm(): ?string
+    public function getRawData(): string
+    {
+        return '';
+    }
+
+    /**
+     * Returns the term to be checked if exists.
+     *
+     * @return string
+     */
+    public function getTerm(): string
     {
         return $this->term;
     }
 
     /**
-     * Set the name of the child resource to be checked if exists.
+     * Set the term to be checked if exists.
      *
      * @param string $term
      *
@@ -72,18 +75,6 @@ class Exists extends AbstractCommand
     public function setTerm(string $term): self
     {
         $this->term = $term;
-
-        return $this;
-    }
-
-    /**
-     * Remove the name of the child resource. This reverts to checking if the managed resource exists.
-     *
-     * @return self
-     */
-    public function removeTerm(): self
-    {
-        $this->term = null;
 
         return $this;
     }

@@ -18,11 +18,7 @@ use Solarium\QueryType\ManagedResources\Query\Command\Remove;
 use Solarium\QueryType\ManagedResources\Query\Command\Stopwords\Add;
 use Solarium\QueryType\ManagedResources\Query\Command\Stopwords\Create;
 use Solarium\QueryType\ManagedResources\Query\Stopwords\InitArgs;
-use Solarium\QueryType\ManagedResources\ResponseParser\Command as CommandResponseParser;
-use Solarium\QueryType\ManagedResources\ResponseParser\Exists as ExistsResponseParser;
-use Solarium\QueryType\ManagedResources\ResponseParser\Remove as RemoveResponseParser;
-use Solarium\QueryType\ManagedResources\ResponseParser\Stopword as StopwordResponseParser;
-use Solarium\QueryType\ManagedResources\ResponseParser\Stopwords as StopwordsResponseParser;
+use Solarium\QueryType\ManagedResources\ResponseParser\Stopwords as ResponseParser;
 use Solarium\QueryType\ManagedResources\Result\Stopwords\WordSet;
 
 /**
@@ -30,13 +26,6 @@ use Solarium\QueryType\ManagedResources\Result\Stopwords\WordSet;
  */
 class Stopwords extends AbstractQuery
 {
-    /**
-     * Default result class if no command is set.
-     *
-     * @var string
-     */
-    protected $defaultResultClass = WordSet::class;
-
     /**
      * Default options.
      *
@@ -75,25 +64,11 @@ class Stopwords extends AbstractQuery
     /**
      * Get the response parser class for this query.
      *
-     * @return \Solarium\Core\Query\ResponseParserInterface
+     * @return \Solarium\QueryType\ManagedResources\ResponseParser\Stopwords
      */
     public function getResponseParser(): ResponseParserInterface
     {
-        if (null === $this->command) {
-            if (null === $this->term) {
-                $parser = new StopwordsResponseParser();
-            } else {
-                $parser = new StopwordResponseParser();
-            }
-        } elseif (self::COMMAND_EXISTS === $this->command->getType()) {
-            $parser = new ExistsResponseParser();
-        } elseif (self::COMMAND_REMOVE === $this->command->getType()) {
-            $parser = new RemoveResponseParser();
-        } else {
-            $parser = new CommandResponseParser();
-        }
-
-        return $parser;
+        return new ResponseParser();
     }
 
     /**

@@ -15,9 +15,9 @@ namespace Solarium\QueryType\ManagedResources\Query\Synonyms;
 class Synonyms
 {
     /**
-     * @var string|null
+     * @var string
      */
-    protected $term = null;
+    protected $term = '';
 
     /**
      * @var array
@@ -27,15 +27,15 @@ class Synonyms
     /**
      * Get the term.
      *
-     * @return string|null
+     * @return string
      */
-    public function getTerm(): ?string
+    public function getTerm(): string
     {
         return $this->term;
     }
 
     /**
-     * Set the term for a single mapping.
+     * Set the term.
      *
      * @param string $term
      *
@@ -44,18 +44,6 @@ class Synonyms
     public function setTerm(string $term): self
     {
         $this->term = $term;
-
-        return $this;
-    }
-
-    /**
-     * Remove the term. This reverts to symmetrical synonyms.
-     *
-     * @return self
-     */
-    public function removeTerm(): self
-    {
-        $this->term = null;
 
         return $this;
     }

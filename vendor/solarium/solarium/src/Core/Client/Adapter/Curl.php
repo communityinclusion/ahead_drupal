@@ -22,10 +22,9 @@ use Solarium\Exception\RuntimeException;
  *
  * @author Intervals <info@myintervals.com>
  */
-class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterface, ConnectionTimeoutAwareInterface
+class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterface
 {
     use TimeoutAwareTrait;
-    use ConnectionTimeoutAwareTrait;
 
     /**
      * Execute a Solr request using the cURL Http.
@@ -41,7 +40,7 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
     }
 
     /**
-     * Get the response for a cURL handle.
+     * Get the response for a curl handle.
      *
      * @param resource $handle
      * @param string   $httpResponse
@@ -67,7 +66,7 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
     }
 
     /**
-     * Create cURL handle for a request.
+     * Create curl handle for a request.
      *
      * @param Request  $request
      * @param Endpoint $endpoint
@@ -90,7 +89,7 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
             curl_setopt($handler, CURLOPT_FOLLOWLOCATION, true);
         }
         curl_setopt($handler, CURLOPT_TIMEOUT, $options['timeout']);
-        curl_setopt($handler, CURLOPT_CONNECTTIMEOUT, $options['connection_timeout']);
+        curl_setopt($handler, CURLOPT_CONNECTTIMEOUT, $options['timeout']);
 
         if (null !== ($proxy = $this->getOption('proxy'))) {
             curl_setopt($handler, CURLOPT_PROXY, $proxy);
@@ -137,7 +136,7 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
         } elseif (Request::METHOD_GET === $method) {
             curl_setopt($handler, CURLOPT_HTTPGET, true);
         } elseif (Request::METHOD_HEAD === $method) {
-            curl_setopt($handler, CURLOPT_NOBODY, true);
+            curl_setopt($handler, CURLOPT_CUSTOMREQUEST, 'HEAD');
         } elseif (Request::METHOD_DELETE === $method) {
             curl_setopt($handler, CURLOPT_CUSTOMREQUEST, 'DELETE');
         } elseif (Request::METHOD_PUT === $method) {
@@ -150,7 +149,7 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
                 curl_setopt($handler, CURLOPT_POSTFIELDS, $request->getRawData());
             }
         } else {
-            throw new InvalidArgumentException(sprintf('unsupported method: %s', $method));
+            throw new InvalidArgumentException("unsupported method: $method");
         }
 
         return $handler;
@@ -218,7 +217,6 @@ class Curl extends Configurable implements AdapterInterface, TimeoutAwareInterfa
     {
         $options = [
             'timeout' => $this->timeout,
-            'connection_timeout' => $this->connectionTimeout ?? $this->timeout,
         ];
         foreach ($request->getHeaders() as $headerLine) {
             list($header, $value) = explode(':', $headerLine);

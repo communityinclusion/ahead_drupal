@@ -27,6 +27,13 @@ class SynonymMappings extends BaseResult implements \IteratorAggregate, \Countab
     protected $name = 'synonymMappings';
 
     /**
+     * ResourceId looked up using the managed resources component.
+     *
+     * @var string
+     */
+    protected $resourceId;
+
+    /**
      * Whether or not to ignore the case.
      *
      * @var bool|null
@@ -60,16 +67,6 @@ class SynonymMappings extends BaseResult implements \IteratorAggregate, \Countab
      * @var array
      */
     protected $items = [];
-
-    /**
-     * @var bool
-     */
-    protected $wasSuccessful = false;
-
-    /**
-     * @var string
-     */
-    protected $statusMessage = 'ERROR';
 
     /**
      * Constructor.
@@ -129,6 +126,16 @@ class SynonymMappings extends BaseResult implements \IteratorAggregate, \Countab
     }
 
     /**
+     * @return string
+     */
+    public function getResourceId(): string
+    {
+        $this->parseResponse();
+
+        return $this->resourceId;
+    }
+
+    /**
      * @return bool|null
      */
     public function isIgnoreCase(): ?bool
@@ -166,25 +173,5 @@ class SynonymMappings extends BaseResult implements \IteratorAggregate, \Countab
         $this->parseResponse();
 
         return $this->updatedSinceInit;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getWasSuccessful(): bool
-    {
-        $this->parseResponse();
-
-        return $this->wasSuccessful;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatusMessage(): string
-    {
-        $this->parseResponse();
-
-        return $this->statusMessage;
     }
 }

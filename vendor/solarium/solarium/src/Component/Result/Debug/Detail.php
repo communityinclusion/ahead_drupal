@@ -12,7 +12,7 @@ namespace Solarium\Component\Result\Debug;
 /**
  * Select component debug detail result.
  */
-class Detail implements \ArrayAccess
+class Detail
 {
     /**
      * Value.
@@ -36,7 +36,7 @@ class Detail implements \ArrayAccess
     protected $description;
 
     /**
-     * @var \Solarium\Component\Result\Debug\Detail[]
+     * @var array
      */
     protected $subDetails;
 
@@ -85,69 +85,22 @@ class Detail implements \ArrayAccess
     }
 
     /**
-     * @param \Solarium\Component\Result\Debug\Detail[]|array $subDetails
+     * @param array $subDetails
      *
      * @return self
      */
     public function setSubDetails(array $subDetails): self
     {
-        $this->subDetails = [];
-        foreach ($subDetails as $subDetail) {
-            if ($subDetail instanceof Detail) {
-                $this->subDetails[] = $subDetail;
-            } else {
-                $this->subDetails[] = new Detail($subDetail['match'], $subDetail['value'], $subDetail['description']);
-            }
-        }
+        $this->subDetails = $subDetails;
 
         return $this;
     }
 
     /**
-     * @return \Solarium\Component\Result\Debug\Detail[]|null
+     * @return array
      */
-    public function getSubDetails(): ?array
+    public function getSubDetails(): array
     {
         return $this->subDetails;
-    }
-
-    public function offsetExists($offset)
-    {
-        return \in_array($offset, ['match', 'value', 'description']);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->{$offset};
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        // Details are immutable.
-    }
-
-    public function offsetUnset($offset)
-    {
-        // Details are immutable.
-    }
-
-    public function debugDump(int $depth = 0): string
-    {
-        $string = '';
-        if ($this->match) {
-            $string .= str_repeat('... ', $depth).sprintf('%f', $this->value).' <= '.$this->description.PHP_EOL;
-            foreach ($this->getSubDetails() ?? [] as $subDetail) {
-                if ($subDetail->getMatch()) {
-                    $string .= $subDetail->debugDump($depth + 1);
-                }
-            }
-        }
-
-        return $string;
-    }
-
-    public function __toString()
-    {
-        return $this->debugDump();
     }
 }

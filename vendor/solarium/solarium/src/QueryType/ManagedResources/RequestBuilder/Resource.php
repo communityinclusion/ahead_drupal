@@ -37,19 +37,13 @@ class Resource extends AbstractRequestBuilder
         }
 
         $request = parent::build($query);
-        // reserved characters in a REST resource name need to be encoded twice to make it through the servlet (SOLR-SOLR-6853)
-        $request->setHandler($query->getHandler().rawurlencode(rawurlencode($query->getName())));
+        $request->setHandler($query->getHandler().$query->getName());
         if (null !== $query->getCommand()) {
             $request->addHeader('Content-Type: application/json; charset=utf-8');
             $this->buildCommand($request, $query->getCommand());
         } else {
-            // Lists one or all items.
+            // Lists all items.
             $request->setMethod(Request::METHOD_GET);
-
-            if (null !== $term = $query->getTerm()) {
-                // reserved characters in a REST resource name need to be encoded twice to make it through the servlet (SOLR-SOLR-6853)
-                $request->setHandler($request->getHandler().'/'.rawurlencode(rawurlencode($term)));
-            }
         }
 
         return $request;
@@ -59,8 +53,6 @@ class Resource extends AbstractRequestBuilder
      * @param \Solarium\Core\Client\Request                              $request
      * @param \Solarium\QueryType\ManagedResources\Query\AbstractCommand $command
      *
-     * @throws \Solarium\Exception\RuntimeException
-     *
      * @return self
      */
     protected function buildCommand(Request $request, AbstractCommand $command): self
@@ -69,35 +61,19 @@ class Resource extends AbstractRequestBuilder
 
         switch ($command->getType()) {
             case BaseQuery::COMMAND_ADD:
-                if (null === $rawData = $command->getRawData()) {
-                    throw new RuntimeException('Missing data for ADD command.');
-                }
-                $request->setRawData($rawData);
+                $request->setRawData($command->getRawData());
                 break;
             case BaseQuery::COMMAND_CONFIG:
-                if (null === $rawData = $command->getRawData()) {
-                    throw new RuntimeException('Missing initArgs for CONFIG command.');
-                }
-                $request->setRawData($rawData);
+                $request->setRawData($command->getRawData());
                 break;
             case BaseQuery::COMMAND_CREATE:
-                if (null === $rawData = $command->getRawData()) {
-                    throw new RuntimeException('Missing class for CREATE command.');
-                }
-                $request->setRawData($rawData);
+                $request->setRawData($command->getRawData());
                 break;
             case BaseQuery::COMMAND_DELETE:
-                if (null === $term = $command->getTerm()) {
-                    throw new RuntimeException('Missing term for DELETE command.');
-                }
-                // reserved characters in a REST resource name need to be encoded twice to make it through the servlet (SOLR-SOLR-6853)
-                $request->setHandler($request->getHandler().'/'.rawurlencode(rawurlencode($command->getTerm())));
+                $request->setHandler($request->getHandler().'/'.$command->getTerm());
                 break;
             case BaseQuery::COMMAND_EXISTS:
-                if (null !== $term = $command->getTerm()) {
-                    // reserved characters in a REST resource name need to be encoded twice to make it through the servlet (SOLR-SOLR-6853)
-                    $request->setHandler($request->getHandler().'/'.rawurlencode(rawurlencode($command->getTerm())));
-                }
+                $request->setHandler($request->getHandler().'/'.$command->getTerm());
                 break;
             case BaseQuery::COMMAND_REMOVE:
                 break;

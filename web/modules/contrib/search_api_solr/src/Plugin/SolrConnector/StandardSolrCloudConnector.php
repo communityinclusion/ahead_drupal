@@ -8,7 +8,6 @@ use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginBase;
 use Drupal\search_api_solr\Utility\Utility;
 use Solarium\Core\Client\Endpoint;
-use Solarium\Core\Client\State\ClusterState;
 use Solarium\Exception\HttpException;
 use Solarium\Exception\OutOfBoundsException;
 use Solarium\QueryType\Graph\Query as GraphQuery;
@@ -172,69 +171,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    * {@inheritdoc}
    */
   public function getCollectionInfo($reset = FALSE) {
-    return $this->getCoreInfo($reset);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getClusterStatus(?string $collection = NULL): ?ClusterState {
-    $this->connect();
-    $this->useTimeout(self::INDEX_TIMEOUT);
-
-    try {
-      $collection = $collection ?? $this->configuration['core'];
-
-      $query = $this->solr->createCollections();
-      $action = $query->createClusterStatus();
-      $action->setCollection($this->configuration['core']);
-      $query->setAction($action);
-
-      $response = $this->solr->collections($query);
-      return $response->getWasSuccessful() ? $response->getClusterState() : NULL;
-    }
-    catch (HttpException $e) {
-      throw new SearchApiSolrException(sprintf('Get ClusterStatus for collection %s failed with error code %s: %s', $collection, $e->getCode(), $e->getMessage()), $e->getCode(), $e);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfigSetName(): ?string {
-    try {
-      if ($clusterState = $this->getClusterStatus()) {
-        return $clusterState->getCollectionState($this->configuration['core'])->getConfigName();
-      }
-    }
-    catch (\Exception $e) {
-      $this->getLogger()->debug($e->getMessage());
-    }
-
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function uploadConfigset(string $name, string $filename): bool {
-    $this->connect();
-    $this->useTimeout(self::FINALIZE_TIMEOUT);
-
-    try {
-      $configsetsQuery = $this->solr->createConfigsets();
-      $action = $configsetsQuery->createUpload();
-      $action
-        ->setFile($filename)
-        ->setName($name)
-        ->setOverwrite(true);
-      $configsetsQuery->setAction($action);
-      $response = $this->solr->configsets($configsetsQuery);
-      return $response->getWasSuccessful();
-    }
-    catch (HttpException $e) {
-      throw new SearchApiSolrException(sprintf('Configset upload failed with error code %s: %s', $e->getCode(), $e->getMessage()), $e->getCode(), $e);
-    }
+    return $this->getCoreInfo();
   }
 
   /**
@@ -339,9 +276,17 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
   }
 
   /**
-   * {@inheritdoc}
+   * Reloads collection.
+   *
+   * @param string|null $collection
+   *   Collection.
+   *
+   * @return bool
+   *   TRUE if successful, FALSE otherwise.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function reloadCollection(?string $collection = NULL): bool {
+  public function reloadCollection(?string $collection = NULL) {
     $this->connect();
     $this->useTimeout(self::INDEX_TIMEOUT);
 
@@ -356,51 +301,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
       return $response->getWasSuccessful();
     }
     catch (HttpException $e) {
-      throw new SearchApiSolrException("Reloading collection $collection failed with error code " . $e->getCode() . ': ' . $e->getMessage(), $e->getCode(), $e);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function createCollection(array $options, ?string $collection = NULL): bool {
-    $this->connect();
-    $this->useTimeout(self::FINALIZE_TIMEOUT);
-
-    try {
-      $collection = $collection ?? $this->configuration['core'];
-
-      $query = $this->solr->createCollections();
-      $action = $query->createCreate(['name' => $collection] + $options);
-      $query->setAction($action);
-
-      $response = $this->solr->collections($query);
-      return $response->getWasSuccessful();
-    }
-    catch (HttpException $e) {
-      throw new SearchApiSolrException("Creating collection $collection failed with error code " . $e->getCode() . ': ' . $e->getMessage(), $e->getCode(), $e);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function deleteCollection(?string $collection = NULL): bool {
-    $this->connect();
-    $this->useTimeout(self::INDEX_TIMEOUT);
-
-    try {
-      $collection = $collection ?? $this->configuration['core'];
-
-      $query = $this->solr->createCollections();
-      $action = $query->createDelete(['name' => $collection]);
-      $query->setAction($action);
-
-      $response = $this->solr->collections($query);
-      return $response->getWasSuccessful();
-    }
-    catch (HttpException $e) {
-      throw new SearchApiSolrException("Deleting collection $collection failed with error code " . $e->getCode() . ': ' . $e->getMessage(), $e->getCode(), $e);
+      throw new SearchApiSolrException("Reloading collection $collection failed with error code " . $e->getCode() . '.', $e->getCode(), $e);
     }
   }
 

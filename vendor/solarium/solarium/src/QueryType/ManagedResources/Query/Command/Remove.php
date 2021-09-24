@@ -37,4 +37,24 @@ class Remove extends AbstractCommand
     {
         return Request::METHOD_DELETE;
     }
+
+    /**
+     * Empty.
+     *
+     * @return string
+     */
+    public function getRawData(): string
+    {
+        return '';
+    }
+
+    /**
+     * Empty.
+     *
+     * @return string
+     */
+    public function getTerm(): string
+    {
+        return '';
+    }
 }

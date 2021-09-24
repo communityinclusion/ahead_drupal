@@ -27,17 +27,13 @@ class Stopwords extends ResponseParserAbstract implements ResponseParserInterfac
      */
     public function parse(ResultInterface $result): array
     {
+        $data = $result->getData();
         $wordSet = null;
-        $data = [];
-        $parsed = ['items' => []];
-        $parsed = $this->parseStatus($parsed, $result);
-
-        if ($parsed['wasSuccessful']) {
-            $data = $result->getData();
-            if (isset($data['wordSet'])) {
-                $wordSet = $data['wordSet'];
-            }
+        if (isset($data['wordSet'])) {
+            $wordSet = $data['wordSet'];
         }
+
+        $parsed = [];
 
         if (null !== $wordSet && !empty($wordSet)) {
             $parsed['items'] = $wordSet['managedList'];
@@ -52,7 +48,7 @@ class Stopwords extends ResponseParserAbstract implements ResponseParserInterfac
             }
         }
 
-        $parsed = $this->addHeaderInfo($data, $parsed);
+        $this->addHeaderInfo($data, $parsed);
 
         return $parsed;
     }
