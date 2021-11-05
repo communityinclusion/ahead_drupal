@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '9f59d7c97c23e66a2d8b0d35b61d8e1c3354f08a',
+        'reference' => '08ba9df6aabd121aae3a343fc0f75a5e45c702b4',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -397,7 +397,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '9f59d7c97c23e66a2d8b0d35b61d8e1c3354f08a',
+            'reference' => '08ba9df6aabd121aae3a343fc0f75a5e45c702b4',
             'dev_requirement' => false,
         ),
         'drupal/action' => array(
@@ -521,12 +521,14 @@
             ),
         ),
         'drupal/bootstrap_barrio' => array(
-            'pretty_version' => '4.33.0',
-            'version' => '4.33.0.0',
+            'pretty_version' => 'dev-5.x',
+            'version' => 'dev-5.x',
             'type' => 'drupal-theme',
             'install_path' => __DIR__ . '/../../web/themes/contrib/bootstrap_barrio',
-            'aliases' => array(),
-            'reference' => '8.x-4.33',
+            'aliases' => array(
+                0 => '5.x-dev',
+            ),
+            'reference' => '55f43c09c950027069e65a3d7365756d523e4e6e',
             'dev_requirement' => false,
         ),
         'drupal/bootstrap_library' => array(
@@ -593,12 +595,12 @@
             ),
         ),
         'drupal/computed_field' => array(
-            'pretty_version' => '2.0.0',
-            'version' => '2.0.0.0',
+            'pretty_version' => '3.0.0-alpha2',
+            'version' => '3.0.0.0-alpha2',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/computed_field',
             'aliases' => array(),
-            'reference' => '8.x-2.0',
+            'reference' => '3.0.0-alpha2',
             'dev_requirement' => false,
         ),
         'drupal/conditional_fields' => array(
@@ -892,12 +894,12 @@
             ),
         ),
         'drupal/devel' => array(
-            'pretty_version' => '2.1.0',
-            'version' => '2.1.0.0',
+            'pretty_version' => '4.1.1',
+            'version' => '4.1.1.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/devel',
             'aliases' => array(),
-            'reference' => '8.x-2.1',
+            'reference' => '4.1.1',
             'dev_requirement' => false,
         ),
         'drupal/ds' => array(
@@ -1102,29 +1104,11 @@
             'reference' => '8.x-3.6',
             'dev_requirement' => false,
         ),
-        'drupal/force_password_change' => array(
-            'pretty_version' => '1.3.0',
-            'version' => '1.3.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/force_password_change',
-            'aliases' => array(),
-            'reference' => '8.x-1.3',
-            'dev_requirement' => false,
-        ),
         'drupal/forum' => array(
             'dev_requirement' => false,
             'replaced' => array(
                 0 => '8.9.19',
             ),
-        ),
-        'drupal/geocoder' => array(
-            'pretty_version' => '2.22.0',
-            'version' => '2.22.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/geocoder',
-            'aliases' => array(),
-            'reference' => '8.x-2.22',
-            'dev_requirement' => false,
         ),
         'drupal/geofield' => array(
             'pretty_version' => '1.34.0',
@@ -1372,42 +1356,6 @@
                 0 => '8.9.19',
             ),
         ),
-        'drupal/migrate_plus' => array(
-            'pretty_version' => '4.2.0',
-            'version' => '4.2.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/migrate_plus',
-            'aliases' => array(),
-            'reference' => '8.x-4.2',
-            'dev_requirement' => false,
-        ),
-        'drupal/migrate_source_csv' => array(
-            'pretty_version' => '2.2.0',
-            'version' => '2.2.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/migrate_source_csv',
-            'aliases' => array(),
-            'reference' => '8.x-2.2',
-            'dev_requirement' => false,
-        ),
-        'drupal/migrate_tools' => array(
-            'pretty_version' => '4.5.0',
-            'version' => '4.5.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/migrate_tools',
-            'aliases' => array(),
-            'reference' => '8.x-4.5',
-            'dev_requirement' => false,
-        ),
-        'drupal/migrate_upgrade' => array(
-            'pretty_version' => '3.2.0',
-            'version' => '3.2.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/migrate_upgrade',
-            'aliases' => array(),
-            'reference' => '8.x-3.2',
-            'dev_requirement' => false,
-        ),
         'drupal/minimal' => array(
             'dev_requirement' => false,
             'replaced' => array(
@@ -1511,12 +1459,12 @@
             ),
         ),
         'drupal/recaptcha' => array(
-            'pretty_version' => '2.5.0',
-            'version' => '2.5.0.0',
+            'pretty_version' => '3.0.0',
+            'version' => '3.0.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/recaptcha',
             'aliases' => array(),
-            'reference' => '8.x-2.5',
+            'reference' => '8.x-3.0',
             'dev_requirement' => false,
         ),
         'drupal/responsive_image' => array(
@@ -1530,15 +1478,6 @@
             'replaced' => array(
                 0 => '8.9.19',
             ),
-        ),
-        'drupal/rules' => array(
-            'pretty_version' => '3.0.0-alpha6',
-            'version' => '3.0.0.0-alpha6',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/rules',
-            'aliases' => array(),
-            'reference' => '8.x-3.0-alpha6',
-            'dev_requirement' => false,
         ),
         'drupal/scheduler' => array(
             'pretty_version' => '1.4.0',
@@ -1625,12 +1564,12 @@
             ),
         ),
         'drupal/simple_mail' => array(
-            'pretty_version' => '1.1.0',
-            'version' => '1.1.0.0',
+            'pretty_version' => '2.0.0',
+            'version' => '2.0.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/simple_mail',
             'aliases' => array(),
-            'reference' => '8.x-1.1',
+            'reference' => '2.0.0',
             'dev_requirement' => false,
         ),
         'drupal/simpletest' => array(
@@ -1713,15 +1652,6 @@
                 0 => '8.9.19',
             ),
         ),
-        'drupal/taxonomy_import' => array(
-            'pretty_version' => '1.1.0',
-            'version' => '1.1.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/taxonomy_import',
-            'aliases' => array(),
-            'reference' => '8.x-1.1',
-            'dev_requirement' => false,
-        ),
         'drupal/telephone' => array(
             'dev_requirement' => false,
             'replaced' => array(
@@ -1778,17 +1708,6 @@
             'replaced' => array(
                 0 => '8.9.19',
             ),
-        ),
-        'drupal/typed_data' => array(
-            'pretty_version' => 'dev-1.x',
-            'version' => 'dev-1.x',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/typed_data',
-            'aliases' => array(
-                0 => '1.x-dev',
-            ),
-            'reference' => 'd4848b6df120b7272a43e920952dbb2de474d1eb',
-            'dev_requirement' => false,
         ),
         'drupal/update' => array(
             'dev_requirement' => false,
@@ -1863,15 +1782,6 @@
                 0 => '8.9.19',
             ),
         ),
-        'drupal/webform' => array(
-            'pretty_version' => '5.29.0',
-            'version' => '5.29.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/webform',
-            'aliases' => array(),
-            'reference' => '8.x-5.29',
-            'dev_requirement' => false,
-        ),
         'drupal/workflow' => array(
             'pretty_version' => '1.5.0',
             'version' => '1.5.0.0',
@@ -1911,15 +1821,6 @@
             'reference' => 'acd09dfe0555fbcfa254291e433c45fdd4652566',
             'dev_requirement' => false,
         ),
-        'egeloen/http-adapter' => array(
-            'pretty_version' => '0.8.0',
-            'version' => '0.8.0.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../egeloen/http-adapter',
-            'aliases' => array(),
-            'reference' => '9641f11487ec26b24c6bbcee4f267cf62f60b855',
-            'dev_requirement' => false,
-        ),
         'egulias/email-validator' => array(
             'pretty_version' => '2.0.0',
             'version' => '2.0.0.0',
@@ -1936,6 +1837,15 @@
             'install_path' => __DIR__ . '/../fabpot/goutte',
             'aliases' => array(),
             'reference' => '3f0eaf0a40181359470651f1565b3e07e3dd31b8',
+            'dev_requirement' => false,
+        ),
+        'google/recaptcha' => array(
+            'pretty_version' => '1.2.4',
+            'version' => '1.2.4.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../google/recaptcha',
+            'aliases' => array(),
+            'reference' => '614f25a9038be4f3f2da7cbfd778dc5b357d2419',
             'dev_requirement' => false,
         ),
         'grasmash/expander' => array(
@@ -1990,15 +1900,6 @@
             'install_path' => __DIR__ . '/../html2text/html2text',
             'aliases' => array(),
             'reference' => 'f55104b7c9f99b0937f0e20fe051b19f9c0ecad1',
-            'dev_requirement' => false,
-        ),
-        'igorw/get-in' => array(
-            'pretty_version' => 'v1.0.3',
-            'version' => '1.0.3.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../igorw/get-in',
-            'aliases' => array(),
-            'reference' => '170ded831f49abc6a6061f655aba9bdbcf7b8111',
             'dev_requirement' => false,
         ),
         'instaclick/php-webdriver' => array(
@@ -2535,8 +2436,8 @@
         'psr/container-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '^1.0',
+                0 => '^1.0',
+                1 => '1.0',
             ),
         ),
         'psr/event-dispatcher' => array(
@@ -3265,15 +3166,6 @@
             'install_path' => __DIR__ . '/../webmozart/path-util',
             'aliases' => array(),
             'reference' => 'd939f7edc24c9a1bb9c0dee5cb05d8e859490725',
-            'dev_requirement' => false,
-        ),
-        'willdurand/geocoder' => array(
-            'pretty_version' => 'v3.3.2',
-            'version' => '3.3.2.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../willdurand/geocoder',
-            'aliases' => array(),
-            'reference' => 'ccc178e2984c0af24881faa0ffe515f20e5e8c23',
             'dev_requirement' => false,
         ),
         'zaporylie/composer-drupal-optimizations' => array(
