@@ -357,28 +357,22 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
   /**
    * {@inheritdoc}
    */
-  protected $usesRowPlugin = FALSE;
+  protected $usesFields = TRUE;
 
   /**
-   * Does the style plugin support custom css class for the rows.
-   *
-   * @var bool
+   * {@inheritdoc}
+   */
+  protected $usesRowPlugin = TRUE;
+
+  /**
+   * {@inheritdoc}
    */
   protected $usesRowClass = FALSE;
 
   /**
-   * Does the style plugin support grouping of rows.
-   *
-   * @var bool
+   * {@inheritdoc}
    */
   protected $usesGrouping = FALSE;
-
-  /**
-   * Does the style plugin for itself support to add fields to it's output.
-   *
-   * @var bool
-   */
-  protected $usesFields = TRUE;
 
   /**
    * Should field labels be enabled by default.
@@ -605,6 +599,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
       $desc_options += [
         '#rendered_entity' => $this->t('- Rendered @entity entity -', ['@entity' => $this->entityType]),
         '#rendered_entity_ajax' => $this->t('- Rendered @entity entity via Ajax (Quicker Map start / Slower Infowindow show) -', ['@entity' => $this->entityType]),
+        '#rendered_view_fields' => $this->t('# Rendered View Fields (with field label, format, classes, etc)'),
       ];
     }
 
@@ -944,6 +939,15 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                   }
                   break;
 
+                case '#rendered_view_fields':
+                  // Normal rendering via view/row fields (with labels options,
+                  // formatters, classes, etc.).
+                  $renderedRow = [
+                    $this->view->rowPlugin->render($result),
+                  ];
+                  $description[] = $this->renderer->renderPlain($renderedRow);
+                  break;
+
                 case '#rendered_entity_ajax':
                   $parameters = [
                     'entity_type' => $entity_type,
@@ -951,7 +955,7 @@ class GeofieldGoogleMapViewStyle extends DefaultStyle implements ContainerFactor
                     'view_mode' => $default_view_mode,
                     'langcode' => $langcode,
                   ];
-                  $url = Url::fromRoute('geofield_map.ajax_popup', $parameters, ['absolute' => TRUE]);
+                  $url = Url::fromRoute('geofield_map.ajax_popup', $parameters);
                   $description[] = sprintf('<div class="geofield-google-map-ajax-popup" data-geofield-google-map-ajax-popup="%s" %s></div>',
                     $url->toString(), GeofieldMapAjaxPopupController::getPopupIdentifierAttribute($entity_type, $entity->id(), $default_view_mode, $langcode));
                   $js_settings['map_settings']['ajaxPoup'] = TRUE;

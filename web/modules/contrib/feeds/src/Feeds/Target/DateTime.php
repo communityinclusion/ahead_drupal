@@ -61,7 +61,7 @@ class DateTime extends DateTargetBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return ['timezone' => DateTimeItemInterface::STORAGE_TIMEZONE];
+    return parent::defaultConfiguration() + ['timezone' => DateTimeItemInterface::STORAGE_TIMEZONE];
   }
 
 }

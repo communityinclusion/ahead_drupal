@@ -14,6 +14,7 @@ use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Plugin\Type\CleanableInterface;
 use Drupal\feeds\Plugin\Type\ClearableInterface;
 use Drupal\feeds\StateInterface;
+use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -117,8 +118,13 @@ class LazySubscriber implements EventSubscriberInterface {
           }
 
           $dispatcher->addListener(FeedsEvents::CLEAN, function (CleanEvent $event) use ($plugin) {
-            $feed = $event->getFeed();
-            $plugin->clean($feed, $event->getEntity(), $feed->getState(StateInterface::CLEAN));
+            try {
+              $feed = $event->getFeed();
+              $plugin->clean($feed, $event->getEntity(), $feed->getState(StateInterface::CLEAN));
+            }
+            catch (Exception $e) {
+              watchdog_exception('feeds', $e);
+            }
           });
         }
         break;

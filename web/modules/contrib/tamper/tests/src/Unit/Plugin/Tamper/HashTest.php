@@ -28,7 +28,7 @@ class HashTest extends TamperPluginTestBase {
    *   The mock of a tamperable item to use in the test.
    */
   protected function getMockItem() {
-    $item = $this->getMock(TamperableItemInterface::class);
+    $item = $this->createMock(TamperableItemInterface::class);
     $item->expects($this->any())
       ->method('getSource')
       ->willReturn([
@@ -70,7 +70,8 @@ class HashTest extends TamperPluginTestBase {
    * Test the plugin behaviour without a tamperable item.
    */
   public function testEmptyTamperableItem() {
-    $this->setExpectedException(TamperException::class, 'Tamperable item can not be null.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Tamperable item can not be null.');
     $this->plugin->tamper('foo');
   }
 

@@ -35,7 +35,8 @@ class ConvertCaseTest extends TamperPluginTestBase {
    * Test convert to upper case.
    */
   public function testUpperCaseWithMultipleValues() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       ConvertCase::SETTING_OPERATION => 'strtoupper',
     ];
@@ -58,7 +59,8 @@ class ConvertCaseTest extends TamperPluginTestBase {
    * Test convert to lower case.
    */
   public function testLowerCaseWithMultipleValues() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       ConvertCase::SETTING_OPERATION => 'strtolower',
     ];
@@ -81,7 +83,8 @@ class ConvertCaseTest extends TamperPluginTestBase {
    * Test convert to upper case first.
    */
   public function testUpperCaseFirstWithMultipleValues() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       ConvertCase::SETTING_OPERATION => 'ucfirst',
     ];
@@ -104,7 +107,8 @@ class ConvertCaseTest extends TamperPluginTestBase {
    * Test convert to lower case first.
    */
   public function testLowerCaseFirstWithMultipleValues() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       ConvertCase::SETTING_OPERATION => 'lcfirst',
     ];
@@ -127,7 +131,8 @@ class ConvertCaseTest extends TamperPluginTestBase {
    * Test convert to upper case words.
    */
   public function testUpperCaseWordsWithMultipleValues() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       ConvertCase::SETTING_OPERATION => 'ucwords',
     ];

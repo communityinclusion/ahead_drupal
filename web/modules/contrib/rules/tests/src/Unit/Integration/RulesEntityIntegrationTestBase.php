@@ -165,7 +165,7 @@ abstract class RulesEntityIntegrationTestBase extends RulesIntegrationTestBase {
 
     $context_definition = ContextDefinition::create($data_type);
 
-    // Inject a fake typed data manger that will return our data definition
+    // Inject a fake typed data manager that will return our data definition
     // prophecy if asked for it in the ContextDefinition class.
     $typed_data_manager = $this->prophesize(TypedDataManagerInterface::class);
     $typed_data_manager->createDataDefinition($data_type)->willReturn($data_definition->reveal());

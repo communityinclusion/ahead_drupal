@@ -34,6 +34,20 @@ use Drupal\search_api_page\SearchApiPageInterface;
  *     "edit-form" = "/admin/config/search/search-api-pages/{search_api_page}/edit",
  *     "delete-form" = "/admin/config/search/search-api-pages/{search_api_page}/delete",
  *     "collection" = "/admin/config/search/search-api-pages"
+ *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "path",
+ *     "clean_url",
+ *     "show_all_when_no_keys",
+ *     "index",
+ *     "limit",
+ *     "searched_fields",
+ *     "style",
+ *     "view_mode_configuration",
+ *     "show_search_form",
+ *     "parse_mode",
  *   }
  * )
  */

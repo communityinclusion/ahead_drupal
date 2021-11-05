@@ -42,7 +42,7 @@ use Drupal\user\UserInterface;
  *   },
  *   admin_permission = "administer search_api_saved_searches",
  *   base_table = "search_api_saved_search",
- *   data_table = "search_api_saved_search_field_data",
+ *   data_table = "search_api_saved_search",
  *   translatable = FALSE,
  *   entity_keys = {
  *     "id" = "id",
@@ -54,6 +54,7 @@ use Drupal\user\UserInterface;
  *   },
  *   bundle_entity_type = "search_api_saved_search_type",
  *   field_ui_base_route = "entity.search_api_saved_search_type.edit_form",
+ *   token_type = "search-api-saved-search",
  *   permission_granularity = "bundle",
  *   links = {
  *     "canonical" = "/saved-search/{search_api_saved_search}",
@@ -83,7 +84,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
     $fields['langcode']->setDisplayConfigurable('form', TRUE);
 
     $fields['label'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Name of your saved search'))
+      ->setLabel(t('Label'))
       ->setDescription(t('The label for the saved search.'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 255)

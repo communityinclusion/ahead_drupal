@@ -323,8 +323,8 @@ There are new results for your saved search "@search_label":
    */
   public function getFieldDefinitions() {
     $fields['mail'] = BundleFieldDefinition::create('email')
-      ->setLabel(t('Email'))
-      ->setDescription(t('The email address to which your saved search should be sent.'))
+      ->setLabel(t('E-mail'))
+      ->setDescription(t('The email address to which notifications should be sent.'))
       ->setDefaultValueCallback(static::class . '::getDefaultMail')
       ->setRequired(TRUE)
       ->setDisplayOptions('view', [

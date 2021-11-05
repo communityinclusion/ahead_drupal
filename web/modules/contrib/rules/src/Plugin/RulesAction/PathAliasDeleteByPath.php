@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "rules_path_alias_delete_by_path",
  *   label = @Translation("Delete all aliases for a path"),
  *   category = @Translation("Path"),
- *   context = {
+ *   context_definitions = {
  *     "path" = @ContextDefinition("string",
  *       label = @Translation("Existing system path"),
  *       description = @Translation("Specifies the existing path for which you wish to delete the alias. For example, '/node/1'. Use an absolute path and do not add a trailing slash.")

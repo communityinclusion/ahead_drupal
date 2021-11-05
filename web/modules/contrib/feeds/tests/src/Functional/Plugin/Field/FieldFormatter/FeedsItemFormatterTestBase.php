@@ -30,7 +30,10 @@ abstract class FeedsItemFormatterTestBase extends FeedsBrowserTestBase {
     parent::setUp();
 
     // Create feeds_item field.
-    $this->createFieldWithStorage('feeds_item', ['type' => 'feeds_item']);
+    $this->createFieldWithStorage('feeds_item', [
+      'type' => 'feeds_item',
+      'label' => 'Feeds item',
+    ]);
   }
 
   /**
@@ -63,14 +66,22 @@ abstract class FeedsItemFormatterTestBase extends FeedsBrowserTestBase {
   /**
    * Asserts that the feeds_item field is not displayed.
    *
+   * Potentially the Stark theme can output a feeds_item field as follows:
+   * @code
+   * <div>
+   *   <div>Feeds item</div>
+   *   <div>05/11/2020 - 15:19</div>
+   * </div>
+   * @endcode
+   *
    * @param string $rendered_content
    *   The rendered content.
    * @param string $input
    *   A property value from the feeds_item field.
    */
   protected function assertFeedsItemFieldNotDisplayed($rendered_content, $input) {
-    $this->assertNotContains('field--type-feeds-item', (string) $rendered_content);
-    $this->assertNotContains('<div class="field__item">' . $input . '</div>', (string) $rendered_content);
+    $this->assertStringNotContainsString('<div>Feeds item</div>', (string) $rendered_content);
+    $this->assertStringNotContainsString('<div>' . $input . '</div>', (string) $rendered_content);
   }
 
   /**
@@ -92,7 +103,8 @@ abstract class FeedsItemFormatterTestBase extends FeedsBrowserTestBase {
       'label' => 'Witty one liner label',
     ]);
 
-    entity_get_display('feeds_feed', $feed_type_id, 'default')
+    $this->container->get('entity_display.repository')
+      ->getViewDisplay('feeds_feed', $feed_type_id, 'default')
       ->setComponent('oneliner', [
         'type' => 'text_default',
         'settings' => ['label' => 'Witty one liner'],

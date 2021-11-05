@@ -5,6 +5,7 @@ namespace Drupal\workflow\Plugin\Field\FieldType;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\OptGroup;
+use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
@@ -28,9 +29,7 @@ use Drupal\workflow\Entity\WorkflowState;
  * )
  */
 class WorkflowItem extends ListItemBase {
-  //class WorkflowItem extends FieldItemBase implements OptionsProviderInterface {
-  // @todo D8-port: perhaps even:
-  //class WorkflowItem extends FieldStringItem {
+  use MessengerTrait;
 
   /**
    * {@inheritdoc}
@@ -66,7 +65,6 @@ class WorkflowItem extends ListItemBase {
      */
     static $propertyDefinitions;
 
-
     $definition['settings']['target_type'] = 'workflow_transition';
     // Definitions vary by entity type and bundle, so key them accordingly.
     $key = $definition['settings']['target_type'] . ':';
@@ -74,14 +72,13 @@ class WorkflowItem extends ListItemBase {
 
     if (!isset($propertyDefinitions[$key])) {
 
-      $propertyDefinitions[$key]['value'] = DataDefinition::create('string') // TODO D8-port : or 'any'
+      $propertyDefinitions[$key]['value'] = DataDefinition::create('string') // @todo D8-port: or 'any'
         ->setLabel(t('Workflow state'))
         ->addConstraint('Length', ['max' => 128])
         ->setRequired(TRUE);
 
-      //workflow_debug( __FILE__ , __FUNCTION__, __LINE__);  // @todo D8-port: still test this snippet.
+      //workflow_debug(__FILE__, __FUNCTION__, __LINE__);  // @todo D8: test this snippet.
       /*
-      // @todo D8-port: test this.
       $propertyDefinitions[$key]['workflow_transition'] = DataDefinition::create('any')
         //    $properties['workflow_transition'] = DataDefinition::create('WorkflowTransition')
         ->setLabel(t('Transition'))
@@ -139,9 +136,9 @@ class WorkflowItem extends ListItemBase {
    * {@inheritdoc}
    */
   public function onChange($property_name, $notify = TRUE) {
-    //workflow_debug( __FILE__ , __FUNCTION__, __LINE__);  // @todo D8-port: still test this snippet.
+    //workflow_debug(__FILE__, __FUNCTION__, __LINE__);  // @todo D8: test this snippet.
 
-    // TODO D8: use this function onChange for adding a line in table workflow_transition_*
+    // @todo D8: use this function onChange for adding a line in table workflow_transition_*
     // Enforce that the computed date is recalculated.
     //if ($property_name == 'value') {
     //  $this->date = NULL;
@@ -172,12 +169,11 @@ class WorkflowItem extends ListItemBase {
     // @todo D8: add this to WorkflowFieldConstraintValidator.
     // Set message, if no 'validated' workflows exist.
     if (count($workflows) == 1) {
-      drupal_set_message(
+      $this->messenger()->addWarning(
         $this->t('You must <a href=":create">create at least one workflow</a>
           before content can be assigned to a workflow.',
-          [':create' => Url::fromRoute('entity.workflow_type.collection')->toString(),]
-        ), 'warning'
-      );
+        [':create' => Url::fromRoute('entity.workflow_type.collection')->toString()]
+      ));
     }
 
     // Validate via annotation WorkflowFieldConstraint. Show a message for each error.
@@ -186,10 +182,10 @@ class WorkflowItem extends ListItemBase {
     foreach ($violation_list->getIterator() as $violation) {
       switch ($violation->getPropertyPath()) {
         case 'fieldnameOnComment':
-          // @todo D8: CommentForm & constraints on storageSettingsForm()
+          // @todo D8: CommentForm & constraints on storageSettingsForm().
           // A 'comment' field name MUST be equal to content field name.
-          // @todo: Still not waterproof. You could have a field on a non-relevant entity_type.
-          drupal_set_message($violation->getMessage(), 'error');
+          // @todo Fix fields on a non-relevant entity_type.
+          $this->messenger()->addError($violation->getMessage());
           $workflows = [];
           break;
 
@@ -198,7 +194,7 @@ class WorkflowItem extends ListItemBase {
       }
     }
 
-    // @todo D8: CommentForm & constraints on storageSettingsForm
+    // @todo D8: CommentForm & constraints on storageSettingsForm.
     // Set the required workflow_type on 'comment' fields.
     // N.B. the following must BELOW the (count($workflows) == 1) snippet.
     /** @var \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage */
@@ -270,7 +266,7 @@ class WorkflowItem extends ListItemBase {
    *
    * This string format is suitable for edition in a textarea.
    *
-   * @param WorkflowState[] $states
+   * @param \Drupal\Core\Entity\EntityInterface[] $states
    *   An array of WorkflowStates, where array keys are values and array values are
    *   labels.
    *
@@ -302,44 +298,14 @@ class WorkflowItem extends ListItemBase {
     return implode("\n", $lines);
   }
 
-//  /**
-//   * {@inheritdoc}
-//   */
-//  public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-//    // @todo Implement this once https://www.drupal.org/node/2238085 lands.
-//    $values['value'] = rand(pow(10, 8), pow(10, 9)-1);
-//    return $values;
-//  }
-
-
   /**
-   * Implementation of TypedDataInterface
+   * Implementation of TypedDataInterface.
    *
    * @see folder \workflow\src\Plugin\Validation\Constraint
    */
 
   /**
-   * {@inheritdoc}
-   *
-   * @see folder \workflow\src\Plugin\Validation\Constraint
-   */
-//  public function getConstraints() {
-//    $constraints = parent::getConstraints();
-//    return $constraints;
-//  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @see folder \workflow\src\Plugin\Validation\Constraint
-   */
-//  public function validate() {
-//    $result = parent::validate();
-//    return $result;
-//  }
-
-  /**
-   * Implementation of OptionsProviderInterface
+   * Implementation of OptionsProviderInterface.
    *
    *   An array of settable options for the object that may be used in an
    *   Options widget, usually when new data should be entered. It may either be
@@ -393,22 +359,22 @@ class WorkflowItem extends ListItemBase {
    * {@inheritdoc}
    */
   public function getSettableOptions(AccountInterface $account = NULL) {
+    // Use the 'allowed_values_function' to calculate the options.
     $allowed_options = [];
 
     // When we are initially on the Storage settings form, no wid is set, yet.
     if (!$wid = $this->getSetting('workflow_type')) {
       return $allowed_options;
     }
+    // On Field settings page, no entity is set.
+    if (!$entity = $this->getEntity()) {
+      return $allowed_options;
+    }
 
-    // Use the 'allowed_values_function' to calculate the options.
     $definition = $this->getFieldDefinition()->getFieldStorageDefinition();
-    $entity = $this->getEntity();
     $field_name = $definition->getName();
     $user = workflow_current_user($account); // @todo #2287057: OK?
-
     // Get the allowed new states for the entity's current state.
-    // @todo D8-port: overwrite getValue().
-    // $sid = $value = $this->getValue();
     /** @var \Drupal\workflow\Entity\WorkflowState $state */
     $sid = workflow_node_current_state($entity, $field_name);
     $state = WorkflowState::load($sid);

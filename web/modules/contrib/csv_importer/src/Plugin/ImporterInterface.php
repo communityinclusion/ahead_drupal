@@ -32,14 +32,6 @@ interface ImporterInterface extends PluginInspectionInterface, ContainerFactoryP
   public function add($content, array &$context);
 
   /**
-   * Get batch operations.
-   *
-   * @return array
-   *   The batch operations.
-   */
-  public function getOperations();
-
-  /**
    * Batch finish handler.
    *
    * @param bool $success
@@ -52,7 +44,7 @@ interface ImporterInterface extends PluginInspectionInterface, ContainerFactoryP
    * @return array
    *   Prepared data.
    */
-  public function finished($success, $results, array $operations);
+  public function finished($success, array $results, array $operations);
 
   /**
    * Run batch operations.

@@ -1,6 +1,8 @@
 $(function () {
   'use strict'
 
+  window.Alert = typeof bootstrap !== 'undefined' ? bootstrap.Alert : Alert
+
   QUnit.module('alert plugin')
 
   QUnit.test('should be defined on jquery object', function (assert) {
@@ -16,6 +18,7 @@ $(function () {
     afterEach: function () {
       $.fn.alert = $.fn.bootstrapAlert
       delete $.fn.bootstrapAlert
+      $('#qunit-fixture').html('')
     }
   })
 
@@ -28,7 +31,7 @@ $(function () {
     assert.expect(2)
     var $el = $('<div/>')
     var $alert = $el.bootstrapAlert()
-    assert.ok($alert instanceof $, 'returns jquery collection')
+    assert.true($alert instanceof $, 'returns jquery collection')
     assert.strictEqual($alert[0], $el[0], 'collection contains element')
   })
 
@@ -43,7 +46,7 @@ $(function () {
 
     $alert.find('.close').trigger('click')
 
-    assert.strictEqual($alert.hasClass('show'), false, 'remove .show class on .close click')
+    assert.false($alert.hasClass('show'), 'remove .show class on .close click')
   })
 
   QUnit.test('should remove element when clicking .close', function (assert) {
@@ -55,7 +58,7 @@ $(function () {
         '</div>'
     var $alert = $(alertHTML).appendTo('#qunit-fixture').bootstrapAlert()
 
-    assert.notEqual($('#qunit-fixture').find('.alert').length, 0, 'element added to dom')
+    assert.notStrictEqual($('#qunit-fixture').find('.alert').length, 0, 'element added to dom')
 
     $alert
       .one('closed.bs.alert', function () {
@@ -79,5 +82,40 @@ $(function () {
         assert.ok(false, 'closed event fired')
       })
       .bootstrapAlert('close')
+  })
+
+  QUnit.test('close should use internal _element if no element provided', function (assert) {
+    assert.expect(1)
+
+    var done = assert.async()
+    var $el = $('<div/>')
+    var $alert = $el.bootstrapAlert()
+    var alertInstance = $alert.data('bs.alert')
+
+    $alert.one('closed.bs.alert', function () {
+      assert.ok('alert closed')
+      done()
+    })
+
+    alertInstance.close()
+  })
+
+  QUnit.test('dispose should remove data and the element', function (assert) {
+    assert.expect(2)
+
+    var $el = $('<div/>')
+    var $alert = $el.bootstrapAlert()
+
+    assert.notStrictEqual(typeof $alert.data('bs.alert'), 'undefined')
+
+    $alert.data('bs.alert').dispose()
+
+    assert.strictEqual(typeof $alert.data('bs.button'), 'undefined')
+  })
+
+  QUnit.test('should return alert version', function (assert) {
+    assert.expect(1)
+
+    assert.strictEqual(typeof Alert.VERSION, 'string')
   })
 })

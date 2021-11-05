@@ -1,6 +1,6 @@
 <?php
 /**
- * Check for merge conflict artifacts
+ * Check for merge conflict artefacts.
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2017 Juliette Reinders Folmer. All rights reserved.
@@ -34,7 +34,10 @@ class GitMergeConflictSniff implements Sniff
      */
     public function register()
     {
-        return [T_OPEN_TAG];
+        return [
+            T_OPEN_TAG,
+            T_OPEN_TAG_WITH_ECHO,
+        ];
 
     }//end register()
 

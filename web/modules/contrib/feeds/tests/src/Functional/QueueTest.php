@@ -29,6 +29,46 @@ class QueueTest extends FeedsBrowserTestBase {
   }
 
   /**
+   * Tests if a feed gets imported via a push.
+   */
+  public function testPushImport() {
+    $feed_type = $this->createFeedType();
+
+    // Create a feed without a source.
+    $feed = $this->createFeed($feed_type->id());
+
+    // Push file contents.
+    $feed->pushImport(file_get_contents($this->resourcesPath() . '/rss/googlenewstz.rss2'));
+
+    // Run cron to import.
+    $this->cronRun();
+
+    // Assert that 6 nodes have been created.
+    $this->assertNodeCount(6);
+  }
+
+  /**
+   * Tests on a push import, if only the file pushed is imported.
+   */
+  public function testPushImportWithSavedSource() {
+    $feed_type = $this->createFeedType();
+
+    // Create a feed with a source.
+    $feed = $this->createFeed($feed_type->id(), [
+      'source' => $this->resourcesUrl() . '/rss/drupalplanet.rss2',
+    ]);
+
+    // Push file contents.
+    $feed->pushImport(file_get_contents($this->resourcesPath() . '/rss/googlenewstz.rss2'));
+
+    // Run cron to import.
+    $this->cronRun();
+
+    // Assert that 6 nodes have been created.
+    $this->assertNodeCount(6);
+  }
+
+  /**
    * Tests if a feed is removed from the queue when the feed gets deleted.
    */
   public function testQueueAfterDeletingFeed() {

@@ -21,7 +21,14 @@ class UrlEncodeTest extends TamperPluginTestBase {
   }
 
   /**
-   * Test url_encode symbols, string with spaces and special chars using legacy method.
+   * Tests url encoding using the 'legacy' method.
+   *
+   * The legacy method uses the PHP function urlencode().
+   *
+   * The following cases are tested:
+   * - encoding symbols;
+   * - encoding a string with spaces;
+   * - encoding special characters.
    */
   public function testUrlEncodeString() {
     $config = [
@@ -34,10 +41,11 @@ class UrlEncodeTest extends TamperPluginTestBase {
   }
 
   /**
-   * Test url_encode of array input using legacy method.
+   * Tests url encoding of array input using the legacy method.
    */
   public function testUrlEncodeArray() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       UrlEncode::SETTING_METHOD => 'urlencode',
     ];
@@ -46,10 +54,11 @@ class UrlEncodeTest extends TamperPluginTestBase {
   }
 
   /**
-   * Test url_encode of numeric input using legacy method.
+   * Tests url encoding of numeric input using the legacy method.
    */
   public function testUrlEncodeNumeric() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       UrlEncode::SETTING_METHOD => 'urlencode',
     ];
@@ -58,7 +67,14 @@ class UrlEncodeTest extends TamperPluginTestBase {
   }
 
   /**
-   * Test url_encode symbols, string with spaces and special chars using raw method.
+   * Tests url encoding using the 'raw' method.
+   *
+   * The raw method uses the PHP function rawurlencode().
+   *
+   * The following cases are tested:
+   * - encoding symbols;
+   * - encoding a string with spaces;
+   * - encoding special characters.
    */
   public function testRawUrlEncodeString() {
     $config = [
@@ -71,10 +87,11 @@ class UrlEncodeTest extends TamperPluginTestBase {
   }
 
   /**
-   * Test url_encode array using raw method.
+   * Tests url encoding of array input using the raw method.
    */
   public function testRawUrlEncodeArray() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       UrlEncode::SETTING_METHOD => 'rawurlencode',
     ];
@@ -83,10 +100,11 @@ class UrlEncodeTest extends TamperPluginTestBase {
   }
 
   /**
-   * Test url_encode number using raw method.
+   * Tests url encoding of number input using the raw method.
    */
   public function testRawUrlEncodeNumeric() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       UrlEncode::SETTING_METHOD => 'rawurlencode',
     ];

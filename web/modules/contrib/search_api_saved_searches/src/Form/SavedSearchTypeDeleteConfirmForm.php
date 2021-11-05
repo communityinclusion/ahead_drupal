@@ -82,7 +82,7 @@ class SavedSearchTypeDeleteConfirmForm extends EntityConfirmFormBase {
     // @see \Drupal\Core\Entity\EntityDeleteForm::buildForm()
     /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $entity */
     $entity = $this->getEntity();
-    $this->addDependencyListsToForm($form, $entity->getConfigDependencyKey(), $this->getConfigNamesToDelete($entity), $this->getConfigManager(), $this->entityManager);
+    $this->addDependencyListsToForm($form, $entity->getConfigDependencyKey(), $this->getConfigNamesToDelete($entity), $this->getConfigManager(), $this->entityTypeManager);
 
     return $form;
   }

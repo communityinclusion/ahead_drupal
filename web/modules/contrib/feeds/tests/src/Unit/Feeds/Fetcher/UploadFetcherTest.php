@@ -10,6 +10,7 @@ use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Feeds\Fetcher\UploadFetcher;
 use Drupal\feeds\StateInterface;
 use Drupal\file\FileUsage\FileUsageInterface;
+use RuntimeException;
 
 /**
  * @coversDefaultClass \Drupal\feeds\Feeds\Fetcher\UploadFetcher
@@ -84,13 +85,14 @@ class UploadFetcherTest extends FeedsUnitTestCase {
    * Tests a fetch that fails.
    *
    * @covers ::fetch
-   * @expectedException \RuntimeException
    */
   public function testFetchException() {
     $feed = $this->createMock(FeedInterface::class);
     $feed->expects($this->any())
       ->method('getSource')
       ->will($this->returnValue('vfs://feeds/test_file'));
+
+    $this->expectException(RuntimeException::class);
     $this->fetcher->fetch($feed, $this->state);
   }
 

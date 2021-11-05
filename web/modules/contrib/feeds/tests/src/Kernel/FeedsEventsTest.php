@@ -73,7 +73,7 @@ class FeedsEventsTest extends FeedsKernelTestBase {
 
     // Ensure that the import failed because of validation errors.
     $messages = \Drupal::messenger()->all();
-    $this->assertContains('This value should not be null.', (string) $messages['warning'][0]);
+    $this->assertStringContainsString('This value should not be null.', (string) $messages['warning'][0]);
     $this->assertNodeCount(0);
 
     // Clear messages.

@@ -2,6 +2,7 @@
 
 namespace Drupal\leaflet\Plugin\Field\FieldWidget;
 
+use Drupal\geofield\Plugin\GeofieldBackendManager;
 use Drupal\leaflet\LeafletSettingsElementsTrait;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -87,6 +88,8 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
    *   The geoPhpWrapper.
    * @param \Drupal\geofield\WktGeneratorInterface $wkt_generator
    *   The WKT format Generator service.
+   * @param \Drupal\geofield\Plugin\GeofieldBackendManager $geofield_backend_manager
+   *   The geofieldBackendManager.
    * @param \Drupal\leaflet\LeafletService $leaflet_service
    *   The Leaflet service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
@@ -104,6 +107,7 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
     array $third_party_settings,
     GeoPHPInterface $geophp_wrapper,
     WktGeneratorInterface $wkt_generator,
+    GeofieldBackendManager $geofield_backend_manager,
     LeafletService $leaflet_service,
     ModuleHandlerInterface $module_handler,
     LinkGeneratorInterface $link_generator,
@@ -116,7 +120,8 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
       $settings,
       $third_party_settings,
       $geophp_wrapper,
-      $wkt_generator
+      $wkt_generator,
+      $geofield_backend_manager
     );
     $this->leafletService = $leaflet_service;
     $this->moduleHandler = $module_handler;
@@ -136,6 +141,7 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
       $configuration['third_party_settings'],
       $container->get('geofield.geophp'),
       $container->get('geofield.wkt_generator'),
+      $container->get('plugin.manager.geofield_backend'),
       $container->get('leaflet.service'),
       $container->get('module_handler'),
       $container->get('link_generator'),
@@ -164,12 +170,11 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
       ],
       'toolbar' => [
         'position' => 'topright',
-        'drawMarker' => TRUE,
+        'marker' => 'defaultMarker',
         'drawPolyline' => TRUE,
         'drawRectangle' => TRUE,
         'drawPolygon' => TRUE,
         'drawCircle' => FALSE,
-        'drawCircleMarker' => FALSE,
         'editMode' => TRUE,
         'dragMode' => TRUE,
         'cutPolygon' => FALSE,
@@ -204,10 +209,16 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
       '#required' => TRUE,
       '#default_value' => $map_settings['height'] ?? $default_settings['map']['height'],
     ];
+    $form['map']['locate'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Automatically locate user current position'),
+      '#description' => t("This option initially centers the map to the user position (only in case of empty map)."),
+      '#default_value' => $map_settings['locate'] ?? $default_settings['map']['locate'],
+    ];
     $form['map']['auto_center'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Automatically center map on existing features'),
-      '#description' => t("This option overrides the widget's default center."),
+      '#description' => t("This option overrides the widget's default center (in case of not empty map)."),
       '#default_value' => $map_settings['auto_center'] ?? $default_settings['map']['auto_center'],
     ];
 
@@ -215,12 +226,6 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
     $map_position_options = $map_settings['map_position'] ?? $default_settings['map']['map_position'];
     $form['map']['map_position'] = $this->generateMapPositionElement($map_position_options);
 
-    $form['map']['locate'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Automatically locate user current position'),
-      '#description' => t("This option centers the map to the user position."),
-      '#default_value' => $map_settings['locate'] ?? $default_settings['map']['locate'],
-    ];
     $form['map']['scroll_zoom_enabled'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable Scroll Wheel Zoom on click'),
@@ -276,10 +281,16 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
       '#default_value' => $toolbar_settings['position'] ?? $default_settings['toolbar']['position'],
     ];
 
-    $form['toolbar']['drawMarker'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Adds button to draw markers.'),
-      '#default_value' => $toolbar_settings['drawMarker'] ?? $default_settings['toolbar']['drawMarker'],
+    $form['toolbar']['marker'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Marker button.'),
+      '#options' => [
+        'none' => $this->t('None'),
+        'defaultMarker' => $this->t('Default marker'),
+        'circleMarker' => $this->t('Circle marker'),
+      ],
+      '#description' => $this->t('Use <b>Default marker</b> for default Point Marker. In case of <b>Circle marker</b> size can be changed by setting the <em>radius</em> property in <strong>Path Geometries Options</strong> below'),
+      '#default_value' => $toolbar_settings['marker'] ?? $default_settings['toolbar']['marker'],
     ];
     $form['toolbar']['drawPolyline'] = [
       '#type' => 'checkbox',
@@ -303,13 +314,6 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
       '#type' => 'checkbox',
       '#title' => $this->t('Adds button to draw circle. (unsupported by GeoJSON'),
       '#default_value' => $toolbar_settings['drawCircle'] ?? $default_settings['toolbar']['drawCircle'],
-      '#disabled' => TRUE,
-    ];
-
-    $form['toolbar']['drawCircleMarker'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Adds button to draw circle marker. (unsupported by GeoJSON'),
-      '#default_value' => $toolbar_settings['drawCircleMarker'] ?? $default_settings['toolbar']['drawCircleMarker'],
       '#disabled' => TRUE,
     ];
 
@@ -368,8 +372,6 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
     // Determine map settings and add map element.
     $map_settings = $this->getSetting('map');
     $default_settings = self::defaultSettings();
-
-
     $input_settings = $this->getSetting('input');
     $js_settings = [];
     $map = leaflet_map_get_info($map_settings['leaflet_map'] ?? $default_settings['map']['leaflet_map']);
@@ -398,7 +400,6 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
 
     if (!empty($map_settings['locate'])) {
       $js_settings['locate'] = TRUE;
-      unset($map['settings']['center']);
     }
 
     // Allow other modules to add/alter the map js settings.

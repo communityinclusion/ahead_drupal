@@ -2,16 +2,12 @@
 
 namespace Drupal\feeds;
 
-use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\feeds\Plugin\PluginFormFactory;
 use Drupal\feeds\Plugin\Type\FeedsPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Form controller for the feed edit forms.
@@ -26,40 +22,23 @@ class FeedForm extends ContentEntityForm {
   protected $formFactory;
 
   /**
-   * Constructs an FeedTypeForm object.
-   *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
-   * @param \Drupal\feeds\Plugin\PluginFormFactory $factory
-   *   The form factory.
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
-   *   The entity type bundle service.
-   * @param \Drupal\Component\Datetime\TimeInterface $time
-   *   The time service.
-   */
-  public function __construct(EntityManagerInterface $entity_manager, PluginFormFactory $factory, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL) {
-    parent::__construct($entity_manager, $entity_type_bundle_info, $time);
-    $this->formFactory = $factory;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    // Compatibility with Drupal 8.2.x.
-    try {
-      $datetime = $container->get('datetime.time');
-    }
-    catch (ServiceNotFoundException $e) {
-      $datetime = NULL;
-    }
+    $instance = parent::create($container);
+    $instance->setPluginFormFactory($container->get('feeds_plugin_form_factory'));
 
-    return new static(
-      $container->get('entity.manager'),
-      $container->get('feeds_plugin_form_factory'),
-      $container->get('entity_type.bundle.info'),
-      $datetime
-    );
+    return $instance;
+  }
+
+  /**
+   * Sets the form factory, used to generate forms for Feeds plugins.
+   *
+   * @param \Drupal\feeds\Plugin\PluginFormFactory $factory
+   *   The Feeds form factory.
+   */
+  protected function setPluginFormFactory(PluginFormFactory $factory) {
+    $this->formFactory = $factory;
   }
 
   /**
@@ -119,6 +98,7 @@ class FeedForm extends ContentEntityForm {
       '#type' => 'checkbox',
       '#title' => $this->t('Active'),
       '#default_value' => $feed->isActive(),
+      '#description' => $this->t('Uncheck the above checkbox to disable periodic import for this feed.'),
     ];
 
     return $form;

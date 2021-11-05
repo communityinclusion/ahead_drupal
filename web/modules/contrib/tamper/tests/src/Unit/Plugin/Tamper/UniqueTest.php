@@ -24,7 +24,8 @@ class UniqueTest extends TamperPluginTestBase {
    * Tests unique with a single value.
    */
   public function testUniqueWithSingleValue() {
-    $this->setExpectedException(TamperException::class, 'Input should be an array.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be an array.');
     $this->plugin->tamper('foo');
   }
 

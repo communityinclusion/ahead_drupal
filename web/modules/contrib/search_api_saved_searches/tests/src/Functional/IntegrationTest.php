@@ -33,6 +33,11 @@ class IntegrationTest extends BrowserTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * A admin user used in this test.
    *
    * @var \Drupal\user\Entity\User
@@ -288,13 +293,13 @@ END;
     $this->assertEquals(4, preg_match_all($regex, $first_mail['body'], $matches, PREG_SET_ORDER));
     $first_mail_urls = [];
     foreach ($matches as $match) {
-      $this->assertContains('token=', $match[2], "{$match[1]} URL for first saved search doesn't include a token.");
+      $this->assertStringContainsString('token=', $match[2], "{$match[1]} URL for first saved search doesn't include a token.");
       $first_mail_urls[$match[1]] = $match[2];
     }
     $this->assertEquals(4, preg_match_all($regex, $second_mail['body'], $matches, PREG_SET_ORDER));
     $second_mail_urls = [];
     foreach ($matches as $match) {
-      $this->assertContains('token=', $match[2], "{$match[1]} URL for second saved search doesn't include a token.");
+      $this->assertStringContainsString('token=', $match[2], "{$match[1]} URL for second saved search doesn't include a token.");
       $second_mail_urls[$match[1]] = $match[2];
     }
 
@@ -417,10 +422,10 @@ END;
     $mail_urls = [];
     foreach ($matches as $match) {
       if ($match[1] === 'Activate') {
-        $this->assertContains('token=', $match[2], "{$match[1]} URL for saved search doesn't include a token.");
+        $this->assertStringContainsString('token=', $match[2], "{$match[1]} URL for saved search doesn't include a token.");
       }
       else {
-        $this->assertNotContains('token=', $match[2], "{$match[1]} URL for saved search unnecessarily includes a token.");
+        $this->assertStringNotContainsString('token=', $match[2], "{$match[1]} URL for saved search unnecessarily includes a token.");
       }
       $mail_urls[$match[1]] = $match[2];
     }
@@ -567,7 +572,7 @@ END;
    * @param string $string
    *   The string for which to test proper escaping.
    */
-  protected function assertOnlyEscaped($string) {
+  protected function assertOnlyEscaped(string $string) {
     $assert_session = $this->assertSession();
 
     $escaped = Html::escape($string);

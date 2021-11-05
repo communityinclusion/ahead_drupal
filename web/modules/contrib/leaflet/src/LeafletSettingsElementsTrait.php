@@ -90,8 +90,9 @@ trait LeafletSettingsElementsTrait {
       'leaflet_markercluster' => [
         'control' => FALSE,
         'options' => '{"spiderfyOnMaxZoom":true,"showCoverageOnHover":true,"removeOutsideVisibleBounds": false}',
+        'include_path' => FALSE,
       ],
-      'path' => '{"color":"#3388ff","opacity":"1.0","stroke":true,"weight":3,"fill":"depends","fillColor":"*","fillOpacity":"0.2"}',
+      'path' => '{"color":"#3388ff","opacity":"1.0","stroke":true,"weight":3,"fill":"depends","fillColor":"*","fillOpacity":"0.2","radius":"6"}',
       'geocoder' => [
         'control' => FALSE,
         'settings' => [
@@ -146,9 +147,10 @@ trait LeafletSettingsElementsTrait {
       '#options' => [
         'px' => t('px'),
         '%' => t('%'),
+        'vh' => t('vh'),
       ],
       '#default_value' => $settings['height_unit'],
-      '#description' => t("Whether height is absolute (pixels) or relative (percent).<br><strong>Note:</strong> In case of Percent the Leaflet Map should be wrapped in a container element with defined Height, otherwise won't show up."),
+      '#description' => t("Whether height is absolute (pixels) or relative (percent, vertical height).<br><strong>Note:</strong> In case of Percent the Leaflet Map should be wrapped in a container element with defined Height, otherwise won't show up."),
     ];
 
     $elements['hide_empty_map'] = [
@@ -770,35 +772,49 @@ trait LeafletSettingsElementsTrait {
             'attributes' => ['target' => 'blank'],
           ])),
         ]),
-        '#default_value' => isset($settings['leaflet_markercluster']['control']) ? $settings['leaflet_markercluster']['control'] : $default_settings['leaflet_markercluster']['control'],
+        '#default_value' => $settings['leaflet_markercluster']['control'] ?? $default_settings['leaflet_markercluster']['control'],
         '#description' => $this->t("@leaflet_markercluster_submodule_warning", [
           '@leaflet_markercluster_submodule_warning' => $leaflet_markercluster_submodule_warning,
         ]),
         '#return_value' => 1,
       ];
-      $element['leaflet_markercluster']['options'] = [
-        '#type' => 'textarea',
-        '#rows' => 4,
-        '#title' => $this->t('Marker Cluster Additional Options'),
-        '#description' => $this->t('An object literal of additional marker cluster options, that comply with the Leaflet Markercluster Js Library.<br>The syntax should respect the javascript object notation (json) format.<br>As suggested in the field placeholder, always use double quotes (") both for the indexes and the string values.'),
-        '#default_value' => isset($settings['leaflet_markercluster']['options']) ? $settings['leaflet_markercluster']['options'] : $default_settings['leaflet_markercluster']['options'],
-        '#placeholder' => $default_settings['leaflet_markercluster']['options'],
-        '#element_validate' => [[get_class($this), 'jsonValidate']],
-      ];
       if (isset($this->fieldDefinition)) {
-        $element['leaflet_markercluster']['options']['#states'] = [
+        $leaflet_markercluster_visibility = [
           'visible' => [
             ':input[name="fields[' . $this->fieldDefinition->getName() . '][settings_edit_form][settings][leaflet_markercluster][control]"]' => ['checked' => TRUE],
           ],
         ];
       }
       else {
-        $element['leaflet_markercluster']['options']['#states'] = [
+        $leaflet_markercluster_visibility = [
           'visible' => [
             ':input[name="style_options[leaflet_markercluster][control]"]' => ['checked' => TRUE],
           ],
         ];
       }
+      $element['leaflet_markercluster']['options'] = [
+        '#type' => 'textarea',
+        '#rows' => 4,
+        '#title' => $this->t('Marker Cluster Additional Options'),
+        '#description' => $this->t('An object literal of additional marker cluster options, that comply with the Leaflet Markercluster Js Library.<br>The syntax should respect the javascript object notation (json) format.<br>As suggested in the field placeholder, always use double quotes (") both for the indexes and the string values.'),
+        '#default_value' => $settings['leaflet_markercluster']['options'] ?? $default_settings['leaflet_markercluster']['options'],
+        '#placeholder' => $default_settings['leaflet_markercluster']['options'],
+        '#element_validate' => [[get_class($this), 'jsonValidate']],
+        '#states' => $leaflet_markercluster_visibility,
+      ];
+      $element['leaflet_markercluster']['include_path'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Enable Markeclustering of Paths elements'),
+        '#default_value' => $settings['leaflet_markercluster']['include_path'] ?? $default_settings['leaflet_markercluster']['include_path'],
+        '#description' => $this->t("Check this options to extend Markerclustering to the Leaflet Map features extending the @path_class_link (Polygon, Polyline, Circle).", [
+          '@path_class_link' => $this->link->generate($this->t('Leaflet Path class'), Url::fromUri('https://leafletjs.com/reference-1.7.1.html#path', [
+            'absolute' => TRUE,
+            'attributes' => ['target' => 'blank'],
+          ])),
+        ]),
+        '#return_value' => 1,
+        '#states' => $leaflet_markercluster_visibility,
+      ];
     }
     else {
       $element['leaflet_markercluster']['markup'] = [

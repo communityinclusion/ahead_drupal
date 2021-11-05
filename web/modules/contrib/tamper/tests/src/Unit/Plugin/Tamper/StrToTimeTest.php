@@ -35,7 +35,7 @@ class StrToTimeTest extends TamperPluginTestBase {
    * @covers ::tamper
    */
   public function testTamperExceptionWithInvalidInput() {
-    $this->setExpectedException(TamperException::class);
+    $this->expectException(TamperException::class);
     $this->plugin->tamper(new \stdClass());
   }
 

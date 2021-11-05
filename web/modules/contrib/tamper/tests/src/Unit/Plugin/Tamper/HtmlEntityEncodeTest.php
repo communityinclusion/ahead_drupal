@@ -31,7 +31,8 @@ class HtmlEntityEncodeTest extends TamperPluginTestBase {
    * Test explode.
    */
   public function testHtmlEntityEncodeWithMultipleValues() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $original = ['foo,bar', 'baz,zip'];
     $this->plugin->tamper($original);
   }

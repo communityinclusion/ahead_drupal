@@ -21,7 +21,14 @@ abstract class FeedsKernelTestBase extends EntityKernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['field', 'node', 'feeds', 'text', 'filter'];
+  public static $modules = [
+    'field',
+    'node',
+    'feeds',
+    'text',
+    'filter',
+    'options',
+  ];
 
   /**
    * {@inheritdoc}
@@ -32,6 +39,7 @@ abstract class FeedsKernelTestBase extends EntityKernelTestBase {
     // Install database schemes.
     $this->installEntitySchema('feeds_feed');
     $this->installEntitySchema('feeds_subscription');
+    $this->installSchema('feeds', 'feeds_clean_list');
     $this->installSchema('node', 'node_access');
 
     // Create a content type.
@@ -51,7 +59,7 @@ abstract class FeedsKernelTestBase extends EntityKernelTestBase {
     $this->installEntitySchema('taxonomy_term');
 
     // Create tags vocabulary.
-    $vocabulary = $this->entityManager->getStorage('taxonomy_vocabulary')->create([
+    $vocabulary = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->create([
       'vid' => 'tags',
       'name' => 'Tags',
     ]);

@@ -9,6 +9,7 @@ namespace Drupal\Tests\feeds_para_mapper\Functional;
  * @group Feeds Paragraphs
  */
 class ImportingTest extends FeedsParaMapperTestBase {
+  protected $defaultTheme = 'stark';
   protected function setUp()
   {
     parent::setUp();

@@ -7,10 +7,10 @@ dependencies:
   - facets:facets
   - search_api_saved_searches:search_api_saved_searches
   - search_api:search_api_test_views
-core: 8.x
+core_version_requirement: ^8.8 || ^9
 hidden: true
 
-# Information added by Drupal.org packaging script on 2019-11-07
-version: '8.x-1.0-alpha2'
+# Information added by Drupal.org packaging script on 2021-02-21
+version: '8.x-1.0-alpha3'
 project: 'search_api_saved_searches'
-datestamp: 1573121890
+datestamp: 1613930454

@@ -17,7 +17,8 @@ class FeedsItemGuidFormatterTest extends FeedsItemFormatterTestBase {
 
     // Set display mode for feeds_item to feeds_item_guid on article content
     // type.
-    entity_get_display('node', 'article', 'default')
+    $this->container->get('entity_display.repository')
+      ->getViewDisplay('node', 'article', 'default')
       ->setComponent('feeds_item', [
         'type' => 'feeds_item_guid',
         'weight' => 1,
@@ -40,11 +41,13 @@ class FeedsItemGuidFormatterTest extends FeedsItemFormatterTestBase {
     $article->feeds_item->guid = $input;
 
     // Display the article and test we are getting correct output for guid.
-    $display = entity_get_display($article->getEntityTypeId(), $article->bundle(), 'default');
+    $display = $this->container->get('entity_display.repository')
+      ->getViewDisplay($article->getEntityTypeId(), $article->bundle(), 'default');
+
     $content = $display->build($article);
     $rendered_content = $this->container->get('renderer')->renderRoot($content);
     if ($expected) {
-      $this->assertContains($expected, (string) $rendered_content);
+      $this->assertStringContainsString($expected, (string) $rendered_content);
     }
     else {
       // If nothing is expected to be displayed, check if the field is rendered
@@ -58,11 +61,11 @@ class FeedsItemGuidFormatterTest extends FeedsItemFormatterTestBase {
    */
   public function providerGuids() {
     return [
-      'integer guid' => ['1', '<div class="field__item">1</div>'],
+      'integer guid' => ['1', '<div>1</div>'],
       'empty guid' => ['', NULL],
-      'zero guid' => ['0', '<div class="field__item">0</div>'],
-      'http url guid' => ['http://en.wikipedia.org/wiki/Civilization_(video_game)', '<div class="field__item"><a href="http://en.wikipedia.org/wiki/Civilization_(video_game)">http://en.wikipedia.org/wiki/Civilization_(video_game)</a></div>'],
-      'https url guid' => ['https://en.wikipedia.org/wiki/Duke_Nukem_3D', '<div class="field__item"><a href="https://en.wikipedia.org/wiki/Duke_Nukem_3D">https://en.wikipedia.org/wiki/Duke_Nukem_3D</a></div>'],
+      'zero guid' => ['0', '<div>0</div>'],
+      'http url guid' => ['http://en.wikipedia.org/wiki/Civilization_(video_game)', '<div><a href="http://en.wikipedia.org/wiki/Civilization_(video_game)">http://en.wikipedia.org/wiki/Civilization_(video_game)</a></div>'],
+      'https url guid' => ['https://en.wikipedia.org/wiki/Duke_Nukem_3D', '<div><a href="https://en.wikipedia.org/wiki/Duke_Nukem_3D">https://en.wikipedia.org/wiki/Duke_Nukem_3D</a></div>'],
     ];
   }
 

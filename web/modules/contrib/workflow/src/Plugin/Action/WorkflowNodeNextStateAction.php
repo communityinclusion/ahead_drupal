@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Sets an entity to the next state.
  *
- * The only change is the 'type' in tha Annotation, so it works on Nodes,
+ * The only change is the 'type' in the Annotation, so it works on Nodes,
  * and can be seen on admin/content page.
  *
  * @Action(
@@ -21,7 +21,7 @@ class WorkflowNodeNextStateAction extends WorkflowStateActionBase {
   /**
    * {@inheritdoc}
    */
-  public function calculateDependencies(){
+  public function calculateDependencies() {
     return [
       'module' => ['workflow', 'node'],
     ];
@@ -45,7 +45,7 @@ class WorkflowNodeNextStateAction extends WorkflowStateActionBase {
   public function execute($object = NULL) {
 
     if (!$transition = $this->getTransitionForExecution($object)) {
-      drupal_set_message('The object is not valid for this action.', 'warning');
+      $this->messenger()->addWarning('The object is not valid for this action.');
       return;
     }
 
@@ -55,8 +55,8 @@ class WorkflowNodeNextStateAction extends WorkflowStateActionBase {
     $entity = $transition->getTargetEntity();
     $field_name = $transition->getFieldName();
     $user = $transition->getOwner();
-    $force = $this->configuration['force'];
     // $comment = $transition->getComment();
+    $force = $this->configuration['force'];
 
     // Get the node's new State Id (which is the next available state).
     $to_sid = $transition->getWorkflow()->getNextSid($entity, $field_name, $user, $force);

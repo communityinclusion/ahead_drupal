@@ -2,9 +2,9 @@ langcode: nl
 status: true
 dependencies:
   module:
-    - action
-    - node
-    - workflow
+    - drupal:action
+    - drupal:node
+    - workflow:workflow
 id: change_a_node_to_next_workflow_state
 label: 'Change a node to next Workflow state'
 type: node

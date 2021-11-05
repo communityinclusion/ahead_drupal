@@ -3,6 +3,7 @@
 namespace Drupal\search_api_page\Form;
 
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Form\BaseFormIdInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
@@ -14,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Builds the search form for the search api page block.
  */
-class SearchApiPageBlockForm extends FormBase {
+class SearchApiPageBlockForm extends FormBase implements BaseFormIdInterface {
 
   /**
    * The language manager.
@@ -86,6 +87,13 @@ class SearchApiPageBlockForm extends FormBase {
   /**
    * {@inheritdoc}
    */
+  public function getBaseFormId() {
+    return 'search_api_page_block_form';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'search_api_page_block_form_' . $this->pageId;
   }
@@ -138,7 +146,7 @@ class SearchApiPageBlockForm extends FormBase {
 
     if (!$search_api_page->getCleanUrl()) {
       $route = 'search_api_page.' . $langcode . '.' . $search_api_page->id();
-      $form['#action'] = $this->getUrlGenerator()->generateFromRoute($route);
+      $form['#action'] = Url::fromRoute($route)->toString();
       $form['#method'] = 'get';
       $form['actions']['submit']['#name'] = '';
     }

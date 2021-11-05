@@ -26,7 +26,7 @@ class DateList extends DateBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       'date_min' => '',
       'date_max' => '',
@@ -43,8 +43,10 @@ class DateList extends DateBase {
       'date_year_range_reverse' => FALSE,
       'date_increment' => 1,
       'date_abbreviate' => TRUE,
-    ] + parent::getDefaultProperties();
+    ] + parent::defineDefaultProperties();
   }
+
+  /****************************************************************************/
 
   /**
    * {@inheritdoc}
@@ -151,7 +153,7 @@ class DateList extends DateBase {
     ];
     $form['date']['date_part_order'] = [
       '#type' => 'webform_tableselect_sort',
-      '#header' => ['part' => 'Date part'],
+      '#header' => ['part' => $this->t('Date part')],
       '#options' => [
         'day' => ['part' => $this->t('Days')],
         'month' => ['part' => $this->t('Months')],

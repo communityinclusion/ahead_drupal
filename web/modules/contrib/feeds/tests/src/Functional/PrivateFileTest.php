@@ -15,6 +15,11 @@ class PrivateFileTest extends FileFieldTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
   public static $modules = [
     'node',
     'file',

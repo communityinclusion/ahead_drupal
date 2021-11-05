@@ -43,7 +43,10 @@ class FeedClearHandlerTest extends FeedsUnitTestCase {
 
     $this->dispatcher = new EventDispatcher();
     $this->context = [];
-    $this->handler = new FeedClearHandler($this->dispatcher);
+    $this->handler = $this->getMockBuilder(FeedClearHandler::class)
+      ->setConstructorArgs([$this->dispatcher])
+      ->setMethods(['batchSet'])
+      ->getMock();
     $this->handler->setStringTranslation($this->getStringTranslationStub());
 
     $state = new State();
@@ -83,7 +86,6 @@ class FeedClearHandlerTest extends FeedsUnitTestCase {
 
   /**
    * @covers ::clear
-   * @expectedException \Exception
    */
   public function testException() {
     $this->dispatcher->addListener(FeedsEvents::CLEAR, function ($event) {
@@ -93,6 +95,7 @@ class FeedClearHandlerTest extends FeedsUnitTestCase {
     $this->feed->expects($this->once())
       ->method('unlock');
 
+    $this->expectException(\Exception::class);
     $this->handler->clear($this->feed, $this->context);
   }
 

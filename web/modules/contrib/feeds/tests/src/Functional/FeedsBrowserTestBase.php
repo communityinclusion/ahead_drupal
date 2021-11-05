@@ -18,6 +18,11 @@ abstract class FeedsBrowserTestBase extends BrowserTestBase {
   use FeedsCommonTrait;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Modules to enable.
    *
    * @var array

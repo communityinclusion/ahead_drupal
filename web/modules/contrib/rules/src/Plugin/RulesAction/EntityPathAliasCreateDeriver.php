@@ -60,7 +60,7 @@ class EntityPathAliasCreateDeriver extends DeriverBase implements ContainerDeriv
         'label' => $this->t('Create a @entity_type path alias', ['@entity_type' => $entity_type->getSingularLabel()]),
         'category' => $this->t('Path'),
         'entity_type_id' => $entity_type_id,
-        'context' => [
+        'context_definitions' => [
           'entity' => ContextDefinition::create("entity:$entity_type_id")
             ->setLabel($entity_type->getLabel())
             ->setRequired(TRUE)

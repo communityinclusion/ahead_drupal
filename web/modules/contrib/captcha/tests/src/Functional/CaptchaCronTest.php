@@ -17,7 +17,12 @@ class CaptchaCronTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['captcha'];
+  protected static $modules = ['captcha'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * Temporary captcha sessions storage.
@@ -31,6 +36,8 @@ class CaptchaCronTest extends BrowserTestBase {
    */
   public function setUp() {
     parent::setUp();
+
+    ini_set('session.gc_maxlifetime', 60 * 60 * 24);
 
     // Get request time.
     $request_time = \Drupal::time()->getRequestTime();

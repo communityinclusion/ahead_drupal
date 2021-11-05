@@ -3,18 +3,22 @@
 namespace Drupal\feeds\Plugin\Type\Target;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\TargetValidationException;
 use Drupal\feeds\FeedInterface;
-use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\FeedTypeInterface;
+use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Processor\EntityProcessorInterface;
 
 /**
  * Helper class for field mappers.
  */
-abstract class FieldTargetBase extends TargetBase {
+abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetInterface, TranslatableTargetInterface {
 
   /**
    * The field settings.
@@ -22,6 +26,13 @@ abstract class FieldTargetBase extends TargetBase {
    * @var array
    */
   protected $fieldSettings;
+
+  /**
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
 
   /**
    * {@inheritdoc}
@@ -36,7 +47,10 @@ abstract class FieldTargetBase extends TargetBase {
     $field_definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions($processor->entityType(), $processor->bundle());
 
     foreach ($field_definitions as $id => $field_definition) {
-      if ($field_definition->isReadOnly() || $id === $processor->bundleKey()) {
+      if (isset($targets[$id])) {
+        continue;
+      }
+      if ($id === $processor->bundleKey()) {
         continue;
       }
       if (in_array($field_definition->getType(), $definition['field_types'])) {
@@ -76,13 +90,57 @@ abstract class FieldTargetBase extends TargetBase {
    */
   public function setTarget(FeedInterface $feed, EntityInterface $entity, $field_name, array $values) {
     if ($values = $this->prepareValues($values)) {
-      $item_list = $entity->get($field_name);
+      $entity_target = $this->getEntityTarget($feed, $entity);
+      if (!empty($entity_target)) {
+        $item_list = $entity_target->get($field_name);
 
-      // Append these values to the existing values.
-      $values = array_merge($item_list->getValue(), $values);
+        // Append these values to the existing values.
+        $values = array_merge($item_list->getValue(), $values);
 
-      $item_list->setValue($values);
+        $item_list->setValue($values);
+      }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isMutable() {
+    return !$this->targetDefinition->getFieldDefinition()->isReadOnly();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isEmpty(FeedInterface $feed, EntityInterface $entity, $field_name) {
+    return $entity->get($field_name)->isEmpty();
+  }
+
+  /**
+   * Get entity, or entity translation to set the map.
+   *
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to import.
+   *
+   * @see \Drupal\feeds\Plugin\Type\Target\FieldTargetBase::isTargetTranslatable()
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   Self entity or entity translation.
+   */
+  public function getEntityTarget(FeedInterface $feed, EntityInterface $entity) {
+    if ($entity instanceof TranslatableInterface && $this->isTargetTranslatable()) {
+      if ($this->languageExists()) {
+        $processor = $feed->getType()->getProcessor();
+        if ($processor instanceof EntityProcessorInterface) {
+          return $processor->getEntityTranslation($feed, $entity, $this->getLangcode());
+        }
+      }
+      return;
+    }
+
+    return $entity;
   }
 
   /**
@@ -243,6 +301,126 @@ abstract class FieldTargetBase extends TargetBase {
       }
     }
     return $remove;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    $configuration = [];
+    if ($this->isTargetFieldTranslatable()) {
+      $configuration['language'] = NULL;
+    }
+    return $configuration;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSummary() {
+    $summary = [];
+
+    if (!$this->isMutable()) {
+      $summary[] = $this->t('Read only');
+    }
+
+    if ($this->isTargetTranslatable()) {
+      $language = $this->getLanguageManager()->getLanguage($this->configuration['language']);
+      if ($language instanceof LanguageInterface) {
+        $summary[] = $this->t('Language: @language', ['@language' => $language->getName()]);
+      }
+    }
+
+    return $summary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    if ($this->isTargetFieldTranslatable()) {
+      $languages = $this->getLanguageManager()->getLanguages();
+      $options = [
+        '' => $this->t('Default'),
+      ];
+      foreach ($languages as $langcode => $language) {
+        $options[$langcode] = $language->getName();
+      }
+      $language_default = !empty($this->configuration['language']) ? $this->configuration['language'] : '';
+      $form['language'] = [
+        '#title'   => $this->t('Language'),
+        '#options' => $options,
+        '#type'    => 'select',
+        '#default_value' => $language_default,
+      ];
+    }
+    return $form;
+  }
+
+  /**
+   * Gets the language manager.
+   *
+   * @return \Drupal\Core\Language\LanguageManagerInterface
+   *   The language manager.
+   */
+  protected function getLanguageManager() {
+    if (!isset($this->languageManager)) {
+      $this->setLanguageManager(\Drupal::service('language_manager'));
+    }
+    return $this->languageManager;
+  }
+
+  /**
+   * Sets the language manager.
+   *
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The language manager.
+   */
+  public function setLanguageManager(LanguageManagerInterface $language_manager) {
+    $this->languageManager = $language_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function languageExists() {
+    return $this->getLanguageManager()->getLanguage($this->configuration['language']) instanceof LanguageInterface;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isTargetTranslatable() {
+    return $this->isTargetFieldTranslatable() && !empty($this->configuration['language']);
+  }
+
+  /**
+   * Checks if the targeted field is translatable.
+   *
+   * @return bool
+   *   True if the field is translatable. False otherwise.
+   */
+  protected function isTargetFieldTranslatable() {
+    $field_storage = $this->targetDefinition->getFieldDefinition()->getFieldStorageDefinition();
+    return !empty($field_storage) && $field_storage->isTranslatable();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLangcode() {
+    if (!empty($this->configuration['language'])) {
+      return $this->configuration['language'];
+    }
+
+    // Get the language from the processor, if the processor has one.
+    $processor = $this->feedType->getProcessor();
+    if ($processor instanceof EntityProcessorInterface) {
+      return $processor->entityLanguage();
+    }
+
+    // Return default language.
+    return $this->getLanguageManager()->getDefaultLanguage()->getId();
   }
 
 }

@@ -4,7 +4,7 @@ namespace Drupal\Tests\feeds\Kernel\Feeds\Source;
 
 use Drupal\node\Entity\Node;
 use Drupal\Tests\feeds\Kernel\FeedsKernelTestBase;
-use Drupal\Tests\taxonomy\Functional\TaxonomyTestTrait;
+use Drupal\Tests\taxonomy\Traits\TaxonomyTestTrait;
 
 /**
  * @coversDefaultClass \Drupal\feeds\Feeds\Source\BasicFieldSource

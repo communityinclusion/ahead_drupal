@@ -6,7 +6,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\workflow\Entity\WorkflowState;
-use Drupal\workflow_ui\Form\WorkflowConfigTransitionFormBase;
+use Drupal\workflow\Form\WorkflowConfigTransitionFormBase;
 
 /**
  * Provides the base form for workflow add and edit forms.
@@ -44,10 +44,10 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
    */
   public function buildHeader() {
     $header = [
-      'label_new' => t('State'),
-      'view' => t('Roles who can view posts in this state'),
-      'update' => t('Roles who can edit posts in this state'),
-      'delete' => t('Roles who can delete posts in this state'),
+      'label_new' => $this->t('State'),
+      'view' => $this->t('Roles who can view posts in this state'),
+      'update' => $this->t('Roles who can edit posts in this state'),
+      'delete' => $this->t('Roles who can delete posts in this state'),
     ];
     return $header;
   }
@@ -60,7 +60,7 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
 
     $workflow = $this->workflow;
     if ($workflow) {
-      /* @var $state WorkflowState */
+      /** @var \Drupal\workflow\Entity\WorkflowState $state */
       $state = $entity;
       $sid = $state->id();
 
@@ -93,7 +93,7 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
 
       $row['label_new'] = [
         '#type' => 'value',
-        '#markup' => t('@label', ['@label' => $state->label()]),
+        '#markup' => $this->t('@label', ['@label' => $state->label()]),
       ];
       $row['view'] = [
         '#type' => 'checkboxes',
@@ -119,7 +119,7 @@ class WorkflowAccessRoleForm extends WorkflowConfigTransitionFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($form_state->getValue($this->entitiesKey) as $sid => $access) {
-      // @todo: not waterproof; can be done smarter, using elementchildren().
+      // @todo Not waterproof; can be done smarter, using elementchildren().
       if (!WorkflowState::load($sid)) {
         continue;
       }

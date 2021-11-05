@@ -145,7 +145,7 @@ Your saved search "[search-api-saved-search:label]" has [search-api-saved-search
       $entity = $this->addTestEntity($i + 1, [
         'name' => $label,
       ]);
-      $url = $entity->url('canonical', ['absolute' => TRUE]);
+      $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
       $result_links[] = "- $label\n  $url";
       $result_items[] = $fields_helper->createItemFromObject($index, $entity->getTypedData(), NULL, $datasource);
     }

@@ -27,7 +27,8 @@ class ImplodeTest extends TamperPluginTestBase {
    * Tests imploding with a single value.
    */
   public function testImplodeWithSingleValue() {
-    $this->setExpectedException(TamperException::class, 'Input should be an array.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be an array.');
     $original = 'foo';
     $this->plugin->tamper($original);
   }

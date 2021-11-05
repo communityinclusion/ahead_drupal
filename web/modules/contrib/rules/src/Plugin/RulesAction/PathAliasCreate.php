@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "rules_path_alias_create",
  *   label = @Translation("Create any path alias"),
  *   category = @Translation("Path"),
- *   context = {
+ *   context_definitions = {
  *     "source" = @ContextDefinition("string",
  *       label = @Translation("Existing system path"),
  *       description = @Translation("Specifies the existing path you wish to alias. For example, '/node/28' or '/forum/1'.")

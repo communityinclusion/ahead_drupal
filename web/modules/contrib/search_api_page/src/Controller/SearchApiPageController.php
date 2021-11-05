@@ -13,6 +13,7 @@ use Drupal\search_api_page\Entity\SearchApiPage;
 use Drupal\search_api_page\SearchApiPageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Pager\PagerManagerInterface;
 
 /**
  * Defines a controller to serve search pages.
@@ -27,20 +28,33 @@ class SearchApiPageController extends ControllerBase {
   protected $parseModePluginManager;
 
   /**
+   * The parse mode pager manager.
+   *
+   * @var Drupal\Core\Pager\PagerManagerInterface
+   */
+  protected $pagerManager;
+
+  /**
    * SearchApiPageController constructor.
    *
    * @param \Drupal\search_api\ParseMode\ParseModePluginManager $parseModePluginManager
    *   The parse mode plugin manager.
+   * @param Drupal\Core\Pager\PagerManagerInterface $pagerManager
+   *   The parse mode pager manager.
    */
-  public function __construct(ParseModePluginManager $parseModePluginManager) {
+  public function __construct(ParseModePluginManager $parseModePluginManager, PagerManagerInterface $pagerManager) {
     $this->parseModePluginManager = $parseModePluginManager;
+    $this->pagerManager = $pagerManager;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.search_api.parse_mode'));
+    return new static(
+      $container->get('plugin.manager.search_api.parse_mode'),
+      $container->get('pager.manager')
+    );
   }
 
   /**
@@ -166,6 +180,7 @@ class SearchApiPageController extends ControllerBase {
       $viewedResult = $this->entityTypeManager()
         ->getViewBuilder($entity->getEntityTypeId())
         ->view($entity, $viewMode);
+      $viewedResult['#search_api_excerpt'] = $item->getExcerpt();
     }
 
     if ($search_api_page->renderAsSnippets()) {
@@ -177,6 +192,7 @@ class SearchApiPageController extends ControllerBase {
     }
 
     $metadata = CacheableMetadata::createFromRenderArray($viewedResult);
+    $metadata->addCacheContexts(['url.path']);
     $metadata->addCacheTags(['search_api_page.style']);
     $metadata->applyTo($viewedResult);
     return $viewedResult;
@@ -300,7 +316,7 @@ class SearchApiPageController extends ControllerBase {
 
     $build['#results'] = $results;
 
-    pager_default_initialize($result->getResultCount(), $search_api_page->getLimit());
+    $this->pagerManager->createPager($result->getResultCount(), $search_api_page->getLimit());
     $build['#pager'] = [
       '#type' => 'pager',
     ];

@@ -4,7 +4,6 @@ namespace Drupal\Tests\profile\Functional;
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\profile\Entity\ProfileType;
@@ -54,6 +53,11 @@ abstract class ProfileTestBase extends BrowserTestBase {
    * @var \Drupal\user\Entity\User
    */
   protected $adminUser;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -162,7 +166,6 @@ abstract class ProfileTestBase extends BrowserTestBase {
       "delete any $id profile",
     ]);
 
-    user_role_grant_permissions(AccountInterface::AUTHENTICATED_ROLE, ['access user profiles']);
     $this->adminUser = $this->drupalCreateUser([
       'administer profile types',
       'administer profile',

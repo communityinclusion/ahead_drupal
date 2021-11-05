@@ -2,7 +2,5 @@ name: Feeds
 description: 'Aggregates RSS/Atom/RDF feeds, imports CSV files and more.'
 package: Feeds
 type: module
-core: 8.x
+core_version_requirement: ^8.9 || ^9
 configure: entity.feeds_feed_type.collection
-dependencies:
-  - drupal:system (>=8.7.0)

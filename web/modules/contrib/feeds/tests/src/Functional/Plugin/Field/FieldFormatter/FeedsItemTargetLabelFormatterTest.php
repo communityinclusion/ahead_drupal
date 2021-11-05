@@ -17,7 +17,8 @@ class FeedsItemTargetLabelFormatterTest extends FeedsItemFormatterTestBase {
 
     // Set display mode for feeds_item to feeds_item_target_label on article
     // content type.
-    entity_get_display('node', 'article', 'default')
+    $display = $this->container->get('entity_display.repository')
+      ->getViewDisplay('node', 'article', 'default')
       ->setComponent('feeds_item', [
         'type' => 'feeds_item_target_label',
         'settings' => ['link' => FALSE],
@@ -39,15 +40,17 @@ class FeedsItemTargetLabelFormatterTest extends FeedsItemFormatterTestBase {
     $article = $this->createNodeWithFeedsItem($feed);
 
     // Display the article and test we are getting correct output for label.
-    $display = entity_get_display($article->getEntityTypeId(), $article->bundle(), 'default');
+    $display = $this->container->get('entity_display.repository')
+      ->getViewDisplay($article->getEntityTypeId(), $article->bundle(), 'default');
+
     $content = $display->build($article);
     $rendered_content = $this->container->get('renderer')->renderRoot($content);
     $this->htmlOutput($rendered_content);
 
     // Assert that the label of the feeds_item field is displayed.
-    $this->assertContains('<div class="field__label">feeds_item label</div>', (string) $rendered_content);
+    $this->assertStringContainsString('<div>Feeds item</div>', (string) $rendered_content);
     // Assert that the label of the feed is displayed.
-    $this->assertContains('<div class="field__item">' . $feed->label() . '</div>', (string) $rendered_content);
+    $this->assertStringContainsString('<div>' . $feed->label() . '</div>', (string) $rendered_content);
   }
 
   /**
@@ -61,7 +64,8 @@ class FeedsItemTargetLabelFormatterTest extends FeedsItemFormatterTestBase {
 
     // Set display mode for feeds_item to feeds_item_target_label on article
     // content type.
-    entity_get_display('node', 'article', 'default')
+    $display = $this->container->get('entity_display.repository')
+      ->getViewDisplay('node', 'article', 'default')
       ->setComponent('feeds_item', [
         'type' => 'feeds_item_target_label',
         'settings' => ['link' => TRUE],
@@ -89,11 +93,13 @@ class FeedsItemTargetLabelFormatterTest extends FeedsItemFormatterTestBase {
     $article = $this->createNodeWithFeedsItem($feed);
 
     // Display the article and test we are getting correct output for label.
-    $display = entity_get_display($article->getEntityTypeId(), $article->bundle(), 'default');
+    $display = $this->container->get('entity_display.repository')
+      ->getViewDisplay($article->getEntityTypeId(), $article->bundle(), 'default');
+
     $content = $display->build($article);
     $rendered_content = $renderer->renderRoot($content);
     $this->htmlOutput($rendered_content);
-    $this->assertContains('<div class="field__item">' . (string) $renderer->renderRoot($expected), (string) $rendered_content);
+    $this->assertStringContainsString('<div>' . (string) $renderer->renderRoot($expected), (string) $rendered_content);
   }
 
 }

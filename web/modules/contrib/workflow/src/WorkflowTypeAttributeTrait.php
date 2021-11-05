@@ -2,11 +2,10 @@
 
 namespace Drupal\workflow;
 
-use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\workflow\Entity\Workflow;
 
 /**
- * Wrapper methods for Workflow* objects
+ * Wrapper methods for Workflow* objects.
  *
  * Using this trait will add getWorkflow(), getWorkflowID() and setWorkflow()
  * methods to the class.
@@ -24,17 +23,18 @@ trait WorkflowTypeAttributeTrait {
 
   /**
    * The attached Workflow.
+   *
    * It must explicitly be defined, and not be public, to avoid errors
    * when exporting with json_encode().
    *
-   * @var Workflow
+   * @var \Drupal\workflow\Entity\Workflow
    */
   protected $workflow = NULL;
 
   /**
-   * @param Workflow $workflow
+   * @param \Drupal\workflow\Entity\Workflow $workflow
    */
-  public function setWorkflow(Workflow $workflow) {
+  public function setWorkflow(Workflow $workflow = NULL) {
     $this->wid = '';
     $this->workflow = NULL;
     if ($workflow) {
@@ -46,7 +46,7 @@ trait WorkflowTypeAttributeTrait {
   /**
    * Returns the Workflow object of this object.
    *
-   * @return Workflow
+   * @return \Drupal\workflow\Entity\Workflow
    *   Workflow object.
    */
   public function getWorkflow() {
@@ -54,7 +54,7 @@ trait WorkflowTypeAttributeTrait {
       return $this->workflow;
     }
 
-    /** @noinspection PhpAssignmentInConditionInspection */
+    /* @noinspection PhpAssignmentInConditionInspection */
     if ($wid = $this->getWorkflowId()) {
       $this->workflow = Workflow::load($wid);
     }
@@ -63,6 +63,9 @@ trait WorkflowTypeAttributeTrait {
 
   /**
    * Sets the Workflow ID of this object.
+   *
+   * @param string $wid
+   *   Workflow ID
    *
    * @return object
    */
@@ -79,7 +82,7 @@ trait WorkflowTypeAttributeTrait {
    *   Workflow Id.
    */
   public function getWorkflowId() {
-    /** @var ContentEntityBase $this */
+    /** @var \Drupal\Core\Entity\ContentEntityBase $this */
     if (!empty($this->wid)) {
       return $this->wid;
     }
@@ -89,9 +92,9 @@ trait WorkflowTypeAttributeTrait {
       $this->wid = $value;
     }
     elseif (is_object($value)) {
+      // In WorkflowTransition.
       $wid = isset($value->getValue()[0]['target_id']) ? $value->getValue()[0]['target_id'] : '';
-      // or: $this->set('wid', $wid);
-      $this->wid = $wid; // in WorkflowTransition.
+      $this->wid = $wid;
     }
     else {
       workflow_debug(__FILE__, __FUNCTION__, __LINE__, '', '');

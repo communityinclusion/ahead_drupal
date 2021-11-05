@@ -6,7 +6,7 @@ use Drupal\Core\Plugin\ContextAwarePluginInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Context\ContextDefinitionInterface;
 use Drupal\rules\Context\ContextHandlerTrait;
-use Drupal\rules\Engine\ExecutionStateInterface;
+use Drupal\rules\Context\ExecutionStateInterface;
 
 /**
  * @coversDefaultClass \Drupal\rules\Context\ContextHandlerTrait
@@ -21,7 +21,7 @@ class ContextHandlerTraitTest extends RulesUnitTestBase {
    */
   public function testMissingContext() {
     // Set the expected exception class and message.
-    $this->setExpectedException('\Drupal\rules\Exception\EvaluationException', 'Required context test is missing for plugin testplugin');
+    $this->setExpectedException('\Drupal\rules\Exception\EvaluationException', "Required context 'test' is missing for plugin 'testplugin'");
 
     // Set 'getContextValue' as mocked method.
     $trait = $this->getMockForTrait(ContextHandlerTrait::class, [], '', TRUE, TRUE, TRUE, ['getContextValue']);

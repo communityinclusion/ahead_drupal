@@ -64,7 +64,7 @@ class UploadFetcherFeedFormTest extends FeedsUnitTestCase {
     ])->shouldBeCalled();
 
     $form = $form_object->buildConfigurationForm([], $form_state, $feed->reveal());
-    $this->assertInternalType('array', $form);
+    $this->assertIsArray($form);
 
     $form_object->validateConfigurationForm($form, $form_state, $feed->reveal());
 

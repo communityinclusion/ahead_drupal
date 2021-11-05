@@ -2,6 +2,7 @@
 
 namespace Drupal\rules\Engine;
 
+use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
 use Drupal\rules\Exception\InvalidExpressionException;
@@ -29,10 +30,13 @@ abstract class ActionExpressionContainer extends ExpressionContainerBase impleme
    *   The plugin implementation definition.
    * @param \Drupal\rules\Engine\ExpressionManagerInterface $expression_manager
    *   The rules expression plugin manager.
+   * @param \Drupal\Core\Logger\LoggerChannelInterface $logger
+   *   The Rules debug logger channel.
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ExpressionManagerInterface $expression_manager) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ExpressionManagerInterface $expression_manager, LoggerChannelInterface $logger) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->expressionManager = $expression_manager;
+    $this->rulesDebugLogger = $logger;
 
     $configuration += ['actions' => []];
     foreach ($configuration['actions'] as $action_config) {
@@ -48,8 +52,9 @@ abstract class ActionExpressionContainer extends ExpressionContainerBase impleme
     if (!$expression instanceof ActionExpressionInterface) {
       throw new InvalidExpressionException('Only action expressions can be added to an action container.');
     }
-    if ($this->getExpression($expression->getUuid())) {
-      throw new InvalidExpressionException('An action with the same UUID already exists in the container.');
+    $uuid = $expression->getUuid();
+    if ($this->getExpression($uuid)) {
+      throw new InvalidExpressionException("An action with UUID $uuid already exists in the container.");
     }
     $this->actions[] = $expression;
     return $this;
@@ -74,7 +79,8 @@ abstract class ActionExpressionContainer extends ExpressionContainerBase impleme
     // We need to update the configuration in case actions have been added or
     // changed.
     $configuration['actions'] = [];
-    foreach ($this->actions as $action) {
+    // Use the iterator, which sorts the actions by weight.
+    foreach ($this as $action) {
       $configuration['actions'][] = $action->getConfiguration();
     }
     return $configuration;
@@ -84,7 +90,19 @@ abstract class ActionExpressionContainer extends ExpressionContainerBase impleme
    * {@inheritdoc}
    */
   public function getIterator() {
-    return new \ArrayIterator($this->actions);
+    if (version_compare(phpversion(), '7.0') >= 0) {
+      // If using PHP7.0 or greater we can use the standard uasort.
+      $iterator = new \ArrayIterator($this->actions);
+      $iterator->uasort([ExpressionContainerBase::class, 'sortByWeightProperty']);
+    }
+    else {
+      // Otherwise use a custom sort for stability when all weights are default.
+      // @todo Remove this when PHP5 is no longer supported.
+      // @see https://www.drupal.org/project/rules/issues/3101013
+      ExpressionContainerBase::mergesort($this->actions, [ExpressionContainerBase::class, 'sortByWeightProperty']);
+      $iterator = new \ArrayIterator($this->actions);
+    }
+    return $iterator;
   }
 
   /**

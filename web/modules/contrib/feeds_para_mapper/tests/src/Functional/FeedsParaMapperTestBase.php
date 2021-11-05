@@ -23,6 +23,7 @@ abstract class FeedsParaMapperTestBase extends BrowserTestBase {
   protected $multiValuedParagraph = FALSE;
   protected $createdPlugins;
   protected $nested = FALSE;
+  protected $defaultTheme = 'stark';
 
 
   /**

@@ -15,6 +15,7 @@ use Drupal\feeds\Plugin\Type\Parser\ParserInterface;
 use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Tests\feeds\Kernel\FeedsKernelTestBase;
+use Drupal\Tests\feeds\Kernel\TestLogger;
 use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -81,7 +82,7 @@ class FeedTest extends FeedsKernelTestBase {
    */
   public function testGetCreatedTime() {
     $feed = $this->createFeed($this->feedType->id());
-    $this->assertInternalType('int', $feed->getCreatedTime());
+    $this->assertTrue(is_int($feed->getCreatedTime()));
   }
 
   /**
@@ -174,7 +175,7 @@ class FeedTest extends FeedsKernelTestBase {
     $feed->lock();
 
     // Assert that starting a cron import task now fails.
-    $this->setExpectedException(LockException::class);
+    $this->expectException(LockException::class);
     $feed->startCronImport();
   }
 
@@ -205,8 +206,13 @@ class FeedTest extends FeedsKernelTestBase {
   public function testPushImport() {
     $feed = $this->createFeed($this->feedType->id());
     $feed->pushImport(file_get_contents($this->resourcesPath() . '/rss/googlenewstz.rss2'));
-    // @todo pushImport() may be put a job on the queue in the future, so no
-    // further asserts are being made here.
+
+    // pushImport() is expected to put a job on a queue. Run all items from
+    // this queue.
+    $this->runCompleteQueue('feeds_feed_refresh:' . $this->feedType->id());
+
+    // Assert that 6 nodes have been created.
+    $this->assertNodeCount(6);
   }
 
   /**
@@ -286,7 +292,7 @@ class FeedTest extends FeedsKernelTestBase {
       throw new Exception();
     });
 
-    $this->setExpectedException(Exception::class);
+    $this->expectException(Exception::class);
     $feed->finishImport();
   }
 
@@ -303,7 +309,7 @@ class FeedTest extends FeedsKernelTestBase {
    */
   public function testProgressFetching() {
     $feed = $this->createFeed($this->feedType->id());
-    $this->assertInternalType('float', $feed->progressFetching());
+    $this->assertTrue(is_float($feed->progressFetching()));
   }
 
   /**
@@ -311,7 +317,7 @@ class FeedTest extends FeedsKernelTestBase {
    */
   public function testProgressParsing() {
     $feed = $this->createFeed($this->feedType->id());
-    $this->assertInternalType('float', $feed->progressParsing());
+    $this->assertTrue(is_float($feed->progressParsing()));
   }
 
   /**
@@ -319,7 +325,7 @@ class FeedTest extends FeedsKernelTestBase {
    */
   public function testProgressImporting() {
     $feed = $this->createFeed($this->feedType->id());
-    $this->assertInternalType('float', $feed->progressImporting());
+    $this->assertTrue(is_float($feed->progressImporting()));
   }
 
   /**
@@ -327,7 +333,7 @@ class FeedTest extends FeedsKernelTestBase {
    */
   public function testProgressCleaning() {
     $feed = $this->createFeed($this->feedType->id());
-    $this->assertInternalType('float', $feed->progressCleaning());
+    $this->assertTrue(is_float($feed->progressCleaning()));
   }
 
   /**
@@ -335,7 +341,7 @@ class FeedTest extends FeedsKernelTestBase {
    */
   public function testProgressClearing() {
     $feed = $this->createFeed($this->feedType->id());
-    $this->assertInternalType('float', $feed->progressClearing());
+    $this->assertTrue(is_float($feed->progressClearing()));
   }
 
   /**
@@ -343,7 +349,7 @@ class FeedTest extends FeedsKernelTestBase {
    */
   public function testProgressExpiring() {
     $feed = $this->createFeed($this->feedType->id());
-    $this->assertInternalType('float', $feed->progressExpiring());
+    $this->assertTrue(is_float($feed->progressExpiring()));
   }
 
   /**
@@ -460,7 +466,7 @@ class FeedTest extends FeedsKernelTestBase {
         ->method('defaultFeedConfiguration')
         ->will($this->returnValue([]));
 
-      $this->assertInternalType('array', $feed->getConfigurationFor($plugin));
+      $this->assertIsArray($feed->getConfigurationFor($plugin));
     }
   }
 
@@ -489,6 +495,32 @@ class FeedTest extends FeedsKernelTestBase {
         'foo' => 'bar',
       ]);
     }
+  }
+
+  /**
+   * @covers ::postDelete
+   */
+  public function testPostDeleteWithFeedTypeMissing() {
+    $feed = $this->createFeed($this->feedType->id());
+
+    // Create variables that are expected later in the log message.
+    $feed_label = $feed->label();
+    $feed_type_id = $this->feedType->id();
+
+    // Add a logger.
+    $test_logger = new TestLogger();
+    $this->container->get('logger.factory')->addLogger($test_logger);
+
+    // Delete feed type and reload feed.
+    $this->feedType->delete();
+    $feed = $this->reloadEntity($feed);
+
+    $feed->postDelete($this->container->get('entity_type.manager')->getStorage('feeds_feed'), [$feed]);
+    $logs = $test_logger->getMessages();
+    $expected_logs = [
+      'Could not perform some post cleanups for feed ' . $feed_label . ' because of the following error: The feed type "' . $feed_type_id . '" for feed 1 no longer exists.',
+    ];
+    $this->assertEquals($expected_logs, $logs);
   }
 
   /**

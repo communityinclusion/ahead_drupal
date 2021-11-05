@@ -50,8 +50,8 @@ class SavedSearchDeleteConfirmForm extends ContentEntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
-    // @todo Replace with messenger service once we depend on Drupal 8.5+.
-    drupal_set_message($this->t('The saved search was successfully deleted.'));
+    $this->messenger()
+      ->addStatus($this->t('The saved search was successfully deleted.'));
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
 

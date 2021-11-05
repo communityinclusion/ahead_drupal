@@ -39,16 +39,14 @@ class DataDefinitionFetcherTest extends KernelTestBase {
   protected $nodeDefinition;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  public static $modules = ['typed_data', 'system', 'node', 'field', 'user'];
+  protected static $modules = ['typed_data', 'system', 'node', 'field', 'user'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('node');
@@ -182,7 +180,8 @@ class DataDefinitionFetcherTest extends KernelTestBase {
    * @covers ::fetchDefinitionByPropertyPath
    */
   public function testFetchingInvalidProperty() {
-    $this->setExpectedException(InvalidArgumentException::class, "Unable to apply data selector 'field_invalid.0.value' at 'field_invalid'");
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage("Unable to apply data selector 'field_invalid.0.value' at 'field_invalid'");
     // This should trigger an exception.
     $this->dataFetcher->fetchDefinitionByPropertyPath(
       $this->nodeDefinition,
@@ -224,7 +223,8 @@ class DataDefinitionFetcherTest extends KernelTestBase {
    * @covers ::fetchDefinitionByPropertyPath
    */
   public function testFetchingNonComplexType() {
-    $this->setExpectedException(InvalidArgumentException::class, "The data selector 'field_integer.0.value.not_existing' cannot be applied because the parent property 'value' is not a list or a complex structure");
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage("The data selector 'field_integer.0.value.not_existing' cannot be applied because the parent property 'value' is not a list or a complex structure");
     // This should trigger an exception.
     $this->dataFetcher->fetchDefinitionByPropertyPath(
       $this->nodeDefinition,
@@ -236,7 +236,8 @@ class DataDefinitionFetcherTest extends KernelTestBase {
    * @covers ::fetchDefinitionByPropertyPath
    */
   public function testFetchingFromPrimitive() {
-    $this->setExpectedException(InvalidArgumentException::class, "The data selector 'unknown_property' cannot be applied because the definition of type 'string' is not a list or a complex structure");
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage("The data selector 'unknown_property' cannot be applied because the definition of type 'string' is not a list or a complex structure");
     $definition = $this->nodeDefinition
       ->getPropertyDefinition('title')
       ->getItemDefinition()
@@ -253,7 +254,8 @@ class DataDefinitionFetcherTest extends KernelTestBase {
    * @covers ::fetchDefinitionByPropertyPath
    */
   public function testFetchingAtInvalidPosition() {
-    $this->setExpectedException(InvalidArgumentException::class, "The data selector 'unknown_property' cannot be applied because the definition of type 'integer' is not a list or a complex structure");
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage("The data selector 'unknown_property' cannot be applied because the definition of type 'integer' is not a list or a complex structure");
     $list_definition = $this->typedDataManager->createListDataDefinition('integer');
 
     // This should trigger an exception.

@@ -7,6 +7,8 @@
  * @ingroup views_module_handlers
  */
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\workflow\Entity\WorkflowManager;
 use Drupal\field\FieldStorageConfigInterface;
 
 /**
@@ -18,9 +20,15 @@ function workflow_field_views_data(FieldStorageConfigInterface $field) {
 
   foreach ($data as $table_name => $table_data) {
     foreach ($table_data as $field_name => $field_data) {
-      if (isset($field_data['filter']) && $field_name != 'delta') {
+      if ($field_name == 'delta') {
+        continue;
+      }
+      if (isset($field_data['filter'])) {
         $data[$table_name][$field_name]['filter']['wid'] = (array_key_exists('workflow_type', $settings)) ? $settings['workflow_type'] : '';
         $data[$table_name][$field_name]['filter']['id'] = 'workflow_state';
+      }
+      if (isset($field_data['argument'])) {
+        $data[$table_name][$field_name]['argument']['id'] = 'workflow_state';
       }
     }
   }
@@ -33,12 +41,12 @@ function workflow_field_views_data(FieldStorageConfigInterface $field) {
  */
 function workflow_views_data_alter(array &$data) {
   // Provide an integration for each entity type except workflow entities.
-  // copied from comment.views.inc
+  // Copied from comment.views.inc.
   foreach (\Drupal::entityTypeManager()->getDefinitions() as $entity_type_id => $entity_type) {
-    if (\Drupal\workflow\Entity\WorkflowManager::isWorkflowEntityType($entity_type_id)) {
+    if (WorkflowManager::isWorkflowEntityType($entity_type_id)) {
       continue;
     }
-    if (!$entity_type->entityClassImplements(\Drupal\Core\Entity\ContentEntityInterface::class)) {
+    if (!$entity_type->entityClassImplements(ContentEntityInterface::class)) {
       continue;
     }
     if (!$entity_type->getBaseTable()) {

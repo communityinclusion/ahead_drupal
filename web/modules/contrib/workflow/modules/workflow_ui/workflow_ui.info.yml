@@ -1,17 +1,16 @@
-name: 'Workflow UI'
-description: 'Administrative UI for Workflow.'
-package: Workflow
+name: Workflow UI
 type: module
-# core: 8.x
-# version: VERSION
-
+description: 'Administrative UI for Workflow. Obsolete. Incorporated in main module.'
+package: Workflow
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - workflow:workflow
 configure: entity.workflow_type.collection
 
-dependencies:
-  - workflow
+hidden: TRUE
 
-# Information added by Drupal.org packaging script on 2018-04-29
-version: '8.x-1.1'
-core: '8.x'
+# Information added by Drupal.org packaging script on 2021-06-16
+version: '8.x-1.5'
 project: 'workflow'
-datestamp: 1525039388
+datestamp: 1623829277

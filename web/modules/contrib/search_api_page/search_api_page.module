@@ -119,7 +119,7 @@ function template_preprocess_search_api_page_result(&$variables) {
   $variables['snippet'] = ['#markup' => $item->getExcerpt()];
   $variables['title'] = $entity->label();
   if ($entity instanceof \Drupal\file\Entity\File) {
-    $variables['url'] = $entity->url();
+    $variables['url'] = $entity->createFileUrl();
   }
   else {
     $variables['url'] = $entity->toUrl()->toString();

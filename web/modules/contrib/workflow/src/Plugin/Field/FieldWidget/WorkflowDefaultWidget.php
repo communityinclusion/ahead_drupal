@@ -25,42 +25,21 @@ class WorkflowDefaultWidget extends WidgetBase {
 
   /**
    * {@inheritdoc}
-   */
-  public static function defaultSettings() {
-    return [
-      /*
-      'workflow_default' => array(
-        'label' => t('Workflow'),
-        'field types' => array('workflow'),
-        'settings' => array(
-          'fieldset' => 0,
-          'name_as_title' => 1,
-          'comment' => 1,
-        ),
-      ),
-       */
-    ] + parent::defaultSettings();
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * Be careful: Widget may be shown in very different places. Test carefully!!
-   *  - On a entity add/edit page
-   *  - On a entity preview page
-   *  - On a entity view page
-   *  - On a entity 'workflow history' tab
-   *  - On a comment display, in the comment history
-   *  - On a comment form, below the comment history
-   *
-   * @todo D8: change "array $items" to "FieldInterface $items"
+   *  - On a entity add/edit page;
+   *  - On a entity preview page;
+   *  - On a entity view page;
+   *  - On a entity 'workflow history' tab;
+   *  - On a comment display, in the comment history;
+   *  - On a comment form, below the comment history.
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
 
     $wid = $this->getFieldSetting('workflow_type');
-    /** @var $workflow Workflow */
+    /** @var \Drupal\workflow\Entity\Workflow $workflow */
     if (!$workflow = Workflow::load($wid)) {
-      // @todo: add error message.
+      // @todo Add error message.
       return $element;
     }
 
@@ -70,11 +49,11 @@ class WorkflowDefaultWidget extends WidgetBase {
       return [];
     }
 
-    /** @var $item \Drupal\workflow\Plugin\Field\FieldType\WorkflowItem */
+    /** @var \Drupal\workflow\Plugin\Field\FieldType\WorkflowItem $item */
     $item = $items[$delta];
     /** @var \Drupal\field\Entity\FieldConfig $field_config */
     $field_config = $item->getFieldDefinition();
-    /** @var $field_storage \Drupal\field\Entity\FieldStorageConfig */
+    /** @var \Drupal\field\Entity\FieldStorageConfig $field_storage */
     $field_storage = $field_config->getFieldStorageDefinition();
 
     $entity = $item->getEntity();
@@ -82,7 +61,7 @@ class WorkflowDefaultWidget extends WidgetBase {
 
     // Create a transition, to pass to the form. No need to use setValues().
     $from_sid = workflow_node_current_state($entity, $field_name);
-    /** @var $transition WorkflowTransition */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     $transition = WorkflowTransition::create([$from_sid, 'field_name' => $field_name]);
     $transition->setTargetEntity($entity);
 
@@ -90,12 +69,18 @@ class WorkflowDefaultWidget extends WidgetBase {
     // Problem 1: adding the element, does not add added fields.
     // Problem 2: adding the form, generates wrong UI.
     // Problem 3: does not work on ScheduledTransition.
-
+    //
     // Step 1: use the Element.
     $element['#default_value'] = $transition;
     $element += WorkflowTransitionElement::transitionElement($element, $form_state, $form);
     // Step 2: use the Form, in order to get extra fields.
-    $workflow_form = WorkflowManager::getWorkflowTransitionForm($entity, $field_name);
+    $form_state_additions = [
+      'input' => $form_state->getUserInput(),
+      'values' => $form_state->getValues(),
+      'triggering_element' => $form_state->getTriggeringElement(),
+    ];
+    $workflow_form = WorkflowManager::getWorkflowTransitionForm($entity, $field_name, $form_state_additions);
+
     // Determine and add the attached fields.
     $attached_fields = WorkflowManager::getAttachedFields('workflow_transition', $wid);
     foreach ($attached_fields as $key => $attached_field) {
@@ -106,7 +91,7 @@ class WorkflowDefaultWidget extends WidgetBase {
     // $form = $this->element($form, $form_state, $transition);
     //$element['workflow_transition'] = array(
     //      '#type' => 'workflow_transition',
-    //      '#title' => t('Workflow transition'),
+    //      '#title' => $this->t('Workflow transition'),
     //      '#default_value' => $transition,
     // );
 
@@ -118,26 +103,14 @@ class WorkflowDefaultWidget extends WidgetBase {
    *
    * Implements workflow_transition() -> WorkflowDefaultWidget::submit().
    *
-   * Overrides submit(array $form, array &$form_state).
-   * Contains 2 extra parameters for D7
-   *
-   * @param array $form
-   * @param array $form_state
-   * @param array $items
-   *   The value of the field.
-   * @param bool $force
-   *   TRUE if all access must be overridden, e.g., for Rules.
-   *
-   * @return int
-   *   If update succeeded, the new State Id. Else, the old Id is returned.
-   *
    * This is called from function _workflow_form_submit($form, &$form_state)
    * It is a replacement of function workflow_transition($entity, $to_sid, $force, $field)
    * It performs the following actions;
    * - save a scheduled action
    * - update history
    * - restore the normal $items for the field.
-   * @todo: remove update of {node_form} table. (separate task, because it has features, too)
+   *
+   * @todo Remove update of {node_form} table. (separate task, because it has features, too.)
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
 
@@ -152,19 +125,18 @@ class WorkflowDefaultWidget extends WidgetBase {
       if (!empty($item)) { // } && $item['value'] instanceof DrupalDateTime) {
 
         // The following can NOT be retrieved from the WorkflowTransition.
-        /** @var $entity \Drupal\Core\Entity\EntityInterface */
+        /** @var \Drupal\Core\Entity\EntityInterface $entity */
         $entity = $form_state->getFormObject()->getEntity();
-        /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
+        /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
         $transition = $item['workflow_transition'];
         // N.B. Use a proprietary version of copyFormValuesToEntity,
         // where $entity/$transition is passed by reference.
-        /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
         $transition = WorkflowTransitionElement::copyFormValuesToTransition($transition, $form, $form_state, $item);
 
         // Try to execute the transition. Return $from_sid when error.
         if (!$transition) {
           // This should not be possible (perhaps when testing/developing).
-          drupal_set_message(t('Error: the transition from %from_sid to %to_sid could not be generated.'), 'error');
+          $this->messenger()->addError($this->t('Error: the transition from %from_sid to %to_sid could not be generated.'));
           // The current value is still the previous state.
           $to_sid = $from_sid = 0;
         }
@@ -184,7 +156,7 @@ class WorkflowDefaultWidget extends WidgetBase {
             $transition->set('to_sid', $action_info['to_sid']);
           }
 
-          $force = FALSE; // @TODO D8-port: add to form for usage in VBO.
+          $force = FALSE; // @todo D8-port: add to form for usage in VBO.
 
           // Now, save/execute the transition.
           $from_sid = $transition->getFromSid();

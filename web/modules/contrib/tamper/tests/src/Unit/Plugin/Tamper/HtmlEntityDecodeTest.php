@@ -31,13 +31,16 @@ class HtmlEntityDecodeTest extends TamperPluginTestBase {
    * Test non string input throws an exception.
    */
   public function testNoStringException() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $this->plugin->tamper(43);
 
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $this->plugin->tamper(['awesomes4uc3!']);
 
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $this->plugin->tamper(NULL);
   }
 

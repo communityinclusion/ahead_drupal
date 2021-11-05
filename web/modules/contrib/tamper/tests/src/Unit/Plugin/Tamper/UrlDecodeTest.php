@@ -21,10 +21,18 @@ class UrlDecodeTest extends TamperPluginTestBase {
   }
 
   /**
-   * Test url_decode symbols, string with spaces and special chars using legacy method.
+   * Tests url decoding using the 'legacy' method.
+   *
+   * The legacy method uses the PHP function urldecode().
+   *
+   * The following cases are tested:
+   * - decoding symbols;
+   * - decoding a string with spaces;
+   * - decoding special characters.
    */
   public function testUrlDecodeLegacyMethod() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       UrlDecode::SETTING_METHOD => 'urldecode',
     ];
@@ -37,10 +45,18 @@ class UrlDecodeTest extends TamperPluginTestBase {
   }
 
   /**
-   * Test url_decode symbols, string with spaces and special chars using raw method.
+   * Tests url decoding using the 'raw' method.
+   *
+   * The raw method uses the PHP function rawurldecode().
+   *
+   * The following cases are tested:
+   * - decoding symbols;
+   * - decoding a string with spaces;
+   * - decoding special characters.
    */
   public function testUrlDecodeRawMethod() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $config = [
       UrlDecode::SETTING_METHOD => 'rawurldecode',
     ];

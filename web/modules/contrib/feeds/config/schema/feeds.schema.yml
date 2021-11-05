@@ -121,6 +121,8 @@ feeds.fetcher.http:
       type: boolean
     use_pubsubhubbub:
       type: boolean
+    always_download:
+      type: boolean
     fallback_hub:
       type: string
     request_timeout:
@@ -181,6 +183,10 @@ feeds.processor.entity:
       type: sequence
       sequence:
         type: ignore
+    langcode:
+      type: string
+    insert_new:
+      type: integer
     update_existing:
       type: integer
     update_non_existent:

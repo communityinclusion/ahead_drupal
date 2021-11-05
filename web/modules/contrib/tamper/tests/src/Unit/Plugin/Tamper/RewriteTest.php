@@ -30,7 +30,7 @@ class RewriteTest extends TamperPluginTestBase {
    *   The mock of a tamperable item to use in the test.
    */
   protected function getMockItem() {
-    $item = $this->getMock(TamperableItemInterface::class);
+    $item = $this->createMock(TamperableItemInterface::class);
     $item->expects($this->any())
       ->method('getSource')
       ->willReturn([

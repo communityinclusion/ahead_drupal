@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\feeds\Unit\Feeds\Target;
 
+use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Feeds\Target\Link;
 
 /**
@@ -19,25 +20,53 @@ class LinkTest extends FieldTargetTestBase {
 
   /**
    * @covers ::prepareValue
+   *
+   * @param string $expected_uri
+   *   The expected uri that is saved.
+   * @param string $input_uri
+   *   The uri that the source provides.
+   *
+   * @dataProvider providerUris
    */
-  public function testPrepareValue() {
-    $method = $this->getMethod('Drupal\feeds\Feeds\Target\Link', 'prepareTarget')->getClosure();
+  public function testPrepareValue($expected_uri, $input_uri) {
+    $method = $this->getMethod(Link::class, 'prepareTarget')->getClosure();
 
     $configuration = [
-      'feed_type' => $this->createMock('Drupal\feeds\FeedTypeInterface'),
+      'feed_type' => $this->createMock(FeedTypeInterface::class),
       'target_definition' => $method($this->getMockFieldDefinition()),
     ];
     $target = new Link($configuration, 'link', []);
 
     $method = $this->getProtectedClosure($target, 'prepareValue');
 
-    $values = ['uri' => 'string'];
+    $values = ['uri' => $input_uri];
     $method(0, $values);
-    $this->assertSame($values['uri'], '');
+    $this->assertSame($expected_uri, $values['uri']);
+  }
 
-    $values = ['uri' => 'http://example.com'];
-    $method(0, $values);
-    $this->assertSame($values['uri'], 'http://example.com');
+  /**
+   * Data provider for ::testPrepareValue().
+   */
+  public function providerUris() {
+    return [
+      // Normal uri.
+      ['http://example.com', 'http://example.com'],
+
+      // Internal uris.
+      ['internal:/node', 'internal:/node'],
+      ['internal:/node', '/node'],
+      ['internal:/', '<front>'],
+
+      // Entity uris.
+      ['entity:node/1', 'entity:node/1'],
+
+      // Linking to nothing.
+      ['route:<nolink>', '<nolink>'],
+      ['route:<none>', '<none>'],
+
+      // Ignored, rejected by link validation.
+      ['node', 'node'],
+    ];
   }
 
 }

@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\feeds\Kernel;
 
+use Drupal\feeds\FeedInterface;
+use Drupal\feeds\StateInterface;
 use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
 
@@ -44,6 +46,35 @@ class UpdateNonExistentTest extends FeedsKernelTestBase {
   }
 
   /**
+   * Asserts that no items exist on the clean list for the given feed.
+   *
+   * @param int $expected_count
+   *   The amount of expected items on the clean list.
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed to check the clean list for.
+   */
+  protected function assertCleanListCount($expected_count, FeedInterface $feed) {
+    $count = $this->container->get('database')
+      ->select('feeds_clean_list')
+      ->fields('feeds_clean_list', [])
+      ->condition('feed_id', $feed->id())
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    $this->assertEquals($expected_count, $count);
+  }
+
+  /**
+   * Asserts that no items exist on the clean list for the given feed.
+   *
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed to check the clean list for.
+   */
+  protected function assertCleanListEmpty(FeedInterface $feed) {
+    $this->assertCleanListCount(0, $feed);
+  }
+
+  /**
    * Tests 'Unpublish non-existent' option.
    *
    * Tests that previously imported items that are no longer available in the
@@ -75,6 +106,9 @@ class UpdateNonExistentTest extends FeedsKernelTestBase {
     // Assert that one was unpublished.
     $node = $this->getNodeByTitle('Egypt, Hamas exchange fire on Gaza frontier, 1 dead - Reuters');
     $this->assertFalse($node->isPublished());
+
+    // Assert that the clean list is empty for the feed.
+    $this->assertCleanListEmpty($feed);
 
     // Manually publish the node.
     $node->status = 1;
@@ -133,12 +167,60 @@ class UpdateNonExistentTest extends FeedsKernelTestBase {
     static::assertEquals(5, $feed->getItemCount());
     $this->assertNodeCount(5);
 
+    // Assert that the clean list is empty for the feed.
+    $this->assertCleanListEmpty($feed);
+
     // Re-import the original feed to import the removed node again.
     $feed->setSource($this->resourcesPath() . '/rss/googlenewstz.rss2');
     $feed->save();
     $feed->import();
     static::assertEquals(6, $feed->getItemCount());
     $this->assertNodeCount(6);
+  }
+
+  /**
+   * Tests if the feeds clean list gets empty after clearing states.
+   */
+  public function testEmptyCleanListAfterClearingStates() {
+    // Create a feed.
+    $feed = $this->createFeed($this->feedType->id(), [
+      'source' => $this->resourcesPath() . '/rss/googlenewstz.rss2',
+    ]);
+
+    // Add two records to the feeds_clean_list table for this feed.
+    $clean_state = $feed->getState(StateInterface::CLEAN);
+    $clean_state->setList([123, 456]);
+    $this->assertCleanListCount(2, $feed);
+
+    // Clear states.
+    $feed->clearStates();
+
+    // Assert that the clean list is now empty for this feed.
+    $this->assertCleanListEmpty($feed);
+  }
+
+  /**
+   * Tests if the feeds clean list gets empty after deleting feed.
+   *
+   * There could exist records on the clean list if an import ends abruptly, for
+   * example.
+   */
+  public function testEmptyCleanListAfterDeletingFeed() {
+    // Create a feed.
+    $feed = $this->createFeed($this->feedType->id(), [
+      'source' => $this->resourcesPath() . '/rss/googlenewstz.rss2',
+    ]);
+
+    // Add two records to the feeds_clean_list table for this feed.
+    $clean_state = $feed->getState(StateInterface::CLEAN);
+    $clean_state->setList([123, 456]);
+    $this->assertCleanListCount(2, $feed);
+
+    // Delete the feed.
+    $feed->delete();
+
+    // Assert that the clean list is now empty for this feed.
+    $this->assertCleanListEmpty($feed);
   }
 
 }

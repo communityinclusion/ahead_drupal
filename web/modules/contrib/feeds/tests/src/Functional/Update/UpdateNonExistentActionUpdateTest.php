@@ -29,7 +29,7 @@ class UpdateNonExistentActionUpdateTest extends UpdatePathTestBase {
    */
   protected function setDatabaseDumpFiles() {
     $this->databaseDumpFiles = [
-      DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-8.4.0.bare.standard.php.gz',
+      DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-8.8.0.bare.standard.php.gz',
       __DIR__ . '/../../../fixtures/feeds-8.x-3.0-alpha6-feeds_installed.php',
       __DIR__ . '/../../../fixtures/feed_type.deprecated-action-ids.php',
     ];

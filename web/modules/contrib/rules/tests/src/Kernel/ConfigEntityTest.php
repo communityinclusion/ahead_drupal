@@ -46,11 +46,15 @@ class ConfigEntityTest extends RulesKernelTestBase {
    * Tests saving the configuration of an action and then loading it again.
    */
   public function testConfigAction() {
-    $action = $this->expressionManager->createAction('rules_test_log');
+    $action = $this->expressionManager->createAction('rules_test_debug_log');
     $config_entity = $this->storage->create([
       'id' => 'test_rule',
     ])->setExpression($action);
     $config_entity->save();
+
+    // The logger instance has changed, refresh it.
+    $this->logger = $this->container->get('logger.channel.rules_debug');
+    $this->logger->addLogger($this->debugLog);
 
     $loaded_entity = $this->storage->load('test_rule');
     $this->assertEquals($action->getConfiguration(), $loaded_entity->get('component')['expression'], 'Action configuration is the same after loading the config.');
@@ -60,7 +64,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
     $expression->execute();
 
     // Test that the action logged something.
-    $this->assertRulesLogEntryExists('action called');
+    $this->assertRulesDebugLogEntryExists('action called');
   }
 
   /**
@@ -68,10 +72,9 @@ class ConfigEntityTest extends RulesKernelTestBase {
    */
   public function testConfigRule() {
     // Create a simple rule with one action and one condition.
-    $rule = $this->expressionManager
-      ->createRule();
+    $rule = $this->expressionManager->createRule();
     $rule->addCondition('rules_test_true');
-    $rule->addAction('rules_test_log');
+    $rule->addAction('rules_test_debug_log');
 
     $config_entity = $this->storage->create([
       'id' => 'test_rule',
@@ -84,7 +87,7 @@ class ConfigEntityTest extends RulesKernelTestBase {
     $expression->execute();
 
     // Test that the action logged something.
-    $this->assertRulesLogEntryExists('action called');
+    $this->assertRulesDebugLogEntryExists('action called');
   }
 
   /**

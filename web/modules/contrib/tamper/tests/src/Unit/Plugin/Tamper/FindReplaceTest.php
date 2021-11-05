@@ -100,7 +100,8 @@ class FindReplaceTest extends TamperPluginTestBase {
    */
   public function testMultipleValues() {
     $plugin = new FindReplace([], 'find_replace', [], $this->getMockSourceDefinition());
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $plugin->tamper(['foo', 'bar', 'baz']);
   }
 

@@ -90,6 +90,7 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
       ],
       \Drupal::service('entity_type.manager'),
       \Drupal::service('entity_type.bundle.info'),
+      \Drupal::service('language_manager'),
     ]);
 
     $this->feed = $this->createMock(FeedInterface::class);
@@ -99,7 +100,7 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
     $this->feed->expects($this->any())
       ->method('getState')
       ->with(StateInterface::CLEAN)
-      ->will($this->returnValue(new CleanState()));
+      ->will($this->returnValue(new CleanState($this->feed->id())));
 
     $this->state = new State();
 
@@ -141,7 +142,7 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
     $hash = $node->feeds_item->hash;
 
     // Clean.
-    $this->processor->clean($this->feed, $node, new CleanState());
+    $this->processor->clean($this->feed, $node, new CleanState($this->feed->id()));
 
     // Assert that the hash did not change.
     $this->assertEquals($hash, $node->feeds_item->hash);
@@ -165,7 +166,7 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
     $this->assertTrue($node->isPublished());
 
     // Clean.
-    $this->processor->clean($this->feed, $node, new CleanState());
+    $this->processor->clean($this->feed, $node, new CleanState($this->feed->id()));
 
     // Reload node.
     $node = $this->container->get('entity_type.manager')->getStorage('node')->load($node->id());
@@ -193,7 +194,7 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
     $this->assertNodeCount(1);
 
     // Clean.
-    $this->processor->clean($this->feed, $node, new CleanState());
+    $this->processor->clean($this->feed, $node, new CleanState($this->feed->id()));
 
     // Assert that the node is deleted.
     $this->assertNodeCount(0);
@@ -256,7 +257,7 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
    * @covers ::entityTypeLabelPlural
    */
   public function testEntityTypeLabelPlural() {
-    $this->assertEquals('Contents', $this->processor->entityTypeLabelPlural());
+    $this->assertEquals('content items', $this->processor->entityTypeLabelPlural());
   }
 
   /**
@@ -270,14 +271,14 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
    * @covers ::getItemLabelPlural
    */
   public function testGetItemLabelPlural() {
-    $this->assertEquals('Articles', $this->processor->getItemLabelPlural());
+    $this->assertEquals('Article items', $this->processor->getItemLabelPlural());
   }
 
   /**
    * @covers ::defaultConfiguration
    */
   public function testDefaultConfiguration() {
-    $this->assertInternalType('array', $this->processor->defaultConfiguration());
+    $this->assertIsArray($this->processor->defaultConfiguration());
   }
 
   /**
@@ -363,7 +364,7 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
   public function testBuildAdvancedForm() {
     $form = [];
     $form_state = $this->createMock(FormStateInterface::class);
-    $this->assertInternalType('array', $this->processor->buildAdvancedForm($form, $form_state));
+    $this->assertIsArray($this->processor->buildAdvancedForm($form, $form_state));
   }
 
   /**
@@ -416,7 +417,7 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
     );
 
     // And let the feed type always return this plugin.
-    $feed_type->expects($this->once())
+    $feed_type->expects($this->exactly(2))
       ->method('getTargetPlugin')
       ->will($this->returnValue($target));
 

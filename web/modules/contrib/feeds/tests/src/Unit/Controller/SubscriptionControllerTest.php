@@ -7,6 +7,7 @@ use Drupal\feeds\Controller\SubscriptionController;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @coversDefaultClass \Drupal\feeds\Controller\SubscriptionController
@@ -134,72 +135,72 @@ class SubscriptionControllerTest extends UnitTestCase {
 
   /**
    * @covers ::subscribe
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testMissingChallenge() {
     $this->request->query->set('hub_challenge', NULL);
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->subscribe(1, 'valid_token', $this->request);
   }
 
   /**
    * @covers ::subscribe
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testMissingTopic() {
     $this->request->query->set('hub_topic', NULL);
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->subscribe(1, 'valid_token', $this->request);
   }
 
   /**
    * @covers ::subscribe
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testWrongMode() {
     $this->request->query->set('hub_mode', 'woops');
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->subscribe(1, 'valid_token', $this->request);
   }
 
   /**
    * @covers ::handleSubscribe
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testWrongToken() {
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->subscribe(1, 'not_valid_token', $this->request);
   }
 
   /**
    * @covers ::handleSubscribe
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testMissingSubscription() {
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->subscribe(2, 'valid_token', $this->request);
   }
 
   /**
    * @covers ::handleSubscribe
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testWrongTopic() {
     $this->request->query->set('hub_topic', 'http://example.com/topic');
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->subscribe(1, 'valid_token', $this->request);
   }
 
   /**
    * @covers ::handleSubscribe
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testSubscriptionInWrongState() {
     $this->subscription->getState()->willReturn('unsubscribed');
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->subscribe(1, 'valid_token', $this->request);
   }
 
   /**
    * @covers ::handleUnsubscribe
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testSubscriptionMissingKv() {
     $this->request->query->set('hub_mode', 'unsubscribe');
     $this->request->query->set('hub_topic', 'http://example.com/topic');
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->subscribe(1, 'valid_token', $this->request);
   }
 
@@ -222,15 +223,14 @@ class SubscriptionControllerTest extends UnitTestCase {
 
   /**
    * @covers ::receive
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testReceiveMissingSig() {
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->receive($this->subscription->reveal(), 'valid_token', $this->request);
   }
 
   /**
    * @covers ::receive
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testReceiveBadSig() {
     $payload = 'abcdefg';
@@ -242,14 +242,15 @@ class SubscriptionControllerTest extends UnitTestCase {
 
     $this->subscription->checkSignature($sig, $payload)->willReturn(FALSE);
 
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->receive($this->subscription->reveal(), 'valid_token', $request);
   }
 
   /**
    * @covers ::receive
-   * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function testReceiveBadToken() {
+    $this->expectException(NotFoundHttpException::class);
     $this->controller->receive($this->subscription->reveal(), 'not_valid_token', $this->request);
   }
 

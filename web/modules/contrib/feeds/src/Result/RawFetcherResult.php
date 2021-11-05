@@ -34,7 +34,7 @@ class RawFetcherResult extends FetcherResult {
    * @param string $raw
    *   The raw result string.
    * @param \Drupal\Core\File\FileSystemInterface $file_system
-   *   The file system service.
+   *   (optional) The file system service.
    */
   public function __construct($raw, FileSystemInterface $file_system = NULL) {
     $this->raw = $raw;

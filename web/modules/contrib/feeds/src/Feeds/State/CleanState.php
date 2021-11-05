@@ -3,6 +3,8 @@
 namespace Drupal\feeds\Feeds\State;
 
 use ArrayIterator;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\feeds\State;
@@ -13,6 +15,27 @@ use RuntimeException;
  */
 class CleanState extends State implements CleanStateInterface {
 
+  use DependencySerializationTrait;
+
+  /**
+   * The database table name.
+   */
+  const TABLE_NAME = 'feeds_clean_list';
+
+  /**
+   * The ID of the feed this state belongs to.
+   *
+   * @var int
+   */
+  protected $feedId;
+
+  /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $connection;
+
   /**
    * Whether or not the list was initiated or not.
    *
@@ -21,18 +44,30 @@ class CleanState extends State implements CleanStateInterface {
   protected $initiated = FALSE;
 
   /**
-   * A list of entity ID's that may be cleaned after processing.
-   *
-   * @var array
-   */
-  protected $cleanList = [];
-
-  /**
    * The type of the entity ID's on the list.
    *
    * @var string
    */
   protected $entityTypeId;
+
+  /**
+   * Constructs a new CleanState.
+   *
+   * @param int $feed_id
+   *   The ID of the feed this state belongs to.
+   * @param \Drupal\Core\Database\Connection $connection
+   *   (optional) The Connection object containing the feeds tables.
+   */
+  public function __construct($feed_id, Connection $connection = NULL) {
+    $this->feedId = $feed_id;
+
+    if (empty($connection)) {
+      $this->connection = \Drupal::database();
+    }
+    else {
+      $this->connection = $connection;
+    }
+  }
 
   /**
    * {@inheritdoc}
@@ -55,7 +90,25 @@ class CleanState extends State implements CleanStateInterface {
    * {@inheritdoc}
    */
   public function setList(array $ids) {
-    $this->cleanList = array_combine($ids, $ids);
+    // Remove previous list first.
+    $this->connection->delete(static::TABLE_NAME)
+      ->condition('feed_id', $this->feedId)
+      ->execute();
+
+    // Insert the list into the database.
+    if (!empty($ids)) {
+      $query = $this->connection->insert(static::TABLE_NAME)
+        ->fields(['feed_id', 'entity_id']);
+      foreach ($ids as $id) {
+        $query->values([
+          'feed_id' => $this->feedId,
+          'entity_id' => $id,
+        ]);
+      }
+      $query->execute();
+    }
+
+    // Set flag that initiating is done.
     $this->initiated = TRUE;
   }
 
@@ -63,15 +116,24 @@ class CleanState extends State implements CleanStateInterface {
    * {@inheritdoc}
    */
   public function getList() {
-    return $this->cleanList;
+    // Get all ID's.
+    return $this->connection->select(static::TABLE_NAME)
+      ->fields(static::TABLE_NAME, ['entity_id'])
+      ->condition('feed_id', $this->feedId)
+      ->execute()
+      ->fetchCol();
   }
 
   /**
    * {@inheritdoc}
    */
   public function removeItem($entity_id) {
-    unset($this->cleanList[$entity_id]);
-    $this->total--;
+    $this->connection->delete(static::TABLE_NAME)
+      ->condition('feed_id', $this->feedId)
+      ->condition('entity_id', $entity_id)
+      ->execute();
+
+    $this->total = $this->count();
     $this->progress($this->total, $this->updated);
   }
 
@@ -83,10 +145,14 @@ class CleanState extends State implements CleanStateInterface {
       return;
     }
 
-    $entity_id = array_shift($this->cleanList);
+    $entity_id = $this->connection->queryRange('SELECT entity_id FROM {' . static::TABLE_NAME . '} WHERE feed_id = :feed_id', 0, 1, [':feed_id' => $this->feedId])
+      ->fetchField();
     if (!$entity_id) {
       return;
     }
+
+    // Claim the item, remove it from the list.
+    $this->removeItem($entity_id);
 
     if (!$storage) {
       $entity_type_id = $this->getEntityTypeId();
@@ -124,14 +190,15 @@ class CleanState extends State implements CleanStateInterface {
    * {@inheritdoc}
    */
   public function getIterator() {
-    return new ArrayIterator($this->cleanList);
+    return new ArrayIterator($this->getList());
   }
 
   /**
    * {@inheritdoc}
    */
   public function count() {
-    return count($this->cleanList);
+    return (int) $this->connection->query('SELECT COUNT(feed_id) FROM {' . static::TABLE_NAME . '} WHERE feed_id = :feed_id', [':feed_id' => $this->feedId])
+      ->fetchField();
   }
 
 }

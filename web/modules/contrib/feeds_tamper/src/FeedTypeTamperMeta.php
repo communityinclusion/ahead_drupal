@@ -186,7 +186,7 @@ class FeedTypeTamperMeta implements FeedTypeTamperMetaInterface {
   public function getSourceDefinition() {
     $source_list = [];
     foreach ($this->feedType->getMappingSources() as $key => $source) {
-      $source_list[$key] = $key;
+      $source_list[$key] = isset($source['label']) ? $source['label'] : $key;
     }
 
     return new SourceDefinition($source_list);

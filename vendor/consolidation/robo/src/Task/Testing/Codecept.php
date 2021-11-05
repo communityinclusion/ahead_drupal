@@ -1,4 +1,5 @@
 <?php
+
 namespace Robo\Task\Testing;
 
 use Robo\Contract\PrintedInterface;
@@ -241,6 +242,15 @@ class Codecept extends BaseTask implements CommandInterface, PrintedInterface
         return $this;
     }
 
+    /**
+     * @return $this
+     */
+    public function noExit()
+    {
+        $this->option("no-exit");
+        return $this;
+    }
+    
     /**
      * @param string $failGroup
      * @return $this

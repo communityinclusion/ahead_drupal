@@ -5,6 +5,8 @@
  * Workflow access installation.
  */
 
+use Drupal\Core\Database\Database;
+
 /**
  * Implements hook_schema().
  */
@@ -34,7 +36,7 @@ function workflow_access_update_8001(&$sandbox) {
  */
 function workflow_access_update_8002(&$sandbox) {
   // Remove the table. Data is now in config.
-  $schema = \Drupal\Core\Database\Database::getConnection()->schema();
+  $schema = Database::getConnection()->schema();
   $schema->dropTable('workflow_access');
   // Rebuild data.
   node_access_needs_rebuild(TRUE);

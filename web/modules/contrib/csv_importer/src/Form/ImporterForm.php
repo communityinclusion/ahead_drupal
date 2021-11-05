@@ -118,7 +118,7 @@ class ImporterForm extends FormBase {
 
     $form['importer']['entity_type'] = [
       '#type' => 'select',
-      '#title' => $this->t('Choose entity type'),
+      '#title' => $this->t('Select entity type'),
       '#required' => TRUE,
       '#options' => $this->getEntityTypeOptions(),
       '#weight' => 0,
@@ -134,7 +134,7 @@ class ImporterForm extends FormBase {
       if ($options = $this->getEntityTypeBundleOptions($entity_type)) {
         $form['importer']['entity_type_bundle'] = [
           '#type' => 'select',
-          '#title' => $this->t('Choose entity bundle'),
+          '#title' => $this->t('Select entity bundle'),
           '#options' => $options,
           '#required' => TRUE,
           '#weight' => 5,
@@ -152,17 +152,31 @@ class ImporterForm extends FormBase {
       if (count($options) > 1) {
         $form['importer']['plugin_id'] = [
           '#type' => 'select',
-          '#title' => $this->t('Choose importer'),
+          '#title' => $this->t('Select importer'),
           '#options' => $options,
           '#default_value' => 0,
           '#weight' => 25,
         ];
       }
+
+      $form['importer']['delimiter'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Select delimiter'),
+        '#options' => [
+          ',' => ',',
+          '~' => '~',
+          ';' => ';',
+          ':' => ':',
+        ],
+        '#default_value' => ',',
+        '#required' => TRUE,
+        '#weight' => 10,
+      ];
     }
 
     $form['importer']['csv'] = [
       '#type' => 'managed_file',
-      '#title' => $this->t('Choose CSV file'),
+      '#title' => $this->t('Select CSV file'),
       '#required' => TRUE,
       '#autoupload' => TRUE,
       '#upload_validators' => ['file_validate_extensions' => ['csv']],
@@ -309,9 +323,11 @@ class ImporterForm extends FormBase {
 
     $csv_fields = [];
 
-    foreach ($csv[0] as $csv_row) {
-      $csv_row = explode('|', $csv_row);
-      $csv_fields[] = $csv_row[0];
+    if (!empty($csv)) {
+      foreach ($csv[0] as $csv_row) {
+        $csv_row = explode('|', $csv_row);
+        $csv_fields[] = $csv_row[0];
+      }
     }
 
     $csv_fields = array_values(array_unique($csv_fields));
@@ -326,7 +342,7 @@ class ImporterForm extends FormBase {
     $entity_type = $form_state->getValue('entity_type');
     $entity_type_bundle = NULL;
     $csv = current($form_state->getValue('csv'));
-    $csv_parse = $this->parser->getCsvById($csv);
+    $csv_parse = $this->parser->getCsvById($csv, $form_state->getUserInput()['delimiter']);
 
     if (isset($form_state->getUserInput()['entity_type_bundle'])) {
       $entity_type_bundle = $form_state->getUserInput()['entity_type_bundle'];

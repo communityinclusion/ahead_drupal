@@ -25,6 +25,11 @@ class CacheabilityTest extends BrowserTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * The admin user used in this test.
    *
    * @var \Drupal\user\Entity\User

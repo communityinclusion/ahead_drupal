@@ -41,17 +41,16 @@ class RouteSubscriber extends RouteSubscriberBase {
     foreach ($field_list as $entityTypeId => $fields) {
 
       /*
-       * @todo Create a Entity workflow field list page and a route
-       * that redirect to the page when a entity have more than
-       * one workflow fields.
+       * @todo For entities with multiple workflow fields, Create an
+       *   Entity workflow field list page and a route
+       *   that redirect to the correct page.
+       * @todo Routes for multiple workflow fields on 3 different bundles of 1 entity type.
        */
 
-      // Only 1 field. Workflow is redirect to workflow/{field_name}.
-      if (count($fields) < 2) {
-        $path = "/$entityTypeId/{{$entityTypeId}}/workflow";
-        $route = $this->getEntityLoadRoute($entityTypeId, $path);
-        $collection->add("entity.$entityTypeId.workflow_history", $route);
-      }
+      // Generate route for default field. Redirect to workflow/{field_name}.
+      $path = "/$entityTypeId/{{$entityTypeId}}/workflow";
+      $route = $this->getEntityLoadRoute($entityTypeId, $path);
+      $collection->add("entity.$entityTypeId.workflow_history", $route);
 
       // Generate one route for each workflow field.
       foreach ($fields as $field_name => $field) {
@@ -91,7 +90,7 @@ class RouteSubscriber extends RouteSubscriberBase {
       ],
       [
         '_admin_route' => TRUE,
-        '_workflow_entity_type_id' => $entityTypeId, // @todo: remove
+        '_workflow_entity_type_id' => $entityTypeId, // @todo Remove this.
         'parameters' => [
           $entityTypeId => ['type' => 'entity:' . $entityTypeId],
         ],

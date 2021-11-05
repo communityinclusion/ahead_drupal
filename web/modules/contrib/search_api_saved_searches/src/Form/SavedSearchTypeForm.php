@@ -378,7 +378,8 @@ class SavedSearchTypeForm extends EntityForm {
     // If the user changed the notification plugins and there is at least one
     // plugin config form, show a message telling the user to configure it.
     if ($selected_plugins && $show_message) {
-      drupal_set_message($this->t('Please configure the used notification methods.'), 'warning');
+      $message = $this->t('Please configure the used notification methods.');
+      $this->messenger()->addWarning($message);
     }
   }
 

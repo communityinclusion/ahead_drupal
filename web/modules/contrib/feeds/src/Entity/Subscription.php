@@ -101,7 +101,7 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
   public function setLease($lease) {
     $lease = (int) trim($lease);
     $this->set('lease', $lease);
-    $this->set('expires', $lease + REQUEST_TIME);
+    $this->set('expires', $lease + \Drupal::time()->getRequestTime());
   }
 
   /**

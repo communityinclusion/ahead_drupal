@@ -9,9 +9,10 @@ use Drupal\Core\Config\Config;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Drupal\user\Entity\Role;
 use Drupal\workflow\Entity\WorkflowTransition;
-use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
 /**
  * Implements hook_help().
@@ -21,31 +22,35 @@ function workflow_access_help($route_name, RouteMatchInterface $route_match) {
 
   switch ($route_name) {
     case 'entity.workflow_type.access_form':
-      $url = \Drupal\Core\Url::fromRoute('workflow.access.settings');
-      $output .= t("This page lets you refine the permissions per role and per
-        workflow state. Although the workflow module allows you to add multiple
-        workflows to per entity type, Workflow Access supports only one
-        workflow per entity type."
+      $url = Url::fromRoute('workflow.access.settings');
+      $output .= t(
+        'This page lets you refine the permissions per role and per
+         workflow state. Although the workflow module allows you to add multiple
+         workflows to per entity type, Workflow Access supports only one
+         workflow per entity type.'
       );
       $output .= "<br>";
-      $output .= t("WARNING: Use of the 'Edit any', 'Edit own', and even 'View
-        published content' permissions for the content type may override these
-        access settings. You may disable those permissions or
-        <a href=':url'>alter the priority of
+      $output .= t(
+        "WARNING: Use of the 'Edit any', 'Edit own', and even 'View
+         published content' permissions for the content type may override these
+         access settings. You may disable those permissions or
+         <a href=':url'>alter the priority of
         the Workflow access module</a>.", [':url' => $url->toString()]
       );
       if (\Drupal::moduleHandler()->moduleExists('og')) {
         $output .= '<br>';
-        $output .= t('WARNING: Organic Groups (OG) is present and may interfere
-          with these settings.');
-        //$output .= ' ';
-        //$url = \Drupal\Core\Url::fromUri('admin/config/group/settings'); // @todo D8: FIXME when OG module is ported.
-        //$output .= t("In particular, if <a href=':url'>Strict node access
+        $output .= t(
+          'WARNING: Organic Groups (OG) is present and may interfere
+          with these settings.'
+        );
+        // $output .= ' ';
+        // $url = Url::fromUri('admin/config/group/settings'); // @todo D8: FIXME when OG module is ported.
+        // $output .= t("In particular, if <a href=':url'>Strict node access
         //  permissions</a> is enabled, since this may override Workflow access
         //  settings.", [':url' => $url]);
-        $output .= t("In particular, if <i>Strict node access
-            permissions</i> is enabled, since this may override Workflow access
-            settings.");
+        $output .= t(
+          'In particular, if <i>Strict node access permissions</i> is enabled,
+           since this may override Workflow access settings.');
       }
       break;
 
@@ -56,11 +61,10 @@ function workflow_access_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * Implements hook_workflow_operations().
- *
- * Create action link for access form on EntityWorkflowUIController::overviewForm.
+ * @inheritdoc
  */
 function workflow_access_workflow_operations($op, EntityInterface $entity = NULL) {
+  // @todo Create action link for AccessRoleForm on WorkflowListBuilder.
   $operations = [];
   return $operations;
 }
@@ -71,25 +75,26 @@ function workflow_access_workflow_operations($op, EntityInterface $entity = NULL
  * We use the Role weight as an id.
  * In contrary to content_access module, that uses a 'content_access_roles_gids'
  * config setting.
- * @todo: determine the best way for D8. See also content_access.module
+ *
+ * @todo Determine the best way for D8. @see content_access.module.
  * The problem is that node_access table uses Int, whereas the Role Id is string.
  */
 function workflow_access_user_role_insert(EntityInterface $entity) {
   // Attend user to Rebuild data, because the weight of a role
   // is the key for workflow_Access.
-  /** @var $entity \Drupal\user\RoleInterface */
+  /** @var \Drupal\user\RoleInterface $entity */
   node_access_needs_rebuild(TRUE);
 }
 
 /**
  * Implements hook_access_ENTITY_TYPE_update().
  *
- * @param EntityInterface $entity
+ * @param \Drupal\Core\Entity\EntityInterface $entity
  */
 function workflow_access_user_role_update(EntityInterface $entity) {
   // Attend user to Rebuild data, because the weight of a role
   // is the key for workflow_Access.
-  /** @var $entity \Drupal\user\RoleInterface */
+  /** @var \Drupal\user\RoleInterface $entity */
   if ($entity->getWeight() != $entity->original->getWeight()) {
     // Role's weight has changed.
     node_access_needs_rebuild(TRUE);
@@ -118,24 +123,19 @@ function workflow_access_node_grants(AccountInterface $account, $op) {
 
 /**
  * Helper providing numeric id for role.
- * Copied from content_access.module
+ * Copied from content_access.module.
  */
 function workflow_access_get_role_gid($rid) {
   // @todo D8: compare with content_access module.
   //  $config = \Drupal::configFactory()->getEditable('content_access.settings');
   //  $roles_gids = $config->get('content_access_roles_gids');
   //  return $roles_gids[$role];
-
-  /* @var $role Role */
-  $role = \Drupal\user\Entity\Role::load($rid);
-  $weight = 100; // Avoid negative values.
-  if ($role) {
-    $weight += $role->getWeight();
-  }
-  else {
-    // For Author, no role exists.
-    $weight -= 20;
-  }
+  //
+  // Return a weight, avoiding negative values by starting with 100.
+  // For 'Author', no role exists.
+  /** @var \Drupal\user\RoleInterface $role */
+  $role = Role::load($rid);
+  $weight = $role ? 100 + $role->getWeight() : 100 - 20;
 
   return $weight;
 }
@@ -146,87 +146,87 @@ function workflow_access_get_role_gid($rid) {
  * Returns a list of grant records for the passed in node object.
  * This hook is invoked by function node_access_acquire_grants().
  */
-function workflow_access_node_access_records(\Drupal\node\NodeInterface $node) {
+function workflow_access_node_access_records(NodeInterface $node) {
   $grants = [];
-  $workflow_transitions_added = FALSE;
-
-  //if (!$node->isPublished()) {
-  //  // @todo: return;
-  //}
-
-  $entity_type = $node->getEntityTypeId();
-
 
   // Only relevant for content with Workflow.
-  if (!isset($node->workflow_transitions)) {
-    $node->workflow_transitions = [];
-    // Sometimes, a node is saved without going through workflow_transition_form.
-    // E.g.,
-    // - when saving a node with workflow_node programmatically with node_save();
-    // - when changing a state on a node view page/history tab;
-    // - when rebuilding permissions via batch for Workflow Fields.
-    // In that case, we need to create the workflow_transitions ourselves to
-    // calculate the grants.
-    foreach (workflow_get_workflow_field_names($node, $entity_type) as $field_name) {
-      $old_sid = $new_sid = $node->$field_name->value;
-
-      // Create a dummy transition, just to set $node->workflow_transitions.
-      if ($old_sid) {
-        /* @var $transition WorkflowTransitionInterface */
-        $transition = WorkflowTransition::create([$old_sid, 'field_name' => $field_name]);
-        $transition->setTargetEntity($node);
-        $transition->setValues($new_sid, $node->getOwnerId(), \Drupal::time()->getRequestTime(), '');
-
-        // Store the transition, so it can be easily fetched later on.
-        // Store in an array, to prepare for multiple workflow_fields per entity.
-        // This is a.o. used in hook_entity_update to trigger 'transition post'.
-        $node->workflow_transitions[$field_name] = $transition;
-        $workflow_transitions_added = TRUE;
-      }
-    }
+  if (!$workflow_field_names = workflow_get_workflow_field_names($node, $node->getEntityTypeId())) {
+    return $grants;
   }
 
-  // Get 'author' of this entity.
-  // - Some entities (e.g., taxonomy_term) do not have a uid.
-  // But then again: node_access is only for nodes...
-  $uid = ($node->getOwnerId()) ? (int) $node->getOwnerId() : 0;
+  // Create grants for each translation of the node.
   $priority = workflow_access_get_setting('workflow_access_priority');
+  foreach ($node->getTranslationLanguages() as $langcode => $language) {
+    $translation = $node->getTranslation($langcode);
 
-  $count = 0;
-  foreach ($node->workflow_transitions as $transition) {
-    // @todo: add support for +1 workflows per entity.
-    if ($count++ == 1) {
-      continue;
+    // @todo How to handle not published entities?
+    // if (!$translation->isPublished()) {
+    //   return;
+    // }
+
+    // Get 'author' of this entity. Some entities (e.g., taxonomy_term)
+    // do not have a uid. But then again: node_access is only for nodes...
+    $uid = ($translation->getOwnerId()) ? (int) $translation->getOwnerId() : 0;
+
+    $workflow_transitions = [];
+    if (isset($translation->workflow_transitions)) {
+      $workflow_transitions = $translation->workflow_transitions;
+    }
+    else {
+      // Sometimes, a node is saved without going through workflow_transition_form.
+      // E.g.,
+      // - when saving a node with workflow_node programmatically with node_save();
+      // - when changing a state on a node view page/history tab;
+      // - when rebuilding permissions via batch for Workflow Fields.
+      // In that case, we need to create the workflow_transitions ourselves to
+      // calculate the grants.
+      foreach ($workflow_field_names as $field_name) {
+        // Create a dummy transition, just to set $workflow_transitions.
+        $old_sid = $new_sid = $translation->{$field_name}->value;
+        if ($old_sid) {
+          /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
+          $transition = WorkflowTransition::create([$old_sid, 'field_name' => $field_name]);
+          $transition->setTargetEntity($translation);
+          $transition->setValues($new_sid, $translation->getOwnerId(), \Drupal::time()->getRequestTime(), '');
+
+          $workflow_transitions[$field_name] = $transition;
+        }
+      }
     }
 
-    $field_name = $transition->getFieldName();
-    if ($current_sid = workflow_node_current_state($node, $field_name)) {
-      foreach (workflow_access_get_workflow_access_by_sid($current_sid) as $rid => $grant) {
-        $realm = ($uid > 0 && $rid == WORKFLOW_ROLE_AUTHOR_RID) ? 'workflow_access_owner' : 'workflow_access';
-        $gid = ($uid > 0 && $rid == WORKFLOW_ROLE_AUTHOR_RID) ? $uid : workflow_access_get_role_gid($rid);
+    $count_workflow_fields = 0;
+    foreach ($workflow_transitions as $field_name => $transition) {
+      // @todo Add support for multiple workflows per entity.
+      if (++$count_workflow_fields > 1) {
+        continue;
+      }
 
-        // Anonymous ($uid == 0) author is not allowed for role 'author' (== -1).
+      if (!$current_sid = workflow_node_current_state($translation, $field_name)) {
+        continue;
+      }
+
+      foreach (workflow_access_get_workflow_access_by_sid($current_sid) as $rid => $grant) {
+        // Anonymous ($uid == 0) author is not allowed for role 'Author' (== -1).
         // Both logically (Anonymous having more rights then authenticated)
-        // and technically: $gid must be a positive int.
+        // and technically ($gid must be a positive integer).
         if ($uid == 0 && $rid == WORKFLOW_ROLE_AUTHOR_RID) {
           continue;
         }
 
         $grants[] = [
-          'realm' => $realm,
-          'gid' => $gid,
+          'realm' => ($uid > 0 && $rid == WORKFLOW_ROLE_AUTHOR_RID)
+          ? 'workflow_access_owner' : 'workflow_access',
+          'gid' => ($uid > 0 && $rid == WORKFLOW_ROLE_AUTHOR_RID)
+          ? $uid : workflow_access_get_role_gid($rid),
           'grant_view' => (int) $grant['grant_view'],
           'grant_update' => (int) $grant['grant_update'],
           'grant_delete' => (int) $grant['grant_delete'],
           'priority' => $priority,
-          // 'langcode' => $node->language(),
+          'langcode' => $langcode,
           'field_name' => $field_name, // Just for analysis and info.
         ];
       }
     }
-  }
-  if ($workflow_transitions_added == TRUE) {
-    unset($node->workflow_transitions);
   }
 
   return $grants;
@@ -241,12 +241,16 @@ function workflow_access_node_access_explain($row) {
   static $interpretations = [];
   switch ($row->realm) {
     case 'workflow_access_owner':
-      $interpretations[$row->gid] = t('Workflow access: author of the content may access');
+      $interpretations[$row->gid] = t(
+        'Workflow access: author of the content may access'
+      );
       break;
 
     case 'workflow_access':
       $roles = user_roles();
-      $interpretations[$row->gid] = t('Workflow access: %role may access', ['%role' => $roles[$row->gid]]);
+      $interpretations[$row->gid] = t(
+        'Workflow access: %role may access', ['%role' => $roles[$row->gid]]
+      );
       break;
   }
   return (!empty($interpretations[$row->gid]) ? $interpretations[$row->gid] : NULL);

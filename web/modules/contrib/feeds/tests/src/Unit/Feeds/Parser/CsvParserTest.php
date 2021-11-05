@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\feeds\Unit\Feeds\Parser;
 
+use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\Feeds\Parser\CsvParser;
 use Drupal\feeds\FeedTypeInterface;
@@ -141,7 +142,6 @@ class CsvParserTest extends FeedsUnitTestCase {
    * Tests parsing an empty CSV file.
    *
    * @covers ::parse
-   * @expectedException \Drupal\feeds\Exception\EmptyFeedException
    */
   public function testEmptyFeed() {
     $this->feedType->method('getMappingSources')
@@ -149,6 +149,8 @@ class CsvParserTest extends FeedsUnitTestCase {
 
     touch('vfs://feeds/empty_file');
     $result = new FetcherResult('vfs://feeds/empty_file');
+
+    $this->expectException(EmptyFeedException::class);
     $this->parser->parse($this->feed, $result, $this->state);
   }
 

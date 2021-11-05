@@ -25,13 +25,14 @@ abstract class DateBase extends WebformElementBase {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultProperties() {
+  protected function defineDefaultProperties() {
     return [
       // Form validation.
       'date_date_min' => '',
       'date_date_max' => '',
       'date_days' => ['0', '1', '2', '3', '4', '5', '6'],
-    ] + parent::getDefaultProperties() + $this->getDefaultMultipleProperties();
+    ] + parent::defineDefaultProperties()
+      + $this->defineDefaultMultipleProperties();
   }
 
   /****************************************************************************/
@@ -49,7 +50,7 @@ abstract class DateBase extends WebformElementBase {
     $element['#theme_wrappers'] = ['form_element'];
 
     // Must manually process #states.
-    // @see drupal_process_states().
+    // @see \Drupal\Core\Form\FormHelper::processStates
     if (!empty($element['#states'])) {
       $element['#attached']['library'][] = 'core/drupal.states';
       $element['#wrapper_attributes']['data-drupal-states'] = Json::encode($element['#states']);
@@ -196,7 +197,7 @@ abstract class DateBase extends WebformElementBase {
     // @see \Drupal\webform\Plugin\WebformElementBase::getItemFormat
     $default_format = $this->configFactory->get('webform.settings')->get('format.' . $this->getPluginId() . '.item');
     if ($default_format && isset($date_formats[$default_format])) {
-      $formats['fallback'] = t('Default date format (@label)', ['@label' => $date_formats[$default_format]->label()]);
+      $formats['fallback'] = $this->t('Default date format (@label)', ['@label' => $date_formats[$default_format]->label()]);
     }
     return $formats;
   }
@@ -230,9 +231,17 @@ abstract class DateBase extends WebformElementBase {
     $form['default']['default_value']['#description'] .= '<br /><br />' . $this->t("You may use tokens. Tokens should use the 'html_date' or 'html_datetime' date format. (i.e. @date_format)", ['@date_format' => '[current-user:field_date_of_birth:date:html_date]']);
 
     // Allow custom date formats to be entered.
-    $form['display']['format']['#type'] = 'webform_select_other';
-    $form['display']['format']['#other__option_label'] = $this->t('Custom date format…');
-    $form['display']['format']['#other__description'] = $this->t('A user-defined date format. See the <a href="http://php.net/manual/function.date.php">PHP manual</a> for available options.');
+    $form['display']['item']['format']['#options']['custom'] = $this->t('Custom HTML/text…');
+    $form['display']['item']['format']['#type'] = 'webform_select_other';
+    $form['display']['item']['format']['#other__option_label'] = $this->t('Custom date format…');
+    $form['display']['item']['format']['#other__description'] = $this->t('A user-defined date format. See the <a href="http://php.net/manual/function.date.php">PHP manual</a> for available options.');
+    $format_custom_states = [
+      'visible' => [':input[name="properties[format][select]"]' => ['value' => 'custom']],
+      'required' => [':input[name="properties[format][select]"]' => ['value' => 'custom']],
+    ];
+    $form['display']['item']['format_html']['#states'] = $format_custom_states;
+    $form['display']['item']['format_text']['#states'] = $format_custom_states;
+    $form['display']['item']['twig']['#states'] = $format_custom_states;
 
     $form['date'] = [
       '#type' => 'fieldset',
@@ -246,12 +255,18 @@ abstract class DateBase extends WebformElementBase {
     $form['date']['date_container']['date_date_min'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Date minimum'),
-      '#description' => $this->t('Specifies the minimum date.') . '<br /><br />' . $this->t('Accepts any date in any <a href="https://www.gnu.org/software/tar/manual/html_chapter/tar_7.html#Date-input-formats">GNU Date Input Format</a>. Strings such as today, +2 months, and Dec 9 2004 are all valid.'),
+      '#description' => $this->t('Specifies the minimum date.')
+        . ' ' . $this->t('To limit the minimum date to the submission date use the <code>[webform_submission:created:html_date]</code> token.')
+        . '<br /><br />'
+        . $this->t('Accepts any date in any <a href="https://www.gnu.org/software/tar/manual/html_chapter/tar_7.html#Date-input-formats">GNU Date Input Format</a>. Strings such as today, +2 months, and Dec 9 2004 are all valid.'),
     ];
     $form['date']['date_container']['date_date_max'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Date maximum'),
-      '#description' => $this->t('Specifies the maximum date.') . '<br /><br />' . $this->t('Accepts any date in any <a href="https://www.gnu.org/software/tar/manual/html_chapter/tar_7.html#Date-input-formats">GNU Date Input Format</a>. Strings such as today, +2 months, and Dec 9 2004 are all valid.'),
+      '#description' => $this->t('Specifies the maximum date.')
+        . ' ' . $this->t('To limit the maximum date to the submission date use the <code>[webform_submission:created:html_date]</code> token.')
+        . '<br /><br />'
+        . $this->t('Accepts any date in any <a href="https://www.gnu.org/software/tar/manual/html_chapter/tar_7.html#Date-input-formats">GNU Date Input Format</a>. Strings such as today, +2 months, and Dec 9 2004 are all valid.'),
     ];
 
     // Date days of the week validation.
@@ -292,12 +307,18 @@ abstract class DateBase extends WebformElementBase {
     $form['validation']['date_container']['date_min'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Date/time minimum'),
-      '#description' => $this->t('Specifies the minimum date/time.') . '<br /><br />' . $this->t('Accepts any date in any <a href="https://www.gnu.org/software/tar/manual/html_chapter/tar_7.html#Date-input-formats">GNU Date/Time Input Format</a>. Strings such as today, +2 months, and Dec 9 2004 10:00 PM are all valid.'),
+      '#description' => $this->t('Specifies the minimum date/time.')
+        . ' ' . $this->t('To limit the minimum date/time to the submission date/time use the <code>[webform_submission:created:html_datetime]</code> token.')
+        . '<br /><br />'
+        . $this->t('Accepts any date in any <a href="https://www.gnu.org/software/tar/manual/html_chapter/tar_7.html#Date-input-formats">GNU Date/Time Input Format</a>. Strings such as today, +2 months, and Dec 9 2004 10:00 PM are all valid.'),
     ];
     $form['validation']['date_container']['date_max'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Date/time maximum'),
-      '#description' => $this->t('Specifies the maximum date/time.') . '<br /><br />' . $this->t('Accepts any date in any <a href="https://www.gnu.org/software/tar/manual/html_chapter/tar_7.html#Date-input-formats">GNU Date/Time Input Format</a>. Strings such as today, +2 months, and Dec 9 2004 10:00 PM are all valid.'),
+      '#description' => $this->t('Specifies the maximum date/time.')
+        . ' ' . $this->t('To limit the maximum date/time to the submission date/time use the <code>[webform_submission:created:html_datetime]</code> token.')
+        . '<br /><br />'
+        . $this->t('Accepts any date in any <a href="https://www.gnu.org/software/tar/manual/html_chapter/tar_7.html#Date-input-formats">GNU Date/Time Input Format</a>. Strings such as today, +2 months, and Dec 9 2004 10:00 PM are all valid.'),
     ];
     return $form;
   }
@@ -653,7 +674,7 @@ abstract class DateBase extends WebformElementBase {
   protected static function formatDate($custom_format, $timestamp = NULL) {
     /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
     $date_formatter = \Drupal::service('date.formatter');
-    return $date_formatter->format($timestamp ?: time(), 'custom', $custom_format);
+    return $date_formatter->format($timestamp ?: \Drupal::time()->getRequestTime(), 'custom', $custom_format);
   }
 
 }

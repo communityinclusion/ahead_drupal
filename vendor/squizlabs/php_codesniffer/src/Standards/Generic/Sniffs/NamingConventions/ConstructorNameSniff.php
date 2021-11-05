@@ -2,7 +2,7 @@
 /**
  * Bans PHP 4 style constructors.
  *
- * Favor PHP 5 constructor syntax, which uses "function __construct()".
+ * Favour PHP 5 constructor syntax, which uses "function __construct()".
  * Avoid PHP 4 constructor syntax, which uses "function ClassName()".
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
@@ -66,7 +66,12 @@ class ConstructorNameSniff extends AbstractScopeSniff
             return;
         }
 
-        $className = strtolower($phpcsFile->getDeclarationName($currScope));
+        $className = $phpcsFile->getDeclarationName($currScope);
+        if (empty($className) === false) {
+            // Not an anonymous class.
+            $className = strtolower($className);
+        }
+
         if ($className !== $this->currentClass) {
             $this->loadFunctionNamesInScope($phpcsFile, $currScope);
             $this->currentClass = $className;

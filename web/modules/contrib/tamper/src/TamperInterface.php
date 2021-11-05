@@ -2,14 +2,14 @@
 
 namespace Drupal\tamper;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Interface definition for tamper plugins.
  */
-interface TamperInterface extends PluginInspectionInterface, PluginFormInterface, ConfigurablePluginInterface {
+interface TamperInterface extends PluginInspectionInterface, PluginFormInterface, ConfigurableInterface {
 
   /**
    * Tamper data.

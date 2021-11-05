@@ -2,6 +2,8 @@
 
 namespace Drupal\feeds\Feeds\Target;
 
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
@@ -17,6 +19,24 @@ use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
  * )
  */
 class Number extends FieldTargetBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static function prepareTarget(FieldDefinitionInterface $field_definition) {
+    $definition = FieldTargetDefinition::createFromFieldDefinition($field_definition)
+      ->addProperty('value');
+
+    // Only the decimal field type is supported as unique target. The float
+    // field type isn't because it cannot be precisely selected with the 'equal'
+    // operator.
+    // @see https://stackoverflow.com/questions/1302243/selecting-a-float-in-mysql
+    if ($field_definition->getType() === 'decimal') {
+      $definition->markPropertyUnique('value');
+    }
+
+    return $definition;
+  }
 
   /**
    * {@inheritdoc}

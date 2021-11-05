@@ -23,7 +23,7 @@ class FeedExpireHandler extends FeedHandlerBase {
       $feed->lock();
     }
     catch (LockException $e) {
-      \Drupal::messenger()->addWarning(t('The feed became locked before the expiring could begin.'));
+      $this->messenger()->addWarning($this->t('The feed became locked before the expiring could begin.'));
       return;
     }
     $feed->clearStates();
@@ -39,7 +39,7 @@ class FeedExpireHandler extends FeedHandlerBase {
       'title' => $this->t('Expiring: %title', ['%title' => $feed->label()]),
       'init_message' => $this->t('Expiring: %title', ['%title' => $feed->label()]),
       'progress_message' => $this->t('Expiring: %title', ['%title' => $feed->label()]),
-      'error_message' => $this->t('An error occored while expiring %title.', ['%title' => $feed->label()]),
+      'error_message' => $this->t('An error occurred while expiring %title.', ['%title' => $feed->label()]),
     ];
 
     foreach ($ids as $id) {
@@ -47,7 +47,7 @@ class FeedExpireHandler extends FeedHandlerBase {
     }
     $batch['operations'][] = [[$this, 'postExpire'], [$feed]];
 
-    batch_set($batch);
+    $this->batchSet($batch);
   }
 
   /**
@@ -80,7 +80,7 @@ class FeedExpireHandler extends FeedHandlerBase {
       $this->dispatchEvent(FeedsEvents::EXPIRE, new ExpireEvent($feed, $item_id));
     }
     catch (\RuntimeException $e) {
-      \Drupal::messenger()->addError($e->getMessage());
+      $this->messenger()->addError($e->getMessage());
       $feed->clearStates();
       $feed->unlock();
     }
@@ -102,7 +102,7 @@ class FeedExpireHandler extends FeedHandlerBase {
   public function postExpire(FeedInterface $feed) {
     $state = $feed->getState(StateInterface::EXPIRE);
     if ($state->total) {
-      \Drupal::messenger()->addStatus($this->t('Expired @count items.', ['@count' => $state->total]));
+      $this->messenger()->addStatus($this->t('Expired @count items.', ['@count' => $state->total]));
     }
     $feed->clearStates();
     $feed->save();

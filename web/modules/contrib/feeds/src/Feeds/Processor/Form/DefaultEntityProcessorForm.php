@@ -3,16 +3,45 @@
 namespace Drupal\feeds\Feeds\Processor\Form;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\feeds\Plugin\Type\ExternalPluginFormBase;
 use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\Entity\User;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * The configuration form for the CSV parser.
  */
-class DefaultEntityProcessorForm extends ExternalPluginFormBase {
+class DefaultEntityProcessorForm extends ExternalPluginFormBase implements ContainerInjectionInterface {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs a DefaultEntityProcessorForm object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -21,6 +50,36 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase {
     $tokens = [
       '@entity' => mb_strtolower($this->plugin->entityTypeLabel()),
       '@entities' => mb_strtolower($this->plugin->entityTypeLabelPlural()),
+    ];
+    $entity_type = $this->entityTypeManager->getDefinition($this->plugin->entityType());
+
+    if ($entity_type->getKey('langcode')) {
+      $langcode = $this->plugin->getConfiguration('langcode');
+
+      $form['langcode'] = [
+        '#type' => 'select',
+        '#options' => $this->plugin->languageOptions(),
+        '#title' => $this->t('Language'),
+        '#required' => TRUE,
+        '#default_value' => $langcode,
+      ];
+
+      // Add default value as one of the options if not yet available.
+      if ($langcode && !isset($form['langcode']['#options'][$langcode])) {
+        $form['langcode']['#options'][$langcode] = $this->t('Unknown language: @language', [
+          '@language' => $langcode,
+        ]);
+      }
+    }
+    $form['insert_new'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Insert new @entities', $tokens),
+      '#description' => $this->t('New @entities will be determined using mappings that are a "unique target".', $tokens),
+      '#options' => [
+        ProcessorInterface::INSERT_NEW => $this->t('Insert new @entities', $tokens),
+        ProcessorInterface::SKIP_NEW => $this->t('Do not insert new @entities', $tokens),
+      ],
+      '#default_value' => $this->plugin->getConfiguration('insert_new'),
     ];
 
     $form['update_existing'] = [
@@ -76,10 +135,7 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase {
       '#default_value' => $this->plugin->getConfiguration('expire'),
     ];
 
-    // @todo Remove hack.
-    $entity_type = \Drupal::entityTypeManager()->getDefinition($this->plugin->entityType());
-
-    if ($entity_type->isSubclassOf(EntityOwnerInterface::class)) {
+    if ($entity_type->entityClassImplements(EntityOwnerInterface::class)) {
       $form['owner_feed_author'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Owner: Feed author'),
@@ -109,7 +165,7 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase {
       '#weight' => 10,
     ];
 
-    if ($entity_type->isSubclassOf(EntityOwnerInterface::class)) {
+    if ($entity_type->entityClassImplements(EntityOwnerInterface::class)) {
       $form['advanced']['authorize'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Authorize'),
@@ -143,7 +199,8 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase {
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     $form_state->setValue('owner_id', (int) $form_state->getValue('owner_id', 0));
 
-    // Check if the selected option for 'update_non_existent' is still available.
+    // Check if the selected option for 'update_non_existent' is still
+    // available.
     $options = $this->getUpdateNonExistentActions();
     $selected = $form_state->getValue('update_non_existent');
     if (!isset($options[$selected])) {

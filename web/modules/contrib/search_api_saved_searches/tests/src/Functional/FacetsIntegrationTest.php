@@ -25,6 +25,11 @@ class FacetsIntegrationTest extends BrowserTestBase {
   ];
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'classy';
+
+  /**
    * The test index's ID.
    *
    * @var string
@@ -69,7 +74,7 @@ class FacetsIntegrationTest extends BrowserTestBase {
 
     $assert_session->pageTextContains('Displaying 2 search results');
     $edit = [
-      'label[0][value]' => 'Test saved search'
+      'label[0][value]' => 'Test saved search',
     ];
     $this->submitForm($edit, 'Save search');
 

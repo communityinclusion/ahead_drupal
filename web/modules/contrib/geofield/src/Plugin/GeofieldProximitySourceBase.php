@@ -85,7 +85,7 @@ abstract class GeofieldProximitySourceBase extends PluginBase implements Geofiel
 
     // If the given value is not a valid option, throw an error.
     if (!in_array($units, $this->getUnitsOptions())) {
-      $message = t('Invalid units supplied.');
+      $message = $this->t('Invalid units supplied.');
       \Drupal::logger('geofield')->error($message);
       return FALSE;
     }
@@ -172,13 +172,12 @@ abstract class GeofieldProximitySourceBase extends PluginBase implements Geofiel
   public function getHaversineOptions() {
 
     $origin = $this->getOrigin();
-    if ($this->isEmptyLocation($origin['lat'], $origin['lon'])) {
+    if (!$origin || !isset($origin['lat']) || !isset($origin['lon'])) {
+      throw new HaversineUnavailableException('Not able to calculate Haversine Options due to invalid Proximity Origin definition.');
+    }
+    if ($this->isEmptyLocation($origin['lat'], $origin['lon']) || !$this->isValidLocation($origin['lat'], $origin['lon'])) {
       return NULL;
     }
-    if (!$origin || !$this->isValidLocation($origin['lat'], $origin['lon'])) {
-      throw new HaversineUnavailableException('Not able to calculate Haversine Options due to invalid Proximity origin location.');
-    }
-
     return [
       'origin_latitude' => $origin['lat'],
       'origin_longitude' => $origin['lon'],

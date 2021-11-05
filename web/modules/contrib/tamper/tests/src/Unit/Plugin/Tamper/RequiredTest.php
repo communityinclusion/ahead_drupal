@@ -49,7 +49,7 @@ class RequiredTest extends TamperPluginTestBase {
    * Test required with a string.
    */
   public function testInvertedRequiredWithSingleValue() {
-    $this->setExpectedException(SkipTamperItemException::class);
+    $this->expectException(SkipTamperItemException::class);
     $this->invertedPlugin->tamper('Expected');
   }
 
@@ -57,7 +57,7 @@ class RequiredTest extends TamperPluginTestBase {
    * Test required with empty string.
    */
   public function testRequiredWithEmptyString() {
-    $this->setExpectedException(SkipTamperItemException::class);
+    $this->expectException(SkipTamperItemException::class);
     $this->plugin->tamper('');
   }
 
@@ -84,7 +84,7 @@ class RequiredTest extends TamperPluginTestBase {
    * Test required with an array.
    */
   public function testInvertedRequiredWithMultipleValues() {
-    $this->setExpectedException(SkipTamperItemException::class);
+    $this->expectException(SkipTamperItemException::class);
     $expected = [
       'foo' => 'bar',
       'zip' => '',
@@ -97,7 +97,7 @@ class RequiredTest extends TamperPluginTestBase {
    * Test required with false.
    */
   public function testRequiredWithBool() {
-    $this->setExpectedException(SkipTamperItemException::class);
+    $this->expectException(SkipTamperItemException::class);
     $this->plugin->tamper(FALSE);
   }
 
@@ -112,7 +112,7 @@ class RequiredTest extends TamperPluginTestBase {
    * Test required with empty array.
    */
   public function testRequiredWithEmptyArray() {
-    $this->setExpectedException(SkipTamperItemException::class);
+    $this->expectException(SkipTamperItemException::class);
     $this->plugin->tamper([]);
   }
 
@@ -127,7 +127,7 @@ class RequiredTest extends TamperPluginTestBase {
    * Test required with empty array.
    */
   public function testRequiredWithNull() {
-    $this->setExpectedException(SkipTamperItemException::class);
+    $this->expectException(SkipTamperItemException::class);
     $this->plugin->tamper(NULL);
   }
 

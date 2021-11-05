@@ -5,6 +5,7 @@ namespace Drupal\Tests\feeds\Unit\Feeds\Fetcher;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Tests\feeds\Unit\FeedsUnitTestCase;
+use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Feeds\Fetcher\HttpFetcher;
@@ -16,6 +17,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Prophecy\Argument;
+use RuntimeException;
 
 /**
  * @coversDefaultClass \Drupal\feeds\Feeds\Fetcher\HttpFetcher
@@ -91,10 +93,11 @@ class HttpFetcherTest extends FeedsUnitTestCase {
    * Tests fetching from a HTTP source that returns a 304 (not modified).
    *
    * @covers ::fetch
-   * @expectedException \Drupal\feeds\Exception\EmptyFeedException
    */
   public function testFetch304() {
     $this->mockHandler->append(new Response(304));
+
+    $this->expectException(EmptyFeedException::class);
     $this->fetcher->fetch($this->feed->reveal(), new State());
   }
 
@@ -102,10 +105,11 @@ class HttpFetcherTest extends FeedsUnitTestCase {
    * Tests fetching from a HTTP source that returns a 404 (not found).
    *
    * @covers ::fetch
-   * @expectedException \RuntimeException
    */
   public function testFetch404() {
     $this->mockHandler->append(new Response(404));
+
+    $this->expectException(RuntimeException::class);
     $this->fetcher->fetch($this->feed->reveal(), new State());
   }
 
@@ -113,10 +117,11 @@ class HttpFetcherTest extends FeedsUnitTestCase {
    * Tests a fetch that fails.
    *
    * @covers ::fetch
-   * @expectedException \RuntimeException
    */
   public function testFetchError() {
     $this->mockHandler->append(new RequestException('', new Request('GET', 'http://google.com')));
+
+    $this->expectException(RuntimeException::class);
     $this->fetcher->fetch($this->feed->reveal(), new State());
   }
 

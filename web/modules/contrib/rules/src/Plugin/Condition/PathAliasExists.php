@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "rules_path_alias_exists",
  *   label = @Translation("Path alias exists"),
  *   category = @Translation("Path"),
- *   context = {
+ *   context_definitions = {
  *     "alias" = @ContextDefinition("string",
  *       label = @Translation("Path alias"),
  *       description = @Translation("Specify the path alias to check for. For example, '/about' for an about page.")

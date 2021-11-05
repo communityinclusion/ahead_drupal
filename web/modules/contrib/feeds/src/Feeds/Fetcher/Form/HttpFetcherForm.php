@@ -26,6 +26,12 @@ class HttpFetcherForm extends ExternalPluginFormBase {
       '#description' => $this->t('Attempt to use a <a href="http://en.wikipedia.org/wiki/PubSubHubbub">PubSubHubbub</a> subscription if available.'),
       '#default_value' => $this->plugin->getConfiguration('use_pubsubhubbub'),
     ];
+    $form['always_download'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Always download'),
+      '#description' => $this->t('Always download the feed, even if the feed has not been updated.'),
+      '#default_value' => $this->plugin->getConfiguration('always_download'),
+    ];
     $form['fallback_hub'] = [
       '#type' => 'url',
       '#title' => $this->t('Fallback hub'),

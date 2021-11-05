@@ -13,7 +13,10 @@ interface ConfigurableTargetInterface extends ConfigurableInterface, DependentPl
   /**
    * Returns the summary for a target.
    *
-   * @return string
+   * Returning the summary as array is encouraged. The allowance of returning a
+   * string only exists for backwards compatibility.
+   *
+   * @return string|string[]
    *   The configuration summary.
    */
   public function getSummary();

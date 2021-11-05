@@ -36,6 +36,9 @@ class AccordionItem extends FieldGroupFormatterBase {
       '#type' => 'field_group_accordion_item',
       '#effect' => $this->getSetting('effect'),
       '#title' => $this->getLabel(),
+      // Prevent \Drupal\content_translation\ContentTranslationHandler::addTranslatabilityClue()
+      // from adding an incorrect suffix to the field group title.
+      '#multilingual' => TRUE,
     ];
 
     if ($this->getSetting('id')) {
@@ -52,7 +55,7 @@ class AccordionItem extends FieldGroupFormatterBase {
     }
 
     if ($this->getSetting('formatter') == 'open') {
-        $element['#open'] = TRUE;
+      $element['#open'] = TRUE;
     }
 
     foreach ($element as $key => $value) {

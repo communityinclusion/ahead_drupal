@@ -83,18 +83,33 @@ class Text extends StringTarget implements ConfigurableTargetInterface, Containe
   }
 
   /**
+   * Retrieves a list of text formats that the given user may use.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The account to select formats for.
+   *
+   * @return \Drupal\filter\FilterFormatInterface[]
+   *   An array of text format objects, keyed by the format ID and ordered by
+   *   weight.
+   */
+  protected function getFilterFormats(AccountInterface $account) {
+    return filter_formats($account);
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return ['format' => 'plain_text'];
+    return parent::defaultConfiguration() + ['format' => 'plain_text'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildConfigurationForm($form, $form_state);
     $options = [];
-    foreach (filter_formats($this->user) as $id => $format) {
+    foreach ($this->getFilterFormats($this->user) as $id => $format) {
       $options[$id] = $format->label();
     }
     $form['format'] = [
@@ -111,14 +126,20 @@ class Text extends StringTarget implements ConfigurableTargetInterface, Containe
    * {@inheritdoc}
    */
   public function getSummary() {
+    $summary = parent::getSummary();
+
     $formats = \Drupal::entityTypeManager()
       ->getStorage('filter_format')
-      ->loadByProperties(['status' => '1', 'format' => $this->configuration['format']]);
+      ->loadByProperties([
+        'status' => '1',
+        'format' => $this->configuration['format'],
+      ]);
 
     if ($formats) {
       $format = reset($formats);
-      return $this->t('Format: %format', ['%format' => $format->label()]);
+      $summary[] = $this->t('Format: %format', ['%format' => $format->label()]);
     }
+    return $summary;
   }
 
 }

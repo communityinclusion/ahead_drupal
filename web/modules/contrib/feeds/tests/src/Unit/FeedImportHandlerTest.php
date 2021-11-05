@@ -2,15 +2,10 @@
 
 namespace Drupal\Tests\feeds\Unit;
 
-use Drupal\feeds\Event\FeedsEvents;
-use Drupal\feeds\Event\FetchEvent;
-use Drupal\feeds\Event\ParseEvent;
-use Drupal\feeds\Event\ProcessEvent;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FeedImportHandler;
-use Drupal\feeds\Feeds\Item\ItemInterface;
-use Drupal\feeds\Result\FetcherResultInterface;
-use Drupal\feeds\Result\ParserResultInterface;
+use Drupal\feeds\FeedsExecutableInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -34,14 +29,27 @@ class FeedImportHandlerTest extends FeedsUnitTestCase {
   protected $feed;
 
   /**
+   * The handler to test.
+   *
+   * @var \Drupal\feeds\FeedImportHandler
+   */
+  protected $handler;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
 
     $this->dispatcher = new EventDispatcher();
-    $this->handler = new FeedImportHandler($this->dispatcher);
+    $this->handler = $this->getMockBuilder(FeedImportHandler::class)
+      ->setConstructorArgs([$this->dispatcher])
+      ->setMethods(['getRequestTime', 'getExecutable'])
+      ->getMock();
     $this->handler->setStringTranslation($this->getStringTranslationStub());
+    $this->handler->expects($this->any())
+      ->method('getRequestTime')
+      ->willReturn(time());
 
     $this->feed = $this->createMock(FeedInterface::class);
     $this->feed->expects($this->any())
@@ -53,54 +61,55 @@ class FeedImportHandlerTest extends FeedsUnitTestCase {
   }
 
   /**
+   * @covers ::import
+   */
+  public function testImport() {
+    $this->handler->expects($this->once())
+      ->method('getExecutable')
+      ->willReturn($this->createMock(FeedsExecutableInterface::class));
+
+    $this->handler->import($this->feed);
+  }
+
+  /**
    * @covers ::startBatchImport
    */
   public function testStartBatchImport() {
-    $this->feed->expects($this->once())
-      ->method('lock')
-      ->will($this->returnValue($this->feed));
+    $this->handler->expects($this->once())
+      ->method('getExecutable')
+      ->willReturn($this->createMock(FeedsExecutableInterface::class));
 
     $this->handler->startBatchImport($this->feed);
   }
 
   /**
-   * @covers ::batchFetch
-   * @covers ::batchParse
-   * @covers ::batchProcess
-   * @covers ::doFetch
-   * @covers ::doParse
-   * @covers ::doProcess
+   * @covers ::startCronImport
    */
-  public function testBatch() {
-    $this->addDefaultEventListeners();
+  public function testStartCronImport() {
+    $this->feed->expects($this->once())
+      ->method('isLocked')
+      ->will($this->returnValue(FALSE));
 
-    $this->feed->expects($this->exactly(3))
-      ->method('saveStates');
+    $this->handler->expects($this->once())
+      ->method('getExecutable')
+      ->willReturn($this->createMock(FeedsExecutableInterface::class));
 
-    $this->handler->batchFetch($this->feed);
-    $this->handler->batchParse($this->feed);
-    $this->handler->batchProcess($this->feed, $this->createMock(ItemInterface::class));
+    $this->handler->startCronImport($this->feed);
   }
 
   /**
-   * Adds default listeners to event dispatcher.
+   * @covers ::pushImport
    */
-  protected function addDefaultEventListeners() {
-    $fetcher_result = $this->createMock(FetcherResultInterface::class);
-    $parser_result = $this->createMock(ParserResultInterface::class);
+  public function testPushImport() {
+    $this->handler->expects($this->once())
+      ->method('getExecutable')
+      ->willReturn($this->createMock(FeedsExecutableInterface::class));
+    $this->feed->expects($this->once())
+      ->method('lock')
+      ->will($this->returnValue($this->feed));
 
-    $this->dispatcher->addListener(FeedsEvents::FETCH, function (FetchEvent $event) use ($fetcher_result) {
-      $event->setFetcherResult($fetcher_result);
-    });
-
-    $this->dispatcher->addListener(FeedsEvents::PARSE, function (ParseEvent $event) use ($fetcher_result, $parser_result) {
-      $this->assertSame($event->getFetcherResult(), $fetcher_result);
-      $event->setParserResult($parser_result);
-    });
-
-    $this->dispatcher->addListener(FeedsEvents::PROCESS, function (ProcessEvent $event) use ($parser_result) {
-      $this->assertInstanceOf(ItemInterface::class, $event->getItem());
-    });
+    $file = $this->resourcesPath() . '/csv/example.csv';
+    $this->handler->pushImport($this->feed, file_get_contents($file), $this->createMock(FileSystemInterface::class));
   }
 
 }

@@ -30,7 +30,7 @@ class TamperableComplexDataAdapterTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp() {
-    $this->complexData = $this->getMock(ComplexDataInterface::class);
+    $this->complexData = $this->createMock(ComplexDataInterface::class);
     $this->adapter = new TamperableComplexDataAdapter($this->complexData);
   }
 

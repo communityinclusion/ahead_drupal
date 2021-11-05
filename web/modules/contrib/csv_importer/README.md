@@ -1,31 +1,39 @@
 # CSV Importer
 
-## INTRODUCTION
+CSV importer module helps to import content from CSV files. 
 
-Import content from CSV files.
+<strong>Supports following entity types import: </strong>
 
-## INSTALLATION
+<ul>
+  <li><a href="https://www.drupal.org/docs/8/modules/csv-importer/examples">Content</a></li>
+  <li><a href="https://www.drupal.org/docs/8/modules/csv-importer/examples">Taxonomy</a></li>
+  <li><a href="https://www.drupal.org/docs/8/modules/csv-importer/examples">User</a> </li>
+  <li><a href="https://www.drupal.org/docs/8/modules/csv-importer/import-menu-link-content">Menu link</a></li>
+  <li><a href="https://www.drupal.org/docs/8/modules/csv-importer/import-comment">Comment</a></li>
+</ul>
 
-<code>composer require drupal/csv_importer:1.2-rc1</code>
+<h2>Usage:</h2>
 
-## REQUIREMENTS
-No special requirements.
+<ul>
+  <li>Navigate to - <strong>/admin/config/development/csv-importer</strong></li>
+  <li>Select entity type, bundle, delimiter and file</li>
+  <li>Press import</li>
+</ul>
 
-## CONFIGURATION
-The module has no modifiable settings.
+<h2>Features:</h2>
+<ul>
+  <li><a href="https://www.drupal.org/docs/8/modules/csv-importer/import-multiple-content">Import multiple content</a></li>
+  <li><a href="https://www.drupal.org/docs/8/modules/csv-importer/import-files">Import files</a></li>
+</ul>
 
-## USAGE
+<h2>For developers:</h2>
+<ul>
+  <li><a href="https://www.drupal.org/docs/8/modules/csv-importer/create-custom-entity-type-import">Create custom entity type import</a></li>
+</ul>
 
-- Navigate to <strong>admin/config/development/csv-importer</strong>
-- Choose entity type
-- Choose entity bundle (if any)
-- Choose CSV file
-- Press <strong>CSV import</strong>
+For more details and examples see <a href="https://www.drupal.org/docs/8/modules/csv-importer">documentation</a>
 
-## DOCUMENTATION
-
-Documentation - https://www.drupal.org/docs/8/modules/csv-importer
-
-## MAINTEINERS
-
-Lasha Badashvili - https://www.drupal.org/u/lashabp
+<h2>Sponsors:</h2>
+<ul>
+  <li><a href="https://www.youcanic.com">YOUCANIC</a></li>
+</ul>

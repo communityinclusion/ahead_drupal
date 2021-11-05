@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\feeds\Unit\Feeds\Parser;
 
+use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Feeds\Parser\OpmlParser;
 use Drupal\feeds\Result\RawFetcherResult;
 use Drupal\Tests\feeds\Unit\FeedsUnitTestCase;
@@ -79,9 +80,9 @@ class OpmlParserTest extends FeedsUnitTestCase {
    * Tests parsing an empty feed.
    *
    * @covers ::parse
-   * @expectedException \Drupal\feeds\Exception\EmptyFeedException
    */
   public function testEmptyFeed() {
+    $this->expectException(EmptyFeedException::class);
     $this->parser->parse($this->feed, new RawFetcherResult('', $this->getMockFileSystem()), $this->state);
   }
 

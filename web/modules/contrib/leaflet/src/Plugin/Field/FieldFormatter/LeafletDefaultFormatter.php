@@ -407,7 +407,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
             }
             // Set the Feature IconSize and ShadowSize to the IconUrl or
             // ShadowUrl Image sizes (if empty or invalid).
-            $this->leafletService-> setFeatureIconSizesIfEmptyOrInvalid($feature);
+            $this->leafletService->setFeatureIconSizesIfEmptyOrInvalid($feature);
             break;
         }
       }

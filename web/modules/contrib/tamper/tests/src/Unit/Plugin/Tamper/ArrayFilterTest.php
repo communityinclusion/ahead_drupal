@@ -24,7 +24,8 @@ class ArrayFilterTest extends TamperPluginTestBase {
    * Test the array filter plugin with a single value.
    */
   public function testArrayFilterWithSingleValue() {
-    $this->setExpectedException(TamperException::class, 'Input should be an array.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be an array.');
     $this->plugin->tamper('foo');
   }
 

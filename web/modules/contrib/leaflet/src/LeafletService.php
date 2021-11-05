@@ -339,7 +339,7 @@ class LeafletService {
    * @param array $feature
    *   The feature array.
    */
-  public function setFeatureIconSizesIfEmptyOrInvalid(array &$feature): void {
+  public function setFeatureIconSizesIfEmptyOrInvalid(array &$feature) {
     if (isset($feature["icon"]["iconSize"])
       && (empty(intval($feature["icon"]["iconSize"]["x"])) && empty(intval($feature["icon"]["iconSize"]["y"])))
       && (!empty($feature["icon"]["iconUrl"]) && $this->fileExists($feature["icon"]["iconUrl"]))) {

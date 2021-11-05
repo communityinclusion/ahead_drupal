@@ -6,23 +6,15 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\ListDataDefinition;
 use Drupal\Core\TypedData\MapDataDefinition;
-use Drupal\Core\TypedData\TypedDataTrait;
-use Drupal\Tests\BrowserTestBase;
-use Drupal\Tests\typed_data\Traits\BrowserTestHelpersTrait;
-use Drupal\typed_data\Widget\FormWidgetManagerTrait;
 
 /**
- * Class SelectWidgetTest.
+ * Tests operation of the 'select' TypedDataForm widget plugin.
  *
  * @group typed_data
  *
  * @coversDefaultClass \Drupal\typed_data\Plugin\TypedDataFormWidget\SelectWidget
  */
-class SelectWidgetTest extends BrowserTestBase {
-
-  use BrowserTestHelpersTrait;
-  use FormWidgetManagerTrait;
-  use TypedDataTrait;
+class SelectWidgetTest extends FormWidgetBrowserTestBase {
 
   /**
    * The tested form widget.
@@ -32,20 +24,14 @@ class SelectWidgetTest extends BrowserTestBase {
   protected $widget;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  public static $modules = [
-    'typed_data',
-    'typed_data_widget_test',
-    'text',
-  ];
+  protected static $modules = ['text'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->widget = $this->getFormWidgetManager()->createInstance('select');
   }
@@ -57,7 +43,7 @@ class SelectWidgetTest extends BrowserTestBase {
     $this->assertFalse($this->widget->isApplicable(DataDefinition::create('any')));
     $this->assertFalse($this->widget->isApplicable(DataDefinition::create('binary')));
     $this->assertFalse($this->widget->isApplicable(DataDefinition::create('boolean')));
-    $this->assertFalse($this->widget->isApplicable(DataDefinition::create('datetime_iso8601')));;
+    $this->assertFalse($this->widget->isApplicable(DataDefinition::create('datetime_iso8601')));
     $this->assertFalse($this->widget->isApplicable(DataDefinition::create('duration_iso8601')));
     $this->assertFalse($this->widget->isApplicable(DataDefinition::create('email')));
     $this->assertFalse($this->widget->isApplicable(DataDefinition::create('float')));
@@ -79,7 +65,7 @@ class SelectWidgetTest extends BrowserTestBase {
     $context_definition = ContextDefinition::create('filter_format')
       ->setLabel('Filter format')
       ->setDescription('Some example selection.');
-    \Drupal::state()->set('typed_data_widgets.definition', $context_definition);
+    $this->container->get('state')->set('typed_data_widgets.definition', $context_definition);
 
     $this->drupalLogin($this->createUser([], NULL, TRUE));
     $path = 'admin/config/user-interface/typed-data-widgets/' . $this->widget->getPluginId();
@@ -107,7 +93,7 @@ class SelectWidgetTest extends BrowserTestBase {
       ->setLabel('Filter format')
       ->setDescription('Some example selection.')
       ->setRequired(TRUE);
-    \Drupal::state()->set('typed_data_widgets.definition', $context_definition);
+    $this->container->get('state')->set('typed_data_widgets.definition', $context_definition);
 
     $this->drupalLogin($this->createUser([], NULL, TRUE));
     $path = 'admin/config/user-interface/typed-data-widgets/' . $this->widget->getPluginId();

@@ -3,11 +3,17 @@
 namespace Drupal\feeds\Form;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\feeds\Exception\MissingTargetException;
 use Drupal\feeds\FeedTypeInterface;
+use Drupal\feeds\MissingTargetDefinition;
 use Drupal\feeds\Plugin\Type\MappingPluginFormInterface;
 use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
+use Drupal\feeds\Plugin\Type\Target\TargetInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a form for mapping settings.
@@ -22,11 +28,37 @@ class MappingForm extends FormBase {
   protected $feedType;
 
   /**
+   * The feed type storage.
+   *
+   * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
+   */
+  protected $feedTypeStorage;
+
+  /**
    * The mappings for this feed type.
    *
    * @var array
    */
   protected $mappings;
+
+  /**
+   * Constructs a new MappingForm object.
+   *
+   * @param \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $feed_type_storage
+   *   The feed type storage.
+   */
+  public function __construct(ConfigEntityStorageInterface $feed_type_storage) {
+    $this->feedTypeStorage = $feed_type_storage;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager')->getStorage('feeds_feed_type')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -168,6 +200,28 @@ class MappingForm extends FormBase {
    *   The form structure for a single mapping row.
    */
   protected function buildRow(array $form, FormStateInterface $form_state, array $mapping, $delta) {
+    try {
+      /** @var \Drupal\feeds\Plugin\Type\TargetInterface $plugin */
+      $plugin = $this->feedType->getTargetPlugin($delta);
+    }
+    catch (MissingTargetException $e) {
+      // The target plugin is missing!
+      $this->messenger()->addWarning($e->getMessage());
+      watchdog_exception('feeds', $e);
+      $plugin = NULL;
+    }
+
+    // Check if the target exists.
+    if (!empty($this->targets[$mapping['target']])) {
+      /** @var \Drupal\feeds\TargetDefinitionInterface $target_definition */
+      $target_definition = $this->targets[$mapping['target']];
+    }
+    else {
+      // The target is missing! Create a placeholder target definition, so that
+      // the mapping row is still being displayed.
+      $target_definition = MissingTargetDefinition::create();
+    }
+
     $ajax_delta = -1;
     $triggering_element = (array) $form_state->getTriggeringElement() + ['#op' => ''];
     if ($triggering_element['#op'] === 'configure') {
@@ -179,10 +233,16 @@ class MappingForm extends FormBase {
     $row['targets'] = [
       '#theme' => 'item_list',
       '#items' => [],
+      '#attributes' => ['class' => ['target']],
     ];
 
+    if ($target_definition instanceof MissingTargetDefinition) {
+      $row['#attributes']['class'][] = 'missing-target';
+      $row['#attributes']['class'][] = 'color-error';
+    }
+
     foreach ($mapping['map'] as $column => $source) {
-      if (!$this->targets[$mapping['target']]->hasProperty($column)) {
+      if (!$target_definition->hasProperty($column)) {
         unset($mapping['map'][$column]);
         continue;
       }
@@ -212,7 +272,7 @@ class MappingForm extends FormBase {
           'machine_name' => [
             '#type' => 'machine_name',
             '#machine_name' => [
-              'exists' => [$this->feedType, 'customSourceExists'],
+              'exists' => [$this, 'customSourceExists'],
               'source' => ['mappings', $delta, 'map', $column, '__new', 'value'],
               'standalone' => TRUE,
               'label' => '',
@@ -224,13 +284,13 @@ class MappingForm extends FormBase {
         ],
       ];
 
-      $label = Html::escape($this->targets[$mapping['target']]->getLabel() . ' (' . $mapping['target'] . ')');
+      $label = Html::escape($target_definition->getLabel() . ' (' . $mapping['target'] . ')');
 
       if (count($mapping['map']) > 1) {
-        $desc = $this->targets[$mapping['target']]->getPropertyLabel($column);
+        $desc = $target_definition->getPropertyLabel($column);
       }
       else {
-        $desc = $this->targets[$mapping['target']]->getDescription();
+        $desc = $target_definition->getDescription();
       }
       if ($desc) {
         $label .= ': ' . $desc;
@@ -248,59 +308,55 @@ class MappingForm extends FormBase {
       '#delta' => $delta,
     ];
 
-    if ($plugin = $this->feedType->getTargetPlugin($delta)) {
-
-      if ($plugin instanceof ConfigurableTargetInterface) {
-        if ($delta == $ajax_delta) {
-          $row['settings'] = $plugin->buildConfigurationForm([], $form_state);
-          $row['settings']['actions'] = [
-            '#type' => 'actions',
-            'save_settings' => $default_button + [
-              '#type' => 'submit',
-              '#button_type' => 'primary',
-              '#value' => $this->t('Update'),
-              '#op' => 'update',
-              '#name' => 'target-save-' . $delta,
-            ],
-            'cancel_settings' => $default_button + [
-              '#type' => 'submit',
-              '#value' => $this->t('Cancel'),
-              '#op' => 'cancel',
-              '#name' => 'target-cancel-' . $delta,
-              '#limit_validation_errors' => [[]],
-            ],
-          ];
-          $row['configure']['#markup'] = '';
-          $row['#attributes']['class'][] = 'feeds-mapping-settings-editing';
-        }
-        else {
-          $row['settings'] = [
-            '#type' => 'item',
-            '#markup' => $plugin->getSummary(),
-            '#parents' => ['config_summary', $delta],
-          ];
-          $row['configure'] = $default_button + [
-            '#type' => 'image_button',
-            '#op' => 'configure',
-            '#name' => 'target-settings-' . $delta,
-            '#src' => 'core/misc/icons/787878/cog.svg',
-          ];
-        }
+    $row['settings']['#markup'] = '';
+    $row['configure']['#markup'] = '';
+    if ($plugin && $this->pluginHasSettingsForm($plugin, $form_state)) {
+      if ($delta == $ajax_delta) {
+        $row['settings'] = $plugin->buildConfigurationForm([], $form_state);
+        $row['settings']['actions'] = [
+          '#type' => 'actions',
+          'save_settings' => $default_button + [
+            '#type' => 'submit',
+            '#button_type' => 'primary',
+            '#value' => $this->t('Update'),
+            '#op' => 'update',
+            '#name' => 'target-save-' . $delta,
+          ],
+          'cancel_settings' => $default_button + [
+            '#type' => 'submit',
+            '#value' => $this->t('Cancel'),
+            '#op' => 'cancel',
+            '#name' => 'target-cancel-' . $delta,
+            '#limit_validation_errors' => [[]],
+          ],
+        ];
+        $row['#attributes']['class'][] = 'feeds-mapping-settings-editing';
       }
       else {
-        $row['settings']['#markup'] = '';
-        $row['configure']['#markup'] = '';
+        $row['settings'] = [
+          '#parents' => ['config_summary', $delta],
+        ] + $this->buildSummary($plugin);
+        $row['configure'] = $default_button + [
+          '#type' => 'image_button',
+          '#op' => 'configure',
+          '#name' => 'target-settings-' . $delta,
+          '#src' => 'core/misc/icons/787878/cog.svg',
+        ];
       }
     }
-    else {
-      $row['settings']['#markup'] = '';
-      $row['configure']['#markup'] = '';
+    elseif ($plugin instanceof ConfigurableTargetInterface) {
+      $summary = $this->buildSummary($plugin);
+      if (!empty($summary)) {
+        $row['settings'] = [
+          '#parents' => ['config_summary', $delta],
+        ] + $this->buildSummary($plugin);
+      }
     }
 
     $mappings = $this->feedType->getMappings();
 
     foreach ($mapping['map'] as $column => $source) {
-      if ($this->targets[$mapping['target']]->isUnique($column)) {
+      if ($target_definition->isUnique($column)) {
         $row['unique'][$column] = [
           '#title' => $this->t('Unique'),
           '#type' => 'checkbox',
@@ -328,6 +384,60 @@ class MappingForm extends FormBase {
     }
 
     return $row;
+  }
+
+  /**
+   * Checks if the given plugin has a settings form.
+   *
+   * @param \Drupal\feeds\Plugin\Type\Target\TargetInterface $plugin
+   *   The target plugin.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the complete form.
+   *
+   * @return bool
+   *   TRUE if it has a settings form. False otherwise.
+   */
+  protected function pluginHasSettingsForm(TargetInterface $plugin, FormStateInterface $form_state) {
+    if (!$plugin instanceof ConfigurableTargetInterface) {
+      // Target is not configurable.
+      return FALSE;
+    }
+
+    if (!$plugin instanceof PluginFormInterface) {
+      // Target plugin does not provide a settings form.
+      return FALSE;
+    }
+
+    $settings_form = $plugin->buildConfigurationForm([], $form_state);
+    return !empty($settings_form);
+  }
+
+  /**
+   * Builds the summary for a configurable target.
+   *
+   * @param \Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface $plugin
+   *   A configurable target plugin.
+   *
+   * @return array
+   *   A renderable array.
+   */
+  protected function buildSummary(ConfigurableTargetInterface $plugin) {
+    // Display a summary of the current plugin settings.
+    $summary = $plugin->getSummary();
+    if (!empty($summary)) {
+      if (!is_array($summary)) {
+        $summary = [$summary];
+      }
+
+      return [
+        '#type' => 'inline_template',
+        '#template' => '<div class="plugin-summary">{{ summary|safe_join("<br />") }}</div>',
+        '#context' => ['summary' => $summary],
+        '#cell_attributes' => ['class' => ['plugin-summary-cell']],
+      ];
+    }
+
+    return [];
   }
 
   /**
@@ -386,6 +496,58 @@ class MappingForm extends FormBase {
     }
 
     return $element;
+  }
+
+  /**
+   * Checks if a particular source already exists on the saved feed type.
+   *
+   * @param string $name
+   *   The name to check.
+   * @param array $element
+   *   The form element using the machine name.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the complete form.
+   *
+   * @return bool
+   *   True if the source already exists, false otherwise.
+   */
+  public function customSourceExists($name, array $element, FormStateInterface $form_state) {
+    // Get unchanged feed type.
+    $unchanged_feed_type = $this->feedTypeStorage->loadUnchanged($this->feedType->getOriginalId());
+    // Check if the custom source already exists on the last saved feed type.
+    if ($unchanged_feed_type && $unchanged_feed_type->customSourceExists($name)) {
+      return TRUE;
+    }
+
+    // Get the delta and the column of the passed form element. The delta is the
+    // position of the mapping row on the form, the column refers to a property
+    // of the target plugin.
+    $element_delta = $element['#array_parents'][1];
+    $element_column = $element['#array_parents'][3];
+
+    // Check other mappings.
+    foreach ($form_state->getValue('mappings') as $delta => $mapping) {
+      foreach ($mapping['map'] as $column => $value) {
+        // Check if this value belongs to our own element.
+        if ($delta == $element_delta && $element_column == $column) {
+          // Don't compare name to our own element.
+          continue;
+        }
+
+        // Check if for this mapping row a new source is selected.
+        if ($value['select'] == '__new') {
+          // Compare the new source's name with the name to check.
+          $map_name = $mappings[$delta]['map'][$column] = $value['__new']['machine_name'];
+          if ($name == $map_name) {
+            // Name is already used by an other mapper.
+            return TRUE;
+          }
+        }
+      }
+    }
+
+    // Name does not exist yet for custom source.
+    return FALSE;
   }
 
   /**

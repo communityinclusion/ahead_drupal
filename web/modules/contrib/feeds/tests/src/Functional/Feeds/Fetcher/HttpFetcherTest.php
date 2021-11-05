@@ -171,4 +171,77 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
     $this->assertText('Deleted 6');
   }
 
+  /**
+   * Tests if nothing gets cached when disabling HTTP Caching.
+   */
+  public function testHttpCacheDisabled() {
+    // Disable caching.
+    $fetcher = $this->feedType->getFetcher();
+    $config = $fetcher->getConfiguration();
+    $config['always_download'] = TRUE;
+    $fetcher->setConfiguration($config);
+    $this->feedType->save();
+
+    // Import feed.
+    $feed = $this->createFeed($this->feedType->id(), [
+      'source' => $this->resourcesUrl() . '/rss/googlenewstz.rss2',
+    ]);
+    $this->batchImport($feed);
+    $this->assertText('Created 6');
+    $this->assertNodeCount(6);
+
+    // Assert that no cache entries were created.
+    $count = $this->container->get('database')
+      ->select('cache_feeds_download')
+      ->fields('cache_feeds_download', [])
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    $this->assertEquals(0, $count);
+  }
+
+  /**
+   * Tests if a changed source is refetched.
+   */
+  public function testChangedSource() {
+    // Install module that dynamically generates a CSV file.
+    $this->container->get('module_installer')->install(['feeds_test_files']);
+    $this->rebuildContainer();
+
+    // Create a feed type.
+    $feed_type = $this->createFeedTypeForCsv([
+      'guid' => 'GUID',
+      'title' => 'Title',
+    ], [
+      'fetcher' => 'http',
+      'fetcher_configuration' => [],
+      'processor_configuration' => [
+        'update_existing' => ProcessorInterface::UPDATE_EXISTING,
+        'values' => [
+          'type' => 'article',
+        ],
+      ],
+    ]);
+
+    // Import feed.
+    $feed = $this->createFeed($feed_type->id(), [
+      'source' => \Drupal::request()->getSchemeAndHttpHost() . '/testing/feeds/nodes.csv',
+    ]);
+    $this->batchImport($feed);
+    $this->assertText('Created 8');
+    $this->assertNodeCount(8);
+
+    // Import again.
+    $this->batchImport($feed);
+    $this->assertText('There are no new');
+
+    // Now change the source to test if the source is refetched.
+    // - Items 1 and 4 changed.
+    // - Items 2 and 7 were removed.
+    \Drupal::state()->set('feeds_test_nodes_last_modified', strtotime('Sun, 30 Mar 2016 10:19:55 GMT'));
+
+    $this->batchImport($feed);
+    $this->assertText('Updated 2');
+  }
+
 }

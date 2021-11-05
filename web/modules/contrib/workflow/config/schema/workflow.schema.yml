@@ -29,16 +29,22 @@ workflow.workflow.*:
       mapping:
         name_as_title:
           type: integer
-          label: 'Use the workflow name as the title of the workflow form'
+          label: 'Use the workflow name as the title of the workflow transition form'
         fieldset:
           type: integer
           label: 'Show the form in a fieldset'
         options:
           type: string
           label: 'How to show the available states'
+        schedule_enable:
+          type: boolean
+          label: 'Enable scheduling in workflow transition form'
         schedule_timezone:
           type: integer
           label: 'Show a timezone when scheduling a transition'
+        always_update_entity:
+          type: integer
+          label: 'Always update the entity last updated timestamp'
         comment_log_node:
           type: integer
           label: 'Show comment on the Content edit form'
@@ -66,6 +72,9 @@ field.storage_settings.workflow:
           label:
             type: label
             label: 'Label'
+    allowed_values_function:
+      type: string
+      label: 'Allowed values function'
 
 field.field_settings.workflow:
   type: mapping

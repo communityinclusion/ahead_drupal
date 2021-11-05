@@ -21,7 +21,7 @@ class RulesMailTest extends RulesKernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['rules'];
+  protected static $modules = ['rules'];
 
   /**
    * {@inheritdoc}

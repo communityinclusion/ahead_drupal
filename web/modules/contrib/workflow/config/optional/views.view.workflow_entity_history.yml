@@ -2,7 +2,7 @@
 status: true
 dependencies:
   module:
-    - workflow
+    - workflow:workflow
 id: workflow_entity_history
 label: 'Workflow Entity history'
 module: views

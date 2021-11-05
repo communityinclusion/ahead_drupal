@@ -76,6 +76,70 @@ class FieldValidationTest extends FeedsBrowserTestBase {
   }
 
   /**
+   * Tests if a field with admin filter format can be imported using the UI.
+   *
+   * When importing the body field using a filter format that anonymous users
+   * are not allowed to use, import should not fail because of permission
+   * issues.
+   */
+  public function testImportFieldWithAdminFilterFormatInUi() {
+    // Create a body field for the article content type.
+    node_add_body_field($this->nodeType);
+
+    // Create a filter not available to anonymous users.
+    $format = FilterFormat::create([
+      'format' => 'empty_format',
+      'name' => 'Empty format',
+    ]);
+    $format->save();
+
+    // Create an user that may use this format.
+    $this->adminUser = $this->drupalCreateUser([
+      'administer feeds',
+      'administer filters',
+      'access site reports',
+      $format->getPermissionName(),
+    ]);
+
+    // Create a feed type, map to body field. Set the filter format that has
+    // restricted access.
+    $feed_type = $this->createFeedTypeForCsv([
+      'guid' => 'guid',
+      'title' => 'title',
+      'body' => 'body',
+    ], [
+      'id' => 'my_feed_type',
+      'mappings' => array_merge($this->getDefaultMappings(), [
+        [
+          'target' => 'body',
+          'map' => ['value' => 'body'],
+          'settings' => ['format' => $format->id()],
+        ],
+      ]),
+    ]);
+
+    // Create a feed that the admin user owns.
+    $feed = $this->createFeed($feed_type->id(), [
+      'source' => $this->resourcesPath() . '/csv/content.csv',
+      'uid' => $this->adminUser->id(),
+    ]);
+
+    // Create an user that can trigger the import.
+    $account = $this->drupalCreateUser([
+      'view my_feed_type feeds',
+      'import my_feed_type feeds',
+    ]);
+    $this->drupalLogin($account);
+
+    // And import!
+    $this->drupalPostForm('feed/1/import', [], 'Import');
+
+    // Assert that 2 nodes have been created.
+    $this->assertNodeCount(2);
+    $this->assertSession()->pageTextContains('Created 2 Article items');
+  }
+
+  /**
    * Tests if a field with admin filter format can be imported on cron.
    *
    * When importing the body field using a filter format that anonymous users

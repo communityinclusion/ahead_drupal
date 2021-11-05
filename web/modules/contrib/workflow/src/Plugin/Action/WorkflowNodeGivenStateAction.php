@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Sets an entity to a new, given state.
  *
- * The only change is the 'type' in tha Annotation, so it works on Nodes,
+ * The only change is the 'type' in the Annotation, so it works on Nodes,
  * and can be seen on admin/content page.
  *
  * @Action(
@@ -21,7 +21,7 @@ class WorkflowNodeGivenStateAction extends WorkflowStateActionBase {
   /**
    * {@inheritdoc}
    */
-  public function calculateDependencies(){
+  public function calculateDependencies() {
     return [
       'module' => ['workflow', 'node'],
     ];
@@ -68,7 +68,7 @@ class WorkflowNodeGivenStateAction extends WorkflowStateActionBase {
      */
 
     if (!$transition = $this->getTransitionForExecution($object)) {
-      drupal_set_message('The entity is not valid for this action.');
+      $this->messenger()->addStatus('The entity is not valid for this action.');
       return;
     }
 

@@ -19,7 +19,8 @@ class FeedsItemUrlFormatterTest extends FeedsItemFormatterTestBase {
   public function testFeedsItemUrlFormatter($input, $expected) {
     // Set display mode for feeds_item to feeds_item_url on article content
     // type.
-    entity_get_display('node', 'article', 'default')
+    $this->container->get('entity_display.repository')
+      ->getViewDisplay('node', 'article', 'default')
       ->setComponent('feeds_item', [
         'type' => 'feeds_item_url',
         'settings' => ['url_plain' => FALSE],
@@ -34,11 +35,14 @@ class FeedsItemUrlFormatterTest extends FeedsItemFormatterTestBase {
     $article->feeds_item->url = $input;
 
     // Display the article and test we are getting correct output for url.
-    $display = entity_get_display($article->getEntityTypeId(), $article->bundle(), 'default');
+    $display = $this->container->get('entity_display.repository')
+      ->getViewDisplay($article->getEntityTypeId(), $article->bundle(), 'default');
+
     $content = $display->build($article);
     $rendered_content = $this->container->get('renderer')->renderRoot($content);
+
     if ($expected) {
-      $this->assertContains($expected, (string) $rendered_content);
+      $this->assertStringContainsString($expected, (string) $rendered_content);
     }
     else {
       // If nothing is expected to be displayed, check if the field is rendered
@@ -53,8 +57,8 @@ class FeedsItemUrlFormatterTest extends FeedsItemFormatterTestBase {
   public function providerUrls() {
     return [
       'empty url' => ['', NULL],
-      'http url' => ['http://en.wikipedia.org/wiki/Star_Control', '<div class="field__item"><a href="http://en.wikipedia.org/wiki/Star_Control">http://en.wikipedia.org/wiki/Star_Control</a></div>'],
-      'https url' => ['https://en.wikipedia.org/wiki/Star_Control_II', '<div class="field__item"><a href="https://en.wikipedia.org/wiki/Star_Control_II">https://en.wikipedia.org/wiki/Star_Control_II</a></div>'],
+      'http url' => ['http://en.wikipedia.org/wiki/Star_Control', '<div><a href="http://en.wikipedia.org/wiki/Star_Control">http://en.wikipedia.org/wiki/Star_Control</a></div>'],
+      'https url' => ['https://en.wikipedia.org/wiki/Star_Control_II', '<div><a href="https://en.wikipedia.org/wiki/Star_Control_II">https://en.wikipedia.org/wiki/Star_Control_II</a></div>'],
       'non http or https html url' => ['<strong>SkyNet activated</strong>', NULL],
     ];
   }
@@ -66,11 +70,12 @@ class FeedsItemUrlFormatterTest extends FeedsItemFormatterTestBase {
    */
   public function testOutputUrlAsPlainText() {
     $input = 'https://en.wikipedia.org/wiki/Star_Control_3';
-    $expected = '<div class="field__item">https://en.wikipedia.org/wiki/Star_Control_3</div>';
+    $expected = '<div>https://en.wikipedia.org/wiki/Star_Control_3</div>';
 
     // Set display mode for feeds_item to feeds_item_url on article content
     // type with plain_text_url setting on.
-    entity_get_display('node', 'article', 'default')
+    $this->container->get('entity_display.repository')
+      ->getViewDisplay('node', 'article', 'default')
       ->setComponent('feeds_item', [
         'type' => 'feeds_item_url',
         'settings' => ['url_plain' => TRUE],
@@ -84,11 +89,13 @@ class FeedsItemUrlFormatterTest extends FeedsItemFormatterTestBase {
     $article = $this->createNodeWithFeedsItem($feed);
     $article->feeds_item->url = $input;
 
-    $display = entity_get_display($article->getEntityTypeId(), $article->bundle(), 'default');
+    $display = $this->container->get('entity_display.repository')
+      ->getViewDisplay($article->getEntityTypeId(), $article->bundle(), 'default');
+
     $content = $display->build($article);
     $rendered_content = $this->container->get('renderer')->renderRoot($content);
 
-    $this->assertContains($expected, (string) $rendered_content);
+    $this->assertStringContainsString($expected, (string) $rendered_content);
   }
 
 }

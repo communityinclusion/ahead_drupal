@@ -69,16 +69,16 @@ function nodeaccess_node_access_records($node) {
     else {
       // Otherwise, check access to unpublished content for authenticated and
       // anonymous users.
-      $role_perms = user_role_permissions([DRUPAL_ANONYMOUS_RID, DRUPAL_AUTHENTICATED_RID]);
+      $role_perms = user_role_permissions([AccountInterface::ANONYMOUS_ROLE, AccountInterface::AUTHENTICATED_ROLE]);
       // Anonymous user setting.
       $grants[] = [
-        'gid' => DRUPAL_ANONYMOUS_RID,
-        'grant_view' => in_array('bypass node access', $role_perms[DRUPAL_ANONYMOUS_RID]),
+        'gid' => AccountInterface::ANONYMOUS_ROLE,
+        'grant_view' => in_array('bypass node access', $role_perms[AccountInterface::ANONYMOUS_ROLE]),
       ];
       // Authenticated user setting.
       $grants[] = [
-        'gid' => DRUPAL_AUTHENTICATED_RID,
-        'grant_view' => in_array('bypass node access', $role_perms[DRUPAL_AUTHENTICATED_RID]),
+        'gid' => AccountInterface::AUTHENTICATED_ROLE,
+        'grant_view' => in_array('bypass node access', $role_perms[AccountInterface::AUTHENTICATED_ROLE]),
       ];
     }
   }
@@ -137,6 +137,32 @@ function nodeaccess_node_grants(AccountInterface $account, $op) {
 }
 
 /**
+ * Implements hook_entity_update().
+ */
+function nodeaccess_entity_update(EntityInterface $entity) {
+  $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
+
+  if ($entity instanceof RoleInterface) {
+    $role_alias = $config->get('role_alias');
+    if ($role_alias[$entity->id()]) {
+      $role_alias[$entity->id()]['alias'] = $entity->label();
+      $role_alias[$entity->id()]['name'] = $entity->label();
+    }
+    else {
+      $role_alias[$entity->id()] = [
+        'alias' => $entity->label(),
+        'name' => $entity->label(),
+        'weight' => 0,
+        'allow' => 0,
+      ];
+    }
+    $config->set('role_alias', $role_alias);
+    $config->save();
+  }
+}
+
+
+/**
  * Implements hook_entity_insert().
  */
 function nodeaccess_entity_insert(EntityInterface $entity) {
@@ -146,6 +172,14 @@ function nodeaccess_entity_insert(EntityInterface $entity) {
     $roles_gids = array_flip($config->get('role_map'));
     $roles_gids[] = $entity->id();
     $config->set('role_map', array_flip($roles_gids));
+    $role_alias = $config->get('role_alias');
+    $role_alias[$entity->id()] = [
+      'alias' => $entity->label(),
+      'name' => $entity->label(),
+      'weight' => 0,
+      'allow' => 0,
+    ];
+    $config->set('role_alias', $role_alias);
     $config->save();
   }
 }
@@ -159,7 +193,11 @@ function nodeaccess_entity_delete(EntityInterface $entity) {
   if ($entity instanceof RoleInterface) {
     $roles_gids = $config->get('role_map');
     unset($roles_gids[$entity->id()]);
-    $config->set('role_map', $roles_gids)->save();
+    $config->set('role_map', $roles_gids);
+    $role_alias = $config->get('role_alias');
+    unset($role_alias[$entity->id()]);
+    $config->set('role_alias', $role_alias);
+    $config->save();
   }
 }
 
@@ -192,15 +230,16 @@ function nodeaccess_node_type_insert(NodeTypeInterface $type) {
   $config = \Drupal::configFactory()->getEditable('nodeaccess.settings');
 
   // New node type, default to whatever is set for access content permission.
-  $role_perms = user_role_permissions([DRUPAL_ANONYMOUS_RID, DRUPAL_AUTHENTICATED_RID]);
-  $anonymous_access = (int) in_array('access content', $role_perms[DRUPAL_ANONYMOUS_RID]);
-  $authenticated_access = (int) in_array('access content', $role_perms[DRUPAL_AUTHENTICATED_RID]);
-  $grants[DRUPAL_ANONYMOUS_RID] = [
+  $role_perms = user_role_permissions([AccountInterface::ANONYMOUS_ROLE, AccountInterface::AUTHENTICATED_ROLE]);
+  $anonymous_access = (int) in_array('access content', $role_perms[AccountInterface::ANONYMOUS_ROLE]);
+  $authenticated_access = (int) in_array('access content', $role_perms[AccountInterface::AUTHENTICATED_ROLE]);
+
+  $grants[AccountInterface::ANONYMOUS_ROLE] = [
     'grant_view' => $anonymous_access,
     'grant_update' => 0,
     'grant_delete' => 0,
   ];
-  $grants[DRUPAL_AUTHENTICATED_RID] = [
+  $grants[AccountInterface::AUTHENTICATED_ROLE] = [
     'grant_view' => $authenticated_access,
     'grant_update' => 0,
     'grant_delete' => 0,
@@ -231,10 +270,10 @@ function nodeaccess_node_access(NodeInterface $node, $op, $account) {
       if ($account->id() == 0 && $node->getOwnerId() == 0) {
         // We check if the role has particular access to this node.
         $grants = _nodeaccess_get_grants($node);
-        $anonymous_rid = $role_map[DRUPAL_ANONYMOUS_RID];
+        $anonymous_rid = $role_map[AccountInterface::ANONYMOUS_ROLE];
         // If anonymous has rights to this node, we allow them.
         if (($grants['rid'][$anonymous_rid]['grant_update'] && $op == 'update') ||
-        ($grants['rid'][$anonymous_rid]['grant_delete'] && $op == 'delete')) {
+            ($grants['rid'][$anonymous_rid]['grant_delete'] && $op == 'delete')) {
           return AccessResult::Allowed();
         }
         return AccessResult::forbidden();
@@ -253,47 +292,41 @@ function _nodeaccess_get_grants($node) {
   $grants = [];
   // Load all roles.
   $db = \Drupal::database();
-  $query = $db->select('nodeaccess', 'na')
+  $result = $db->select('nodeaccess', 'na')
     ->fields('na', ['gid', 'grant_view', 'grant_update', 'grant_delete'])
-    ->condition('na.nid', $node->id, '=')
-    ->condition('na.realm', 'nodeaccess_rid', '=');
-  $result = $query->execute()->fetchAll();
-
-  if ($result) {
-    foreach ($result as $grant) {
-      $grants['rid'][$grant->gid] = [
-        'grant_view' => $grant->grant_view,
-        'grant_update' => $grant->grant_update,
-        'grant_delete' => $grant->grant_delete,
-      ];
-    }
-  
+    ->condition('nid', $node->id, '=')
+    ->condition('realm', 'nodeaccess_rid', '=')
+    ->execute()
+    ->fetchAll();
+  foreach ($result as $grant) {
+    $grants['rid'][$grant->gid] = [
+      'grant_view' => $grant->grant_view,
+      'grant_update' => $grant->grant_update,
+      'grant_delete' => $grant->grant_delete,
+    ];
   }
-
   // Load users from node_access.
   $db = \Drupal::database();
-  $query = $db->select('nodeaccess', 'n');
-  $query->leftJoin('users_field_data', 'ufd', 'ufd.uid = n.gid');
-  $query->fields('n', ['gid', 'grant_view', 'grant_update', 'grant_delete']);
-  $query->condition('n.nid', $node->id, '=')
+  $entries = $db->select('nodeaccess', 'n');
+  $entries->join('users_field_data', 'ufd', 'ufd.uid = n.gid');
+  $entries->fields('n', ['grant_view', 'grant_update', 'grant_delete'])
+    ->condition('n.nid', $node->id, '=')
     ->condition('n.realm', 'nodeaccess_uid', '=')
-    ->orderBy('name', 'ASC');
-  $result = $query->execute()->fetchAll();
+    ->orderBy('ufd.name', 'ASC');
+  $result = $entries->execute();
 
-    if ($result) {
-        foreach ($result as $account) {
-          $grants['uid'][$account->uid] = [
-            'name' => $account->name,
-            'keep' => 1,
-            'grant_view' => $account->grant_view,
-            'grant_update' => $account->grant_update,
-            'grant_delete' => $account->grant_delete,
-          ];
-        }
-  
-
-  
+  $results = [];
+  while($data = $result->fetchObject()) {
+    $results[] = $data;
   }
-  
+  foreach ($result as $account) {
+    $grants['uid'][$account->uid] = [
+      'name' => $account->name,
+      'keep' => 1,
+      'grant_view' => $account->grant_view,
+      'grant_update' => $account->grant_update,
+      'grant_delete' => $account->grant_delete,
+    ];
+  }
   return $grants;
 }

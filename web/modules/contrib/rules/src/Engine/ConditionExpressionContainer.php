@@ -2,8 +2,10 @@
 
 namespace Drupal\rules\Engine;
 
+use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\rules\Context\ContextConfig;
+use Drupal\rules\Context\ExecutionStateInterface;
 use Drupal\rules\Exception\InvalidExpressionException;
 
 /**
@@ -29,10 +31,13 @@ abstract class ConditionExpressionContainer extends ExpressionContainerBase impl
    *   The plugin implementation definition.
    * @param \Drupal\rules\Engine\ExpressionManagerInterface $expression_manager
    *   The rules expression plugin manager.
+   * @param \Drupal\Core\Logger\LoggerChannelInterface $logger
+   *   The Rules debug logger channel.
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ExpressionManagerInterface $expression_manager) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ExpressionManagerInterface $expression_manager, LoggerChannelInterface $logger) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->expressionManager = $expression_manager;
+    $this->rulesDebugLogger = $logger;
 
     $configuration += ['conditions' => []];
     foreach ($configuration['conditions'] as $condition_config) {
@@ -48,8 +53,9 @@ abstract class ConditionExpressionContainer extends ExpressionContainerBase impl
     if (!$expression instanceof ConditionExpressionInterface) {
       throw new InvalidExpressionException('Only condition expressions can be added to a condition container.');
     }
-    if ($this->getExpression($expression->getUuid())) {
-      throw new InvalidExpressionException('A condition with the same UUID already exists in the container.');
+    $uuid = $expression->getUuid();
+    if ($this->getExpression($uuid)) {
+      throw new InvalidExpressionException("A condition with UUID $uuid already exists in the container.");
     }
     $this->conditions[] = $expression;
     return $this;
@@ -102,7 +108,8 @@ abstract class ConditionExpressionContainer extends ExpressionContainerBase impl
     // We need to update the configuration in case conditions have been added or
     // changed.
     $configuration['conditions'] = [];
-    foreach ($this->conditions as $condition) {
+    // Use the iterator, which sorts the conditions by weight.
+    foreach ($this as $condition) {
       $configuration['conditions'][] = $condition->getConfiguration();
     }
     return $configuration;
@@ -112,7 +119,19 @@ abstract class ConditionExpressionContainer extends ExpressionContainerBase impl
    * {@inheritdoc}
    */
   public function getIterator() {
-    return new \ArrayIterator($this->conditions);
+    if (version_compare(phpversion(), '7.0') >= 0) {
+      // If using PHP7.0 or greater we can use the standard uasort.
+      $iterator = new \ArrayIterator($this->conditions);
+      $iterator->uasort([ExpressionContainerBase::class, 'sortByWeightProperty']);
+    }
+    else {
+      // Otherwise use a custom sort for stability when all weights are default.
+      // @todo Remove this when PHP5 is no longer supported.
+      // @see https://www.drupal.org/project/rules/issues/3101013
+      ExpressionContainerBase::mergesort($this->conditions, [ExpressionContainerBase::class, 'sortByWeightProperty']);
+      $iterator = new \ArrayIterator($this->conditions);
+    }
+    return $iterator;
   }
 
   /**

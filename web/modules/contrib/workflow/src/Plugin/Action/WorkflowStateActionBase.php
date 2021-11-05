@@ -29,7 +29,7 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
    */
   public function calculateDependencies() {
     return parent::calculateDependencies() + [
-      'module' => ['workflow',],
+      'module' => ['workflow'],
     ];
   }
 
@@ -56,7 +56,8 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
   }
 
   /**
-   * @param EntityInterface $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *
    * @return \Drupal\workflow\Entity\WorkflowTransitionInterface
    */
   protected function getTransitionForExecution(EntityInterface $entity) {
@@ -75,7 +76,7 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
     }
 
     // In 'after saving new content', the node is already saved. Avoid second insert.
-    // @todo: clone?
+    // @todo Clone?
     $entity->enforceIsNew(FALSE);
 
     $config = $this->configuration;
@@ -89,7 +90,7 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
     $to_sid = isset($config['to_sid']) ? $config['to_sid'] : '';
     // Get the Comment. Parse the $comment variables.
     $comment_string = $this->configuration['comment'];
-    $comment = t($comment_string, [
+    $comment = $this->t($comment_string, [
       '%title' => $entity->label(),
       // "@" and "%" will automatically run check_plain().
       '%state' => workflow_get_sid_name($to_sid),
@@ -109,24 +110,22 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-
     // If we are on admin/config/system/actions and use CREATE AN ADVANCED ACTION
     // Then $context only contains:
-    // - $context['actions_label'] = "Change workflow state of post to new state"
-    // - $context['actions_type'] = "entity"
+    // - $context['actions_label'] = "Change workflow state of post to new state";
+    // - $context['actions_type'] = "entity".
     //
     // If we are on a VBO action form, then $context only contains:
-    // - $context['entity_type'] = "node"
-    // - $context['view'] = "(Object) view"
-    // - $context['settings'] = "[]"
-
+    // - $context['entity_type'] = "node";
+    // - $context['view'] = "(Object) view";
+    // - $context['settings'] = "[]".
     $config = $this->configuration;
     $field_name = $config['field_name'];
     $wids = workflow_get_workflow_names();
 
     if (empty($field_name) && count($wids) > 1) {
-      drupal_set_message('You have multiple workflows in the system. Please first select the field name
-          and save the form. Then, revisit the form to set the correct state value.', 'warning');
+      $this->messenger()->addWarning('You have multiple workflows in the system. Please first select the field name
+          and save the form. Then, revisit the form to set the correct state value.');
     }
 
     $wid = count($wids) ? array_keys($wids)[0] : '';
@@ -136,7 +135,7 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
     }
 
     // Get the common Workflow, or create a dummy Workflow.
-    /** @var Workflow $workflow */
+    /** @var \Drupal\workflow\Entity\Workflow $workflow */
     $workflow = $wid ? Workflow::load($wid) : Workflow::create(['id' => 'dummy_action', 'label' => 'dummy_action']);
     $current_state = $workflow->getCreationState();
 
@@ -185,25 +184,25 @@ abstract class WorkflowStateActionBase extends ConfigurableActionBase implements
     );
 
     // Add the WorkflowTransitionForm to the page. @todo
-
     $element = []; // Just to be explicit.
     $element['#default_value'] = $transition;
 
     // Avoid Action Buttons. That removes the options box&more. No Buttons in config screens!
-    $original_options = $transition->getWorkflow()->options['options'];
-    $transition->getWorkflow()->options['options'] = 'select';
+    $original_options = $transition->getWorkflow()->getSetting('options');
+    $transition->getWorkflow()->setSetting('options', 'select');
     // Generate and add the Workflow form element.
     $element = WorkflowTransitionElement::transitionElement($element, $form_state, $form);
     // Just to be sure, reset the options box setting.
-    $transition->getWorkflow()->options['options'] = $original_options;
+    $transition->getWorkflow()->setSetting('options', $original_options);
 
     // Make adaptations for VBO-form:
     $element['field_name']['#access'] = TRUE;
     $element['force']['#access'] = TRUE;
-    $element['to_sid']['#description'] = t('Please select the state that should be assigned when this action runs.');
+    $element['to_sid']['#description'] = $this->t('Please select the state that should be assigned when this action runs.');
     $element['comment']['#title'] = $this->t('Message');
-    $element['comment']['#description'] = $this->t('This message will be written into the workflow history log when the action
-      runs. You may include the following variables: %state, %title, %user.');
+    $element['comment']['#description'] = $this->t('This message will be written
+      into the workflow history log when the action runs.
+      You may include the following variables: %state, %title, %user.');
 
     $form['workflow_transition_action_config'] = $element;
     return $form;

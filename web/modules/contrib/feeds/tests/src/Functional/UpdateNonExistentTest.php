@@ -2,8 +2,10 @@
 
 namespace Drupal\Tests\feeds\Functional;
 
-use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
+use Drupal\feeds\Event\FeedsEvents;
+use Drupal\feeds\Event\ProcessEvent;
 use Drupal\feeds\FeedTypeInterface;
+use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
 
 /**
  * Tests the feature of updating items that are no longer available in the feed.
@@ -63,7 +65,7 @@ class UpdateNonExistentTest extends FeedsBrowserTestBase {
 
     // Reload feed and assert that 6 nodes have been created.
     $feed = $this->reloadFeed($feed);
-    $this->assertText('Created 6 Articles.');
+    $this->assertText('Created 6 Article items.');
     static::assertEquals(6, $feed->getItemCount());
     $this->assertNodeCount(6);
 
@@ -124,7 +126,7 @@ class UpdateNonExistentTest extends FeedsBrowserTestBase {
 
     // Assert that 6 nodes have been created.
     $feed = $this->reloadFeed($feed);
-    $this->assertText('Created 6 Articles.');
+    $this->assertText('Created 6 Article items.');
     static::assertEquals(6, $feed->getItemCount());
     $this->assertNodeCount(6);
 
@@ -220,7 +222,7 @@ class UpdateNonExistentTest extends FeedsBrowserTestBase {
    * '_delete' and when performing an import using cron.
    */
   public function testDeleteNonExistentItemsWithCron() {
-    // Set 'update_non_existent' setting to 'unpublish'.
+    // Set 'update_non_existent' setting to 'delete'.
     $config = $this->feedType->getProcessor()->getConfiguration();
     $config['update_non_existent'] = ProcessorInterface::DELETE_NON_EXISTENT;
     $this->feedType->getProcessor()->setConfiguration($config);
@@ -258,6 +260,131 @@ class UpdateNonExistentTest extends FeedsBrowserTestBase {
     $feed = $this->reloadFeed($feed);
     static::assertEquals(6, $feed->getItemCount());
     $this->assertNodeCount(6);
+  }
+
+  /**
+   * Tests if the right items get cleaned with running multithreaded imports.
+   */
+  public function testMultithreadImport() {
+    // Set 'update_non_existent' setting to 'delete'.
+    $config = $this->feedType->getProcessor()->getConfiguration();
+    $config['update_non_existent'] = ProcessorInterface::DELETE_NON_EXISTENT;
+    $this->feedType->getProcessor()->setConfiguration($config);
+    // Set the import period to run as often as possible.
+    $this->feedType->setImportPeriod(FeedTypeInterface::SCHEDULE_CONTINUOUSLY);
+    $this->feedType->save();
+
+    // Create a feed and import first file.
+    $feed = $this->createFeed($this->feedType->id(), [
+      'source' => $this->resourcesPath() . '/rss/googlenewstz.rss2',
+    ]);
+
+    // Run cron to import.
+    $this->cronRun();
+
+    // Assert that 6 nodes have been created.
+    $feed = $this->reloadFeed($feed);
+    static::assertEquals(6, $feed->getItemCount());
+    $this->assertNodeCount(6);
+
+    // Import an "updated" version of the file from which one item is removed.
+    $feed->setSource($this->resourcesPath() . '/rss/googlenewstz_missing.rss2');
+    $feed->save();
+    $feed->startCronImport();
+
+    // Create queue.
+    $queue_name = 'feeds_feed_refresh:' . $this->feedType->id();
+    $queue = $this->container->get('queue')->get($queue_name);
+    $queue->createQueue();
+    $queue_worker = $this->container->get('plugin.manager.queue_worker')->createInstance($queue_name);
+
+    // Process first three queue items. The first item is expected to be the
+    // "fetch" item, the second a "parse" item.
+    for ($i = 0; $i < 3; $i++) {
+      $item = $queue->claimItem();
+
+      $queue_worker->processItem($item->data);
+      $queue->deleteItem($item);
+    }
+
+    // Listen to process event.
+    $this->container->get('event_dispatcher')->addListener(FeedsEvents::PROCESS, [$this, 'onProcess'], FeedsEvents::AFTER);
+
+    // Process another item.
+    $item = $queue->claimItem();
+    $queue_worker->processItem($item->data);
+    $queue->deleteItem($item);
+
+    // Process remaining items.
+    while ($item = $queue->claimItem()) {
+      $queue_worker->processItem($item->data);
+      $queue->deleteItem($item);
+    }
+
+    // Assert that only one node is removed.
+    $feed = $this->reloadFeed($feed);
+    static::assertEquals(5, $feed->getItemCount());
+    $this->assertNodeCount(5);
+  }
+
+  /**
+   * Tests cleaning when using a non-existing action plugin.
+   *
+   * When upgrading from Drupal 8 to Drupal 9, it is possible that the
+   * configured action for the 'update_non_existent' setting no longer exists.
+   * In this case, we want the import to fail gracefully, not with a fatal
+   * error.
+   */
+  public function testWithNonExistentActionPlugin() {
+    // Set 'update_non_existent' setting to 'unpublish'.
+    $config = $this->feedType->getProcessor()->getConfiguration();
+    $config['update_non_existent'] = 'foo';
+    $this->feedType->getProcessor()->setConfiguration($config);
+    $this->feedType->save();
+
+    // Create a feed and import first file.
+    $feed = $this->createFeed($this->feedType->id(), [
+      'source' => $this->resourcesPath() . '/rss/googlenewstz.rss2',
+    ]);
+    $this->batchImport($feed);
+
+    // Reload feed and assert that 6 nodes have been created.
+    $feed = $this->reloadFeed($feed);
+    $this->assertText('Created 6 Article items.');
+    static::assertEquals(6, $feed->getItemCount());
+    $this->assertNodeCount(6);
+
+    // Import an "updated" version of the file from which one item is removed.
+    $feed->setSource($this->resourcesPath() . '/rss/googlenewstz_missing.rss2');
+    $feed->save();
+    $this->batchImport($feed);
+
+    // Assert that cleaning failed.
+    $this->assertText('Cleaning Egypt, Hamas exchange fire on Gaza frontier, 1 dead - Reuters failed because of non-existing action plugin foo.');
+
+    // Try to import again and assert that the same error message appears.
+    $this->batchImport($feed);
+    $this->assertText('Cleaning Egypt, Hamas exchange fire on Gaza frontier, 1 dead - Reuters failed because of non-existing action plugin foo.');
+  }
+
+  /**
+   * Acts on processing a single item.
+   *
+   * @param \Drupal\feeds\Event\ProcessEvent $event
+   *   The process event.
+   */
+  public function onProcess(ProcessEvent $event) {
+    // Claim another queue item.
+    $feed_type_id = $event->getFeed()->getType()->id();
+    $queue_name = 'feeds_feed_refresh:' . $feed_type_id;
+    $queue = $this->container->get('queue')->get($queue_name);
+    $queue_worker = $this->container->get('plugin.manager.queue_worker')->createInstance($queue_name);
+
+    $item = $queue->claimItem();
+    if ($item) {
+      $queue_worker->processItem($item->data);
+      $queue->deleteItem($item);
+    }
   }
 
 }

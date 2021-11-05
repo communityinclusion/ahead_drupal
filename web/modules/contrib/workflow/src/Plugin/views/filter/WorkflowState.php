@@ -24,11 +24,13 @@ class WorkflowState extends ManyToOne {
   public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
     parent::init($view, $display, $options);
     $wid = isset($this->definition['wid']) ? $this->definition['wid'] : '';
-    $grouped = isset($options['group_info']['widget']) ? $options['group_info']['widget'] == 'select' : false;
+    $grouped = isset($options['group_info']['widget']) ? $options['group_info']['widget'] == 'select' : FALSE;
     $this->valueOptions = workflow_get_workflow_state_names($wid, $grouped);
   }
 
   /**
+   * Returns the valid options for this State.
+   *
    * Child classes should be used to override this function and set the
    * 'value options', unless 'options callback' is defined as a valid function
    * or static public method to generate these values.
@@ -45,11 +47,11 @@ class WorkflowState extends ManyToOne {
       return $this->valueOptions;
     }
 
-    //@todo: implement the below code, and remove the line from init.
-    // @todo: follow Options patterns
+    // @todo Implement the below code, and remove the line from init.
+    // @todo Follow Options patterns.
     // @see callback_allowed_values_function()
     // @see options_allowed_values()
-
     return parent::getValueOptions();
   }
+
 }

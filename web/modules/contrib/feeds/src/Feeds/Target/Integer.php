@@ -2,6 +2,9 @@
 
 namespace Drupal\feeds\Feeds\Target;
 
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\feeds\FieldTargetDefinition;
+
 /**
  * Defines an integer field mapper.
  *
@@ -14,6 +17,17 @@ namespace Drupal\feeds\Feeds\Target;
  * )
  */
 class Integer extends Number {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static function prepareTarget(FieldDefinitionInterface $field_definition) {
+    $definition = FieldTargetDefinition::createFromFieldDefinition($field_definition)
+      ->addProperty('value')
+      ->markPropertyUnique('value');
+
+    return $definition;
+  }
 
   /**
    * {@inheritdoc}

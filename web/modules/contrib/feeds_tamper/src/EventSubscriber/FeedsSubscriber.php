@@ -1,16 +1,14 @@
 <?php
 
 namespace Drupal\feeds_tamper\EventSubscriber;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
+
 use Drupal\feeds\Event\FeedsEvents;
 use Drupal\feeds\Event\ParseEvent;
 use Drupal\feeds\Feeds\Item\ItemInterface;
-use Drupal\feeds\StateInterface;
 use Drupal\feeds_tamper\Adapter\TamperableFeedItemAdapter;
 use Drupal\feeds_tamper\FeedTypeTamperManagerInterface;
 use Drupal\tamper\Exception\SkipTamperDataException;
 use Drupal\tamper\Exception\SkipTamperItemException;
-use Exception;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -21,7 +19,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * into processing.
  */
 class FeedsSubscriber implements EventSubscriberInterface {
-  use StringTranslationTrait;
 
   /**
    * A feed type meta object.
@@ -133,20 +130,6 @@ class FeedsSubscriber implements EventSubscriberInterface {
         // with ItemInterface.
         $item->set($source, NULL);
       }
-      catch (SkipTamperItemException $e) {
-                // Should be catched by ::afterParse().
-                throw $e;
-              }
-              catch (Exception $e) {
-                // An error happened. Catch exception and set a message on the feed.
-                /** @var \Drupal\feeds\StateInterface $state */
-                $state = $event->getFeed()->getState(StateInterface::PARSE);
-                $state->setMessage($this->t('Tampering failed for source %source when trying to applying the tamper %label: @exception', [
-                  '%label' => $tamper->getSetting('label') ? $tamper->getSetting('label') : $tamper->getPluginId(),
-                  '%source' => $source,
-                  '@exception' => $e->getMessage(),
-                ]), 'warning');
-              }
     }
   }
 

@@ -21,12 +21,16 @@ class ConfigEntityDefaultsTest extends RulesKernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['rules', 'rules_test',
-    'rules_test_default_component', 'user', 'system',
+  protected static $modules = [
+    'rules',
+    'rules_test',
+    'rules_test_default_component',
+    'user',
+    'system',
   ];
 
   /**
-   * Disable strict config schema checking for now.
+   * Ensure strict config schema checking.
    *
    * @var bool
    */

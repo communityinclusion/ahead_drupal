@@ -185,4 +185,31 @@ trait FeedsCommonTrait {
     return $this->absolutePath() . '/tests/resources';
   }
 
+  /**
+   * Runs all items from one queue.
+   *
+   * @param string $queue_name
+   *   The name of the queue to run all items from.
+   */
+  protected function runCompleteQueue($queue_name) {
+    // Create queue.
+    $queue = \Drupal::service('queue')->get($queue_name);
+    $queue->createQueue();
+    $queue_worker = \Drupal::service('plugin.manager.queue_worker')->createInstance($queue_name);
+
+    // Process all items of queue.
+    while ($item = $queue->claimItem()) {
+      $queue_worker->processItem($item->data);
+      $queue->deleteItem($item);
+    }
+  }
+
+  /**
+   * Prints messages useful for debugging.
+   */
+  protected function printMessages() {
+    $messages = \Drupal::messenger()->all();
+    print_r($messages);
+  }
+
 }

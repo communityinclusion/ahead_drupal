@@ -24,7 +24,7 @@ abstract class TamperPluginTestBase extends UnitTestCase {
    */
   protected function setUp() {
     $this->plugin = $this->instantiatePlugin();
-    $this->plugin->setStringTranslation($this->getMock(TranslationInterface::class));
+    $this->plugin->setStringTranslation($this->createMock(TranslationInterface::class));
 
     parent::setUp();
   }
@@ -44,7 +44,7 @@ abstract class TamperPluginTestBase extends UnitTestCase {
    *   A source definition.
    */
   protected function getMockSourceDefinition() {
-    $mock = $this->getMock(SourceDefinitionInterface::class);
+    $mock = $this->createMock(SourceDefinitionInterface::class);
     $mock->expects($this->any())
       ->method('getList')
       ->willReturn(['foo', 'bar']);
@@ -55,42 +55,42 @@ abstract class TamperPluginTestBase extends UnitTestCase {
    * @covers ::getPluginId
    */
   public function testGetPluginId() {
-    $this->assertInternalType('string', $this->plugin->getPluginId());
+    $this->assertIsString($this->plugin->getPluginId());
   }
 
   /**
    * @covers ::getPluginDefinition
    */
   public function testGetPluginDefinition() {
-    $this->assertInternalType('array', $this->plugin->getPluginDefinition());
+    $this->assertIsArray($this->plugin->getPluginDefinition());
   }
 
   /**
    * @covers ::getConfiguration
    */
   public function testGetConfiguration() {
-    $this->assertInternalType('array', $this->plugin->getConfiguration());
+    $this->assertIsArray($this->plugin->getConfiguration());
   }
 
   /**
    * @covers ::defaultConfiguration
    */
   public function testDefaultConfiguration() {
-    $this->assertInternalType('array', $this->plugin->defaultConfiguration());
+    $this->assertIsArray($this->plugin->defaultConfiguration());
   }
 
   /**
    * @covers ::buildConfigurationForm
    */
   public function testBuildConfigurationForm() {
-    $this->assertInternalType('array', $this->plugin->buildConfigurationForm([], $this->getMock(FormStateInterface::class)));
+    $this->assertIsArray($this->plugin->buildConfigurationForm([], $this->createMock(FormStateInterface::class)));
   }
 
   /**
    * @covers ::multiple
    */
   public function testMultiple() {
-    $this->assertInternalType('boolean', $this->plugin->multiple());
+    $this->assertIsBool($this->plugin->multiple());
   }
 
 }

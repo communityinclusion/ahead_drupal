@@ -7,7 +7,6 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\workflow\Element\WorkflowTransitionElement;
-use Drupal\workflow\Entity\WorkflowTransitionInterface;
 
 /**
  * Provides a Transition Form to be used in the Workflow Widget.
@@ -15,9 +14,7 @@ use Drupal\workflow\Entity\WorkflowTransitionInterface;
 class WorkflowTransitionForm extends ContentEntityForm {
 
   /*************************************************************************
-   *
    * Implementation of interface FormInterface.
-   *
    */
 
   /**
@@ -26,15 +23,13 @@ class WorkflowTransitionForm extends ContentEntityForm {
   public function getFormId() {
     // We need a proprietary Form ID, to identify the unique forms
     // when multiple fields or entities are shown on 1 page.
-    // Test this f.i. by checking the'scheduled' box. It wil
-    // not unfold.
-    $form_id = parent::getFormId();
+    // Test this f.i. by checking the'scheduled' box. It will not unfold.
+    // $form_id = parent::getFormId();
 
-    /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     $transition = $this->entity;
     $field_name = $transition->getFieldName();
 
-    /** @var $entity \Drupal\Core\Entity\EntityInterface */
     // Entity may be empty on VBO bulk form.
     // $entity = $transition->getTargetEntity();
     // Compose Form Id from string + Entity Id + Field name.
@@ -44,30 +39,16 @@ class WorkflowTransitionForm extends ContentEntityForm {
     // Field name contains implicit entity_type & bundle (since 1 field per entity)
     // $entity_type = $transition->getTargetEntityTypeId();
     // $entity_id = $transition->getTargetEntityId();;
-
     $suffix = 'form';
     // Emulate nodeForm convention.
     if ($transition->id()) {
       $suffix = 'edit_form';
     }
-    $form_id = implode('_', ['workflow_transition', $field_name, $suffix]);
+    $form_id = implode('_', ['workflow_transition', $transition->getTargetEntityTypeId(), $transition->getTargetEntityId(), $field_name, $suffix]);
     $form_id = Html::getUniqueId($form_id);
 
     return $form_id;
   }
-
-  /**
-   * {@inheritdoc}
-   *
-   * N.B. The D8-version of this form is stripped. If any use case is missing:
-   * - compare with the D7-version of WorkflowTransitionForm::submitForm()
-   * - compare with the D8-version of WorkflowTransitionElement::copyFormValuesToEntity()
-   */
-  /*
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    parent::submitForm($form, $form_state);
-  }
-   */
 
   /* *************************************************************************
    *
@@ -77,6 +58,7 @@ class WorkflowTransitionForm extends ContentEntityForm {
 
   /**
    * This function is called by buildForm().
+   *
    * Caveat: !! It is not declared in the EntityFormInterface !!
    *
    * {@inheritdoc}
@@ -86,35 +68,27 @@ class WorkflowTransitionForm extends ContentEntityForm {
     // This might cause baseFieldDefinitions to appear twice.
     $form = parent::form($form, $form_state);
 
-    /** @var $transition \Drupal\workflow\Entity\WorkflowTransitionInterface */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     $transition = $this->entity;
 
     // Do not pass the element, but the form.
     // $element['#default_value'] = $transition;
     // $form += WorkflowTransitionElement::transitionElement($element, $form_state, $form);
     //
-    // Pass the form via parameter
+    // Pass the form via parameter.
     $form['#default_value'] = $transition;
     $form = WorkflowTransitionElement::transitionElement($form, $form_state, $form);
     return $form;
   }
 
-  /*
-   * Returns the action form element for the current entity form.
-   * Caveat: !! It is not declared in the EntityFormInterface !!
-   *
-   * {@inheritdoc}
-  protected function actionsElement(array $form, FormStateInterface $form_state) {
-    $element = parent::actionsElement($form, $form_state);
-    return $element;
-  }
-   */
-
   /**
    * Returns an array of supported actions for the current entity form.
+   *
    * Caveat: !! It is not declared in the EntityFormInterface !!
+   *
    * @param array $form
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *
    * @return array
    */
   protected function actions(array $form, FormStateInterface $form_state) {
@@ -122,7 +96,7 @@ class WorkflowTransitionForm extends ContentEntityForm {
     $actions = parent::actions($form, $form_state);
 
     // A default button is provided by core. Override it.
-    $actions['submit']['#value'] = t('Update workflow');
+    $actions['submit']['#value'] = $this->t('Update workflow');
     $actions['submit']['#attributes'] = ['class' => ['form-save-default-button']];
 
     if (!_workflow_use_action_buttons()) {
@@ -149,7 +123,7 @@ class WorkflowTransitionForm extends ContentEntityForm {
     // unset($actions['submit']);
     $default_submit_action = $actions['submit'];
     $actions = _workflow_transition_form_get_action_buttons($form, $workflow_form, $default_submit_action);
-    foreach ($actions as $key => &$action) {
+    foreach ($actions as &$action) {
       $action['#submit'] = $default_submit_action['#submit'];
     }
 
@@ -175,7 +149,8 @@ class WorkflowTransitionForm extends ContentEntityForm {
    */
   public function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {
     parent::copyFormValuesToEntity($entity, $form, $form_state);
-    // Use a proprietary version of copyFormValuesToEntity(), passing $entity by reference...
+    // Use a proprietary version of copyFormValuesToEntity(),
+    // passing $entity by reference...
     $values = $form_state->getValues();
     // ... but only the returning object is OK (!).
     return WorkflowTransitionElement::copyFormValuesToTransition($entity, $form, $form_state, $values);
@@ -188,22 +163,9 @@ class WorkflowTransitionForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     // Execute transition and update the attached entity.
-    /** @var WorkflowTransitionInterface $transition */
+    /** @var \Drupal\workflow\Entity\WorkflowTransitionInterface $transition */
     $transition = $this->getEntity();
     return $transition->executeAndUpdateEntity();
   }
-
-  /*************************************************************************
-   *
-   * Implementation of interface ContentEntityFormInterface (extends EntityFormInterface).
-   *
-   */
-
-  /**
-   * {@inheritdoc}
-   */
-  //public function validateForm(array &$form, FormStateInterface $form_state) {
-  //  return parent::validateForm($form, $form_state);
-  //}
 
 }

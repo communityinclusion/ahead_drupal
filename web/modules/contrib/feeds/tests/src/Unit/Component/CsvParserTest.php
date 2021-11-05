@@ -4,6 +4,7 @@ namespace Drupal\Tests\feeds\Unit\Component;
 
 use Drupal\feeds\Component\CsvParser;
 use Drupal\Tests\feeds\Unit\FeedsUnitTestCase;
+use InvalidArgumentException;
 
 /**
  * @coversDefaultClass \Drupal\feeds\Component\CsvParser
@@ -101,19 +102,17 @@ class CsvParserTest extends FeedsUnitTestCase {
 
   /**
    * Tries to create a CsvParser instance with an invalid file path.
-   *
-   * @expectedException \InvalidArgumentException
    */
   public function testInvalidFilePath() {
+    $this->expectException(InvalidArgumentException::class);
     CsvParser::createFromFilePath('beep boop');
   }
 
   /**
    * Creates a new CsvParser instance with an invalid CSV source.
-   *
-   * @expectedException \InvalidArgumentException
    */
   public function testInvalidResourcePath() {
+    $this->expectException(InvalidArgumentException::class);
     new CsvParser('beep boop');
   }
 

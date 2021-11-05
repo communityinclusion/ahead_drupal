@@ -2,3 +2,6 @@
 
 views.filter.workflow_state:
   type: views.filter.many_to_one
+
+views.argument.workflow_state:
+  type: views.argument.string

@@ -101,8 +101,8 @@ class TimestampTest extends FeedsKernelTestBase {
     // Assert that the fourth entry failed to validate.
     $messages = \Drupal::messenger()->messagesByType('warning');
     $this->assertCount(1, $messages);
-    $this->assertContains('The content <em class="placeholder">Eodem modo typi</em> failed to validate', (string) $messages[0]);
-    $this->assertContains('created.0.value: This value should be of the correct primitive type.', (string) $messages[0]);
+    $this->assertStringContainsString('The content <em class="placeholder">Eodem modo typi</em> failed to validate', (string) $messages[0]);
+    $this->assertStringContainsString('created.0.value: This value should be of the correct primitive type.', (string) $messages[0]);
   }
 
   /**

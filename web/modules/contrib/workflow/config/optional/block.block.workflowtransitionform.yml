@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   module:
-    - workflow
+    - workflow:workflow
   theme:
     - bartik
 id: workflowtransitionform

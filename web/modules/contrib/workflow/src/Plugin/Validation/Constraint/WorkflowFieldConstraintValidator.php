@@ -3,7 +3,7 @@
 namespace Drupal\workflow\Plugin\Validation\Constraint;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\user\UserStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
@@ -44,7 +44,7 @@ class WorkflowFieldConstraintValidator extends ConstraintValidator implements Co
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('entity.manager')->getStorage('user'));
+    return new static($container->get('entity_type.manager')->getStorage('user'));
   }
 
   /**
@@ -52,34 +52,30 @@ class WorkflowFieldConstraintValidator extends ConstraintValidator implements Co
    */
   public function validate($entity, Constraint $constraint) {
     // Workflow field name on CommentForm has special requirements.
-    /** @var FieldStorageConfig $field_storage */
+    /** @var \Drupal\field\Entity\FieldStorageConfig $field_storage */
     $field_storage = $entity->getFieldDefinition()->getFieldStorageDefinition();
-    if ($field_storage->getTargetEntityTypeId() == 'comment') {
-      if (!$this->isValidFieldname($field_storage)) {
-        $this->context->buildViolation($constraint->messageFieldname)
-          ->atPath('fieldnameOnComment')
-          ->addViolation();
-      }
+    if (!$this->isValidFieldname($field_storage)) {
+      $this->context->buildViolation($constraint->messageFieldname)
+        ->atPath('fieldnameOnComment')
+        ->addViolation();
     }
   }
 
   /**
-   * @param FieldStorageConfig $field_storage
+   * @param \Drupal\Core\Field\FieldStorageDefinitionInterface $field_storage
    *
    * @return bool
    */
-  protected function isValidFieldname(FieldStorageConfig $field_storage) {
-    $comment_field_name_ok = FALSE;
-
+  protected function isValidFieldname(FieldStorageDefinitionInterface $field_storage) {
     if ($field_storage->getTargetEntityTypeId() !== 'comment') {
       return TRUE;
     }
 
     $field_name = $field_storage->getName();
-
     // Check if the 'comment' field name exists on the 'commented' entity type.
-    // @todo: Still not waterproof. You could have a field on a non-relevant entity_type.
-    foreach (_workflow_info_fields() as $key => $info) {
+    // @todo Fix field on a non-relevant entity_type.
+    $comment_field_name_ok = FALSE;
+    foreach (_workflow_info_fields() as $info) {
       if (($info->getName() == $field_name) && ($info->getTargetEntityTypeId() !== 'comment')) {
         $comment_field_name_ok = TRUE;
       }

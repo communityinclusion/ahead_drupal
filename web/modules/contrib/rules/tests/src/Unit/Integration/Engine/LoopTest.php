@@ -197,8 +197,9 @@ class LoopTest extends RulesEntityIntegrationTestBase {
       ->checkIntegrity();
 
     $this->assertEquals(1, iterator_count($violations));
+    // The Exception message part of the output should be HTML-escaped.
     $this->assertEquals(
-      'List variable <em class="placeholder">unknown_list</em> does not exist. Unable to get variable unknown_list, it is not defined.',
+      "List variable <em class=\"placeholder\">unknown_list</em> does not exist. Unable to get variable &#039;unknown_list&#039;; it is not defined.",
       (string) $violations[0]->getMessage()
     );
   }
@@ -241,8 +242,9 @@ class LoopTest extends RulesEntityIntegrationTestBase {
       ->checkIntegrity();
 
     $this->assertEquals(1, iterator_count($violations));
+    // The Exception message part of the output should be HTML-escaped.
     $this->assertEquals(
-      'Data selector <em class="placeholder">unknown_variable</em> for context <em class="placeholder">Text to concatenate</em> is invalid. Unable to get variable unknown_variable, it is not defined.',
+      "Data selector <em class=\"placeholder\">unknown_variable</em> for context <em class=\"placeholder\">Text to concatenate</em> is invalid. Unable to get variable &#039;unknown_variable&#039;; it is not defined.",
       (string) $violations[0]->getMessage()
     );
   }
@@ -287,8 +289,9 @@ class LoopTest extends RulesEntityIntegrationTestBase {
       ->checkIntegrity();
 
     $this->assertEquals(1, iterator_count($violations));
+    // The Exception message part of the output should be HTML-escaped.
     $this->assertEquals(
-      'Data selector <em class="placeholder">list_item</em> for context <em class="placeholder">Text to concatenate</em> is invalid. Unable to get variable list_item, it is not defined.',
+      "Data selector <em class=\"placeholder\">list_item</em> for context <em class=\"placeholder\">Text to concatenate</em> is invalid. Unable to get variable &#039;list_item&#039;; it is not defined.",
       (string) $violations[0]->getMessage()
     );
   }
@@ -298,7 +301,7 @@ class LoopTest extends RulesEntityIntegrationTestBase {
    */
   public function testOutOfScopeVariableExecution() {
     // Set the expected exception class and message.
-    $this->setExpectedException('\Drupal\rules\Exception\EvaluationException', 'Unable to get variable list_item, it is not defined.');
+    $this->setExpectedException('\Drupal\rules\Exception\EvaluationException', "Unable to get variable 'list_item'; it is not defined.");
 
     $rule = $this->rulesExpressionManager->createRule();
     $loop = $this->rulesExpressionManager->createInstance('rules_loop', ['list' => 'string_list']);

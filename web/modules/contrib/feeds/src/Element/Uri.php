@@ -4,6 +4,7 @@ namespace Drupal\feeds\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\Url;
+use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 
 /**
  * Provides a form element for input of a URI.
@@ -24,8 +25,12 @@ class Uri extends Url {
   /**
    * Form element validation handler for #type 'feeds_uri'.
    */
-  public static function validateUrl(&$element, FormStateInterface $form_state, &$complete_form) {
-    $value = file_stream_wrapper_uri_normalize(trim($element['#value']));
+  public static function validateUrl(&$element, FormStateInterface $form_state, &$complete_form, StreamWrapperManagerInterface $stream_wrapper_manager = NULL) {
+    if (empty($stream_wrapper_manager)) {
+      $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+    }
+
+    $value = $stream_wrapper_manager->normalizeUri(trim($element['#value']));
     $form_state->setValueForElement($element, $value);
 
     if (!$value) {

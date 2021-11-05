@@ -21,6 +21,11 @@ abstract class FunctionalTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
   public static $modules = [
     'search_api_page',
     'node',

@@ -3,6 +3,7 @@
 namespace Drupal\Tests\feeds\FunctionalJavascript\Feeds\Parser;
 
 use Drupal\feeds\Entity\Feed;
+use Drupal\filter\Entity\FilterFormat;
 use Drupal\node\Entity\Node;
 
 /**
@@ -24,6 +25,18 @@ class CsvParserTest extends ParserTestBase {
   public function testMapCustomSource() {
     // Create a text field called 'alpha'.
     $this->createFieldWithStorage('field_alpha');
+
+    // Create a filter format.
+    $format = FilterFormat::create([
+      'format' => 'empty_format',
+      'name' => 'Empty format',
+    ]);
+    $format->save();
+
+    // Allow admin user to use this format.
+    $rid = $this->createRole([$format->getPermissionName()]);
+    $this->adminUser->addRole($rid);
+    $this->adminUser->save();
 
     // Add mappings to feed item, title, body, alpha.
     $this->addMappings($this->feedType->id(), [
@@ -54,6 +67,7 @@ class CsvParserTest extends ParserTestBase {
             'machine_name' => 'body_',
           ],
         ],
+        'settings' => ['format' => $format->id()],
       ],
       [
         'target' => 'field_alpha',

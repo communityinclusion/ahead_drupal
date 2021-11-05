@@ -33,7 +33,8 @@ class ExplodeTest extends TamperPluginTestBase {
    * Test explode.
    */
   public function testExplodeWithMultipleValues() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $original = ['foo,bar', 'baz,zip'];
     $this->getPluginDefaultConfig()->tamper($original);
   }
@@ -51,7 +52,8 @@ class ExplodeTest extends TamperPluginTestBase {
    * Text explode with limit.
    */
   public function testExplodeWithMultipleValuesAndLimit() {
-    $this->setExpectedException(TamperException::class, 'Input should be a string.');
+    $this->expectException(TamperException::class);
+    $this->expectExceptionMessage('Input should be a string.');
     $original = ['foo,bar,baz,zip', 'fizz,bang,boop'];
     $this->getPluginWithLimit()->tamper($original);
   }

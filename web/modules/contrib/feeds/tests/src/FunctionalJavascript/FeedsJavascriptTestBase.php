@@ -4,8 +4,8 @@ namespace Drupal\Tests\feeds\FunctionalJavascript;
 
 use Drupal\Component\Utility\Html;
 use Drupal\feeds\FeedInterface;
+use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Entity\FeedType;
-use Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\feeds\Traits\FeedCreationTrait;
 use Drupal\Tests\feeds\Traits\FeedsCommonTrait;
@@ -21,6 +21,11 @@ abstract class FeedsJavascriptTestBase extends WebDriverTestBase {
   use FeedsCommonTrait;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Modules to enable.
    *
    * @var array
@@ -30,13 +35,6 @@ abstract class FeedsJavascriptTestBase extends WebDriverTestBase {
     'node',
     'user',
   ];
-
-  /**
-   * {@inheritdoc}
-   *
-   * Do not use PhantomJS.
-   */
-  protected $minkDefaultDriverClass = DrupalSelenium2Driver::class;
 
   /**
    * A test user with administrative privileges.
@@ -97,25 +95,66 @@ abstract class FeedsJavascriptTestBase extends WebDriverTestBase {
    *   (optional) Additional field values to submit.
    * @param bool $assert_mappings
    *   (optional) Whether or not to assert the mappings. Defaults to true.
-   *
-   * @todo add support for setting target configuration.
    */
   protected function addMappings($feed_type_id, array $mappings, array $edit = [], $assert_mappings = TRUE) {
     $this->drupalGet('/admin/structure/feeds/manage/' . $feed_type_id . '/mapping');
 
+    $session = $this->getSession();
+    $assert_session = $this->assertSession();
+    $page = $session->getPage();
+
+    // Compose edit values.
+    $edit += $this->mappingGetEditValues($mappings);
     foreach ($mappings as $i => $mapping) {
       // Add target.
-      $this->assertSession()->fieldExists('add_target');
-      $this->getSession()->getPage()->selectFieldOption('add_target', $mapping['target']);
-      $this->assertSession()->assertWaitOnAjaxRequest();
+      $assert_session->fieldExists('add_target');
+      $page->selectFieldOption('add_target', $mapping['target']);
+      $assert_session->assertWaitOnAjaxRequest();
 
       // Select sources.
       foreach ($mapping['map'] as $key => $source) {
         if (is_array($source)) {
           // Custom source.
-          $this->assertSession()->fieldExists("mappings[$i][map][$key][select]");
-          $this->getSession()->getPage()->selectFieldOption("mappings[$i][map][$key][select]", '__new');
+          $assert_session->fieldExists("mappings[$i][map][$key][select]");
+          $page->selectFieldOption("mappings[$i][map][$key][select]", '__new');
+        }
+      }
 
+      // Set target configuration, if supplied.
+      if (!empty($mapping['settings'])) {
+        $this->mappingSetTargetConfiguration($i, $mapping['settings']);
+      }
+    }
+
+    // Set the form values, including machine name.
+    $this->mappingSetMappings($edit);
+
+    $this->submitForm($edit, 'Save');
+
+    // Assert that the mappings and custom sources were successfully added.
+    if ($assert_mappings) {
+      $feed_type = FeedType::load($feed_type_id);
+      $feed_type = $this->reloadEntity($feed_type);
+      $this->assertMappings($mappings, $feed_type);
+    }
+  }
+
+  /**
+   * Returns edit values for the mappings page.
+   *
+   * @param array $mappings
+   *   An array of mapping arrays.
+   *
+   * @return array
+   *   A list of edit values.
+   */
+  protected function mappingGetEditValues(array $mappings) {
+    $edit = [];
+
+    foreach ($mappings as $i => $mapping) {
+      // Select sources.
+      foreach ($mapping['map'] as $key => $source) {
+        if (is_array($source)) {
           $edit["mappings[$i][map][$key][select]"] = '__new';
           foreach ($source as $source_key => $source_value) {
             $edit["mappings[$i][map][$key][__new][$source_key]"] = $source_value;
@@ -135,10 +174,21 @@ abstract class FeedsJavascriptTestBase extends WebDriverTestBase {
       }
     }
 
+    return $edit;
+  }
+
+  /**
+   * Sets the form values on the mappings page.
+   *
+   * @param array $edit
+   *   The form values.
+   */
+  protected function mappingSetMappings(array $edit) {
     // Set the form values, including machine name.
     $assert_session = $this->assertSession();
     $submit_button = $assert_session->buttonExists('Save');
     $form = $assert_session->elementExists('xpath', './ancestor::form', $submit_button);
+
     foreach ($edit as $name => $value) {
       if (strpos($name, '[__new][machine_name]') !== FALSE) {
         // Make machine name appear.
@@ -149,48 +199,88 @@ abstract class FeedsJavascriptTestBase extends WebDriverTestBase {
 
         // First, wait for machine name button to become visible.
         $xpath = $base_xpath . '/descendant-or-self::*/button';
-        $this->assertSession()->waitForElementVisible('xpath', $xpath);
+        $assert_session->waitForElementVisible('xpath', $xpath);
         // Click button.
         $this->getSession()->getDriver()->click($xpath);
 
         // Wait for machine name text field to become visible.
         $xpath = $base_xpath . '/' . $this->cssSelectToXpath('div.form-type-machine-name input.machine-name-target');
-        $this->assertSession()->waitForElementVisible('xpath', $xpath);
+        $assert_session->waitForElementVisible('xpath', $xpath);
       }
+
       $field = $assert_session->fieldExists($name, $form);
       $field->setValue($value);
     }
+  }
 
-    $this->submitForm($edit, 'Save');
+  /**
+   * Sets target configuration for a mapper.
+   *
+   * @param int $i
+   *   The row number on the mapping form.
+   * @param array $settings
+   *   The settings to set.
+   */
+  protected function mappingSetTargetConfiguration($i, array $settings) {
+    $page = $this->getSession()->getPage();
+    $assert_session = $this->assertSession();
 
-    // Assert that the mappings and custom sources were successfully added.
-    if ($assert_mappings) {
-      $feed_type = FeedType::load($feed_type_id);
-      $feed_type = $this->reloadEntity($feed_type);
-      $saved_mappings = $feed_type->getMappings();
+    // Open the settings form for the the target.
+    $target_settings = $page->find('css', 'input[name="target-settings-' . $i . '"]');
+    $target_settings->click();
+    $assert_session->assertWaitOnAjaxRequest();
 
-      foreach ($mappings as $i => $mapping) {
-        // Assert target.
-        $this->assertEquals($mapping['target'], $saved_mappings[$i]['target']);
+    // Set target configuration values.
+    foreach ($settings as $settings_key => $settings_value) {
+      $target_settings_field = $page->findField('mappings[' . $i . '][settings][' . $settings_key . ']');
+      $target_settings_field->setValue($settings_value);
+    }
 
-        // Assert map.
-        foreach ($mapping['map'] as $key => $source) {
-          if (is_array($source)) {
-            $this->assertEquals($source['machine_name'], $saved_mappings[$i]['map'][$key]);
-            // Assert custom source.
-            $custom_source = $feed_type->getCustomSource($source['machine_name']);
-            foreach ($source as $source_key => $source_value) {
-              $this->assertEquals($source_value, $custom_source[$source_key]);
-            }
-          }
-          else {
-            $this->assertEquals($source, $saved_mappings[$i]['map'][$key]);
+    // Update configuration.
+    $page->findButton('Update')->click();
+    $assert_session->assertWaitOnAjaxRequest();
+  }
+
+  /**
+   * Asserts that the given feed type has the expected mappings.
+   *
+   * @param array $mappings
+   *   The expected mappings.
+   * @param \Drupal\feeds\FeedTypeInterface $feed_type
+   *   The feed type to check.
+   */
+  protected function assertMappings(array $mappings, FeedTypeInterface $feed_type) {
+    // Get the saved mappings.
+    $saved_mappings = $feed_type->getMappings();
+
+    foreach ($mappings as $i => $mapping) {
+      // Assert target.
+      $this->assertEquals($mapping['target'], $saved_mappings[$i]['target']);
+
+      // Assert map.
+      foreach ($mapping['map'] as $key => $source) {
+        if (is_array($source)) {
+          $this->assertEquals($source['machine_name'], $saved_mappings[$i]['map'][$key]);
+          // Assert custom source.
+          $custom_source = $feed_type->getCustomSource($source['machine_name']);
+          foreach ($source as $source_key => $source_value) {
+            $this->assertEquals($source_value, $custom_source[$source_key]);
           }
         }
+        else {
+          $this->assertEquals($source, $saved_mappings[$i]['map'][$key]);
+        }
+      }
 
-        // Assert unique.
-        if (isset($mapping['unique'])) {
-          $this->assertEquals($mapping['unique'], $saved_mappings[$i]['unique']);
+      // Assert unique.
+      if (isset($mapping['unique'])) {
+        $this->assertEquals($mapping['unique'], $saved_mappings[$i]['unique']);
+      }
+
+      // Assert settings.
+      if (!empty($mapping['settings'])) {
+        foreach ($mapping['settings'] as $settings_key => $settings_value) {
+          $this->assertEquals($settings_value, $saved_mappings[$i]['settings'][$settings_key]);
         }
       }
     }

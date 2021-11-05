@@ -19,6 +19,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     plural = "@count Workflow scheduled transitions",
  *   ),
  *   bundle_label = @Translation("Workflow type"),
+ *   bundle_entity_type = "workflow_type",
  *   module = "workflow",
  *   handlers = {
  *     "access" = "Drupal\workflow\WorkflowAccessControlHandler",
@@ -54,9 +55,9 @@ class WorkflowScheduledTransition extends WorkflowTransition {
     parent::__construct($values, $entityType, $bundle, $translations);
 
     // This transition is scheduled.
-    $this->is_scheduled = TRUE;
+    $this->isScheduled = TRUE;
     // This transition is not executed.
-    $this->is_executed = FALSE;
+    $this->isExecuted = FALSE;
   }
 
   /**
@@ -72,16 +73,16 @@ class WorkflowScheduledTransition extends WorkflowTransition {
    * This is a hack to avoid the following error, because ScheduledTransition is not a bundle of Workflow:
    *   Drupal\Component\Plugin\Exception\PluginNotFoundException: The "entity:workflow_scheduled_transition:first" plugin does not exist. in Drupal\Core\Plugin\DefaultPluginManager->doGetDefinition() (line 60 of core\lib\Drupal\Component\Plugin\Discovery\DiscoveryTrait.php).
    */
-  function validate() {
+  public function validate() {
     // Since this function generates an error in one use case (using WorkflowTransitionForm)
     // and is not called in the other use case (using the Workflow Widget),
     // this function is disabled for now.
-    // @todo: this function is only called in the WorkflowTransitionForm, not in the Widget.
-    // @todo: repair https://www.drupal.org/node/2896650
-
+    // @todo This function is only called in the WorkflowTransitionForm, not in the Widget.
+    // @todo Repair https://www.drupal.org/node/2896650 .
+    //
     // The following is from return parent::validate();
     $this->validated = TRUE;
-    //$violations = $this->getTypedData()->validate();
+    // $violations = $this->getTypedData()->validate();
     // return new EntityConstraintViolationList($this, iterator_to_array($violations));
     $violations = [];
     return new EntityConstraintViolationList($this, $violations);
@@ -97,9 +98,8 @@ class WorkflowScheduledTransition extends WorkflowTransition {
    * Saves a scheduled transition. If the transition is executed, save in history.
    */
   public function save() {
-
     // If executed, save in history.
-    if ($this->is_executed) {
+    if ($this->isExecuted) {
       // Be careful, we are not a WorkflowScheduleTransition anymore!
       // No fuzzing around, just copy the ScheduledTransition to a normal one.
       $current_sid = $this->getFromSid();
@@ -113,7 +113,7 @@ class WorkflowScheduledTransition extends WorkflowTransition {
     $hid = $this->id();
     if (!$hid) {
       // Insert the transition. Make sure it hasn't already been inserted.
-      // @todo: Allow a scheduled transition per revision.
+      // @todo Allow a scheduled transition per revision.
       $entity = $this->getTargetEntity();
       $found_transition = self::loadByProperties($entity->getEntityTypeId(), $entity->id(), [], $this->getFieldName(), $this->getLangcode());
       if ($found_transition) {
@@ -126,7 +126,7 @@ class WorkflowScheduledTransition extends WorkflowTransition {
       }
     }
     else {
-      workflow_debug(__FILE__, __FUNCTION__, __LINE__ );  // @todo D8-port: still test this snippet.
+      workflow_debug(__FILE__, __FUNCTION__, __LINE__); // @todo D8-port: still test this snippet.
       // Update the transition.
       $result = parent::save();
     }
@@ -139,21 +139,14 @@ class WorkflowScheduledTransition extends WorkflowTransition {
         '%entity_title' => $entity->label(),
         '%state_name' => $state->label(),
         '%scheduled_date' => $this->getTimestampFormatted(),
-        'link' => ($this->getTargetEntityId() && $this->getTargetEntity()->hasLinkTemplate('canonical')) ? $this->getTargetEntity()->toLink(t('View'))->toString() : '',
+        'link' => ($this->getTargetEntityId() && $this->getTargetEntity()->hasLinkTemplate('canonical')) ? $this->getTargetEntity()->toLink($this->t('View'))->toString() : '',
       ];
       \Drupal::logger('workflow')->notice($message, $args);
-      drupal_set_message(t($message, $args));
+      $this->messenger()->addStatus($this->t($message, $args));
     }
 
     return $result;
   }
-
-  /**
-   * {@inheritdoc}
-   */
-//  public static function loadMultiple(array $ids = NULL) {
-//    return parent::loadMultiple($ids);
-//  }
 
   /**
    * {@inheritdoc}
@@ -183,9 +176,9 @@ class WorkflowScheduledTransition extends WorkflowTransition {
    *   An array of transitions.
    */
   public static function loadBetween($start = 0, $end = 0, $from_sid = '', $to_sid = '') {
-    $transition_type = 'workflow_scheduled_transition'; // @todo: get this from annotation.
+    $transition_type = 'workflow_scheduled_transition'; // @todo Get this from annotation.
 
-    /* @var $query \Drupal\Core\Entity\Query\QueryInterface */
+    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
     $query = \Drupal::entityQuery($transition_type)
       ->sort('timestamp', 'ASC')
       ->addTag($transition_type);
@@ -207,20 +200,20 @@ class WorkflowScheduledTransition extends WorkflowTransition {
     return $transitions;
   }
 
-
   /**
    * Property functions.
    */
 
   /**
-   * If a scheduled transition has no comment, a default comment is added before executing it.
+   * Create a default comment (on scheduled transition w/o comment).
    */
   public function addDefaultComment() {
-    $this->setComment(t('Scheduled by user @uid.', ['@uid' => $this->getOwnerId()]));
+    $this->setComment($this->t('Scheduled by user @uid.', ['@uid' => $this->getOwnerId()]));
   }
 
   /**
    * Define the fields. Modify the parent fields.
+   *
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
@@ -241,21 +234,22 @@ class WorkflowScheduledTransition extends WorkflowTransition {
     $fields['timestamp'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Scheduled'))
       ->setDescription(t('The date+time this transition is scheduled for.'))
-//      ->setQueryable(FALSE)
-//      ->setCustomStorage(FALSE)
-//      ->setTranslatable(TRUE)
-//      ->setDisplayOptions('view', array(
-//        'label' => 'hidden',
-//        'type' => 'timestamp',
-//        'weight' => 0,
-//      ))
-//      ->setDisplayOptions('form', array(
-//        'type' => 'datetime_timestamp',
-//        'weight' => 10,
-//      ))
-//      ->setDisplayConfigurable('form', TRUE);
+    /*
+      ->setQueryable(FALSE)
+      ->setCustomStorage(FALSE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('view', array(
+        'label' => 'hidden',
+        'type' => 'timestamp',
+        'weight' => 0,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'datetime_timestamp',
+        'weight' => 10,
+      ))
+      ->setDisplayConfigurable('form', TRUE);
+     */
       ->setRevisionable(TRUE);
-
 
     // Remove the specific ID-field : tid vs. hid.
     unset($fields['hid']);

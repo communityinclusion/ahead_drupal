@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "rules_path_has_alias",
  *   label = @Translation("Path has alias"),
  *   category = @Translation("Path"),
- *   context = {
+ *   context_definitions = {
  *     "path" = @ContextDefinition("string",
  *       label = @Translation("Path"),
  *       description = @Translation("Specifies the existing path you wish to check. For example, '/node/28' or '/forum/1'.")

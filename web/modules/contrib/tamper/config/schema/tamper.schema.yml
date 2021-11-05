@@ -8,6 +8,33 @@ tamper.convert_case:
       type: string
       label: 'How to convert case'
 
+tamper.convert_boolean:
+  mapping:
+    true_value:
+      type: string
+      label: 'Truth'
+    false_value:
+      type: string
+      label: 'False'
+    match_case:
+      type: boolean
+      label: 'Match case'
+    no_match_value:
+      type: string
+      label: 'If no match'
+    other_text:
+      type: string
+      label: 'Other text'
+
+tamper.copy:
+  mapping:
+    to_from:
+      type: string
+      label: 'To or from'
+    copy_source:
+      type: string
+      label: 'Source'
+
 tamper.url_decode:
   mapping:
     method:
@@ -22,6 +49,12 @@ tamper.default_value:
     only_if_empty:
       type: boolean
       label: 'Only if empty'
+
+tamper.encode:
+  mapping:
+    mode:
+      type: string
+      label: 'Serialization mode'
 
 tamper.explode:
   mapping:
@@ -73,6 +106,51 @@ tamper.implode:
     glue:
       type: string
       label: 'String glue'
+
+tamper.keyword_filter:
+  mapping:
+    words:
+      type: string
+      label: 'Words or phrases to filter on'
+    word_boundaries:
+      type: boolean
+      label: 'Respect word boundaries'
+    exact:
+      type: boolean
+      label: 'Exact'
+    case_sensitive:
+      type: boolean
+      label: 'Case sensitive'
+    invert:
+      type: boolean
+      label: 'Invert filter'
+    word_list:
+      type: sequence
+      label: 'Word list'
+      sequence:
+        type: string
+        label: 'Word'
+    regex:
+      type: boolean
+      label: 'Use regex'
+    function:
+      type: string
+      label: 'Keyword filtering function'
+
+tamper.math:
+  mapping:
+    operation:
+      type: string
+      label: 'Operation'
+    flip:
+      type: boolean
+      label: 'Flip'
+    value:
+      type: float
+      label: 'Value'
+    log:
+      type: boolean
+      label: 'Log'
 
 tamper.number_format:
   mapping:
@@ -130,6 +208,12 @@ tamper.trim:
     side:
       type: string
       label: 'Side'
+
+tamper.timetodate:
+  mapping:
+    date_format:
+      type: string
+      label: 'Date format'
 
 tamper.truncate_text:
   mapping:

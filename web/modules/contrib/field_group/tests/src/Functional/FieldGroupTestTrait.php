@@ -2,8 +2,6 @@
 
 namespace Drupal\Tests\field_group\Functional;
 
-use Drupal;
-
 /**
  * Provides common functionality for the FieldGroup test classes.
  */
@@ -23,7 +21,7 @@ trait FieldGroupTestTrait {
    * @param array $data
    *   Data for the field group.
    *
-   * @return \stdClass
+   * @return object
    *   An object that represents the field group.
    */
   protected function createGroup($entity_type, $bundle, $context, $mode, array $data) {
@@ -34,7 +32,11 @@ trait FieldGroupTestTrait {
 
     $data['format_settings'] += Drupal::service('plugin.manager.field_group.formatters')->getDefaultSettings($data['format_type'], $context);
 
-    $group_name = 'group_' . mb_strtolower($this->randomMachineName());
+    $group_name_without_prefix = isset($data['group_name']) && is_string($data['group_name'])
+      ? preg_replace('/^group_/', '', $data['group_name'])
+      : mb_strtolower($this->randomMachineName());
+
+    $group_name = 'group_' . $group_name_without_prefix;
 
     $field_group = (object) [
       'group_name' => $group_name,
