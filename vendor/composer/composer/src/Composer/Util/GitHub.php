@@ -22,25 +22,29 @@ use Composer\Downloader\TransportException;
  */
 class GitHub
 {
+    /** @var IOInterface */
     protected $io;
+    /** @var Config */
     protected $config;
+    /** @var ProcessExecutor */
     protected $process;
-    protected $remoteFilesystem;
+    /** @var HttpDownloader */
+    protected $httpDownloader;
 
     /**
      * Constructor.
      *
-     * @param IOInterface      $io               The IO instance
-     * @param Config           $config           The composer configuration
-     * @param ProcessExecutor  $process          Process instance, injectable for mocking
-     * @param RemoteFilesystem $remoteFilesystem Remote Filesystem, injectable for mocking
+     * @param IOInterface     $io             The IO instance
+     * @param Config          $config         The composer configuration
+     * @param ProcessExecutor $process        Process instance, injectable for mocking
+     * @param HttpDownloader  $httpDownloader Remote Filesystem, injectable for mocking
      */
-    public function __construct(IOInterface $io, Config $config, ProcessExecutor $process = null, RemoteFilesystem $remoteFilesystem = null)
+    public function __construct(IOInterface $io, Config $config, ProcessExecutor $process = null, HttpDownloader $httpDownloader = null)
     {
         $this->io = $io;
         $this->config = $config;
         $this->process = $process ?: new ProcessExecutor($io);
-        $this->remoteFilesystem = $remoteFilesystem ?: Factory::createRemoteFilesystem($this->io, $config);
+        $this->httpDownloader = $httpDownloader ?: Factory::createHttpDownloader($this->io, $config);
     }
 
     /**
@@ -104,7 +108,7 @@ class GitHub
         try {
             $apiUrl = ('github.com' === $originUrl) ? 'api.github.com/' : $originUrl . '/api/v3/';
 
-            $this->remoteFilesystem->getContents($originUrl, 'https://'. $apiUrl, false, array(
+            $this->httpDownloader->get('https://'. $apiUrl, array(
                 'retry-auth-failure' => false,
             ));
         } catch (TransportException $e) {
@@ -128,11 +132,11 @@ class GitHub
     }
 
     /**
-     * Extract ratelimit from response.
+     * Extract rate limit from response.
      *
-     * @param array $headers Headers from Composer\Downloader\TransportException.
+     * @param string[] $headers Headers from Composer\Downloader\TransportException.
      *
-     * @return array Associative array with the keys limit and reset.
+     * @return array{limit: int|'?', reset: string}
      */
     public function getRateLimit(array $headers)
     {
@@ -163,7 +167,7 @@ class GitHub
     /**
      * Finds whether a request failed due to rate limiting
      *
-     * @param array $headers Headers from Composer\Downloader\TransportException.
+     * @param string[] $headers Headers from Composer\Downloader\TransportException.
      *
      * @return bool
      */

@@ -23,6 +23,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class OutdatedCommand extends ShowCommand
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         $this
@@ -32,11 +35,13 @@ class OutdatedCommand extends ShowCommand
                 new InputArgument('package', InputArgument::OPTIONAL, 'Package to inspect. Or a name including a wildcard (*) to filter lists of packages instead.'),
                 new InputOption('outdated', 'o', InputOption::VALUE_NONE, 'Show only packages that are outdated (this is the default, but present here for compat with `show`'),
                 new InputOption('all', 'a', InputOption::VALUE_NONE, 'Show all installed packages with their latest versions'),
+                new InputOption('locked', null, InputOption::VALUE_NONE, 'Shows updates for packages from the lock file, regardless of what is currently in vendor dir'),
                 new InputOption('direct', 'D', InputOption::VALUE_NONE, 'Shows only packages that are directly required by the root package'),
                 new InputOption('strict', null, InputOption::VALUE_NONE, 'Return a non-zero exit code when there are outdated packages'),
                 new InputOption('minor-only', 'm', InputOption::VALUE_NONE, 'Show only packages that have minor SemVer-compatible updates. Use with the --outdated option.'),
                 new InputOption('format', 'f', InputOption::VALUE_REQUIRED, 'Format of the output: text or json', 'text'),
                 new InputOption('ignore', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Ignore specified package(s). Use it with the --outdated option if you don\'t want to be informed about new versions of some packages.'),
+                new InputOption('no-dev', null, InputOption::VALUE_NONE, 'Disables search in require-dev packages.'),
             ))
             ->setHelp(
                 <<<EOT
@@ -77,6 +82,12 @@ EOT
         if ($input->getOption('minor-only')) {
             $args['--minor-only'] = true;
         }
+        if ($input->getOption('locked')) {
+            $args['--locked'] = true;
+        }
+        if ($input->getOption('no-dev')) {
+            $args['--no-dev'] = true;
+        }
         $args['--format'] = $input->getOption('format');
         $args['--ignore'] = $input->getOption('ignore');
 
@@ -86,7 +97,7 @@ EOT
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function isProxyCommand()
     {

@@ -28,9 +28,13 @@ use Composer\Util\Silencer;
  */
 class BinaryInstaller
 {
+    /** @var string */
     protected $binDir;
+    /** @var string */
     protected $binCompat;
+    /** @var IOInterface */
     protected $io;
+    /** @var Filesystem */
     protected $filesystem;
 
     /**
@@ -47,12 +51,21 @@ class BinaryInstaller
         $this->filesystem = $filesystem ?: new Filesystem();
     }
 
+    /**
+     * @param string $installPath
+     * @param bool $warnOnOverwrite
+     *
+     * @return void
+     */
     public function installBinaries(PackageInterface $package, $installPath, $warnOnOverwrite = true)
     {
         $binaries = $this->getBinaries($package);
         if (!$binaries) {
             return;
         }
+
+        Platform::workaroundFilesystemIssues();
+
         foreach ($binaries as $bin) {
             $binPath = $installPath.'/'.$bin;
             if (!file_exists($binPath)) {
@@ -82,18 +95,23 @@ class BinaryInstaller
             }
 
             if ($this->binCompat === "auto") {
-                if (Platform::isWindows()) {
+                if (Platform::isWindows() || Platform::isWindowsSubsystemForLinux()) {
                     $this->installFullBinaries($binPath, $link, $bin, $package);
                 } else {
                     $this->installSymlinkBinaries($binPath, $link);
                 }
             } elseif ($this->binCompat === "full") {
                 $this->installFullBinaries($binPath, $link, $bin, $package);
+            } elseif ($this->binCompat === "symlink") {
+                $this->installSymlinkBinaries($binPath, $link);
             }
-            Silencer::call('chmod', $link, 0777 & ~umask());
+            Silencer::call('chmod', $binPath, 0777 & ~umask());
         }
     }
 
+    /**
+     * @return void
+     */
     public function removeBinaries(PackageInterface $package)
     {
         $this->initializeBinDir();
@@ -118,6 +136,11 @@ class BinaryInstaller
         }
     }
 
+    /**
+     * @param string $bin
+     *
+     * @return string
+     */
     public static function determineBinaryCaller($bin)
     {
         if ('.bat' === substr($bin, -4) || '.exe' === substr($bin, -4)) {
@@ -134,17 +157,26 @@ class BinaryInstaller
         return 'php';
     }
 
+    /**
+     * @return string[]
+     */
     protected function getBinaries(PackageInterface $package)
     {
         return $package->getBinaries();
     }
 
+    /**
+     * @param string $binPath
+     * @param string $link
+     * @param string $bin
+     *
+     * @return void
+     */
     protected function installFullBinaries($binPath, $link, $bin, PackageInterface $package)
     {
         // add unixy support for cygwin and similar environments
         if ('.bat' !== substr($binPath, -4)) {
             $this->installUnixyProxyBinaries($binPath, $link);
-            @chmod($link, 0777 & ~umask());
             $link .= '.bat';
             if (file_exists($link)) {
                 $this->io->writeError('    Skipped installation of bin '.$bin.'.bat proxy for package '.$package->getName().': a .bat proxy was already installed');
@@ -152,9 +184,16 @@ class BinaryInstaller
         }
         if (!file_exists($link)) {
             file_put_contents($link, $this->generateWindowsProxyCode($binPath, $link));
+            Silencer::call('chmod', $link, 0777 & ~umask());
         }
     }
 
+    /**
+     * @param string $binPath
+     * @param string $link
+     *
+     * @return void
+     */
     protected function installSymlinkBinaries($binPath, $link)
     {
         if (!$this->filesystem->relativeSymlink($binPath, $link)) {
@@ -162,17 +201,33 @@ class BinaryInstaller
         }
     }
 
+    /**
+     * @param string $binPath
+     * @param string $link
+     *
+     * @return void
+     */
     protected function installUnixyProxyBinaries($binPath, $link)
     {
         file_put_contents($link, $this->generateUnixyProxyCode($binPath, $link));
+        Silencer::call('chmod', $link, 0777 & ~umask());
     }
 
+    /**
+     * @return void
+     */
     protected function initializeBinDir()
     {
         $this->filesystem->ensureDirectoryExists($this->binDir);
         $this->binDir = realpath($this->binDir);
     }
 
+    /**
+     * @param string $bin
+     * @param string $link
+     *
+     * @return string
+     */
     protected function generateWindowsProxyCode($bin, $link)
     {
         $binPath = $this->filesystem->findShortestPath($link, $bin);
@@ -184,6 +239,12 @@ class BinaryInstaller
             "{$caller} \"%BIN_TARGET%\" %*\r\n";
     }
 
+    /**
+     * @param string $bin
+     * @param string $link
+     *
+     * @return string
+     */
     protected function generateUnixyProxyCode($bin, $link)
     {
         $binPath = $this->filesystem->findShortestPath($link, $bin);
@@ -191,7 +252,116 @@ class BinaryInstaller
         $binDir = ProcessExecutor::escape(dirname($binPath));
         $binFile = basename($binPath);
 
-        $proxyCode = <<<PROXY
+        $binContents = file_get_contents($bin);
+        // For php files, we generate a PHP proxy instead of a shell one,
+        // which allows calling the proxy with a custom php process
+        if (preg_match('{^(#!.*\r?\n)?<\?php}', $binContents, $match)) {
+            // carry over the existing shebang if present, otherwise add our own
+            $proxyCode = empty($match[1]) ? '#!/usr/bin/env php' : trim($match[1]);
+
+            $binPathExported = var_export($binPath, true);
+
+            return $proxyCode . "\n" . <<<PROXY
+<?php
+
+/**
+ * Proxy PHP file generated by Composer
+ *
+ * This file includes the referenced bin path ($binPath) using ob_start to remove the shebang if present
+ * to prevent the shebang from being output on PHP<8
+ *
+ * @generated
+ */
+
+namespace Composer;
+
+\$binPath = __DIR__ . "/" . $binPathExported;
+
+if (PHP_VERSION_ID < 80000) {
+    if (!class_exists('Composer\BinProxyWrapper')) {
+        /**
+         * @internal
+         */
+        final class BinProxyWrapper
+        {
+            private \$handle;
+            private \$position;
+
+            public function stream_open(\$path, \$mode, \$options, &\$opened_path)
+            {
+                // get rid of composer-bin-proxy:// prefix for __FILE__ & __DIR__ resolution
+                \$opened_path = substr(\$path, 21);
+                \$this->handle = fopen(\$opened_path, \$mode);
+                \$this->position = 0;
+
+                // remove all traces of this stream wrapper once it has been used
+                stream_wrapper_unregister('composer-bin-proxy');
+
+                return (bool) \$this->handle;
+            }
+
+            public function stream_read(\$count)
+            {
+                \$data = fread(\$this->handle, \$count);
+
+                if (\$this->position === 0) {
+                    \$data = preg_replace('{^#!.*\\r?\\n}', '', \$data);
+                }
+
+                \$this->position += strlen(\$data);
+
+                return \$data;
+            }
+
+            public function stream_cast(\$castAs)
+            {
+                return \$this->handle;
+            }
+
+            public function stream_close()
+            {
+                fclose(\$this->handle);
+            }
+
+            public function stream_lock(\$operation)
+            {
+                return \$operation ? flock(\$this->handle, \$operation) : true;
+            }
+
+            public function stream_tell()
+            {
+                return \$this->position;
+            }
+
+            public function stream_eof()
+            {
+                return feof(\$this->handle);
+            }
+
+            public function stream_stat()
+            {
+                return fstat(\$this->handle);
+            }
+
+            public function stream_set_option(\$option, \$arg1, \$arg2)
+            {
+                return true;
+            }
+        }
+    }
+
+    if (function_exists('stream_wrapper_register') && stream_wrapper_register('composer-bin-proxy', 'Composer\BinProxyWrapper')) {
+        include("composer-bin-proxy://" . \$binPath);
+        exit(0);
+    }
+}
+
+include \$binPath;
+
+PROXY;
+        }
+
+        return <<<PROXY
 #!/usr/bin/env sh
 
 dir=\$(cd "\${0%[/\\\\]*}" > /dev/null; cd $binDir && pwd)
@@ -208,7 +378,5 @@ fi
 "\${dir}/$binFile" "\$@"
 
 PROXY;
-
-        return $proxyCode;
     }
 }

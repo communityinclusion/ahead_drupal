@@ -19,20 +19,27 @@ use Composer\Repository\PlatformRepository;
  */
 class JsonManipulator
 {
+    /** @var string */
     private static $DEFINES = '(?(DEFINE)
-       (?<number>   -? (?= [1-9]|0(?!\d) ) \d+ (\.\d+)? ([eE] [+-]? \d+)? )
+       (?<number>    -? (?= [1-9]|0(?!\d) ) \d++ (\.\d++)? ([eE] [+-]?+ \d++)? )
        (?<boolean>   true | false | null )
-       (?<string>    " ([^"\\\\]* | \\\\ ["\\\\bfnrt\/] | \\\\ u [0-9A-Fa-f]{4} )* " )
-       (?<array>     \[  (?:  (?&json) \s* (?: , (?&json) \s* )*  )?  \s* \] )
-       (?<pair>      \s* (?&string) \s* : (?&json) \s* )
-       (?<object>    \{  (?:  (?&pair)  (?: , (?&pair)  )*  )?  \s* \} )
-       (?<json>   \s* (?: (?&number) | (?&boolean) | (?&string) | (?&array) | (?&object) ) )
+       (?<string>    " ([^"\\\\]*+ | \\\\ ["\\\\bfnrt\/] | \\\\ u [0-9A-Fa-f]{4} )* " )
+       (?<array>     \[  (?:  (?&json) \s*+ (?: , (?&json) \s*+ )*+  )?+  \s*+ \] )
+       (?<pair>      \s*+ (?&string) \s*+ : (?&json) \s*+ )
+       (?<object>    \{  (?:  (?&pair)  (?: , (?&pair)  )*+  )?+  \s*+ \} )
+       (?<json>      \s*+ (?: (?&number) | (?&boolean) | (?&string) | (?&array) | (?&object) ) )
     )';
 
+    /** @var string */
     private $contents;
+    /** @var string */
     private $newline;
+    /** @var string */
     private $indent;
 
+    /**
+     * @param string $contents
+     */
     public function __construct($contents)
     {
         $contents = trim($contents);
@@ -47,11 +54,21 @@ class JsonManipulator
         $this->detectIndenting();
     }
 
+    /**
+     * @return string
+     */
     public function getContents()
     {
         return $this->contents . $this->newline;
     }
 
+    /**
+     * @param string $type
+     * @param string $package
+     * @param string $constraint
+     * @param bool   $sortPackages
+     * @return bool
+     */
     public function addLink($type, $package, $constraint, $sortPackages = false)
     {
         $decoded = JsonFile::parseJson($this->contents);
@@ -112,12 +129,13 @@ class JsonManipulator
      *
      * @link https://getcomposer.org/doc/02-libraries.md#platform-packages
      *
-     * @param array $packages
+     * @param array<string> $packages
+     * @return void
      */
     private function sortPackages(array &$packages = array())
     {
         $prefix = function ($requirement) {
-            if (preg_match(PlatformRepository::PLATFORM_PACKAGE_REGEX, $requirement)) {
+            if (PlatformRepository::isPlatformPackage($requirement)) {
                 return preg_replace(
                     array(
                         '/^php/',
@@ -145,61 +163,96 @@ class JsonManipulator
         });
     }
 
-    public function addRepository($name, $config)
+    /**
+     * @param string                $name
+     * @param array<string, mixed>  $config
+     * @param bool                  $append
+     * @return bool
+     */
+    public function addRepository($name, $config, $append = true)
     {
-        return $this->addSubNode('repositories', $name, $config);
+        return $this->addSubNode('repositories', $name, $config, $append);
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function removeRepository($name)
     {
         return $this->removeSubNode('repositories', $name);
     }
 
+    /**
+     * @param string $name
+     * @param mixed  $value
+     * @return bool
+     */
     public function addConfigSetting($name, $value)
     {
         return $this->addSubNode('config', $name, $value);
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function removeConfigSetting($name)
     {
         return $this->removeSubNode('config', $name);
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return bool
+     */
     public function addProperty($name, $value)
     {
-        if (substr($name, 0, 8) === 'suggest.') {
+        if (strpos($name, 'suggest.') === 0) {
             return $this->addSubNode('suggest', substr($name, 8), $value);
         }
 
-        if (substr($name, 0, 6) === 'extra.') {
+        if (strpos($name, 'extra.') === 0) {
             return $this->addSubNode('extra', substr($name, 6), $value);
         }
 
-        if (substr($name, 0, 8) === 'scripts.') {
+        if (strpos($name, 'scripts.') === 0) {
             return $this->addSubNode('scripts', substr($name, 8), $value);
         }
 
         return $this->addMainKey($name, $value);
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function removeProperty($name)
     {
-        if (substr($name, 0, 8) === 'suggest.') {
+        if (strpos($name, 'suggest.') === 0) {
             return $this->removeSubNode('suggest', substr($name, 8));
         }
 
-        if (substr($name, 0, 6) === 'extra.') {
+        if (strpos($name, 'extra.') === 0) {
             return $this->removeSubNode('extra', substr($name, 6));
         }
 
-        if (substr($name, 0, 8) === 'scripts.') {
+        if (strpos($name, 'scripts.') === 0) {
             return $this->removeSubNode('scripts', substr($name, 8));
         }
 
         return $this->removeMainKey($name);
     }
 
-    public function addSubNode($mainNode, $name, $value)
+    /**
+     * @param string $mainNode
+     * @param string $name
+     * @param mixed  $value
+     * @param bool   $append
+     * @return bool
+     */
+    public function addSubNode($mainNode, $name, $value, $append = true)
     {
         $decoded = JsonFile::parseJson($this->contents);
 
@@ -258,7 +311,7 @@ class JsonManipulator
                 return $matches['start'] . $that->format($value, 1) . $matches['end'];
             }, $children);
         } else {
-            $this->pregMatch('#^{ \s*? (?P<content>\S+.*?)? (?P<trailingspace>\s*) }$#sx', $children, $match);
+            $this->pregMatch('#^{ (?P<leadingspace>\s*?) (?P<content>\S+.*?)? (?P<trailingspace>\s*) }$#sx', $children, $match);
 
             $whitespace = '';
             if (!empty($match['trailingspace'])) {
@@ -271,11 +324,24 @@ class JsonManipulator
                 }
 
                 // child missing but non empty children
-                $children = preg_replace(
-                    '#'.$whitespace.'}$#',
-                    addcslashes(',' . $this->newline . $this->indent . $this->indent . JsonFile::encode($name).': '.$this->format($value, 1) . $whitespace . '}', '\\$'),
-                    $children
-                );
+                if ($append) {
+                    $children = preg_replace(
+                        '#'.$whitespace.'}$#',
+                        addcslashes(',' . $this->newline . $this->indent . $this->indent . JsonFile::encode($name).': '.$this->format($value, 1) . $whitespace . '}', '\\$'),
+                        $children
+                    );
+                } else {
+                    $whitespace = '';
+                    if (!empty($match['leadingspace'])) {
+                        $whitespace = $match['leadingspace'];
+                    }
+
+                    $children = preg_replace(
+                        '#^{'.$whitespace.'#',
+                        addcslashes('{' . $whitespace . JsonFile::encode($name).': '.$this->format($value, 1) . ',' . $this->newline . $this->indent . $this->indent, '\\$'),
+                        $children
+                    );
+                }
             } else {
                 if ($subName !== null) {
                     $value = array($subName => $value);
@@ -293,6 +359,11 @@ class JsonManipulator
         return true;
     }
 
+    /**
+     * @param string $mainNode
+     * @param string $name
+     * @return bool
+     */
     public function removeSubNode($mainNode, $name)
     {
         $decoded = JsonFile::parseJson($this->contents);
@@ -356,6 +427,10 @@ class JsonManipulator
             $childrenClean = $children;
         }
 
+        if (!isset($childrenClean)) {
+            throw new \InvalidArgumentException("JsonManipulator: \$childrenClean is not defined. Please report at https://github.com/composer/composer/issues/new.");
+        }
+
         // no child data left, $name was the only key in
         $this->pregMatch('#^{ \s*? (?P<content>\S+.*?)? (?P<trailingspace>\s*) }$#sx', $childrenClean, $match);
         if (empty($match['content'])) {
@@ -381,7 +456,7 @@ class JsonManipulator
             if ($subName !== null) {
                 $curVal = json_decode($matches['content'], true);
                 unset($curVal[$name][$subName]);
-                $childrenClean = $that->format($curVal, 0);
+                $childrenClean = $that->format($curVal);
             }
 
             return $matches['start'] . $childrenClean . $matches['end'];
@@ -390,6 +465,11 @@ class JsonManipulator
         return true;
     }
 
+    /**
+     * @param string $key
+     * @param mixed  $content
+     * @return bool
+     */
     public function addMainKey($key, $content)
     {
         $decoded = JsonFile::parseJson($this->contents);
@@ -430,6 +510,10 @@ class JsonManipulator
         return true;
     }
 
+    /**
+     * @param string $key
+     * @return bool
+     */
     public function removeMainKey($key)
     {
         $decoded = JsonFile::parseJson($this->contents);
@@ -463,6 +547,30 @@ class JsonManipulator
         return false;
     }
 
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function removeMainKeyIfEmpty($key)
+    {
+        $decoded = JsonFile::parseJson($this->contents);
+
+        if (!array_key_exists($key, $decoded)) {
+            return true;
+        }
+
+        if (is_array($decoded[$key]) && count($decoded[$key]) === 0) {
+            return $this->removeMainKey($key);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param mixed $data
+     * @param int   $depth
+     * @return string
+     */
     public function format($data, $depth = 0)
     {
         if (is_array($data)) {
@@ -488,6 +596,9 @@ class JsonManipulator
         return JsonFile::encode($data);
     }
 
+    /**
+     * @return void
+     */
     protected function detectIndenting()
     {
         if ($this->pregMatch('{^([ \t]+)"}m', $this->contents, $match)) {
@@ -497,6 +608,12 @@ class JsonManipulator
         }
     }
 
+    /**
+     * @param string        $re
+     * @param string        $str
+     * @param array<string> $matches
+     * @return int
+     */
     protected function pregMatch($re, $str, &$matches = array())
     {
         $count = preg_match($re, $str, $matches);

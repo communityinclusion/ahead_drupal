@@ -21,9 +21,17 @@ use Composer\Util\ProcessExecutor;
 class FossilDownloader extends VcsDownloader
 {
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function doDownload(PackageInterface $package, $path, $url)
+    protected function doDownload(PackageInterface $package, $path, $url, PackageInterface $prevPackage = null)
+    {
+        return \React\Promise\resolve();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function doInstall(PackageInterface $package, $path, $url)
     {
         // Ensure we are allowed to use this URL by config
         $this->config->prohibitUrlByConfig($url, $this->io);
@@ -44,17 +52,18 @@ class FossilDownloader extends VcsDownloader
         if (0 !== $this->process->execute($command, $ignoredOutput, realpath($path))) {
             throw new \RuntimeException('Failed to execute ' . $command . "\n\n" . $this->process->getErrorOutput());
         }
+
+        return \React\Promise\resolve();
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function doUpdate(PackageInterface $initial, PackageInterface $target, $path, $url)
+    protected function doUpdate(PackageInterface $initial, PackageInterface $target, $path, $url)
     {
         // Ensure we are allowed to use this URL by config
         $this->config->prohibitUrlByConfig($url, $this->io);
 
-        $url = ProcessExecutor::escape($url);
         $ref = ProcessExecutor::escape($target->getSourceReference());
         $this->io->writeError(" Updating to ".$target->getSourceReference());
 
@@ -66,10 +75,12 @@ class FossilDownloader extends VcsDownloader
         if (0 !== $this->process->execute($command, $ignoredOutput, realpath($path))) {
             throw new \RuntimeException('Failed to execute ' . $command . "\n\n" . $this->process->getErrorOutput());
         }
+
+        return \React\Promise\resolve();
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getLocalChanges(PackageInterface $package, $path)
     {
@@ -83,7 +94,7 @@ class FossilDownloader extends VcsDownloader
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function getCommitLogs($fromReference, $toReference, $path)
     {
@@ -107,7 +118,7 @@ class FossilDownloader extends VcsDownloader
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected function hasMetadataRepository($path)
     {

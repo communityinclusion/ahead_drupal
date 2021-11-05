@@ -24,21 +24,24 @@ use Composer\IO\IOInterface;
  */
 class HgDriver extends VcsDriver
 {
+    /** @var array<string, string> Map of tag name to identifier */
     protected $tags;
+    /** @var array<string, string> Map of branch name to identifier */
     protected $branches;
+    /** @var string */
     protected $rootIdentifier;
+    /** @var string */
     protected $repoDir;
-    protected $infoCache = array();
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function initialize()
     {
         if (Filesystem::isLocalPath($this->url)) {
             $this->repoDir = $this->url;
         } else {
-            if (!Cache::isUsable($this->config->get('cache-vcs-dir'))) {
+            if (!Cache::isUsable((string) $this->config->get('cache-vcs-dir'))) {
                 throw new \RuntimeException('HgDriver requires a usable cache directory, and it looks like you set it to be disabled');
             }
 
@@ -80,7 +83,7 @@ class HgDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getRootIdentifier()
     {
@@ -94,7 +97,7 @@ class HgDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getUrl()
     {
@@ -102,7 +105,7 @@ class HgDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getSource($identifier)
     {
@@ -110,7 +113,7 @@ class HgDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getDist($identifier)
     {
@@ -118,7 +121,7 @@ class HgDriver extends VcsDriver
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getFileContent($file, $identifier)
     {
@@ -126,14 +129,14 @@ class HgDriver extends VcsDriver
         $this->process->execute($resource, $content, $this->repoDir);
 
         if (!trim($content)) {
-            return;
+            return null;
         }
 
         return $content;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getChangeDate($identifier)
     {
@@ -150,7 +153,7 @@ class HgDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getTags()
     {
@@ -172,7 +175,7 @@ class HgDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getBranches()
     {
@@ -202,7 +205,7 @@ class HgDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public static function supports(IOInterface $io, Config $config, $url, $deep = false)
     {
@@ -228,8 +231,8 @@ class HgDriver extends VcsDriver
             return false;
         }
 
-        $processExecutor = new ProcessExecutor($io);
-        $exit = $processExecutor->execute(sprintf('hg identify -- %s', ProcessExecutor::escape($url)), $ignored);
+        $process = new ProcessExecutor($io);
+        $exit = $process->execute(sprintf('hg identify -- %s', ProcessExecutor::escape($url)), $ignored);
 
         return $exit === 0;
     }

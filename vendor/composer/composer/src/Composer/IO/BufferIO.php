@@ -24,6 +24,11 @@ use Symfony\Component\Console\Helper\HelperSet;
  */
 class BufferIO extends ConsoleIO
 {
+    /** @var StringInput */
+    protected $input;
+    /** @var StreamOutput */
+    protected $output;
+
     /**
      * @param string                        $input
      * @param int                           $verbosity
@@ -41,6 +46,9 @@ class BufferIO extends ConsoleIO
         )));
     }
 
+    /**
+     * @return string output
+     */
     public function getOutput()
     {
         fseek($this->output->getStream(), 0);
@@ -61,6 +69,13 @@ class BufferIO extends ConsoleIO
         return $output;
     }
 
+    /**
+     * @param string[] $inputs
+     *
+     * @see createStream
+     *
+     * @return void
+     */
     public function setUserInputs(array $inputs)
     {
         if (!$this->input instanceof StreamableInputInterface) {
@@ -71,9 +86,14 @@ class BufferIO extends ConsoleIO
         $this->input->setInteractive(true);
     }
 
+    /**
+     * @param string[] $inputs
+     *
+     * @return false|resource stream
+     */
     private function createStream(array $inputs)
     {
-        $stream = fopen('php://memory', 'r+', false);
+        $stream = fopen('php://memory', 'r+');
 
         foreach ($inputs as $input) {
             fwrite($stream, $input.PHP_EOL);

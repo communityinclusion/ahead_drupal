@@ -143,10 +143,8 @@ class HtmlPageCrawler extends Crawler
             /** @var \DOMNode $node */
             foreach ($this as $newnode) {
                 /** @var \DOMNode $newnode */
-                if ($node !== $newnode) {
-                    $newnode = static::importNewnode($newnode, $node, $i);
-                    $node->appendChild($newnode);
-                }
+                $newnode = static::importNewnode($newnode, $node, $i);
+                $node->appendChild($newnode);
                 $newnodes[] = $newnode;
             }
         }
@@ -223,11 +221,9 @@ class HtmlPageCrawler extends Crawler
             /** @var \DOMNode $node */
             foreach ($content as $newnode) {
                 /** @var \DOMNode $newnode */
-                if ($node !== $newnode) {
-                    $newnode = static::importNewnode($newnode, $node, $i);
-                    $node->parentNode->insertBefore($newnode, $node);
-                    $newnodes[] = $newnode;
-                }
+                $newnode = static::importNewnode($newnode, $node, $i);
+                $node->parentNode->insertBefore($newnode, $node);
+                $newnodes[] = $newnode;
             }
         }
         $content->clear();
@@ -461,9 +457,7 @@ class HtmlPageCrawler extends Crawler
             foreach ($this as $newnode) {
                 /** @var \DOMNode $newnode */
                 $newnode = static::importNewnode($newnode, $node, $i);
-                if ($newnode !== $node) {
-                    $node->parentNode->insertBefore($newnode, $node);
-                }
+                $node->parentNode->insertBefore($newnode, $node);
                 $newnodes[] = $newnode;
             }
         }
@@ -489,7 +483,7 @@ class HtmlPageCrawler extends Crawler
                 $newnode = static::importNewnode($newnode, $node, $i);
                 if ($refnode === null) {
                     $node->appendChild($newnode);
-                } else if ($refnode !== $newnode) {
+                } else {
                     $node->insertBefore($newnode, $refnode);
                 }
                 $newnodes[] = $newnode;
@@ -517,12 +511,10 @@ class HtmlPageCrawler extends Crawler
             foreach ($this as $newnode) {
                 /** @var \DOMNode $newnode */
                 $newnode = static::importNewnode($newnode, $node, $i);
-                if ($newnode !== $node) {
-                    if ($refnode === null) {
-                        $node->appendChild($newnode);
-                    } else {
-                        $node->insertBefore($newnode, $refnode);
-                    }
+                if ($refnode === null) {
+                    $node->appendChild($newnode);
+                } else {
+                    $node->insertBefore($newnode, $refnode);
                 }
                 $newnodes[] = $newnode;
             }

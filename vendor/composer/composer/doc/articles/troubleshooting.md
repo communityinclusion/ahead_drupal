@@ -7,21 +7,21 @@ This is a list of common pitfalls on using Composer, and how to avoid them.
 
 ## General
 
-1. Before asking anyone, run [`composer diagnose`](../03-cli.md#diagnose) to check
-   for common problems. If it all checks out, proceed to the next steps.
-
-2. When facing any kind of problems using Composer, be sure to **work with the
+1. When facing any kind of problems using Composer, be sure to **work with the
    latest version**. See [self-update](../03-cli.md#self-update) for details.
+
+2. Before asking anyone, run [`composer diagnose`](../03-cli.md#diagnose) to check
+   for common problems. If it all checks out, proceed to the next steps.
 
 3. Make sure you have no problems with your setup by running the installer's
    checks via `curl -sS https://getcomposer.org/installer | php -- --check`.
 
-4. Ensure you're **installing vendors straight from your `composer.json`** via
+4. Try clearing Composer's cache by running `composer clear-cache`.
+
+5. Ensure you're **installing vendors straight from your `composer.json`** via
    `rm -rf vendor && composer update -v` when troubleshooting, excluding any
    possible interferences with existing vendor installations or `composer.lock`
    entries.
-
-5. Try clearing Composer's cache by running `composer clear-cache`.
 
 ## Package not found
 
@@ -47,37 +47,44 @@ This is a list of common pitfalls on using Composer, and how to avoid them.
    In this case add the `--with-dependencies` argument **or** add all dependencies which
    need an update to the command.
 
-## Package not found on travis-ci.org
+## Dependencies on the root package
 
-1. Check the ["Package not found"](#package-not-found) item above.
+When your root package depends on a package which ends up depending (directly or
+indirectly) back on the root package itself, issues can occur in two cases:
 
-2. If the package tested is a dependency of one of its dependencies (cyclic
-   dependency), the problem might be that Composer is not able to detect the version
-   of the package properly. If it is a git clone it is generally alright and Composer
-   will detect the version of the current branch, but travis does shallow clones so
-   that process can fail when testing pull requests and feature branches in general.
+1. During development, if you are on a branch like `dev-main` and the branch has no
+   [branch-alias](aliases.md#branch-alias) defined, and the dependency on the root package
+   requires version `^2.0` for example, the `dev-main` version will not satisfy it.
+   The best solution here is to make sure you first define a branch alias.
+
+2. In CI (Continuous Integration) runs, the problem might be that Composer is not able
+   to detect the version of the root package properly. If it is a git clone it is
+   generally alright and Composer will detect the version of the current branch,
+   but some CIs do shallow clones so that process can fail when testing pull requests
+   and feature branches. In these cases the branch alias may then not be recognized.
    The best solution is to define the version you are on via an environment variable
-   called COMPOSER_ROOT_VERSION. You set it to `dev-master` for example to define
-   the root package's version as `dev-master`.
-   Use: `before_script: COMPOSER_ROOT_VERSION=dev-master composer install` to export
-   the variable for the call to composer.
+   called COMPOSER_ROOT_VERSION. You set it to `dev-main` for example to define
+   the root package's version as `dev-main`.
+   Use for example: `COMPOSER_ROOT_VERSION=dev-main composer install` to export
+   the variable only for the call to composer, or you can define it globally in the
+   CI env vars.
 
 ## Package not found in a Jenkins-build
 
 1. Check the ["Package not found"](#package-not-found) item above.
-2. Reason for failing is similar to the problem which can occur on travis-ci.org: The
-   git-clone / checkout within Jenkins leaves the branch in a "detached HEAD"-state. As
-   a result, Composer is not able to identify the version of the current checked out branch
-   and may not be able to resolve a cyclic dependency. To solve this problem, you can use
-   the "Additional Behaviours" -> "Check out to specific local branch" in your Git-settings
-   for your Jenkins-job, where your "local branch" shall be the same branch as you are
-   checking out. Using this, the checkout will not be in detached state any more and cyclic
-   dependency is recognized correctly.
+
+2. The git-clone / checkout within Jenkins leaves the branch in a "detached HEAD"-state. As
+   a result, Composer may not able to identify the version of the current checked out branch
+   and may not be able to resolve a [dependency on the root package](#dependencies-on-the-root-package).
+   To solve this problem, you can use the "Additional Behaviours" -> "Check out to specific local
+   branch" in your Git-settings for your Jenkins-job, where your "local branch" shall be the same
+   branch as you are checking out. Using this, the checkout will not be in detached state any more
+   and the dependency on the root package should become satisfied.
 
 ## I have a dependency which contains a "repositories" definition in its composer.json, but it seems to be ignored.
 
 The [`repositories`](../04-schema.md#repositories) configuration property is defined as [root-only](../04-schema.md#root-package). It is not inherited. You can read more about the reasons behind this in the "[why can't
-composer load repositories recursively?](../faqs/why-can't-composer-load-repositories-recursively.md)" article.
+Composer load repositories recursively?](../faqs/why-can't-composer-load-repositories-recursively.md)" article.
 The simplest work-around to this limitation, is moving or duplicating the `repositories` definition into your root
 composer.json.
 
@@ -177,17 +184,12 @@ Because of GitHub's rate limits on their API it can happen that Composer prompts
 for authentication asking your username and password so it can go ahead with its work.
 
 If you would prefer not to provide your GitHub credentials to Composer you can
-manually create a token using the following procedure:
-
-1. [Create](https://github.com/settings/tokens) an OAuth token on GitHub.
-[Read more](https://github.com/blog/1509-personal-api-tokens) on this.
-
-2. Add it to the configuration running `composer config -g github-oauth.github.com <oauthtoken>`
+manually create a token using the [procedure documented here](authentication-for-private-packages.md#github-oauth).
 
 Now Composer should install/update without asking for authentication.
 
 ## proc_open(): fork failed errors
-If composer shows proc_open() fork failed on some commands:
+If Composer shows proc_open() fork failed on some commands:
 
 `PHP Fatal error: Uncaught exception 'ErrorException' with message 'proc_open(): fork failed - Cannot allocate memory' in phar`
 
@@ -207,13 +209,14 @@ To enable the swap you can use for example:
 ```sh
 /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024
 /sbin/mkswap /var/swap.1
+/bin/chmod 0600 /var/swap.1
 /sbin/swapon /var/swap.1
 ```
 You can make a permanent swap file following this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-ubuntu-14-04).
 
 ## proc_open(): failed to open stream errors (Windows)
 
-If composer shows proc_open(NUL) errors on Windows:
+If Composer shows proc_open(NUL) errors on Windows:
 
 `proc_open(NUL): failed to open stream: No such file or directory`
 
@@ -285,7 +288,7 @@ Disable IPv6 on that device (in this case "Wi-Fi"):
 networksetup -setv6off Wi-Fi
 ```
 
-Run composer ...
+Run Composer ...
 
 You can enable IPv6 again with:
 
@@ -309,7 +312,7 @@ As a workaround, open a SSH connection to your Git host before running Composer:
 
 ```bash
 ssh -t git@mygitserver.tld
-composer update
+php composer.phar update
 ```
 
 See also https://github.com/composer/composer/issues/4180 for more information.

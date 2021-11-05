@@ -23,15 +23,19 @@ use Composer\IO\IOInterface;
  */
 class FossilDriver extends VcsDriver
 {
+    /** @var array<string, string> Map of tag name to identifier */
     protected $tags;
+    /** @var array<string, string> Map of branch name to identifier */
     protected $branches;
-    protected $rootIdentifier;
-    protected $repoFile;
+    /** @var ?string */
+    protected $rootIdentifier = null;
+    /** @var ?string */
+    protected $repoFile = null;
+    /** @var string */
     protected $checkoutDir;
-    protected $infoCache = array();
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function initialize()
     {
@@ -46,7 +50,7 @@ class FossilDriver extends VcsDriver
         if (Filesystem::isLocalPath($this->url) && is_dir($this->url)) {
             $this->checkoutDir = $this->url;
         } else {
-            if (!Cache::isUsable($this->config->get('cache-repo-dir')) || !Cache::isUsable($this->config->get('cache-vcs-dir'))) {
+            if (!Cache::isUsable((string) $this->config->get('cache-repo-dir')) || !Cache::isUsable((string) $this->config->get('cache-vcs-dir'))) {
                 throw new \RuntimeException('FossilDriver requires a usable cache directory, and it looks like you set it to be disabled');
             }
 
@@ -63,6 +67,8 @@ class FossilDriver extends VcsDriver
 
     /**
      * Check that fossil can be invoked via command line.
+     *
+     * @return void
      */
     protected function checkFossil()
     {
@@ -73,6 +79,8 @@ class FossilDriver extends VcsDriver
 
     /**
      * Clone or update existing local fossil repository.
+     *
+     * @return void
      */
     protected function updateLocalRepo()
     {
@@ -110,7 +118,7 @@ class FossilDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getRootIdentifier()
     {
@@ -122,7 +130,7 @@ class FossilDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getUrl()
     {
@@ -130,7 +138,7 @@ class FossilDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getSource($identifier)
     {
@@ -138,7 +146,7 @@ class FossilDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getDist($identifier)
     {
@@ -146,7 +154,7 @@ class FossilDriver extends VcsDriver
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getFileContent($file, $identifier)
     {
@@ -161,18 +169,18 @@ class FossilDriver extends VcsDriver
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getChangeDate($identifier)
     {
         $this->process->execute('fossil finfo -b -n 1 composer.json', $output, $this->checkoutDir);
-        list($ckout, $date, $message) = explode(' ', trim($output), 3);
+        list(, $date) = explode(' ', trim($output), 3);
 
         return new \DateTime($date, new \DateTimeZone('UTC'));
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getTags()
     {
@@ -191,13 +199,12 @@ class FossilDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function getBranches()
     {
         if (null === $this->branches) {
             $branches = array();
-            $bookmarks = array();
 
             $this->process->execute('fossil branch list', $output, $this->checkoutDir);
             foreach ($this->process->splitLines($output) as $branch) {
@@ -212,7 +219,7 @@ class FossilDriver extends VcsDriver
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public static function supports(IOInterface $io, Config $config, $url, $deep = false)
     {
