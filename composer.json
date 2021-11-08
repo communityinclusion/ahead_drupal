@@ -83,6 +83,7 @@
         "drupal/geofield_map": "^2.57",
         "drupal/google_analytics": "^3.0",
         "drupal/google_tag": "^1.4",
+        "drupal/jquery_ui_accordion": "1.x-dev@dev",
         "drupal/leaflet": "^2.1",
         "drupal/mailgun": "^1.0@beta",
         "drupal/memcache": "^2.0",

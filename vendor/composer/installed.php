@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '044cc6bac949da9fdcbc1f514db35317aaa0c5ee',
+        'reference' => '38b9b7e5c8b1c3050aa469b12ea915ba3ced392f',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -397,7 +397,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '044cc6bac949da9fdcbc1f514db35317aaa0c5ee',
+            'reference' => '38b9b7e5c8b1c3050aa469b12ea915ba3ced392f',
             'dev_requirement' => false,
         ),
         'drupal/action' => array(
@@ -1178,6 +1178,17 @@
             'install_path' => __DIR__ . '/../../web/modules/contrib/jquery_ui',
             'aliases' => array(),
             'reference' => '8.x-1.4',
+            'dev_requirement' => false,
+        ),
+        'drupal/jquery_ui_accordion' => array(
+            'pretty_version' => 'dev-1.x',
+            'version' => 'dev-1.x',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/jquery_ui_accordion',
+            'aliases' => array(
+                0 => '1.x-dev',
+            ),
+            'reference' => '9d089e830f6c69a599f679f8d47e256c11482796',
             'dev_requirement' => false,
         ),
         'drupal/jquery_ui_draggable' => array(
