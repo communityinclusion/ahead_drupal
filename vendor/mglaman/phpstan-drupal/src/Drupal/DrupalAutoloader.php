@@ -161,6 +161,13 @@ class DrupalAutoloader
                 continue;
             }
             foreach ($yaml['services'] as $serviceId => $serviceDefinition) {
+                // Check if this is an alias shortcut.
+                // @link https://symfony.com/doc/4.4/service_container/alias_private.html#aliasing
+                if (is_string($serviceDefinition)) {
+                    $serviceDefinition = [
+                        'alias' => str_replace('@', '', $serviceDefinition),
+                    ];
+                }
                 // Prevent \Nette\DI\ContainerBuilder::completeStatement from array_walk_recursive into the arguments
                 // and thinking these are real services for PHPStan's container.
                 if (isset($serviceDefinition['arguments']) && is_array($serviceDefinition['arguments'])) {
@@ -188,15 +195,7 @@ class DrupalAutoloader
         }
 
         $service_map = $container->getByType(ServiceMap::class);
-        assert($service_map instanceof ServiceMap);
-        // @todo this is a hack that needs investigation.
-        // We cannot manipulate the service container and add parameters, so we take the existing
-        // service and modify it's properties so that its reference is updated within the container.
-        //
-        // During debug this works, but other times it fails.
         $service_map->setDrupalServices($this->serviceMap);
-        // So, to work around whatever is happening we force it into globals.
-        $GLOBALS['drupalServiceMap'] = $service_map->getServices();
     }
 
     protected function loadLegacyIncludes(): void
