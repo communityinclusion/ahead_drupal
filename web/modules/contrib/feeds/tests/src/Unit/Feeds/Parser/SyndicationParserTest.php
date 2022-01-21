@@ -63,6 +63,7 @@ class SyndicationParserTest extends FeedsUnitTestCase {
     'feed.reader.podcastentry' => 'Laminas\Feed\Reader\Extension\Podcast\Entry',
     'feed.reader.podcastfeed' => 'Laminas\Feed\Reader\Extension\Podcast\Feed',
     'feed.reader.georssentry' => 'Drupal\feeds\Laminas\Extension\Georss\Entry',
+    'feed.reader.mediarssentry' => 'Drupal\feeds\Laminas\Extension\Mediarss\Entry',
   ];
 
   /**
@@ -116,6 +117,37 @@ class SyndicationParserTest extends FeedsUnitTestCase {
   }
 
   /**
+   * Tests parsing a RSS feed that contains media.
+   *
+   * @covers ::parse
+   */
+  public function testParseMediaFeed() {
+    $file = $this->resourcesPath() . '/rss/media-rss.rss2';
+    $fetcher_result = new RawFetcherResult(file_get_contents($file), $this->getMockFileSystem());
+
+    $result = $this->parser->parse($this->feed, $fetcher_result, $this->state);
+    $this->assertSame(count($result), 4);
+
+    $expected = [
+      1 => [
+        'mediarss_content' => 'https://www.example.com/image1.png',
+        'mediarss_thumbnail' => 'https://www.example.com/thumbnail1.png',
+      ],
+      2 => [
+        'mediarss_content' => 'https://www.example.com/image2.png',
+      ],
+      3 => [
+        'mediarss_thumbnail' => 'https://www.example.com/thumbnail3.png',
+      ],
+    ];
+    foreach ($expected as $index => $expected_values) {
+      foreach ($expected_values as $key => $value) {
+        $this->assertSame($value, $result[$index]->get($key), "Entry $index got expected value for $key.");
+      }
+    }
+  }
+
+  /**
    * Tests parsing an Atom feed.
    *
    * @covers ::parse
@@ -164,8 +196,9 @@ class SyndicationParserTest extends FeedsUnitTestCase {
    * @covers ::getMappingSources
    */
   public function testGetMappingSources() {
-    // Not really much to test here.
-    $this->assertSame(count($this->parser->getMappingSources()), 17);
+    $mapping_sources = $this->parser->getMappingSources();
+    $this->assertIsArray($mapping_sources);
+    $this->assertNotEmpty($mapping_sources);
   }
 
 }

@@ -276,7 +276,7 @@ fieldset#group-specific-population-ques fieldset legend {
 
 .btnToggle {padding:5px;}
 
-#block-views-block-flag-bookmark-block-1 {
+#block-views-block-flag-bookmark-block-1, #block-views-block-flag-bookmark-block-1--2 {
 	position:relative;
 	z-index:500;
 	background-color:#fff;
@@ -285,36 +285,36 @@ fieldset#group-specific-population-ques fieldset legend {
 	overflow: visible;
 	margin: 0 12px 6px 0;
 }
-#block-views-block-flag-bookmark-block-1 .item-list ul li {
+#block-views-block-flag-bookmark-block-1 .item-list ul li, #block-views-block-flag-bookmark-block-1--2 .item-list ul li {
 	margin:8px 2px;
 }
 .navbar-toggler-right .navbar-toggler-icon {background-color: #ccc;}
 
-#block-views-block-flag-bookmark-block-1 .form-group,#block-views-block-flag-bookmark-block-1 .form-control {
+#block-views-block-flag-bookmark-block-1 .form-group,#block-views-block-flag-bookmark-block-1 .form-control, #block-views-block-flag-bookmark-block-1--2 .form-group,#block-views-block-flag-bookmark-block-1--2 .form-control  {
 	display:block;
 	width:220px;
 }
 
-#block-views-block-flag-bookmark-block-1 .content {
+#block-views-block-flag-bookmark-block-1 .content, #block-views-block-flag-bookmark-block-1--2 .content {
 	display:none;
 }
 
-#block-views-block-flag-bookmark-block-1 .view-content.row {
+#block-views-block-flag-bookmark-block-1 .view-content.row, #block-views-block-flag-bookmark-block-1--2 .view-content.row {
 	width:225px;
 	margin:0;
 }
 
-#block-views-block-flag-bookmark-block-1.toggled .content {
+#block-views-block-flag-bookmark-block-1.toggled .content, #block-views-block-flag-bookmark-block-1--2.toggled .content {
 	display:block;
 	width: 250px;
 	background-color: #fff;
 }
 
-#block-views-block-flag-bookmark-block-1 .content .col-auto {
+#block-views-block-flag-bookmark-block-1 .content .col-auto, #block-views-block-flag-bookmark-block-1--2 .content .col-auto {
 	padding:5px;
 }
 
-#block-views-block-flag-bookmark-block-1 h2 {
+#block-views-block-flag-bookmark-block-1 h2, #block-views-block-flag-bookmark-block-1--2 h2 {
 	width:150px;
 	font-size:1em;
 	border:1px solid #333;
@@ -323,19 +323,19 @@ fieldset#group-specific-population-ques fieldset legend {
 	    padding: 7px;
 }
 
-#block-views-block-flag-bookmark-block-1 h2:hover {
+#block-views-block-flag-bookmark-block-1 h2:hover, #block-views-block-flag-bookmark-block-1--2 h2:hover {
 	font-size:1em;
 	text-decoration:none;
 	background-color: #0071b3;
 	color:#fff;
 }
 
-#block-views-block-flag-bookmark-block-1 .content {
+#block-views-block-flag-bookmark-block-1 .content, #block-views-block-flag-bookmark-block-1--2 .content {
 	border:2px solid #333;
 	border-radius:6px;
 }
 
-#block-savesearch {
+#block-savesearch, #block-savesearch--2 {
 	position:relative;
 	background-color:#fff;
 	z-index:400;
@@ -345,22 +345,22 @@ fieldset#group-specific-population-ques fieldset legend {
 
 	margin: 0 12px 6px 0;
 }
-#block-savesearch .content {
+#block-savesearch .content,, #block-savesearch--2 .content {
 	min-width: 256px;
 	background-color: #fff;
 }
 
-#block-savesearch .form-group,#block-savesearch .form-control {
+#block-savesearch .form-group,#block-savesearch .form-control, #block-savesearch--2 .form-group,#block-savesearch--2 .form-control {
 	display:block;
 	width:220px;
 	background-color: #fff;
 }
 
-#block-savesearch .content {
+#block-savesearch .content, #block-savesearch--2 .content {
 	display:none;
 }
 
-#block-savesearch.toggled .content {
+#block-savesearch.toggled .content, #block-savesearch--2.toggled .content {
 	display:block;
 }
 
@@ -368,11 +368,11 @@ fieldset#group-specific-population-ques fieldset legend {
 	max-width:100%;
 }
 
-#block-savesearch .content .col-auto {
+#block-savesearch .content .col-auto, #block-savesearch--2 .content .col-auto {
 	padding:5px;
 }
 
-#block-savesearch h2 {
+#block-savesearch h2, #block-savesearch--2 h2 {
 	/* width:200px; */
 	width: 150px;
 	font-size:1em;
@@ -383,19 +383,19 @@ fieldset#group-specific-population-ques fieldset legend {
 }
 
 
-#block-savesearch h2:hover {
+#block-savesearch h2:hover, #block-savesearch--2 h2:hover {
 	font-size:1em;
 	text-decoration:none;
 	background-color: #0071b3;
 	color:#fff;
 }
 
- #block-savesearch .content {
+ #block-savesearch .content, #block-savesearch--2 .content {
 	border:2px solid #333;
 	border-radius:6px;
 }
 
-#block-savesearch fieldset.form-item-notify-interval.form-group {
+#block-savesearch fieldset.form-item-notify-interval.form-group, #block-savesearch--2 fieldset.form-item-notify-interval.form-group {
 	display:none;
 }
 
@@ -713,7 +713,7 @@ ul.js-facets-checkbox-links {
 
 	a.searchJump.homeShow {
 		display:none;
-		
+
 		}
 
 }
@@ -744,11 +744,11 @@ a.searchJump {
 	width: 200px;
 	height: 20px;
 	word-wrap: normal;
-	
+
 	}
 	a.searchJump.homeShow {
 		display:none;
-		
+
 		}
 }
 
@@ -853,7 +853,7 @@ a.searchJump {
 }
 div.flag-bookmark { padding-left: 15px;
 	padding-bottom:15px; }
-#block-views-block-flag-bookmark-block-1 ul li .views-field-title {font-size: 105%; font-weight: bold;}
+#block-views-block-flag-bookmark-block-1 ul li .views-field-title, #block-views-block-flag-bookmark-block-1--2 ul li .views-field-title {font-size: 105%; font-weight: bold;}
 .view-solr-search-content .view-header #home_header {display: none;}
 .view-solr-search-content .view-header .resultCount {display: block;}
 .view-solr-search-content .view-header.homeShow #home_header {display:block;}
@@ -922,7 +922,7 @@ div.field--name-field-completed-survey { width: 192px; height: 42px; float: righ
 div.field--name-field-completed-survey div.field__label {width: 150px; height: 42px; float: left; font-size: 80%;}
 div.field--name-field-completed-survey div.field__item {width: 42px; height: 42px; float: left;}
 @media (min-width: 770px) {
-	
+
     div.field--name-field-completed-survey { margin-top: -25px;}
 	}
 a.showAllInst {color: #9a9a9a;}

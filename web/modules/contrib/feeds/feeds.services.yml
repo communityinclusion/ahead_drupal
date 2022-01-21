@@ -30,11 +30,13 @@ services:
       - { name: event_subscriber }
   feed.reader.georssentry:
     class: Drupal\feeds\Laminas\Extension\Georss\Entry
+  feed.reader.mediarssentry:
+    class: Drupal\feeds\Laminas\Extension\Mediarss\Entry
   cache.feeds_download:
     class: Drupal\Core\Cache\CacheBackendInterface
     tags:
       - { name: cache.bin }
-    factory: cache_factory:get
+    factory: ['@cache_factory', 'get']
     arguments: [feeds_download]
 
   feeds.entity_finder:

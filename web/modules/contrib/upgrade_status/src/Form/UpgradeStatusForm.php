@@ -348,7 +348,7 @@ class UpgradeStatusForm extends FormBase {
           'label' => [
             '#type' => 'html_tag',
             '#tag' => 'label',
-            '#value' => $extension->info['name'],
+            '#value' => $extension->info['name'] . ' (' . $extension->getName() . ')',
             '#attributes' => [
               'for' => 'edit-' . $next_step . '-data-list-' . str_replace('_', '-', $name),
             ],
@@ -356,11 +356,34 @@ class UpgradeStatusForm extends FormBase {
         ],
         'class' => 'project-label',
       ];
+      $type = '';
+      if ($extension->info['upgrade_status_type'] == ProjectCollector::TYPE_CUSTOM) {
+        if ($extension->getType() == 'module') {
+          $type = $this->t('Custom module');
+        }
+        elseif ($extension->getType() == 'theme') {
+          $type = $this->t('Custom theme');
+        }
+        elseif ($extension->getType() == 'profile') {
+          $type = $this->t('Custom profile');
+        }
+      }
+      else {
+        if ($extension->getType() == 'module') {
+          $type = $this->t('Contributed module');
+        }
+        elseif ($extension->getType() == 'theme') {
+          $type = $this->t('Contributed theme');
+        }
+        elseif ($extension->getType() == 'profile') {
+          $type = $this->t('Contributed profile');
+        }
+      }
       $option['type'] = [
         'data' => [
           'label' => [
             '#type' => 'markup',
-            '#markup' => $extension->info['upgrade_status_type'] == ProjectCollector::TYPE_CUSTOM ? $this->t('Custom') : $this->t('Contributed'),
+            '#markup' => $type,
           ],
         ]
       ];
@@ -507,7 +530,6 @@ class UpgradeStatusForm extends FormBase {
         ];
       }
       else {
-        $plan = (string) $this->projectCollector->getPlan($name);
         $option['issues'] = [
           'data' => [
             'label' => [
@@ -724,11 +746,50 @@ MARKUP
         ]
       ];
 
+      // Check database version.
+      $type = $this->database->databaseType();
+      $version = $this->database->version();
+      $addendum = '';
+      if ($type == 'pgsql') {
+        $type = 'PostgreSQL';
+        $requirement = $this->t('When using PostgreSQL, minimum version is 12 <a href=":trgm">with the pg_trgm extension</a> created.', [':trgm' => 'https://www.postgresql.org/docs/10/pgtrgm.html']);
+        $has_trgm = $this->database->query("SELECT installed_version FROM pg_available_extensions WHERE name = 'pg_trgm'")->fetchField();
+        if (version_compare($version, '12') >= 0 && $has_trgm) {
+          $class = 'no-known-error';
+          $addendum = $this->t('Has pg_trgm extension.');
+        }
+        else {
+          $status = FALSE;
+          $class = 'known-error';
+          if (!$has_trgm) {
+            $addendum = $this->t('No pg_trgm extension.');
+          }
+        }
+        $build['data']['#rows'][] = [
+          'class' => [$class],
+          'data' => [
+            'requirement' => [
+              'class' => 'requirement-label',
+              'data' => [
+                '#type' => 'markup',
+                '#markup' => $requirement
+              ],
+            ],
+            'status' => [
+              'data' => trim($type . ' ' . $version . ' ' . $addendum),
+              'class' => 'status-info',
+            ],
+          ]
+        ];
+      }
+
       // Check JSON support in database.
       $class = 'no-known-error';
       $requirement = $this->t('Supported.');
       try {
-        $this->database->query('SELECT JSON_TYPE(\'1\')');
+        // A hasJson() method was added to Connection from Drupal 9.4.0
+        // but we cannot rely on being on Drupal 9.4.x+
+        $this->database->query($type == 'pgsql' ? 'SELECT JSON_TYPEOF(\'1\')' : 'SELECT JSON_TYPE(\'1\')');
       }
       catch (\Exception $e) {
         $class = 'known-error';

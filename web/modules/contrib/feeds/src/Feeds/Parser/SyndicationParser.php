@@ -31,6 +31,7 @@ class SyndicationParser extends PluginBase implements ParserInterface {
     $result = new ParserResult();
     Reader::setExtensionManager(\Drupal::service('feed.bridge.reader'));
     Reader::registerExtension('GeoRSS');
+    Reader::registerExtension('MediaRSS');
 
     $raw = $fetcher_result->getRaw();
     if (!strlen(trim($raw))) {
@@ -79,6 +80,14 @@ class SyndicationParser extends PluginBase implements ParserInterface {
       }
       if ($date = $entry->getDateModified()) {
         $item->set('updated', $date->getTimestamp());
+      }
+
+      if ($media_content = $entry->getMediaContent()) {
+        $item->set('mediarss_content', $media_content['url']);
+      }
+
+      if ($media_thumbnail = $entry->getMediaThumbnail()) {
+        $item->set('mediarss_thumbnail', $media_thumbnail['url']);
       }
 
       if ($point = $entry->getGeoPoint()) {
@@ -177,6 +186,14 @@ class SyndicationParser extends PluginBase implements ParserInterface {
           'targets' => ['field_tags'],
           'types' => ['field_item:taxonomy_term_reference' => []],
         ],
+      ],
+      'mediarss_content' => [
+        'label' => $this->t('Media content'),
+        'description' => $this->t('Available if the feed supports the Media RSS specification. Can contain audio, video or other media.'),
+      ],
+      'mediarss_thumbnail' => [
+        'label' => $this->t('Media thumbnail'),
+        'description' => $this->t('Available if the feed supports the Media RSS specification. An image that is representative for the media object.'),
       ],
       'georss_lat' => [
         'label' => $this->t('Item latitude'),
