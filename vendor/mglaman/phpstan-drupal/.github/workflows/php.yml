@@ -24,7 +24,7 @@ jobs:
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: true
-          - php-version: "8.0"
+          - php-version: "8.1"
             drupal: "10.0.x-dev"
             experimental: true
     steps:
@@ -40,8 +40,8 @@ jobs:
       - name: "Downgrade dev dependencies"
         run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
         if: ${{ matrix.drupal == '^8.9' }}
-      - name: "Upgrade to drupal/core:10.0.x"
-        run: "composer require drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
+      - name: "Upgrade to drupal/core:10.0.x and drush/drush:^11.0"
+        run: "composer require drupal/core-recommended:${{ matrix.drupal }} drush/drush:^11.0 --with-all-dependencies --dev --no-update"
         if: ${{ matrix.drupal == '10.0.x-dev' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
@@ -71,7 +71,7 @@ jobs:
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: true
-          - php-version: "8.0"
+          - php-version: "8.1"
             drupal: "10.0.x-dev"
             experimental: true
     steps:
@@ -89,10 +89,18 @@ jobs:
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
+      - name: "set the version alias for self"
+        run: |
+          if [ "${{ github.event_name }}" == 'pull_request' ]; then
+            echo ::set-output name=VERSION_ALIAS::dev-"${{ github.sha }}"
+          else
+            echo ::set-output name=VERSION_ALIAS::dev-main
+          fi
+        id: branch_alias
       - name: "require phpstan-drupal"
         run: |
           cd ~/drupal
-          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal *@dev
+          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.1.99" phpstan/extension-installer --with-all-dependencies
           cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
       - name: "Test core/install.php"
         run: |
@@ -137,7 +145,7 @@ jobs:
           - "^8.9"
           - "^9.0"
         include:
-          - php-version: "8.0"
+          - php-version: "8.1"
             drupal: "10.0.x-dev"
             experimental: true
     steps:
