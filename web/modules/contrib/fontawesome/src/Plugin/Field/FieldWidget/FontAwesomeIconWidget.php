@@ -82,7 +82,7 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
       '#size' => 50,
       '#field_prefix' => 'fa-',
       '#default_value' => $items[$delta]->get('icon_name')->getValue(),
-      '#description' => $this->t('Name of the Font Awesome Icon. See @iconsLink for valid icon names, or begin typing for an autocomplete list. Note that all four versions of the icon will be shown - Light, Regular, Solid, and Duotone respectively. If the icon shows a question mark, that icon version is not supported in your version of Fontawesome.', [
+      '#description' => $this->t('Name of the Font Awesome Icon. See @iconsLink for valid icon names, or begin typing for an autocomplete list. Note that all four versions of the icon will be shown - Light, Regular, Solid, Duotone, and Thin respectively. If the icon shows a question mark, that icon version is not supported in your version of Fontawesome.', [
         '@iconsLink' => Link::fromTextAndUrl($this->t('the Font Awesome icon list'), Url::fromUri('https://fontawesome.com/icons'))->toString(),
       ]),
       '#autocomplete_route_name' => 'fontawesome.autocomplete',
@@ -92,7 +92,7 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
     ];
 
     // Get current settings.
-    $iconSettings = unserialize($items[$delta]->get('settings')->getValue());
+    $iconSettings = unserialize($items[$delta]->get('settings')->getValue() ?? '');
     // Build additional settings.
     $element['settings'] = [
       '#type' => 'details',
@@ -112,6 +112,7 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
         'far' => $this->t('Regular'),
         'fal' => $this->t('Light'),
         'fad' => $this->t('Duotone'),
+        'fat' => $this->t('Thin'),
         'fak' => $this->t('Kit Uploads'),
       ],
       '#default_value' => $items[$delta]->get('style')->getValue(),
@@ -301,6 +302,7 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
         'far' => $this->t('Regular'),
         'fal' => $this->t('Light'),
         'fad' => $this->t('Duotone'),
+        'fat' => $this->t('Thin'),
         'fak' => $this->t('Kit Uploads'),
       ],
       '#default_value' => isset($iconSettings['masking']['style']) ? $iconSettings['masking']['style'] : '',
@@ -451,6 +453,9 @@ class FontAwesomeIconWidget extends WidgetBase implements ContainerFactoryPlugin
     if (is_bool($configuration_settings->get('use_duotone_file')) && !$configuration_settings->get('use_duotone_file')) {
       unset($element['settings']['style']['#options']['fad']);
       unset($element['settings']['duotone']);
+    }
+    if (is_bool($configuration_settings->get('use_thin_file')) && !$configuration_settings->get('use_thin_file')) {
+      unset($element['settings']['style']['#options']['fat']);
     }
 
     return $element;

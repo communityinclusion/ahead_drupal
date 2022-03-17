@@ -182,6 +182,11 @@ class FontAwesomeManager implements FontAwesomeManagerInterface {
             break;
           }
         }
+        // Add the aliases into the search terms.
+        if (isset($icon['aliases']['names'])) {
+          $icon['search']['terms'] += $icon['aliases']['names'];
+          dpm($icon['search']['terms']);
+        }
         $icons[$icon['name']] = [
           'name' => $icon['name'],
           'type' => $type,

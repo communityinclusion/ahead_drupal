@@ -178,9 +178,11 @@ class FontAwesomeIconpickerWidget extends FontAwesomeIconWidget {
     // Loop over each item and set the data properly.
     foreach ($values as &$item) {
       // Reset $item['icon_name'] to the base name.
-      $class = $item['icon_name'];
-      $item['icon_name'] = $this->iconManager->getIconBaseNameFromClass($class);
-      $item['style'] = $this->iconManager->getIconPrefixFromClass($class);
+      if (!empty($item['icon_name'])) {
+        $class = $item['icon_name'];
+        $item['icon_name'] = $this->iconManager->getIconBaseNameFromClass($class);
+        $item['style'] = $this->iconManager->getIconPrefixFromClass($class);
+      }
       unset($item['settings']['style']);
 
       if (!empty($item['settings']['masking']['mask'])) {

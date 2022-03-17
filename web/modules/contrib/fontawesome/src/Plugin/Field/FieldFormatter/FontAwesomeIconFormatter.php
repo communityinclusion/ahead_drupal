@@ -134,13 +134,15 @@ class FontAwesomeIconFormatter extends FormatterBase implements ContainerFactory
 
       // Format power transforms.
       $iconTransforms = [];
-      $powerTransforms = $iconSettings['power_transforms'];
-      foreach ($powerTransforms as $transform) {
-        if (!empty($transform['type'])) {
-          $iconTransforms[] = $transform['type'] . '-' . $transform['value'];
+      if (isset($iconSettings['power_transforms'])) {
+        $powerTransforms = $iconSettings['power_transforms'];
+        foreach ($powerTransforms as $transform) {
+          if (!empty($transform['type'])) {
+            $iconTransforms[] = $transform['type'] . '-' . $transform['value'];
+          }
         }
+        unset($iconSettings['power_transforms']);
       }
-      unset($iconSettings['power_transforms']);
 
       // Move duotone settings into the render.
       if (isset($iconSettings['duotone'])) {

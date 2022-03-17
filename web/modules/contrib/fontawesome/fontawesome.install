@@ -16,7 +16,7 @@ function fontawesome_requirements($phase) {
   // Report the version of Font Awesome.
   if ($phase == 'runtime') {
     $requirements['fontawesome'] = [
-      'title' => t('Font Awesome 5'),
+      'title' => t('Font Awesome'),
     ];
 
     // Load the configuration settings.
@@ -68,7 +68,7 @@ function fontawesome_requirements($phase) {
       }
 
       $requirements['fontawesome']['severity'] = REQUIREMENT_OK;
-      $requirements['fontawesome']['value'] = t('Font Awesome 5 library is installed. Using %version version. (@moreInfoLink)', [
+      $requirements['fontawesome']['value'] = t('Font Awesome library is installed. Using %version version. (@moreInfoLink)', [
         '%version' => $version,
         '@moreInfoLink' => Link::createFromRoute(t('more information'), 'fontawesome.admin_settings')->toString(),
       ]);
@@ -83,7 +83,7 @@ function fontawesome_requirements($phase) {
     else {
       $requirements['fontawesome']['severity'] = REQUIREMENT_ERROR;
       $requirements['fontawesome']['value'] = t('Not installed');
-      $requirements['fontawesome']['description'] = t('The Font Awesome 5 library could not be found. If you want this module to handle loading your FontAwesome assets, please verify Font Awesome 5 is installed correctly or that the CDN has been activated and properly configured. Please see the @adminPage and the Font Awesome module README file for more details.', [
+      $requirements['fontawesome']['description'] = t('The Font Awesome library could not be found. If you want this module to handle loading your FontAwesome assets, please verify Font Awesome is installed correctly or that the CDN has been activated and properly configured. Please see the @adminPage and the Font Awesome module README file for more details.', [
         '@adminPage' => Link::createFromRoute(t('admin page'), 'fontawesome.admin_settings')->toString(),
       ]);
     }

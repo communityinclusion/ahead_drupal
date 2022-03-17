@@ -71,6 +71,7 @@ class AutocompleteController extends ControllerBase {
         'use_light_file' => is_null($configuration_settings->get('use_light_file')) === TRUE ? TRUE : $configuration_settings->get('use_light_file'),
         'use_brands_file' => is_null($configuration_settings->get('use_brands_file')) === TRUE ? TRUE : $configuration_settings->get('use_brands_file'),
         'use_duotone_file' => is_null($configuration_settings->get('use_duotone_file')) === TRUE ? TRUE : $configuration_settings->get('use_duotone_file'),
+        'use_thin_file' => is_null($configuration_settings->get('use_thin_file')) === TRUE ? TRUE : $configuration_settings->get('use_thin_file'),
       ];
 
       // Check each icon to see if it starts with the typed string.
@@ -115,6 +116,14 @@ class AutocompleteController extends ControllerBase {
                   break;
                 }
                 $iconPrefix = 'fad';
+                break;
+
+              case 'thin':
+                // Don't show if unavailable.
+                if (!$activeFiles['use_thin_file']) {
+                  break;
+                }
+                $iconPrefix = 'fat';
                 break;
 
               case 'kit_uploads':

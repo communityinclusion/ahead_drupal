@@ -119,6 +119,7 @@ class EditorIconDialog extends FormBase {
         'far' => $this->t('Regular'),
         'fal' => $this->t('Light'),
         'fad' => $this->t('Duotone'),
+        'fat' => $this->t('Thin'),
         'fak' => $this->t('Kit Uploads'),
       ],
       '#default_value' => 'fas',
