@@ -7,7 +7,7 @@ core_version_requirement: ^8 || ^9
 dependencies:
   - fontawesome:fontawesome
 
-# Information added by Drupal.org packaging script on 2022-03-16
-version: '8.x-2.20'
+# Information added by Drupal.org packaging script on 2022-03-25
+version: '8.x-2.22'
 project: 'fontawesome'
-datestamp: 1647454353
+datestamp: 1648222750
