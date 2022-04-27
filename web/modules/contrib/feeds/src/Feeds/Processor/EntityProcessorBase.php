@@ -579,8 +579,8 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     // Compose error message. If available, use the entity label to indicate
     // which item failed. Fallback to the GUID value (if available) or else
     // no indication.
-    $label = $entity->label();
-    $guid = $entity->get('feeds_item')->guid;
+    $label = (string) $entity->label();
+    $guid = (string) $entity->get('feeds_item')->guid;
 
     $messages = [];
     $args = [
@@ -590,10 +590,10 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       '@errors' => \Drupal::service('renderer')->renderRoot($element),
       ':url' => $this->url('entity.feeds_feed_type.mapping', ['feeds_feed_type' => $this->feedType->id()]),
     ];
-    if ($label || $label === '0' || $label === 0) {
+    if ($label || $label === '0') {
       $messages[] = $this->t('The @entity %label failed to validate with the following errors: @errors', $args);
     }
-    elseif ($guid || $guid === '0' || $guid === 0) {
+    elseif ($guid || $guid === '0') {
       $messages[] = $this->t('The @entity with GUID %guid failed to validate with the following errors: @errors', $args);
     }
     else {

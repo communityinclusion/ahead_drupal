@@ -167,6 +167,9 @@ views.style.leaflet_map:
         options:
           type: text
           label: 'Options'
+        include_path:
+          type: boolean
+          label: 'Include Path'
     fullscreen:
       type: mapping
       label: 'Leaflet Fullscreen'

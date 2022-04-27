@@ -722,7 +722,8 @@ class Feed extends ContentEntityBase implements FeedInterface {
         'label' => 'inline',
         'type' => 'number_integer',
         'weight' => 0,
-      ]);
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
     return $fields;
   }

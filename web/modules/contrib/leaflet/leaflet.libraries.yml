@@ -44,6 +44,7 @@ leaflet-widget:
   dependencies:
     - core/jquery
     - leaflet/general
+    - leaflet/leaflet-drupal
     - leaflet/leaflet-geoman
 
 # Control Fullscreen
