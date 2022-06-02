@@ -226,13 +226,13 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
     $form['map']['locate'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Automatically locate user current position'),
-      '#description' => t("This option initially centers the map to the user position (only in case of empty map)."),
+      '#description' => $this->t("This option initially centers the map to the user position (only in case of empty map)."),
       '#default_value' => $map_settings['locate'] ?? $default_settings['map']['locate'],
     ];
     $form['map']['auto_center'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Automatically center map on existing features'),
-      '#description' => t("This option overrides the widget's default center (in case of not empty map)."),
+      '#description' => $this->t("This option overrides the widget's default center (in case of not empty map)."),
       '#default_value' => $map_settings['auto_center'] ?? $default_settings['map']['auto_center'],
     ];
 
@@ -243,7 +243,7 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
     $form['map']['scroll_zoom_enabled'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable Scroll Wheel Zoom on click'),
-      '#description' => t("This option enables zooming by mousewheel as soon as the user clicked on the map."),
+      '#description' => $this->t("This option enables zooming by mousewheel as soon as the user clicked on the map."),
       '#default_value' => $map_settings['scroll_zoom_enabled'] ?? $default_settings['map']['scroll_zoom_enabled'],
     ];
 
@@ -279,10 +279,10 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
       '#type' => 'select',
       '#title' => $this->t('Toolbar position.'),
       '#options' => [
-        'topleft' => 'topleft',
-        'topright' => 'topright',
-        'bottomleft' => 'bottomleft',
-        'bottomright' => 'bottomright',
+        'topleft' => $this->t('topleft'),
+        'topright' => $this->t('topright'),
+        'bottomleft' => $this->t('bottomleft'),
+        'bottomright' => $this->t('bottomright'),
       ],
       '#default_value' => $toolbar_settings['position'] ?? $default_settings['toolbar']['position'],
     ];
@@ -318,7 +318,7 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
 
     $form['toolbar']['drawCircle'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Adds button to draw circle. (unsupported by GeoJSON'),
+      '#title' => $this->t('Adds button to draw circle. (unsupported by GeoJSON)'),
       '#default_value' => $toolbar_settings['drawCircle'] ?? $default_settings['toolbar']['drawCircle'],
       '#disabled' => TRUE,
     ];

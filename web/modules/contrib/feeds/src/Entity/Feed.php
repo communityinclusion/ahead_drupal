@@ -562,6 +562,9 @@ class Feed extends ContentEntityBase implements FeedInterface {
       // Grab the first feed to get its type.
       $feed = reset($group);
       try {
+        // Clear all state objects for the feed.
+        $feed->clearStates();
+
         foreach ($feed->getType()->getPlugins() as $plugin) {
           $plugin->onFeedDeleteMultiple($group);
         }

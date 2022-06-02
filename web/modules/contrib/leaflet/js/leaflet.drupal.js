@@ -393,6 +393,9 @@
     if (options.shadowUrl) {
       icon_options.shadowUrl = options.shadowUrl;
     }
+    if (options.iconRetinaUrl) {
+      icon_options.iconRetinaUrl = options.iconRetinaUrl;
+    }
     if (options.shadowSize && options.shadowSize.x && options.shadowSize.y) {
       icon_options.shadowSize = new L.Point(parseInt(options.shadowSize.x), parseInt(options.shadowSize.y));
     }

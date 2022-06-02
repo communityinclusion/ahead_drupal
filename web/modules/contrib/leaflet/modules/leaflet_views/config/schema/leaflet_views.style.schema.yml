@@ -5,8 +5,11 @@ views.style.leaflet_map:
   label: 'Leaflet map'
   mapping:
     data_source:
-      type: string
-      label: 'Data source'
+      type: sequence
+      label: 'Data sources'
+      sequence:
+        type: string
+        label: 'Data source'
     entity_source:
       type: string
       label: 'Entity source'
