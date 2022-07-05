@@ -361,7 +361,7 @@ fieldset#group-specific-population-ques fieldset legend {
 }
 
 #block-savesearch.toggled .content, #block-savesearch--2.toggled .content {
-	display:block;
+	display:block; width: 240px;
 }
 
 #edit-search-api-fulltext {
