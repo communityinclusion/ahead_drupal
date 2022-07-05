@@ -462,7 +462,7 @@ header#header {
 
 .field-group-accordion-wrapper h3.ui-accordion-header,.field-group-accordion-wrapper h3.ui-state-default a,.field-group-accordion-wrapper h3.ui-state-active a,.field-group-accordion-wrapper h3.ui-state-active:hover a {
 	color:#2980B9;
-	background-color:#f2f2f2;
+	background-color:#e3dada;
 }
 
 .node--type-cedar-record h1 {
