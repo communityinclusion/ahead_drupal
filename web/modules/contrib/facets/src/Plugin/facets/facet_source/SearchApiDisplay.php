@@ -3,6 +3,8 @@
 namespace Drupal\facets\Plugin\facets\facet_source;
 
 use Drupal\Component\Plugin\DependentPluginInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -24,12 +26,27 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Provides a facet source based on a Search API display.
  *
+ * @todo The support for non views displays might be removed from facets 3.x and
+ *       moved into a sub or contributed module. So this class needs to become
+ *       something like "SearchApiViewsDisplay" and a "SearchApiCustomDisplay"
+ *       plugin needs to be provided by the sub or contributed module. At the
+ *       moment we have switches within this class for example to get the cache
+ *       metadata. Those need to be removed.
+ *
  * @FacetsFacetSource(
  *   id = "search_api",
  *   deriver = "Drupal\facets\Plugin\facets\facet_source\SearchApiDisplayDeriver"
  * )
  */
 class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSourceInterface {
+
+  /**
+   * List of Search API cache plugins that works with Facets cache system.
+   */
+  const CACHEABLE_PLUGINS = [
+    'search_api_tag',
+    'search_api_time',
+  ];
 
   /**
    * The search index the query should is executed on.
@@ -106,6 +123,8 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
       return new \stdClass();
     }
 
+    $request_stack = $container->get('request_stack');
+
     return new static(
       $configuration,
       $plugin_id,
@@ -113,7 +132,7 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
       $container->get('plugin.manager.facets.query_type'),
       $container->get('search_api.query_helper'),
       $container->get('plugin.manager.search_api.display'),
-      $container->get('request_stack')->getMasterRequest(),
+      $request_stack->getMainRequest(),
       $container->get('module_handler')
     );
   }
@@ -136,14 +155,10 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
    * {@inheritdoc}
    */
   public function getPath() {
-    // The implementation in search api tells us that this is a base path only
-    // if a path is defined, and false if that isn't done. This means that we
-    // have to check for this + create our own uri if that's needed.
-    if ($this->getDisplay()->getPath()) {
-      return $this->getDisplay()->getPath();
+    if ($this->isRenderedInCurrentRequest()) {
+      return \Drupal::service('path.current')->getPath();
     }
-
-    return \Drupal::service('path.current')->getPath();
+    return $this->getDisplay()->getPath();
   }
 
   /**
@@ -159,11 +174,12 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
 
     // If there are no results, we can check the Search API Display plugin has
     // configuration for views. If that configuration exists, we can execute
-    // that view and try to use it's results.
+    // that view and try to use its results.
     $display_definition = $this->getDisplay()->getPluginDefinition();
     if ($results === NULL && isset($display_definition['view_id'])) {
       $view = Views::getView($display_definition['view_id']);
       $view->setDisplay($display_definition['view_display']);
+      $view->preExecute();
       $view->execute();
       $results = $this->searchApiQueryHelper->getResults($search_id);
     }
@@ -187,7 +203,7 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
       $configuration = [
         'query' => $results->getQuery(),
         'facet' => $facet,
-        'results' => isset($facet_results[$facet->getFieldIdentifier()]) ? $facet_results[$facet->getFieldIdentifier()] : [],
+        'results' => $facet_results[$facet->getFieldIdentifier()] ?? [],
       ];
 
       // Get the Facet Specific Query Type so we can process the results
@@ -256,8 +272,13 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
     // Get the Search API Backend.
     $backend = $server->getBackend();
 
-    $fields = $index->getFields();
-    foreach ($fields as $field) {
+    $fields = &drupal_static(__METHOD__, []);
+
+    if (!isset($fields[$index->id()])) {
+      $fields[$index->id()] = $index->getFields();
+    }
+
+    foreach ($fields[$index->id()] as $field) {
       if ($field->getFieldIdentifier() == $field_id) {
         return $this->getQueryTypesForDataType($backend, $field->getType());
       }
@@ -388,7 +409,7 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
       $js_settings = [
         'view_id' => $view->id(),
         'current_display_id' => $view->current_display,
-        'view_base_path' => ltrim($view->getPath(), '/'),
+        'view_base_path' => ltrim($view->getPath() ?? '', '/'),
         'ajax_path' => Url::fromRoute('views.ajax')->toString(),
       ];
       $build['#attached']['library'][] = 'facets/drupal.facets.views-ajax';
@@ -410,6 +431,96 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
         return $this->searchApiQueryHelper->getResults($search_id)
           ->getResultCount();
       }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    if ($views_display = $this->getViewsDisplay()) {
+      return $views_display
+        ->getDisplay()
+        ->getCacheMetadata()
+        ->getCacheContexts();
+    }
+
+    // Custom display implementations should provide their own cache metadata.
+    $display = $this->getDisplay();
+    if ($display instanceof CacheableDependencyInterface) {
+      return $display->getCacheContexts();
+    }
+
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    if ($views_display = $this->getViewsDisplay()) {
+      return Cache::mergeTags(
+        $views_display->getDisplay()->getCacheMetadata()->getCacheTags(),
+        $views_display->getCacheTags()
+      );
+    }
+
+    // Custom display implementations should provide their own cache metadata.
+    $display = $this->getDisplay();
+    if ($display instanceof CacheableDependencyInterface) {
+      return $display->getCacheTags();
+    }
+
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    if ($views_display = $this->getViewsDisplay()) {
+      $cache_plugin = $views_display->getDisplay()->getPlugin('cache');
+      return Cache::mergeMaxAges(
+        $views_display->getDisplay()->getCacheMetadata()->getCacheMaxAge(),
+        $cache_plugin ? $cache_plugin->getCacheMaxAge() : 0
+      );
+    }
+
+    // Custom display implementations should provide their own cache metadata.
+    $display = $this->getDisplay();
+    if ($display instanceof CacheableDependencyInterface) {
+      return $display->getCacheMaxAge();
+    }
+
+    // Caching is not supported.
+    return 0;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * Alter views view cache metadata:
+   *  - When view being re-saved it will collect all cache metadata from its
+   * plugins, including cache plugin.
+   *  - Search API cache plugin will pre-execute the query and collect cacheable
+   * metadata from all facets and will pass it to the view.
+   *
+   * View will use collected cache tags to invalidate search results. And cache
+   * context provided by the facet to vary results.
+   *
+   * @see \Drupal\views\Plugin\views\display\DisplayPluginBase::calculateCacheMetadata()
+   * @see \Drupal\search_api\Plugin\views\cache\SearchApiCachePluginTrait::alterCacheMetadata()
+   * @see \Drupal\facets\FacetManager\DefaultFacetManager::alterQuery()
+   */
+  public function registerFacet(FacetInterface $facet) {
+    if (
+      // On the config-sync or site install view will already have all required
+      // cache tags, so don't react if it's already there.
+      !in_array('config:' . $facet->getConfigDependencyName(), $this->getCacheTags())
+      // Re-save it only if we know that views cache plugin works with facets.
+      && in_array($this->getViewsDisplay()->getDisplay()->getOption('cache')['type'], static::CACHEABLE_PLUGINS)
+    ) {
+      $this->getViewsDisplay()->save();
     }
   }
 
