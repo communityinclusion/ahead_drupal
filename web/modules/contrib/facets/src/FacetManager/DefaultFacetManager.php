@@ -9,6 +9,7 @@ use Drupal\facets\Event\PostBuildFacet;
 use Drupal\facets\Exception\InvalidProcessorException;
 use Drupal\facets\FacetInterface;
 use Drupal\facets\FacetSource\FacetSourcePluginManager;
+use Drupal\facets\Plugin\facets\facet_source\SearchApiDisplay;
 use Drupal\facets\Processor\BuildProcessorInterface;
 use Drupal\facets\Processor\PostQueryProcessorInterface;
 use Drupal\facets\Processor\PreQueryProcessorInterface;
@@ -164,8 +165,20 @@ class DefaultFacetManager {
         ]
       );
       $query_type_plugin->execute();
-      // Merge cache medata that gathered from facet and its processors.
+      // Merge cache metadata that gathered from facet and its processors.
       if ($query_is_cacheable) {
+        if ($query->hasTag('alter_cache_metadata')) {
+          $facet_source = $facet->getFacetSource();
+          if ($facet_source instanceof SearchApiDisplay) {
+            // Avoid a loop when saving a view. The Search API cache plugin for
+            // views "preExecutes" a query to collect cache metadata from
+            // modules that alter this query. Our SearchApiDisplay must not ask
+            // the view for its cache metadata at this point which is in a
+            // random state.
+            $facet_source->setDisplayEditInProgress(TRUE);
+          }
+        }
+
         $query->addCacheableDependency($facet);
       }
     }
@@ -371,13 +384,17 @@ class DefaultFacetManager {
    *   Throws an exception when an invalid processor is linked to the facet.
    */
   public function build(FacetInterface $facet) {
-    $facet = $this->processBuild($facet);
+    $built_facet = $this->processBuild($facet);
+    // The build process might have returned a previously built and statically
+    // cached instance of the facet object. So we need to ensure that the cache
+    // metadata is updated on the outer object, too.
+    $facet->addCacheableDependency($built_facet);
 
-    if ($facet->getOnlyVisibleWhenFacetSourceIsVisible()) {
+    if ($built_facet->getOnlyVisibleWhenFacetSourceIsVisible()) {
       // Block rendering and processing should be stopped when the facet source
       // is not available on the page. Returning an empty array here is enough
       // to halt all further processing.
-      $facet_source = $facet->getFacetSource();
+      $facet_source = $built_facet->getFacetSource();
       if (is_null($facet_source) || !$facet_source->isRenderedInCurrentRequest()) {
         return [];
       }
@@ -385,19 +402,19 @@ class DefaultFacetManager {
 
     // We include this build even if empty, it may contain attached libraries.
     /** @var \Drupal\facets\Widget\WidgetPluginInterface $widget */
-    $widget = $facet->getWidgetInstance();
-    $build = $widget->build($facet);
+    $widget = $built_facet->getWidgetInstance();
+    $build = $widget->build($built_facet);
     // No results behavior handling. Return a custom text or false depending on
     // settings.
-    if (empty($facet->getResults())) {
-      $empty_behavior = $facet->getEmptyBehavior();
+    if (empty($built_facet->getResults())) {
+      $empty_behavior = $built_facet->getEmptyBehavior();
       if ($empty_behavior && $empty_behavior['behavior'] === 'text') {
         return [
           [
             0 => $build,
             '#type' => 'container',
             '#attributes' => [
-              'data-drupal-facet-id' => $facet->id(),
+              'data-drupal-facet-id' => $built_facet->id(),
               'class' => ['facet-empty'],
             ],
             'empty_text' => [
@@ -418,7 +435,7 @@ class DefaultFacetManager {
             0 => $build,
             '#type' => 'container',
             '#attributes' => [
-              'data-drupal-facet-id' => $facet->id(),
+              'data-drupal-facet-id' => $built_facet->id(),
               'class' => ['facet-empty', 'facet-hidden'],
             ],
           ],

@@ -219,6 +219,23 @@ function facets_update_8009() {
  * Enable facet block caching for the views with "Search API tag or time" cache.
  */
 function facets_update_8010() {
+  // Moved to facets_update_8012().
+}
+
+/**
+ * Resave facets for consistent configuration export.
+ */
+function facets_update_8011() {
+  $facets = Facet::loadMultiple();
+  foreach ($facets as $facet) {
+    $facet->save();
+  }
+}
+
+/**
+ * Update facet block caching for the views with "Search API tag or time" cache.
+ */
+function facets_update_8012() {
   $facet_storage = \Drupal::entityTypeManager()->getStorage('facets_facet');
   $processed_views = [];
   /** @var \Drupal\facets\FacetInterface $facet */
@@ -239,16 +256,6 @@ function facets_update_8010() {
     }
   }
   return !empty($processed_views)
-    ? sprintf('Facet caching was enabled for the following views: %s.', implode(', ', $processed_views))
+    ? sprintf('Facet caching was updated for the following views: %s.', implode(', ', $processed_views))
     : 'There are no views with search API cache plugins and facets in the same time, so nothing has been updated.';
-}
-
-/**
- * Resave facets for consistent configuration export.
- */
-function facets_update_8011() {
-  $facets = Facet::loadMultiple();
-  foreach ($facets as $facet) {
-    $facet->save();
-  }
 }

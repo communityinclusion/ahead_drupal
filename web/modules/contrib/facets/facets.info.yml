@@ -8,7 +8,7 @@ test_dependencies:
   - search_api:search_api
   - drupal:views
 
-# Information added by Drupal.org packaging script on 2022-07-09
-version: '2.0.4'
+# Information added by Drupal.org packaging script on 2022-07-20
+version: '2.0.5'
 project: 'facets'
-datestamp: 1657367472
+datestamp: 1658315617

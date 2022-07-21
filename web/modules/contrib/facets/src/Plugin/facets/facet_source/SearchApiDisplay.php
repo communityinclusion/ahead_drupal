@@ -5,6 +5,7 @@ namespace Drupal\facets\Plugin\facets\facet_source;
 use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -82,6 +83,13 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
    * @var \Drupal\Core\Extension\ModuleHandler
    */
   protected $moduleHandler;
+
+  /**
+   * Indicates if the display is edited and saved.
+   *
+   * @var bool
+   */
+  protected $display_edit_in_progress = FALSE;
 
   /**
    * Constructs a SearchApiBaseFacetSource object.
@@ -176,6 +184,8 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
     // configuration for views. If that configuration exists, we can execute
     // that view and try to use its results.
     $display_definition = $this->getDisplay()->getPluginDefinition();
+    $view = NULL;
+
     if ($results === NULL && isset($display_definition['view_id'])) {
       $view = Views::getView($display_definition['view_id']);
       $view->setDisplay($display_definition['view_display']);
@@ -185,6 +195,15 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
     }
 
     if (!$results instanceof ResultSetInterface) {
+      if ($view) {
+        foreach ($facets as $facet) {
+          // In case of an empty result we must inherit the cache metadata of
+          // the query. It will know if no results is a valid "result" or a
+          // temporary issue or an error and set the metadata accordingly.
+          $facet->addCacheableDependency($view->getQuery());
+        }
+      }
+
       return;
     }
 
@@ -206,10 +225,13 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
         'results' => $facet_results[$facet->getFieldIdentifier()] ?? [],
       ];
 
-      // Get the Facet Specific Query Type so we can process the results
+      // Get the Facet Specific Query Type, so we can process the results
       // using the build() function of the query type.
       $query_type = $this->queryTypePluginManager->createInstance($facet->getQueryType(), $configuration);
       $query_type->build();
+
+      // Merge the runtime cache metadata of the query.
+      $facet->addCacheableDependency($results->getQuery());
     }
   }
 
@@ -439,6 +461,9 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
    */
   public function getCacheContexts() {
     if ($views_display = $this->getViewsDisplay()) {
+      if ($this->isDisplayEditInProgress()) {
+        return [];
+      }
       return $views_display
         ->getDisplay()
         ->getCacheMetadata()
@@ -459,6 +484,9 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
    */
   public function getCacheTags() {
     if ($views_display = $this->getViewsDisplay()) {
+      if ($this->isDisplayEditInProgress()) {
+        return [];
+      }
       return Cache::mergeTags(
         $views_display->getDisplay()->getCacheMetadata()->getCacheTags(),
         $views_display->getCacheTags()
@@ -479,6 +507,9 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
    */
   public function getCacheMaxAge() {
     if ($views_display = $this->getViewsDisplay()) {
+      if ($this->isDisplayEditInProgress()) {
+        return CacheBackendInterface::CACHE_PERMANENT;
+      }
       $cache_plugin = $views_display->getDisplay()->getPlugin('cache');
       return Cache::mergeMaxAges(
         $views_display->getDisplay()->getCacheMetadata()->getCacheMaxAge(),
@@ -522,6 +553,24 @@ class SearchApiDisplay extends FacetSourcePluginBase implements SearchApiFacetSo
     ) {
       $this->getViewsDisplay()->save();
     }
+  }
+
+  /**
+   * Is the display currently edited and saved?
+   *
+   * @return bool
+   */
+  public function isDisplayEditInProgress(): bool {
+    return $this->display_edit_in_progress;
+  }
+
+  /**
+   * Set the state, that the display is currently edited and saved.
+   *
+   * @param bool $display_edit_in_progress
+   */
+  public function setDisplayEditInProgress(bool $display_edit_in_progress): void {
+    $this->display_edit_in_progress = $display_edit_in_progress;
   }
 
 }

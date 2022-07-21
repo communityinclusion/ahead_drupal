@@ -316,8 +316,7 @@ class FeedsDrushCommands extends DrushCommands {
         ':label' => $feed->label(),
         ':id' => $feed->id(),
       ]));
-      $feed->startBatchImport();
-      drush_backend_batch_process();
+      $feed->import();
     }
   }
 

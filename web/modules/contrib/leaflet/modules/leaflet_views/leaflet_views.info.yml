@@ -1,13 +1,13 @@
 name: Leaflet Views
 description: Views integration for the Leaflet module.
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^8.8 || ^9 || ^10
 type: module
 package: Geofield
 dependencies:
   - leaflet:leaflet
   - drupal:views
 
-# Information added by Drupal.org packaging script on 2022-05-25
-version: '2.2.2'
+# Information added by Drupal.org packaging script on 2022-06-22
+version: '2.2.3'
 project: 'leaflet'
-datestamp: 1653513452
+datestamp: 1655936195

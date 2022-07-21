@@ -3,7 +3,6 @@
 /**
  * @file
  * Contains facets.module.
- *
  */
 
 use Drupal\Component\Utility\Html;

@@ -53,7 +53,7 @@
   $(document).on('leaflet.map', function(e, settings, lMap, mapid) {
 
     // Executes once per mapid.
-    $(document).once('leaflet_map_event_' + mapid).each(function() {
+    once('leaflet_map_event_' + mapid, 'html').forEach(function() {
       // Set the start center and the start zoom, and initialize the reset_map control.
       if (!Drupal.Leaflet[mapid].start_center && !Drupal.Leaflet[mapid].start_zoom) {
         Drupal.Leaflet[mapid].start_center = Drupal.Leaflet[mapid].lMap.getCenter();

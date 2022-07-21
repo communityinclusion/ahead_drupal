@@ -23,7 +23,7 @@ leaflet-drupal:
     js/leaflet.drupal.js: {}
   dependencies:
     - core/jquery
-    - core/jquery.once
+    - core/once
     - core/drupal
     - leaflet/leaflet
 

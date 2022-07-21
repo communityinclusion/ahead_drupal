@@ -807,39 +807,43 @@ class FacetForm extends EntityForm {
     ));
 
     $facet->setHardLimit($form_state->getValue(['facet_settings', 'hard_limit']));
-
     $facet->setExclude($form_state->getValue(['facet_settings', 'exclude']));
-    $facet->setUseHierarchy($form_state->getValue(
+    
+    $facet_uses_hierarchy = $form_state->getValue(
       [
         'facet_settings',
         'use_hierarchy',
       ]
-    ));
-    $facet->setKeepHierarchyParentsActive($form_state->getValue(
-      [
-        'facet_settings',
-        'keep_hierarchy_parents_active',
-      ]
-    ));
-    $hierarchy_id = $form_state->getValue(['facet_settings', 'hierarchy']);
-    $facet->setHierarchy($hierarchy_id, $form_state->getValue(
-      [
-        'facet_settings',
-        $hierarchy_id,
-      ]
-    ));
-    $facet->setExpandHierarchy($form_state->getValue(
-      [
-        'facet_settings',
-        'expand_hierarchy',
-      ]
-    ));
-    $facet->setEnableParentWhenChildGetsDisabled($form_state->getValue(
-      [
-        'facet_settings',
-        'enable_parent_when_child_gets_disabled',
-      ]
-    ));
+    );
+    $facet->setUseHierarchy($facet_uses_hierarchy);
+    if ($facet_uses_hierarchy) {
+      $facet->setKeepHierarchyParentsActive($form_state->getValue(
+        [
+          'facet_settings',
+          'keep_hierarchy_parents_active',
+        ]
+      ));
+      $hierarchy_id = $form_state->getValue(['facet_settings', 'hierarchy']);
+      $facet->setHierarchy($hierarchy_id, $form_state->getValue(
+        [
+          'facet_settings',
+          $hierarchy_id,
+        ]
+      ));
+      $facet->setExpandHierarchy($form_state->getValue(
+        [
+          'facet_settings',
+          'expand_hierarchy',
+        ]
+      ));
+      $facet->setEnableParentWhenChildGetsDisabled($form_state->getValue(
+        [
+          'facet_settings',
+          'enable_parent_when_child_gets_disabled',
+        ]
+      ));
+    }
+
     $facet->set('show_title', $form_state->getValue(
       [
         'facet_settings',
