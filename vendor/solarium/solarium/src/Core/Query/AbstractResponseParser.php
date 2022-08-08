@@ -9,6 +9,8 @@
 
 namespace Solarium\Core\Query;
 
+use Solarium\Core\Query\Result\ResultInterface;
+
 /**
  * Abstract class for response parsers.
  *
@@ -70,5 +72,22 @@ abstract class AbstractResponseParser
         $result['queryTime'] = $queryTime;
 
         return $result;
+    }
+
+    /**
+     * Parses HTTP status code and adds boolean wasSuccessful to result data.
+     * Parses HTTP status message and adds string statusMessage to result data.
+     *
+     * @param array           $data
+     * @param ResultInterface $result
+     *
+     * @return array
+     */
+    protected function parseStatus(array $data, ResultInterface $result): array
+    {
+        $data['wasSuccessful'] = 200 === $result->getResponse()->getStatusCode();
+        $data['statusMessage'] = $result->getResponse()->getStatusMessage();
+
+        return $data;
     }
 }

@@ -19,11 +19,20 @@ use Solarium\QueryType\ManagedResources\Query\AbstractQuery as Query;
 class Exists extends AbstractCommand
 {
     /**
-     * Term to be checked if exists.
+     * Default options.
      *
-     * @var string
+     * @var array
      */
-    protected $term = '';
+    protected $options = [
+        'useHeadRequest' => false,
+    ];
+
+    /**
+     * Name of the child resource to be checked if exists.
+     *
+     * @var string|null
+     */
+    protected $term = null;
 
     /**
      * Returns command type, for use in adapters.
@@ -42,31 +51,26 @@ class Exists extends AbstractCommand
      */
     public function getRequestMethod(): string
     {
+        if ($this->options['useHeadRequest']) {
+            return Request::METHOD_HEAD;
+        }
+
+        // use GET by default to avoid SOLR-15116 and SOLR-16274
         return Request::METHOD_GET;
     }
 
     /**
-     * Empty.
+     * Returns the name of the child resource to be checked if exists.
      *
-     * @return string
+     * @return string|null
      */
-    public function getRawData(): string
-    {
-        return '';
-    }
-
-    /**
-     * Returns the term to be checked if exists.
-     *
-     * @return string
-     */
-    public function getTerm(): string
+    public function getTerm(): ?string
     {
         return $this->term;
     }
 
     /**
-     * Set the term to be checked if exists.
+     * Set the name of the child resource to be checked if exists.
      *
      * @param string $term
      *
@@ -75,6 +79,47 @@ class Exists extends AbstractCommand
     public function setTerm(string $term): self
     {
         $this->term = $term;
+
+        return $this;
+    }
+
+    /**
+     * Remove the name of the child resource. This reverts to checking if the managed resource exists.
+     *
+     * @return self
+     */
+    public function removeTerm(): self
+    {
+        $this->term = null;
+
+        return $this;
+    }
+
+    /**
+     * Use a HEAD request to check if a resource or child resource exists?
+     *
+     * @return bool
+     */
+    public function getUseHeadRequest(): bool
+    {
+        return $this->getOption('useHeadRequest');
+    }
+
+    /**
+     * Use a HEAD request to check if a resource or child resource exists?
+     *
+     * Solarium defaults to GET requests because multiple Solr versions have bugs in the
+     * handling of HEAD requests. Only set this to true if you know that your Solr version
+     * isn't affected by {@link https://issues.apache.org/jira/browse/SOLR-15116 SOLR-15116}
+     * or {@link https://issues.apache.org/jira/browse/SOLR-16274 SOLR-16274}.
+     *
+     * @param bool $useHeadRequest
+     *
+     * @return self
+     */
+    public function setUseHeadRequest(bool $useHeadRequest): self
+    {
+        $this->setOption('useHeadRequest', $useHeadRequest);
 
         return $this;
     }

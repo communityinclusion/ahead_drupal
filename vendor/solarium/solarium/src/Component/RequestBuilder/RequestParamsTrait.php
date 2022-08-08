@@ -29,7 +29,7 @@ trait RequestParamsTrait
      *
      * @param string $key
      *
-     * @return string|array
+     * @return string|array|null
      */
     public function getParam(string $key)
     {
@@ -87,7 +87,7 @@ trait RequestParamsTrait
                 }
                 $this->params[$key][] = $value;
             } else {
-                // not all solr handlers support 0/1 as boolean values...
+                // not all Solr handlers support 0/1 as boolean values...
                 if (true === $value) {
                     $value = 'true';
                 } elseif (false === $value) {
@@ -157,7 +157,7 @@ trait RequestParamsTrait
     {
         $queryString = '';
         if (\count($this->params) > 0) {
-            $queryString = http_build_query($this->params, null, $separator);
+            $queryString = http_build_query($this->params, '', $separator);
             $queryString = preg_replace(
                 '/%5B(?:\d|[1-9]\d+)%5D=/',
                 '=',

@@ -90,6 +90,9 @@ field.widget.settings.leaflet_widget_default:
         drawCircleMarker:
           type: boolean
           label: 'Draw Circle Marker'
+        drawText:
+          type: boolean
+          label: 'Draw Text'
         editMode:
           type: boolean
           label: 'Edit Mode'

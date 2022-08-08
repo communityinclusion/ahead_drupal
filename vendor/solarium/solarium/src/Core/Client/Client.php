@@ -30,10 +30,14 @@ use Solarium\Exception\InvalidArgumentException;
 use Solarium\Exception\OutOfBoundsException;
 use Solarium\Exception\UnexpectedValueException;
 use Solarium\Plugin\BufferedAdd\BufferedAdd;
+use Solarium\Plugin\BufferedAdd\BufferedAddLite;
+use Solarium\Plugin\BufferedDelete\BufferedDelete;
+use Solarium\Plugin\BufferedDelete\BufferedDeleteLite;
 use Solarium\Plugin\CustomizeRequest\CustomizeRequest;
 use Solarium\Plugin\Loadbalancer\Loadbalancer;
 use Solarium\Plugin\MinimumScoreFilter\MinimumScoreFilter;
 use Solarium\Plugin\ParallelExecution\ParallelExecution;
+use Solarium\Plugin\PostBigExtractRequest;
 use Solarium\Plugin\PostBigRequest;
 use Solarium\Plugin\PrefetchIterator;
 use Solarium\QueryType\Analysis\Query\Document as AnalysisQueryDocument;
@@ -54,6 +58,7 @@ use Solarium\QueryType\Select\Query\Query as SelectQuery;
 use Solarium\QueryType\Select\Result\Result as SelectResult;
 use Solarium\QueryType\Server\Api\Query as ApiQuery;
 use Solarium\QueryType\Server\Collections\Query\Query as CollectionsQuery;
+use Solarium\QueryType\Server\Configsets\Query\Query as ConfigsetsQuery;
 use Solarium\QueryType\Server\CoreAdmin\Query\Query as CoreAdminQuery;
 use Solarium\QueryType\Server\CoreAdmin\Result\Result as CoreAdminResult;
 use Solarium\QueryType\Spellcheck\Query as SpellcheckQuery;
@@ -72,11 +77,12 @@ use Solarium\QueryType\Update\Result as UpdateResult;
  * The client is the main interface for usage of the Solarium library.
  * You can use it to get query instances and to execute them.
  * It also allows to register plugins and query types to customize Solarium.
+ * It gives access to the event dispatcher so that you can add listeners.
  * Finally, it also gives access to the adapter, which holds the Solr connection settings.
  *
  * Example usage with default settings:
  * <code>
- * $client = new Solarium\Client;
+ * $client = new Solarium\Client($adapter, $eventDispatcher);
  * $query = $client->createSelect();
  * $result = $client->select($query);
  * </code>
@@ -159,6 +165,11 @@ class Client extends Configurable implements ClientInterface
     const QUERY_COLLECTIONS = 'collections';
 
     /**
+     * Querytype configsets.
+     */
+    const QUERY_CONFIGSETS = 'configsets';
+
+    /**
      * Querytype API.
      */
     const QUERY_API = 'api';
@@ -210,6 +221,7 @@ class Client extends Configurable implements ClientInterface
         self::QUERY_REALTIME_GET => RealtimeGetQuery::class,
         self::QUERY_CORE_ADMIN => CoreAdminQuery::class,
         self::QUERY_COLLECTIONS => CollectionsQuery::class,
+        self::QUERY_CONFIGSETS => ConfigsetsQuery::class,
         self::QUERY_API => ApiQuery::class,
         self::QUERY_MANAGED_RESOURCES => Resources::class,
         self::QUERY_MANAGED_STOPWORDS => Stopwords::class,
@@ -224,9 +236,13 @@ class Client extends Configurable implements ClientInterface
     protected $pluginTypes = [
         'loadbalancer' => Loadbalancer::class,
         'postbigrequest' => PostBigRequest::class,
+        'postbigextractrequest' => PostBigExtractRequest::class,
         'customizerequest' => CustomizeRequest::class,
         'parallelexecution' => ParallelExecution::class,
         'bufferedadd' => BufferedAdd::class,
+        'bufferedaddlite' => BufferedAddLite::class,
+        'buffereddelete' => BufferedDelete::class,
+        'buffereddeletelite' => BufferedDeleteLite::class,
         'prefetchiterator' => PrefetchIterator::class,
         'minimumscorefilter' => MinimumScoreFilter::class,
     ];
@@ -336,11 +352,11 @@ class Client extends Configurable implements ClientInterface
 
         $key = $endpoint->getKey();
 
-        if (0 === \strlen($key)) {
+        if (null === $key || 0 === \strlen($key)) {
             throw new InvalidArgumentException('An endpoint must have a key value');
         }
 
-        //double add calls for the same endpoint are ignored, but non-unique keys cause an exception
+        // double add calls for the same endpoint are ignored, but non-unique keys cause an exception
         if (\array_key_exists($key, $this->endpoints) && $this->endpoints[$key] !== $endpoint) {
             throw new InvalidArgumentException('An endpoint must have a unique key');
         }
@@ -815,7 +831,7 @@ class Client extends Configurable implements ClientInterface
         $event = new PreExecuteRequestEvent($request, $endpoint);
         $this->eventDispatcher->dispatch($event);
         if (null !== $event->getResponse()) {
-            $response = $event->getResponse(); //a plugin result overrules the standard execution result
+            $response = $event->getResponse(); // a plugin result overrules the standard execution result
         } else {
             $response = $this->getAdapter()->execute($request, $endpoint);
         }
@@ -1048,6 +1064,22 @@ class Client extends Configurable implements ClientInterface
     }
 
     /**
+     * Execute a Configsets API query.
+     *
+     * @internal this is a convenience method that forwards the query to the
+     *  execute method, thus allowing for an easy to use and clean API
+     *
+     * @param QueryInterface|\Solarium\QueryType\Server\Configsets\Query\Query $query
+     * @param Endpoint|string|null                                             $endpoint
+     *
+     * @return ResultInterface|\Solarium\QueryType\Server\Configsets\Result\ListConfigsetsResult
+     */
+    public function configsets(QueryInterface $query, $endpoint = null): ResultInterface
+    {
+        return $this->execute($query, $endpoint);
+    }
+
+    /**
      * Create a query instance.
      *
      * @param string $type
@@ -1261,42 +1293,6 @@ class Client extends Configurable implements ClientInterface
     }
 
     /**
-     * Create a managed resources query instance.
-     *
-     * @param mixed $options
-     *
-     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Resources
-     */
-    public function createManagedResources(array $options = null)
-    {
-        return $this->createQuery(self::QUERY_MANAGED_RESOURCES, $options);
-    }
-
-    /**
-     * Create a managed resources query instance.
-     *
-     * @param mixed $options
-     *
-     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Stopwords
-     */
-    public function createManagedStopwords(array $options = null)
-    {
-        return $this->createQuery(self::QUERY_MANAGED_STOPWORDS, $options);
-    }
-
-    /**
-     * Create a managed resources query instance.
-     *
-     * @param mixed $options
-     *
-     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Synonyms
-     */
-    public function createManagedSynonyms(array $options = null)
-    {
-        return $this->createQuery(self::QUERY_MANAGED_SYNONYMS, $options);
-    }
-
-    /**
      * Create a Collections API query instance.
      *
      * @param mixed $options
@@ -1309,6 +1305,18 @@ class Client extends Configurable implements ClientInterface
     }
 
     /**
+     * Create a Configsets API query instance.
+     *
+     * @param mixed $options
+     *
+     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\Server\Configsets\Query\Query
+     */
+    public function createConfigsets(array $options = null): ConfigsetsQuery
+    {
+        return $this->createQuery(self::QUERY_CONFIGSETS, $options);
+    }
+
+    /**
      * Create an API query instance.
      *
      * @param mixed $options
@@ -1318,6 +1326,42 @@ class Client extends Configurable implements ClientInterface
     public function createApi(array $options = null): ApiQuery
     {
         return $this->createQuery(self::QUERY_API, $options);
+    }
+
+    /**
+     * Create a managed resources query instance.
+     *
+     * @param mixed $options
+     *
+     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Resources
+     */
+    public function createManagedResources(array $options = null)
+    {
+        return $this->createQuery(self::QUERY_MANAGED_RESOURCES, $options);
+    }
+
+    /**
+     * Create a managed stopwords query instance.
+     *
+     * @param mixed $options
+     *
+     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Stopwords
+     */
+    public function createManagedStopwords(array $options = null)
+    {
+        return $this->createQuery(self::QUERY_MANAGED_STOPWORDS, $options);
+    }
+
+    /**
+     * Create a managed synonyms query instance.
+     *
+     * @param mixed $options
+     *
+     * @return \Solarium\Core\Query\AbstractQuery|\Solarium\QueryType\ManagedResources\Query\Synonyms
+     */
+    public function createManagedSynonyms(array $options = null)
+    {
+        return $this->createQuery(self::QUERY_MANAGED_SYNONYMS, $options);
     }
 
     /**

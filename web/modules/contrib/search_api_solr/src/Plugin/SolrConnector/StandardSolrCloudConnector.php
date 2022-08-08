@@ -8,6 +8,7 @@ use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginBase;
 use Drupal\search_api_solr\Utility\Utility;
 use Solarium\Core\Client\Endpoint;
+use Solarium\Core\Client\State\ClusterState;
 use Solarium\Exception\HttpException;
 use Solarium\Exception\OutOfBoundsException;
 use Solarium\QueryType\Graph\Query as GraphQuery;
@@ -23,7 +24,7 @@ use Solarium\QueryType\Stream\Query as StreamQuery;
  *   description = @Translation("A standard connector for a Solr Cloud.")
  * )
  */
-class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCloudConnectorInterface {
+class StandardSolrCloudConnector extends SolrConnectorPluginBase implements SolrCloudConnectorInterface {
 
   /**
    * {@inheritdoc}
@@ -32,7 +33,18 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
     return [
       'checkpoints_collection' => '',
       'stats_cache' => 'org.apache.solr.search.stats.LRUStatsCache',
+      'distrib' => TRUE,
+      'context' => 'solr',
     ] + parent::defaultConfiguration();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfiguration(array $configuration) {
+    $configuration['distrib'] = (bool) $configuration['distrib'];
+
+    parent::setConfiguration($configuration);
   }
 
   /**
@@ -56,9 +68,16 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
 
     $form['optimize_timeout']['#description'] = $this->t('The timeout in seconds for background index optimization queries on the Solr collection.');
 
+    $form['context'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Solr host context'),
+      '#description' => $this->t('The context path for the Solr web application. Defaults to "solr" in any Solr Cloud installation.'),
+      '#default_value' => isset($this->configuration['context']) ? $this->configuration['context'] : 'solr',
+    ];
+
     $form['advanced']['checkpoints_collection'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('checkpoints_collection'),
+      '#title' => $this->t('Checkpoints Collection'),
       '#description' => $this->t("The collection where topic checkpoints are stored. Not required if you don't work with topic() streaming expressions."),
       '#default_value' => isset($this->configuration['checkpoints_collection']) ? $this->configuration['checkpoints_collection'] : '',
     ];
@@ -74,6 +93,13 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
       ],
       '#description' => $this->t('Document and term statistics are needed in order to calculate relevancy. Solr provides four implementations out of the box when it comes to document stats calculation. LocalStatsCache: This only uses local term and document statistics to compute relevance. In cases with uniform term distribution across shards, this works reasonably well. ExactStatsCache: This implementation uses global values (across the collection) for document frequency. ExactSharedStatsCache: This is exactly like the exact stats cache in its functionality but the global stats are reused for subsequent requests with the same terms. LRUStatsCache: This implementation uses an LRU cache to hold global stats, which are shared between requests. Formerly a limitation was that TF/IDF relevancy computations only used shard-local statistics. This is still the case by default or if LocalStatsCache is used. If your data isn’t randomly distributed, or if you want more exact statistics, then remember to configure the ExactStatsCache (or "better").'),
       '#default_value' => isset($this->configuration['stats_cache']) ? $this->configuration['stats_cache'] : 'org.apache.solr.search.stats.LRUStatsCache',
+    ];
+
+    $form['advanced']['distrib'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Distribute queries'),
+      '#description' => $this->t("Normally queries should be distributed across all nodes of a Solr Cloud that store shards of the collection. In rare debug use-cases or when you only run a single node it might be useful to disable the query distribution."),
+      '#default_value' => $this->configuration['distrib'] ?? TRUE,
     ];
 
     return $form;
@@ -171,7 +197,69 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    * {@inheritdoc}
    */
   public function getCollectionInfo($reset = FALSE) {
-    return $this->getCoreInfo();
+    return $this->getCoreInfo($reset);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getClusterStatus(?string $collection = NULL): ?ClusterState {
+    $this->connect();
+    $this->useTimeout(self::INDEX_TIMEOUT);
+
+    try {
+      $collection = $collection ?? $this->configuration['core'];
+
+      $query = $this->solr->createCollections();
+      $action = $query->createClusterStatus();
+      $action->setCollection($this->configuration['core']);
+      $query->setAction($action);
+
+      $response = $this->solr->collections($query);
+      return $response->getWasSuccessful() ? $response->getClusterState() : NULL;
+    }
+    catch (HttpException $e) {
+      throw new SearchApiSolrException(sprintf('Get ClusterStatus for collection %s failed with error code %s: %s', $collection, $e->getCode(), $e->getMessage()), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfigSetName(): ?string {
+    try {
+      if ($clusterState = $this->getClusterStatus()) {
+        return $clusterState->getCollectionState($this->configuration['core'])->getConfigName();
+      }
+    }
+    catch (\Exception $e) {
+      $this->getLogger()->debug($e->getMessage());
+    }
+
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function uploadConfigset(string $name, string $filename): bool {
+    $this->connect();
+    $this->useTimeout(self::FINALIZE_TIMEOUT);
+
+    try {
+      $configsetsQuery = $this->solr->createConfigsets();
+      $action = $configsetsQuery->createUpload();
+      $action
+        ->setFile($filename)
+        ->setName($name)
+        ->setOverwrite(TRUE);
+      $configsetsQuery->setAction($action);
+      $response = $this->solr->configsets($configsetsQuery);
+      return $response->getWasSuccessful();
+    }
+    catch (HttpException $e) {
+      throw new SearchApiSolrException(sprintf('Configset upload failed with error code %s: %s', $e->getCode(), $e->getMessage()), $e->getCode(), $e);
+    }
   }
 
   /**
@@ -225,7 +313,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getSelectQuery() {
     $query = parent::getSelectQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -233,7 +321,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getMoreLikeThisQuery() {
     $query = parent::getMoreLikeThisQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -241,7 +329,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getTermsQuery() {
     $query = parent::getTermsQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -249,7 +337,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getSpellcheckQuery() {
     $query = parent::getSpellcheckQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -257,7 +345,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getSuggesterQuery() {
     $query = parent::getSuggesterQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -265,7 +353,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getAutocompleteQuery() {
     $query = parent::getAutocompleteQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -276,17 +364,9 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
   }
 
   /**
-   * Reloads collection.
-   *
-   * @param string|null $collection
-   *   Collection.
-   *
-   * @return bool
-   *   TRUE if successful, FALSE otherwise.
-   *
-   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   * {@inheritdoc}
    */
-  public function reloadCollection(?string $collection = NULL) {
+  public function reloadCollection(?string $collection = NULL): bool {
     $this->connect();
     $this->useTimeout(self::INDEX_TIMEOUT);
 
@@ -301,7 +381,51 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
       return $response->getWasSuccessful();
     }
     catch (HttpException $e) {
-      throw new SearchApiSolrException("Reloading collection $collection failed with error code " . $e->getCode() . '.', $e->getCode(), $e);
+      throw new SearchApiSolrException("Reloading collection $collection failed with error code " . $e->getCode() . ': ' . $e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createCollection(array $options, ?string $collection = NULL): bool {
+    $this->connect();
+    $this->useTimeout(self::FINALIZE_TIMEOUT);
+
+    try {
+      $collection = $collection ?? $this->configuration['core'];
+
+      $query = $this->solr->createCollections();
+      $action = $query->createCreate(['name' => $collection] + $options);
+      $query->setAction($action);
+
+      $response = $this->solr->collections($query);
+      return $response->getWasSuccessful();
+    }
+    catch (HttpException $e) {
+      throw new SearchApiSolrException("Creating collection $collection failed with error code " . $e->getCode() . ': ' . $e->getMessage(), $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteCollection(?string $collection = NULL): bool {
+    $this->connect();
+    $this->useTimeout(self::INDEX_TIMEOUT);
+
+    try {
+      $collection = $collection ?? $this->configuration['core'];
+
+      $query = $this->solr->createCollections();
+      $action = $query->createDelete(['name' => $collection]);
+      $query->setAction($action);
+
+      $response = $this->solr->collections($query);
+      return $response->getWasSuccessful();
+    }
+    catch (HttpException $e) {
+      throw new SearchApiSolrException("Deleting collection $collection failed with error code " . $e->getCode() . ': ' . $e->getMessage(), $e->getCode(), $e);
     }
   }
 
@@ -309,7 +433,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    * {@inheritdoc}
    */
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '') {
-    SolrConnectorPluginBase::alterConfigFiles($files, $lucene_match_version, $server_id);
+    parent::alterConfigFiles($files, $lucene_match_version, $server_id);
 
     // Leverage the implicit Solr request handlers with default settings for
     // Solr Cloud.

@@ -22,7 +22,7 @@ use Solarium\Component\Result\Grouping\ValueGroup;
  * Also known as Result Grouping or Field Collapsing.
  * See the Solr wiki for more info about this functionality
  *
- * @see https://lucene.apache.org/solr/guide/result-grouping.html
+ * @see https://solr.apache.org/guide/result-grouping.html
  */
 class Grouping extends AbstractComponent
 {
@@ -553,7 +553,7 @@ class Grouping extends AbstractComponent
     {
         $this->setOption('resultvaluegroupclass', $value);
 
-        return  $this;
+        return $this;
     }
 
     /**

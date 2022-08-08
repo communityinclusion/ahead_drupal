@@ -2,6 +2,7 @@
 
 namespace Drupal\leaflet_views\Plugin\views\style;
 
+use Drupal\search_api\Plugin\views\ResultRow;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldTypePluginManagerInterface;
 use Drupal\Core\Render\BubbleableMetadata;
@@ -308,6 +309,23 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
    * {@inheritdoc}
    */
   public function getFieldValue($index, $field) {
+    $result = $this->view->result[$index];
+
+    if ($result instanceof ResultRow) {
+      $search_api_field = $result->_item->getField($field, FALSE);
+      if ($search_api_field !== NULL) {
+        $values = $search_api_field->getValues();
+      }
+
+      if (!empty($values)) {
+        foreach ($values as $key => $value) {
+          [$lat, $lon] = explode(',', $value);
+          $values[$key] = sprintf('POINT(%s %s)', $lon, $lat);
+        }
+        return $values;
+      }
+    }
+
     $this->view->row_index = $index;
     $value = isset($this->view->field[$field]) ? $this->view->field[$field]->getValue($this->view->result[$index]) : NULL;
     unset($this->view->row_index);
@@ -732,23 +750,40 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
             if (!empty($geofield_value)) {
               $features = $this->leafletService->leafletProcessGeofield($geofield_value);
 
+              $entity_id = NULL;
+              $entity_type = NULL;
+              $entity_language = NULL;
               if (!empty($result->_entity)) {
                 // Entity API provides a plain entity object.
                 $entity = $result->_entity;
+                $entity_id = $entity->id();
+                $entity_type = $entity->getEntityTypeId();
+                $entity_language = $entity->language()->getId();
               }
               elseif (isset($result->_object)) {
                 // Search API provides a TypedData EntityAdapter.
                 $entity_adapter = $result->_object;
                 if ($entity_adapter instanceof EntityAdapter) {
                   $entity = $entity_adapter->getValue();
+                  $entity_id = $entity->id();
+                  $entity_type = $entity->getEntityTypeId();
+                  $entity_language = $entity->language()->getId();
                 }
+              }
+              elseif ($result instanceof ResultRow) {
+                $id = $result->_item->getId();
+                $search_api_id_parts = explode(':', $result->_item->getId());
+                $id_parts = explode('/', $search_api_id_parts[1]);
+                $entity_id = $id_parts[1] ?? NULL;
+                $entity_type = $id_parts[0] ?? NULL;
+                $entity_language = $search_api_id_parts[2] ?? NULL;
               }
 
               // Render the entity with the selected view mode.
-              if (isset($entity)) {
+              if (!empty($entity_id) && !empty($entity_type)) {
                 // Get and set (if not set) the Geofield cardinality.
                 /* @var \Drupal\Core\Field\FieldItemList $geofield_entity */
-                if (!isset($map['geofield_cardinality'])) {
+                if (!isset($map['geofield_cardinality']) && isset($entity)) {
                   try {
                     $geofield_entity = $entity->get($geofield_name);
                     $map['geofield_cardinality'] = $geofield_entity->getFieldDefinition()
@@ -766,8 +801,10 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                     $map['geofield_cardinality'] = -1;
                   }
                 }
+                else {
+                  $map['geofield_cardinality'] = -1;
+                }
 
-                $entity_type = $entity->getEntityTypeId();
                 $entity_type_langcode_attribute = $entity_type . '_field_data_langcode';
 
                 $view = $this->view;
@@ -780,8 +817,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                 ];
                 if (isset($dynamic_renderers[$rendering_language])) {
                   /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
-                  $langcode = isset($result->$entity_type_langcode_attribute) ? $result->$entity_type_langcode_attribute : $entity->language()
-                    ->getId();
+                  $langcode = isset($result->$entity_type_langcode_attribute) ? $result->$entity_type_langcode_attribute : $entity_language;
                 }
                 else {
                   if (strpos($rendering_language, '***LANGUAGE_') !== FALSE) {
@@ -795,7 +831,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
 
                 switch ($this->options['description_field']) {
                   case '#rendered_entity':
-                    $build = $this->entityManager->getViewBuilder($entity->getEntityTypeId())
+                    $build = $this->entityManager->getViewBuilder($entity_type)
                       ->view($entity, $this->options['view_mode'], $langcode);
                     $render_context = new RenderContext();
                     $description = $this->renderer->executeInRenderContext($render_context, function () use (&$build) {
@@ -809,13 +845,13 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                   case '#rendered_entity_ajax':
                     $parameters = [
                       'entity_type' => $entity_type,
-                      'entity' => $entity->id(),
+                      'entity' => $entity_id,
                       'view_mode' => $this->options['view_mode'],
                       'langcode' => $langcode,
                     ];
                     $url = Url::fromRoute('leaflet_views.ajax_popup', $parameters);
                     $description = sprintf('<div class="leaflet-ajax-popup" data-leaflet-ajax-popup="%s" %s></div>',
-                      $url->toString(), LeafletAjaxPopupController::getPopupIdentifierAttribute($entity_type, $entity->id(), $this->options['view_mode'], $langcode));
+                      $url->toString(), LeafletAjaxPopupController::getPopupIdentifierAttribute($entity_type, $entity_id, $this->options['view_mode'], $langcode));
                     $map['settings']['ajaxPoup'] = TRUE;
                     break;
 
@@ -862,7 +898,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
 
                   // Attach pop-ups if we have a description field.
                   // Add its entity id, so it might be referenced from outside.
-                  $feature['entity_id'] = $entity->id();
+                  $feature['entity_id'] = $entity_id;
 
                   // Generate the weight feature property
                   // (falls back to natural result ordering).

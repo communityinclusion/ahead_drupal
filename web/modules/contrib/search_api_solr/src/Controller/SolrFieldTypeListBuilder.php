@@ -194,11 +194,8 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
    *
    * @return array
    *   A list of all disabled request handlers for current server.
-   *
-   * @throws \Drupal\search_api\SearchApiException
    */
   protected function getDisabledEntities(): array {
-    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     return $backend->getDisabledFieldTypes();
   }
@@ -232,6 +229,9 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
   /**
    * Returns the formatted XML for schema_extra_types.xml.
    *
+   * @return string
+   *   The XML snippet.
+   *
    * @throws \Drupal\search_api\SearchApiException
    */
   public function getSchemaExtraTypesXml() {
@@ -250,12 +250,16 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
    * Returns the formatted XML for solrconfig_extra.xml.
    *
    * @param int|null $solr_major_version
+   *   The Solr major version.
+   *
+   * @return string
+   *   The XML snippet.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
   public function getSchemaExtraFieldsXml(?int $solr_major_version = NULL) {
     $xml = '';
-    /* @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
+    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
     foreach ($this->getEnabledEntities() as $solr_field_type) {
       foreach ($solr_field_type->getStaticFields() as $static_field) {
         $xml .= '<field ';
@@ -288,6 +292,9 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
 
   /**
    * Returns the formatted XML for solrconfig_extra.xml.
+   *
+   * @return string
+   *   The XML snippet.
    *
    * @throws \Drupal\search_api\SearchApiException
    */

@@ -136,8 +136,11 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
       $node = Node::load($nid);
       $this->assertEquals($node->title->value, (string) $item->title);
       $this->assertEquals($node->body->value, (string) $item->description);
-      $this->assertEquals($node->feeds_item->guid, (string) $item->guid);
-      $this->assertEquals($node->feeds_item->url, (string) $item->link);
+
+      $feeds_item = $node->get('feeds_item')->getItemByFeed($feed);
+      $this->assertEquals($feeds_item->guid, (string) $item->guid);
+      $this->assertEquals($feeds_item->url, (string) $item->link);
+
       $this->assertEquals($node->created->value, strtotime((string) $item->pubDate));
 
       $terms = [];
