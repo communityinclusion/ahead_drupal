@@ -79,6 +79,7 @@
         "drupal/flag": "^4.0",
         "drupal/fontawesome": "^2.15",
         "drupal/fontyourface": "^3.2",
+        "drupal/force_password_change": "^2.0",
         "drupal/geofield": "^1.1",
         "drupal/geofield_map": "^2.57",
         "drupal/google_analytics": "^3.0",

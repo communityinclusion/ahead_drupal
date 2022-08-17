@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '5262e5377a7f526e0524832a698df4ae2150bed3',
+        'reference' => 'c20787282a4162f02e4cd5e6d7cc31526275c159',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -397,7 +397,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '5262e5377a7f526e0524832a698df4ae2150bed3',
+            'reference' => 'c20787282a4162f02e4cd5e6d7cc31526275c159',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -893,6 +893,15 @@
             'install_path' => __DIR__ . '/../../web/modules/contrib/fontyourface',
             'aliases' => array(),
             'reference' => '8.x-3.6',
+            'dev_requirement' => false,
+        ),
+        'drupal/force_password_change' => array(
+            'pretty_version' => '2.0.0',
+            'version' => '2.0.0.0',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/force_password_change',
+            'aliases' => array(),
+            'reference' => '2.0.0',
             'dev_requirement' => false,
         ),
         'drupal/geofield' => array(
