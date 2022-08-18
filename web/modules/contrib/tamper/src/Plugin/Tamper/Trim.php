@@ -81,6 +81,10 @@ class Trim extends TamperBase {
    * {@inheritdoc}
    */
   public function tamper($data, TamperableItemInterface $item = NULL) {
+    //Hack PF Found this here: https://www.drupal.org/project/feeds_tamper/issues/2978476#comment-13082489
+    if ($data == NULL) {
+      return FALSE;
+    }
     if (!is_string($data)) {
       throw new TamperException('Input should be a string.');
     }

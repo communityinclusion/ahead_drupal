@@ -61,7 +61,8 @@ class Mapper
     $supported = array();
     foreach ($fields as $field) {
       foreach ($definitions as $name => $plugin ) {
-        if(in_array($field->getType(), $plugin['field_types'])) {
+        // Hack PF.  got this from https://www.drupal.org/files/issues/2021-08-24/3224211-undefined-index-field-types.patch
+         if(array_key_exists('field_types', $plugin) && in_array($field->getType(), $plugin['field_types'])) {
           $this->updateInfo($field, "plugin", $plugin);
           $this->updateInfo($field, "type", $field->getType());
           $supported[] = $field;
