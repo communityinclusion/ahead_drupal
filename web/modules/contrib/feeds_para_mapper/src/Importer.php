@@ -118,7 +118,7 @@ class Importer {
    *  The targets that are being mapped.
    */
   private function resetTypes($targets) {
-    foreach ($targets as $target) {
+    foreach ($targets as $target) 
       if ($target instanceof FieldTargetDefinition) {
         $field = $target->getFieldDefinition();
         if ($field instanceof FieldConfigInterface && $info = $field->get('target_info')) {
