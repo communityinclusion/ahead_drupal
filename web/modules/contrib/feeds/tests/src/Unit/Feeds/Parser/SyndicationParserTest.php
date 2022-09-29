@@ -68,7 +68,7 @@ class SyndicationParserTest extends FeedsUnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $container = new ContainerBuilder();

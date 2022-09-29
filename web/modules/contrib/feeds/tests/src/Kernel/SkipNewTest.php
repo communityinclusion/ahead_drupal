@@ -25,7 +25,7 @@ class SkipNewTest extends FeedsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Setup an event dispatcher. We use this to check the number of created and

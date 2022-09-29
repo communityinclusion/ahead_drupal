@@ -38,7 +38,7 @@ abstract class EntityReferenceTestBase extends FieldTargetTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $referencable_entity_type_id = $this->getReferencableEntityTypeId();

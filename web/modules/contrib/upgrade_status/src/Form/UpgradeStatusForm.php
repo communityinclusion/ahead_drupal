@@ -6,7 +6,7 @@ use Composer\Semver\Semver;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\DrupalKernelInterface;
 use Drupal\Core\Extension\Extension;
-use Drupal\Core\Extension\ModuleHandler;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Datetime\DateFormatter;
 use Drupal\Core\Form\FormBase;
@@ -16,12 +16,12 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RedirectDestination;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
+use Drupal\upgrade_status\CookieJar;
 use Drupal\upgrade_status\DeprecationAnalyzer;
 use Drupal\upgrade_status\ProjectCollector;
 use Drupal\upgrade_status\ScanResultFormatter;
-use Drupal\upgrade_status\Util\CorrectDbServerVersion;
+use Drupal\upgrade_status\Util\DatabaseServerMetadataExtractor;
 use Drupal\user\Entity\Role;
-use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,7 +67,7 @@ class UpgradeStatusForm extends FormBase {
   /**
    * The module handler service.
    *
-   * @var \Drupal\Core\Extension\ModuleHandler
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
 
@@ -153,7 +153,7 @@ class UpgradeStatusForm extends FormBase {
    *   The renderer service.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger.
-   * @param \Drupal\Core\Extension\ModuleHandler $module_handler
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    * @param \Drupal\upgrade_status\DeprecationAnalyzer $deprecation_analyzer
    *   The deprecation analyzer.
@@ -174,7 +174,7 @@ class UpgradeStatusForm extends FormBase {
     ScanResultFormatter $result_formatter,
     RendererInterface $renderer,
     LoggerInterface $logger,
-    ModuleHandler $module_handler,
+    ModuleHandlerInterface $module_handler,
     DeprecationAnalyzer $deprecation_analyzer,
     StateInterface $state,
     DateFormatter $date_formatter,
@@ -720,7 +720,7 @@ MARKUP
     ];
 
     if ($this->nextMajor == 10) {
-      $build['description'] = $this->t('Upgrades to Drupal 10 are supported from Drupal 9.3.x and Drupal 9.4.x. It is suggested to update to the latest Drupal 9 version available. <a href=":platform">Several hosting platform requirements have been raised for Drupal 10</a>.', [':platform' => 'https://www.drupal.org/node/3228686']);
+      $build['description'] = $this->t('Upgrades to Drupal 10 are supported from Drupal 9.4.x and Drupal 9.5.x. It is suggested to update to the latest Drupal 9 version available. <a href=":platform">Several hosting platform requirements have been raised for Drupal 10</a>.', [':platform' => 'https://www.drupal.org/node/3228686']);
 
       // Check Drupal version. Link to update if available.
       $core_version_info = [
@@ -730,14 +730,14 @@ MARKUP
       $has_core_update = FALSE;
       $core_update_info = $this->releaseStore->get('drupal');
       if (isset($core_update_info['releases']) && is_array($core_update_info['releases'])) {
-        // Find the latest release that are higher than our current and is not beta/alpha/rc.
+        // Find the latest release that are higher than our current and is not beta/alpha/rc/dev.
         foreach ($core_update_info['releases'] as $version => $release) {
           $major_version = explode('.', $version)[0];
-          if ((version_compare($version, \Drupal::VERSION) > 0) && empty($release['version_extra']) && $major_version === '9') {
+          if ($major_version === '9' && !strpos($version, '-') && (version_compare($version, \Drupal::VERSION) > 0)) {
             $link = $core_update_info['link'] . '/releases/' . $version;
             $core_version_info = [
               '#type' => 'link',
-              '#title' => version_compare(\Drupal::VERSION, '9.3.0') >= 0 ?
+              '#title' => version_compare(\Drupal::VERSION, '9.4.0') >= 0 ?
                 $this->t('Version @current allows to upgrade but @new is available.', ['@current' => \Drupal::VERSION, '@new' => $version]) :
                 $this->t('Version @current does not allow to upgrade and @new is available.', ['@current' => \Drupal::VERSION, '@new' => $version]),
               '#url' => Url::fromUri($link),
@@ -747,7 +747,7 @@ MARKUP
           }
         }
       }
-      if (version_compare(\Drupal::VERSION, '9.3.0') >= 0) {
+      if (version_compare(\Drupal::VERSION, '9.4.0') >= 0) {
         if (!$has_core_update) {
           $class = 'no-known-error';
         }
@@ -764,7 +764,7 @@ MARKUP
         'data' => [
           'requirement' => [
             'class' => 'requirement-label',
-            'data' => $this->t('Drupal core should be at least 9.3.x'),
+            'data' => $this->t('Drupal core should be at least 9.4.x'),
           ],
           'status' => [
             'data' => $core_version_info,
@@ -789,7 +789,7 @@ MARKUP
         'data' => [
           'requirement' => [
             'class' => 'requirement-label',
-            'data' => $this->t('PHP version should be at least @minimum_php. Before updating to PHP 8, use <code>$ composer why-not php:8</code> to check if any projects need updating for compatibility. Also check custom projects manually.', ['@minimum_php' => $minimum_php]),
+            'data' => $this->t('PHP version should be at least @minimum_php. Before updating to PHP 8, use <code>$ composer why-not php 8.1</code> to check if any projects need updating for compatibility. Also check custom projects manually.', ['@minimum_php' => $minimum_php]),
           ],
           'status' => [
             'data' => $this->t('Version @version', ['@version' => $version]),
@@ -839,9 +839,11 @@ MARKUP
       $class = 'no-known-error';
       $requirement = $this->t('Supported.');
       try {
-        // A hasJson() method was added to Connection from Drupal 9.4.0
-        // but we cannot rely on being on Drupal 9.4.x+
-        $this->database->query($database_type == 'pgsql' ? 'SELECT JSON_TYPEOF(\'1\')' : 'SELECT JSON_TYPE(\'1\')');
+        if (!method_exists($this->database, 'hasJson') || !$this->database->hasJson()) {
+          // A hasJson() method was added to Connection from Drupal 9.4.0
+          // but we cannot rely on being on Drupal 9.4.x+
+          $this->database->query($database_type == 'pgsql' ? 'SELECT JSON_TYPEOF(\'1\')' : 'SELECT JSON_TYPE(\'1\')');
+        }
       }
       catch (\Exception $e) {
         $class = 'known-error';
@@ -941,10 +943,10 @@ MARKUP
     $has_core_update = FALSE;
     $core_update_info = $this->releaseStore->get('drupal');
     if (isset($core_update_info['releases']) && is_array($core_update_info['releases'])) {
-      // Find the latest release that are higher than our current and is not beta/alpha/rc.
+      // Find the latest release that are higher than our current and is not beta/alpha/rc/dev.
       foreach ($core_update_info['releases'] as $version => $release) {
         $major_version = explode('.', $version)[0];
-        if ((version_compare($version, \Drupal::VERSION) > 0) && empty($release['version_extra']) && $major_version === '8') {
+        if ($major_version === '8' && !strpos($version, '-') && (version_compare($version, \Drupal::VERSION) > 0)) {
           $link = $core_update_info['link'] . '/releases/' . $version;
           $core_version_info = [
             '#type' => 'link',
@@ -1007,58 +1009,40 @@ MARKUP
       ]
     ];
 
-    // Check database version.
-    $database_type = $this->database->databaseType();
-    $version = $this->database->version();
+    $database_server_metadata_extractor = new DatabaseServerMetadataExtractor($this->database);
+    $database_type = $database_server_metadata_extractor->getType();
+    $version = $database_server_metadata_extractor->getVersion();
 
-    // If running on Drupal 8, the mysql driver might
-    // mis-report the database version.
-    if ($this->nextMajor == 9) {
-      $versionFixer = new CorrectDbServerVersion($this->database);
-      $version = $versionFixer->getCorrectedDbServerVersion($version);
-    }
-
-    // MariaDB databases report as MySQL. Detect MariaDB separately based on code from
-    // https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Database%21Driver%21mysql%21Connection.php/function/Connection%3A%3AgetMariaDbVersionMatch/9.0.x
-    // See also https://www.drupal.org/node/3119156 for test values.
     if ($database_type == 'mysql') {
-      // MariaDB may prefix its version string with '5.5.5-', which should be
-      // ignored.
-      // @see https://github.com/MariaDB/server/blob/f6633bf058802ad7da8196d01fd19d75c53f7274/include/mysql_com.h#L42.
-      $regex = '/^(?:5\\.5\\.5-)?(\\d+\\.\\d+\\.\\d+.*-mariadb.*)/i';
-      preg_match($regex, $version, $matches);
-      if (!empty($matches[1])) {
-        $database_type_full_name = 'MariaDB';
-        $version = $matches[1];
-        $requirement = $this->t('When using MariaDB, minimum version is 10.3.7');
-        if (version_compare($version, '10.3.7') >= 0) {
-          $class = 'no-known-error';
-        }
-        elseif (version_compare($version, '10.1.0') >= 0) {
-          $class = 'known-warning';
-          $requirement .= ' ' . $this->t('Alternatively, <a href=":driver">install the MariaDB 10.1 driver for Drupal 9</a> for now.', [':driver' => 'https://www.drupal.org/project/mysql56']);
-        }
-        else {
-          $status = FALSE;
-          $class = 'known-error';
-          $requirement .= ' ' . $this->t('Once updated to at least 10.1, you can also <a href=":driver">install the MariaDB 10.1 driver for Drupal 9</a> for now.', [':driver' => 'https://www.drupal.org/project/mysql56']);
-        }
+      $database_type_full_name = 'MySQL or Percona Server';
+      $requirement = $this->t('When using MySQL/Percona, minimum version is 5.7.8');
+      if (version_compare($version, '5.7.8') >= 0) {
+        $class = 'no-known-error';
+      }
+      elseif (version_compare($version, '5.6.0') >= 0) {
+        $class = 'known-warning';
+        $requirement .= ' ' . $this->t('Alternatively, <a href=":driver">install the MySQL 5.6 driver for Drupal 9</a> for now.', [':driver' => 'https://www.drupal.org/project/mysql56']);
       }
       else {
-        $database_type_full_name = 'MySQL or Percona Server';
-        $requirement = $this->t('When using MySQL/Percona, minimum version is 5.7.8');
-        if (version_compare($version, '5.7.8') >= 0) {
-          $class = 'no-known-error';
-        }
-        elseif (version_compare($version, '5.6.0') >= 0) {
-          $class = 'known-warning';
-          $requirement .= ' ' . $this->t('Alternatively, <a href=":driver">install the MySQL 5.6 driver for Drupal 9</a> for now.', [':driver' => 'https://www.drupal.org/project/mysql56']);
-        }
-        else {
-          $status = FALSE;
-          $class = 'known-error';
-          $requirement .= ' ' . $this->t('Once updated to at least 5.6, you can also <a href=":driver">install the MySQL 5.6 driver for Drupal 9</a> for now.', [':driver' => 'https://www.drupal.org/project/mysql56']);
-        }
+        $status = FALSE;
+        $class = 'known-error';
+        $requirement .= ' ' . $this->t('Once updated to at least 5.6, you can also <a href=":driver">install the MySQL 5.6 driver for Drupal 9</a> for now.', [':driver' => 'https://www.drupal.org/project/mysql56']);
+      }
+    }
+    elseif ($database_type == 'mariadb') {
+      $database_type_full_name = 'MariaDB';
+      $requirement = $this->t('When using MariaDB, minimum version is 10.3.7');
+      if (version_compare($version, '10.3.7') >= 0) {
+        $class = 'no-known-error';
+      }
+      elseif (version_compare($version, '10.1.0') >= 0) {
+        $class = 'known-warning';
+        $requirement .= ' ' . $this->t('Alternatively, <a href=":driver">install the MariaDB 10.1 driver for Drupal 9</a> for now.', [':driver' => 'https://www.drupal.org/project/mysql56']);
+      }
+      else {
+        $status = FALSE;
+        $class = 'known-error';
+        $requirement .= ' ' . $this->t('Once updated to at least 10.1, you can also <a href=":driver">install the MariaDB 10.1 driver for Drupal 9</a> for now.', [':driver' => 'https://www.drupal.org/project/mysql56']);
       }
     }
     elseif ($database_type == 'pgsql') {

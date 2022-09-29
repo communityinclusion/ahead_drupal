@@ -26,7 +26,7 @@ class CsvParserTest extends FeedsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->setUpBodyField();
   }

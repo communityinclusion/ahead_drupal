@@ -4,7 +4,7 @@ namespace Drupal\Tests\feeds\Unit\Event;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Tests\feeds\Unit\FeedsUnitTestCase;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * @coversDefaultClass \Drupal\feeds\Event\EventDispatcherTrait

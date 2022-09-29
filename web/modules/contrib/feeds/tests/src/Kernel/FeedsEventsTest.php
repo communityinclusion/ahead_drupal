@@ -46,7 +46,7 @@ class FeedsEventsTest extends FeedsKernelTestBase {
     // Sort the positions and ensure they remain in the same order.
     $sorted = $positions;
     sort($sorted);
-    $this->assertTrue($sorted == $positions, 'The event subscriber messages appear in the correct order.');
+    $this->assertEquals($positions, $sorted, 'The event subscriber messages appear in the correct order.');
   }
 
   /**
@@ -152,22 +152,22 @@ class FeedsEventsTest extends FeedsKernelTestBase {
 
     $this->assertEventSubscriberMessageOrder([
       // Import starts with fetching.
-      FeedsSubscriber::class . '::onInitImport called',
+      FeedsSubscriber::class . '::onInitImport(fetch) called',
       FeedsSubscriber::class . '::preFetch called',
       FeedsSubscriber::class . '::postFetch called',
       // Second stage is parsing.
-      FeedsSubscriber::class . '::onInitImport called',
+      FeedsSubscriber::class . '::onInitImport(parse) called',
       FeedsSubscriber::class . '::preParse called',
       FeedsSubscriber::class . '::postParse called',
       // Third stage is processing, process events occur per item.
-      FeedsSubscriber::class . '::onInitImport called',
+      FeedsSubscriber::class . '::onInitImport(process) called',
       FeedsSubscriber::class . '::preProcess called',
       FeedsSubscriber::class . '::prevalidate called',
       FeedsSubscriber::class . '::preSave called',
       FeedsSubscriber::class . '::postSave called',
       FeedsSubscriber::class . '::postProcess called',
       // Second item being processed.
-      FeedsSubscriber::class . '::onInitImport called',
+      FeedsSubscriber::class . '::onInitImport(process) called',
       FeedsSubscriber::class . '::preProcess called',
       FeedsSubscriber::class . '::prevalidate called',
       FeedsSubscriber::class . '::preSave called',
@@ -216,9 +216,9 @@ class FeedsEventsTest extends FeedsKernelTestBase {
     batch_process();
 
     $this->assertEventSubscriberMessageOrder([
-      FeedsSubscriber::class . '::onInitExpire called',
+      FeedsSubscriber::class . '::onInitExpire() called',
       FeedsSubscriber::class . '::onExpire called',
-      FeedsSubscriber::class . '::onInitExpire called',
+      FeedsSubscriber::class . '::onInitExpire() called',
       FeedsSubscriber::class . '::onExpire called',
     ]);
   }
@@ -245,7 +245,7 @@ class FeedsEventsTest extends FeedsKernelTestBase {
     batch_process();
 
     $this->assertEventSubscriberMessageOrder([
-      FeedsSubscriber::class . '::onInitClear called',
+      FeedsSubscriber::class . '::onInitClear() called',
       FeedsSubscriber::class . '::onClear called',
     ]);
   }

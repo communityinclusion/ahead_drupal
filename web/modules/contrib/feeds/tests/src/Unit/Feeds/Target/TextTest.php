@@ -34,7 +34,7 @@ class TextTest extends FieldTargetTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->filter = $this->prophesize(FilterFormatInterface::class);

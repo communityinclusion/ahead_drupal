@@ -113,6 +113,13 @@ final class DeprecationAnalyzer {
   protected $extensionMetadataDeprecationAnalyzer;
 
   /**
+   * The CSS deprecation analyzer.
+   *
+   * @var \Drupal\upgrade_status\CSSDeprecationAnalyzer
+   */
+  protected $CSSDeprecationAnalyzer;
+
+  /**
    * The time service.
    *
    * @var \Drupal\Component\Datetime\TimeInterface
@@ -154,6 +161,8 @@ final class DeprecationAnalyzer {
    *   The route deprecation analyzer.
    * @param \Drupal\upgrade_status\ExtensionMetadataDeprecationAnalyzer $extension_metadata_analyzer
    *   The extension metadata analyzer.
+   * @param \Drupal\upgrade_status\CSSDeprecationAnalyzer $css_deprecation_analyzer
+   *   The CSS deprecation analyzer.
    * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time service.
    */
@@ -167,6 +176,7 @@ final class DeprecationAnalyzer {
     ThemeFunctionDeprecationAnalyzer $theme_function_deprecation_analyzer,
     RouteDeprecationAnalyzer $route_deprecation_analyzer,
     ExtensionMetadataDeprecationAnalyzer $extension_metadata_analyzer,
+    CSSDeprecationAnalyzer $css_deprecation_analyzer,
     TimeInterface $time
   ) {
     $this->scanResultStorage = $key_value_factory->get('upgrade_status_scan_results');
@@ -178,6 +188,7 @@ final class DeprecationAnalyzer {
     $this->themeFunctionDeprecationAnalyzer = $theme_function_deprecation_analyzer;
     $this->routeDeprecationAnalyzer = $route_deprecation_analyzer;
     $this->extensionMetadataDeprecationAnalyzer = $extension_metadata_analyzer;
+    $this->CSSDeprecationAnalyzer = $css_deprecation_analyzer;
     $this->time = $time;
   }
 
@@ -323,11 +334,13 @@ final class DeprecationAnalyzer {
    *
    * @param \Drupal\Core\Extension\Extension $extension
    *   The extension to analyze.
+   * @param array $options
+   *   Options for the analysis.
    *
    * @return null
    *   Errors are logged to the logger, data is stored to keyvalue storage.
    */
-  public function analyze(Extension $extension) {
+  public function analyze(Extension $extension, array $options = []) {
     try {
       $this->initEnvironment();
     }
@@ -343,14 +356,15 @@ final class DeprecationAnalyzer {
     $project_dir = DRUPAL_ROOT . '/' . $extension->getPath();
     $this->logger->notice('Processing %path.', ['%path' => $project_dir]);
 
+    $memory_limit = $options['phpstan-memory-limit'] ?? '1500M';
     $command = [
       $this->phpPath,
       $this->binPath . '/phpstan',
       'analyse',
-      '--memory-limit=-1',
+      '--memory-limit=' . $memory_limit,
       '--error-format=json',
       '--configuration=' . $this->phpstanNeonPath,
-      $project_dir,
+      $project_dir
     ];
 
     $process = new Process($command, DRUPAL_ROOT, NULL, NULL, NULL);
@@ -397,9 +411,15 @@ final class DeprecationAnalyzer {
       $this->twigDeprecationAnalyzer->analyze($extension),
       $this->libraryDeprecationAnalyzer->analyze($extension),
       $this->themeFunctionDeprecationAnalyzer->analyze($extension),
-      (projectCollector::getDrupalCoreMajorVersion() > 8) ? $this->routeDeprecationAnalyzer->analyze($extension) : [],
-      $metadataDeprecations,
+      $metadataDeprecations
     );
+    if (projectCollector::getDrupalCoreMajorVersion() > 8) {
+      $more_deprecations = array_merge($more_deprecations,
+        $this->routeDeprecationAnalyzer->analyze($extension),
+        $this->CSSDeprecationAnalyzer->analyze($extension)
+      );
+    }
+
     foreach ($more_deprecations as $one_deprecation) {
       $result['data']['files'][$one_deprecation->getFile()]['messages'][] = [
         'message' => $one_deprecation->getMessage(),
@@ -517,6 +537,14 @@ final class DeprecationAnalyzer {
         throw new \Exception('Vendor source files were not found. You may need to configure a vendor-dir in composer.json. See https://getcomposer.org/doc/06-config.md#vendor-dir. Missing ' . $extension_neon . ' and ' . $rules_neon . '.');
       }
       $config .= "\nincludes:\n\t- '" . $extension_neon . "'\n\t- '" . $rules_neon . "'\n";
+
+      // phpstan-drupal 1.1.16 introduced a new rules.neon file, include it if
+      // it exists. phpstan-drupal 1.1.4 and earlier are the only versions that
+      // still support PHP 7.3 and earlier, and this file does not exist there.
+      $drupal_rules_neon = $this->vendorPath . '/mglaman/phpstan-drupal/rules.neon';
+      if (file_exists($drupal_rules_neon)) {
+        $config .= "\t- '" . $drupal_rules_neon . "'\n";
+      }
     }
 
     $success = file_put_contents($this->phpstanNeonPath, $config);
@@ -757,6 +785,11 @@ final class DeprecationAnalyzer {
       'Call to deprecated function file_move(). Deprecated in drupal:9.3.0 and is removed from drupal:10.0.0. Use Drupal\file\FileRepositoryInterface::move() instead.',
       'Call to deprecated function file_save_data(). Deprecated in drupal:9.3.0 and is removed from drupal:10.0.0. Use Drupal\file\FileRepositoryInterface::writeData() instead.',
 
+      // 0.12.3 (0.12.2 has no rule additions.)
+      'Call to deprecated function user_password(). Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\Core\Password\PasswordGeneratorInterface::generate() instead.',
+
+      // 0.12.4
+      'Call to deprecated function file_build_uri(). Deprecated in drupal:9.3.0 and is removed from drupal:10.0.0 without replacement.',
     ];
     return
       in_array($string, $rector_covered) ||

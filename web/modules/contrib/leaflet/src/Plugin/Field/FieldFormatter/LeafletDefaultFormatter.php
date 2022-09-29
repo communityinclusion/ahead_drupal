@@ -387,22 +387,22 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
             break;
 
           default:
+            // Apply Token Replacements to iconUrl & shadowUrl.
             if (!empty($settings['icon']['iconUrl'])) {
               $feature['icon']['iconUrl'] = str_replace(["\n", "\r"], "", $this->token->replace($settings['icon']['iconUrl'], $tokens));
+              // Generate correct Absolute iconUrl & shadowUrl,
+              // if not external.
               if (!empty($feature['icon']['iconUrl'])) {
-                // Generate Absolute iconUrl , if not external.
-                $feature['icon']['iconUrl'] = $this->leafletService->pathToAbsolute($feature['icon']['iconUrl']);
-                // Set the Feature IconSize to the IconUrl Image sizes
-                // (if empty).
+                $feature['icon']['iconUrl'] = $this->leafletService->generateAbsoluteString($feature['icon']['iconUrl']);
               }
             }
             if (!empty($settings['icon']['shadowUrl'])) {
               $feature['icon']['shadowUrl'] = str_replace(["\n", "\r"], "", $this->token->replace($settings['icon']['shadowUrl'], $tokens));
               if (!empty($feature['icon']['shadowUrl'])) {
-                // Generate Absolute shadowUrl, if not external.
-                $feature['icon']['shadowUrl'] = $this->leafletService->pathToAbsolute($feature['icon']['shadowUrl']);
+                $feature['icon']['shadowUrl'] = $this->leafletService->generateAbsoluteString($feature['icon']['shadowUrl']);
               }
             }
+
             // Set the Feature IconSize and ShadowSize to the IconUrl or
             // ShadowUrl Image sizes (if empty or invalid).
             $this->leafletService->setFeatureIconSizesIfEmptyOrInvalid($feature);

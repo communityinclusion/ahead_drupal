@@ -349,7 +349,7 @@ trait LeafletSettingsElementsTrait {
   protected function generateIconFormElement(array $icon_options) {
     $default_settings = $this::getDefaultSettings();
     $token_replacement_disclaimer = $this->t('<b>Note: </b> Using <strong>Replacement Patterns</strong> it is possible to dynamically define the Marker Icon output, with the composition of Marker Icon paths including entity properties or fields values.');
-    $icon_url_description = $this->t('Can be an absolute or relative URL. <b>If left empty the default Leaflet Marker will be used.</b><br>@token_replacement_disclaimer', [
+    $icon_url_description = $this->t('Can be an absolute or relative URL (as Drupal root folder relative paths <strong>without the leading slash</strong>) <br><b>If left empty the default Leaflet Marker will be used.</b><br>@token_replacement_disclaimer', [
       '@token_replacement_disclaimer' => $token_replacement_disclaimer,
     ]);
 

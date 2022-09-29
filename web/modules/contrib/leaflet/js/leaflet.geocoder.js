@@ -62,11 +62,14 @@
       delay: geocoder_settings.delay || 800,
       // This bit uses the geocoder to fetch address values.
       source: function (request, response) {
+        let thisElement = this.element;
+        thisElement.addClass('ui-autocomplete-loading');
         // Execute the geocoder.
         $.when(Drupal.Leaflet.prototype.geocode(request.term, providers, options).then(
           // On Resolve/Success.
           function (results) {
             response($.map(results, function (item) {
+              thisElement.removeClass('ui-autocomplete-loading');
               return {
                 // the value property is needed to be passed to the select.
                 value: item.formatted_address,
@@ -97,7 +100,7 @@
             .openOn(map);
         }
       }
-    });
+    }).addClass('form-autocomplete');;
   }
 
 })(jQuery, Drupal, drupalSettings);

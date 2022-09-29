@@ -25,7 +25,7 @@ class MultiFeedTest extends FeedsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Set up an event dispatcher to check the number of created and/or updated

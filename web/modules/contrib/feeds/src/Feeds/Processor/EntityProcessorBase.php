@@ -234,6 +234,12 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       $feeds_item = $entity->get('feeds_item')->getItemByFeed($feed, TRUE);
       $feeds_item->hash = $hash;
 
+      // Set new revision if needed.
+      if ($this->configuration['revision']) {
+        $entity->setNewRevision(TRUE);
+        $entity->setRevisionCreationTime($this->dateTime->getRequestTime());
+      }
+
       // Set field values.
       $this->map($feed, $entity, $item);
 
@@ -748,6 +754,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       'skip_hash_check' => FALSE,
       'values' => [],
       'authorize' => $this->entityType->entityClassImplements('Drupal\user\EntityOwnerInterface'),
+      'revision' => FALSE,
       'expire' => static::EXPIRE_NEVER,
       'owner_id' => 0,
       'owner_feed_author' => 0,

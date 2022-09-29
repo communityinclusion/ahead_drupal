@@ -22,7 +22,7 @@ class UserRoleTest extends ConfigEntityReferenceTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->transliteration->transliterate('Bar', LanguageInterface::LANGCODE_DEFAULT, '_')

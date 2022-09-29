@@ -12,7 +12,7 @@ class FeedsItemImportedFormatterTest extends FeedsItemFormatterTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Set display mode for feeds_item to feeds_item_imported on article content

@@ -75,13 +75,6 @@ class MemcacheBackend implements CacheBackendInterface {
   protected $timestampInvalidator;
 
   /**
-   * The DateTime Service.
-   *
-   * @var \Drupal\Component\Datetime\TimeInterface
-   */
-  protected $time;
-
-  /**
    * Constructs a MemcacheBackend object.
    *
    * @param string $bin
@@ -93,12 +86,11 @@ class MemcacheBackend implements CacheBackendInterface {
    * @param \Drupal\memcache\Invalidator\TimestampInvalidatorInterface $timestamp_invalidator
    *   The timestamp invalidation provider.
    */
-  public function __construct($bin, DrupalMemcacheInterface $memcache, CacheTagsChecksumInterface $checksum_provider, TimestampInvalidatorInterface $timestamp_invalidator, $time_service = NULL) {
+  public function __construct($bin, DrupalMemcacheInterface $memcache, CacheTagsChecksumInterface $checksum_provider, TimestampInvalidatorInterface $timestamp_invalidator) {
     $this->bin = $bin;
     $this->memcache = $memcache;
     $this->checksumProvider = $checksum_provider;
     $this->timestampInvalidator = $timestamp_invalidator;
-    $this->time = $time_service ?? \Drupal::time();
 
     $this->ensureBinDeletionTimeIsSet();
   }
@@ -122,6 +114,18 @@ class MemcacheBackend implements CacheBackendInterface {
     catch (ContainerNotInitializedException $e) {
       return false;
     }
+  }
+
+  /**
+   * Returns the timestamp for the current request.
+   *
+   * @return int
+   *   A Unix timestamp.
+   *
+   * @see Drupal\Component\Datetime\Time::getRequestTime()
+   */
+  public static function getRequestTime() {
+    return (int) $_SERVER['REQUEST_TIME'] ?? time();
   }
 
   /**
@@ -192,7 +196,7 @@ class MemcacheBackend implements CacheBackendInterface {
     $cache->valid = TRUE;
 
     // Items that have expired are invalid.
-    if ($cache->expire != CacheBackendInterface::CACHE_PERMANENT && $cache->expire <= $this->time->getRequestTime()) {
+    if ($cache->expire != CacheBackendInterface::CACHE_PERMANENT && $cache->expire <= static::getRequestTime()) {
       $cache->valid = FALSE;
     }
 
@@ -374,7 +378,7 @@ class MemcacheBackend implements CacheBackendInterface {
   public function invalidateMultiple(array $cids) {
     foreach ($cids as $cid) {
       if ($item = $this->get($cid)) {
-        $item->expire = $this->time->getRequestTime() - 1;
+        $item->expire = static::getRequestTime() - 1;
         $this->memcache->set($cid, $item);
       }
     }

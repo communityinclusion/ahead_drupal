@@ -101,10 +101,12 @@ function feeds_cron() {
     }
   }
 
-  // Delete queued timestamp after 12 hours assuming the update has failed.
+  // Delete queued timestamp after some time assuming the update has failed.
+  // By default this is 12 hours, equal to the timeout set for locking a feed.
+  $timeout = \Drupal::config('feeds.settings')->get('lock_timeout') ?? 3600 * 12;
   $ids = \Drupal::entityQuery('feeds_feed')
     ->accessCheck(FALSE)
-    ->condition('queued', \Drupal::time()->getRequestTime() - (3600 * 12), '<')
+    ->condition('queued', \Drupal::time()->getRequestTime() - $timeout, '<')
     ->condition('queued', 0, '<>')
     ->execute();
 

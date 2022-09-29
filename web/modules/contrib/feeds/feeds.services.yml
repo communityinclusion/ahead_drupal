@@ -45,6 +45,11 @@ services:
   feeds.entity_finder:
     class: Drupal\feeds\EntityFinder
     arguments: ['@entity_type.manager', '@entity.repository']
+  feeds.lock:
+    class: Drupal\feeds\Lock\FeedsLockBackend
+    arguments: ['@database', '@entity_type.manager', '@config.factory']
+    tags:
+      - { name: backend_overridable }
 
   feeds_plugin_form_factory:
     class: Drupal\feeds\Plugin\PluginFormFactory
