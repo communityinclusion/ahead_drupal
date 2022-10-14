@@ -47,7 +47,7 @@
         "cweagans/composer-patches": "^1.6.5",
         "d3/d3": "3.5.*",
         "drupal/address": "^1.4",
-        "drupal/admin_toolbar": "^3.1",
+        "drupal/admin_toolbar": "^3.2",
         "drupal/adminimal_admin_toolbar": "^1.9",
         "drupal/adminimal_theme": "^1.4",
         "drupal/auto_entitylabel": "^3.0",
