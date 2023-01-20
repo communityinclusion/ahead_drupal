@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\file\FileRepositoryInterface;
 use Drupal\Component\Utility\Unicode;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -37,6 +38,13 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
   protected $config;
 
   /**
+   * The file repository.
+   *
+   * @var \Drupal\file\FileRepositoryInterface
+   */
+  protected $fileRepository;
+
+  /**
    * Constructs ImporterBase object.
    *
    * @param array $configuration
@@ -49,11 +57,14 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
    *   The entity type manager service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config
    *   The config service.
+   * @param \Drupal\file\FileRepositoryInterface $file_repository
+   *   The file repository service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config, FileRepositoryInterface $file_repository) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->config = $config;
+    $this->fileRepository = $file_repository;
   }
 
   /**
@@ -65,7 +76,8 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('file.repository'),
     );
   }
 
@@ -150,7 +162,7 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
 
     foreach ($content as $key => $item) {
       if (is_string($item) && file_exists($item)) {
-        $created = file_save_data(file_get_contents($item), $this->config->get('system.file')->get('default_scheme') . '://' . basename($item), FileSystemInterface::EXISTS_REPLACE);
+        $created = $this->fileRepository->writeData(file_get_contents($item), $this->config->get('system.file')->get('default_scheme') . '://' . basename($item), FileSystemInterface::EXISTS_REPLACE);
         $content[$key] = $created->id();
       }
     }

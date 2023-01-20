@@ -88,7 +88,9 @@ class ItemListController extends ControllerBase {
       return $build;
     }
 
-    $entity_ids = $this->entityTypeManager()->getStorage($processor->entityType())->getQuery()
+    $entity_ids = $this->entityTypeManager()->getStorage($processor->entityType())
+      ->getQuery()
+      ->accessCheck(TRUE)
       ->condition('feeds_item', [$feeds_feed->id()], 'IN')
       ->pager(50)
       ->sort('feeds_item.imported', 'DESC')

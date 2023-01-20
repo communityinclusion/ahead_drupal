@@ -285,10 +285,13 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
 
     // Sets/consider possibly existing previous Zoom settings.
     $this->setExistingZoomSettings();
+
+    // Determine the formatter default and input settings.
+    $default_settings = self::defaultSettings();
     $settings = $this->getSettings();
 
-    // Always render the map, even if we do not have any data.
-    $map = leaflet_map_get_info($settings['leaflet_map']);
+    // Get the base Map info.
+    $map = leaflet_map_get_info($settings['leaflet_map']) ?? $default_settings['leaflet_map'];
 
     // Add a specific map id.
     $map['id'] = Html::getUniqueId("leaflet_map_{$entity_type}_{$bundle}_{$entity_id}_{$field->getName()}");

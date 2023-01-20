@@ -173,6 +173,9 @@ class EntityReferenceTest extends FeedsKernelTestBase {
     $this->assertEquals('Page 1', $node->title->value);
     $node2 = $this->reloadEntity($node2);
     $this->assertEquals('Page 2', $node2->title->value);
+
+    // Clear the logged messages so no failure is reported on tear down.
+    $this->logger->clearMessages();
   }
 
   /**
@@ -324,6 +327,9 @@ class EntityReferenceTest extends FeedsKernelTestBase {
       $node = $this->reloadEntity($nodes[$i]);
       $this->assertEquals('Article ' . $i, $node->title->value);
     }
+
+    // Clear the logged messages so no failure is reported on tear down.
+    $this->logger->clearMessages();
   }
 
   /**
@@ -432,6 +438,9 @@ class EntityReferenceTest extends FeedsKernelTestBase {
       $term = $this->reloadEntity($terms[$i]);
       $this->assertEquals('Description of term ' . $i, $term->description->value);
     }
+
+    // Clear the logged messages so no failure is reported on tear down.
+    $this->logger->clearMessages();
   }
 
   /**
@@ -510,6 +519,9 @@ class EntityReferenceTest extends FeedsKernelTestBase {
       $node = Node::load($nid);
       $this->assertEquals($expected_value, $node->field_event->getValue());
     }
+
+    // Clear the logged messages so no failure is reported on tear down.
+    $this->logger->clearMessages();
   }
 
 }

@@ -337,7 +337,7 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
    *   The ID of the new entity or false if the given label is empty.
    */
   protected function createEntity($label) {
-    if (!strlen(trim($label))) {
+    if (!is_string($label) || !strlen(trim($label))) {
       return FALSE;
     }
 
@@ -394,7 +394,7 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
     $delta = 0;
     foreach ($form_state->getValues() as $key => $value) {
       if (strpos($key, 'target-settings-') === 0) {
-        list(, , $delta) = explode('-', $key);
+        [, , $delta] = explode('-', $key);
         break;
       }
     }

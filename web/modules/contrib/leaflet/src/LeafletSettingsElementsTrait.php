@@ -169,14 +169,6 @@ trait LeafletSettingsElementsTrait {
       ],
     ];
 
-    $elements['disable_wheel'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Disable zoom using mouse wheel'),
-      '#description' => $this->t("If enabled, the mouse wheel won't change the zoom level of the map."),
-      '#default_value' => $settings['disable_wheel'],
-      '#return_value' => 1,
-    ];
-
     $elements['gesture_handling'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Gesture Handling'),
@@ -188,6 +180,19 @@ trait LeafletSettingsElementsTrait {
       ]),
       '#default_value' => $settings['gesture_handling'],
       '#return_value' => 1,
+    ];
+
+    $elements['disable_wheel'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Disable zoom using mouse wheel'),
+      '#description' => $this->t("If enabled, the mouse wheel won't change the zoom level of the map."),
+      '#default_value' => $settings['disable_wheel'],
+      '#return_value' => 1,
+      '#states' => [
+        'invisible' => [
+          ':input[name="style_options[gesture_handling]"]' => ['checked' => TRUE],
+        ],
+      ],
     ];
 
   }

@@ -59,8 +59,10 @@ class Trim extends TamperBase {
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
-    $this->setConfiguration([self::SETTING_CHARACTER => $form_state->getValue(self::SETTING_CHARACTER)]);
-    $this->setConfiguration([self::SETTING_SIDE => $form_state->getValue(self::SETTING_SIDE)]);
+    $this->setConfiguration([
+      self::SETTING_CHARACTER => $form_state->getValue(self::SETTING_CHARACTER),
+      self::SETTING_SIDE => $form_state->getValue(self::SETTING_SIDE),
+    ]);
   }
 
   /**
@@ -81,10 +83,6 @@ class Trim extends TamperBase {
    * {@inheritdoc}
    */
   public function tamper($data, TamperableItemInterface $item = NULL) {
-    //Hack PF Found this here: https://www.drupal.org/project/feeds_tamper/issues/2978476#comment-13082489
-    if ($data == NULL) {
-      return FALSE;
-    }
     if (!is_string($data)) {
       throw new TamperException('Input should be a string.');
     }

@@ -32,7 +32,7 @@ class EventDispatcherTraitTest extends FeedsUnitTestCase {
     $event = new Event();
     $dispatcher->expects($this->once())
       ->method('dispatch')
-      ->with('test_event', $event);
+      ->with($event, 'test_event');
     $method = $this->getMethod(get_class($mock), 'dispatchEvent');
     $method->invokeArgs($mock, ['test_event', $event]);
   }

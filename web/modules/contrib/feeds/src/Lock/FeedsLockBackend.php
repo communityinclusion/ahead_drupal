@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Lock\PersistentDatabaseLockBackend;
+use Psr\Log\LoggerInterface;
 
 /**
  * Lock backend for Feeds imports.
@@ -30,6 +31,13 @@ class FeedsLockBackend extends PersistentDatabaseLockBackend {
   protected $timeout;
 
   /**
+   * A logger instance.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
    * Constructs a new FeedsLockBackend.
    *
    * @param \Drupal\Core\Database\Connection $database
@@ -38,11 +46,14 @@ class FeedsLockBackend extends PersistentDatabaseLockBackend {
    *   The entity type manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   A logger instance.
    */
-  public function __construct(Connection $database, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory) {
+  public function __construct(Connection $database, EntityTypeManagerInterface $entity_type_manager, ConfigFactoryInterface $config_factory, LoggerInterface $logger) {
     parent::__construct($database);
     $this->feedStorage = $entity_type_manager->getStorage('feeds_feed');
     $this->timeout = $config_factory->get('feeds.settings')->get('lock_timeout');
+    $this->logger = $logger;
   }
 
   /**
@@ -114,6 +125,13 @@ class FeedsLockBackend extends PersistentDatabaseLockBackend {
     if (!$this->ensureTableExists()) {
       throw new \Exception('The semaphore table could not be created.');
     }
+
+    // Imports running for a long time could potentially indicate issues, though
+    // it can also happen that the import is very large and just takes long to
+    // complete. So only log a notice of this and not a warning.
+    $this->logger->notice('Lock @name got extended.', [
+      '@name' => $name,
+    ]);
 
     $this->locks[$name] = TRUE;
     return $this->acquire($name, $timeout);

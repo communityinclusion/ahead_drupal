@@ -35,7 +35,7 @@ trait EventDispatcherTrait {
    *   The invoked event.
    */
   protected function dispatchEvent($event_name, Event $event = NULL) {
-    return $this->getEventDispatcher()->dispatch($event_name, $event);
+    return $this->getEventDispatcher()->dispatch($event, $event_name);
   }
 
   /**
@@ -55,7 +55,7 @@ trait EventDispatcherTrait {
    * Sets the event dispatcher service to use.
    *
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
-   *   The string translation service.
+   *   The event dispatcher service.
    */
   public function setEventDispatcher(EventDispatcherInterface $event_dispatcher) {
     $this->_eventDispatcher = $event_dispatcher;

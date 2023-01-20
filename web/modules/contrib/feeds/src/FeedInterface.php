@@ -174,6 +174,11 @@ interface FeedInterface extends ContentEntityInterface, EntityChangedInterface, 
   public function hasQueueTasks(): bool;
 
   /**
+   * Removes all queue tasks for the current feed.
+   */
+  public function clearQueueTasks(): void;
+
+  /**
    * Checks if there was recent import activity.
    *
    * @param int $seconds

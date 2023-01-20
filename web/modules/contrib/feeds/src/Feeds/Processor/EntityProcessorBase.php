@@ -33,6 +33,7 @@ use Drupal\feeds\Plugin\Type\Processor\EntityProcessorInterface;
 use Drupal\feeds\Plugin\Type\Target\TargetInterface;
 use Drupal\feeds\Plugin\Type\Target\TranslatableTargetInterface;
 use Drupal\feeds\StateInterface;
+use Drupal\feeds\StateType;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\user\EntityOwnerInterface;
@@ -205,7 +206,11 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
 
     // Bulk load existing entities to save on db queries.
     if (($skip_existing && $existing_entity_id) || (!$existing_entity_id && $skip_new)) {
-      $state->skipped++;
+      $state->report(StateType::SKIP, 'Skipped because the entity already exists.', [
+        'feed' => $feed,
+        'item' => $item,
+        'entity_label' => [$existing_entity_id, 'id'],
+      ]);
       return;
     }
 
@@ -220,7 +225,12 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     // Do not proceed if the item exists, has not changed, and we're not
     // forcing the update.
     if ($existing_entity_id && !$changed && !$this->configuration['skip_hash_check']) {
-      $state->skipped++;
+      $state->report(StateType::SKIP, 'Skipped because the source data has not changed.', [
+        'feed' => $feed,
+        'item' => $item,
+        'entity' => $entity,
+        'entity_label' => $this->identifyEntity($entity, $feed),
+      ]);
       return;
     }
 
@@ -262,19 +272,40 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       $feed->dispatchEntityEvent(FeedsEvents::PROCESS_ENTITY_POSTSAVE, $entity, $item);
 
       // Track progress.
-      $existing_entity_id ? $state->updated++ : $state->created++;
+      $operation = $existing_entity_id ? StateType::UPDATE : StateType::CREATE;
+      $state->report($operation, '', [
+        'feed' => $feed,
+        'item' => $item,
+        'entity' => $entity,
+        'entity_label' => $this->identifyEntity($entity, $feed),
+      ]);
     }
     catch (EmptyFeedException $e) {
       // Not an error.
-      $state->skipped++;
+      $state->report(StateType::SKIP, 'Skipped because a value appeared to be empty.', [
+        'feed' => $feed,
+        'item' => $item,
+        'entity' => $entity,
+        'entity_label' => $this->identifyEntity($entity, $feed),
+      ]);
     }
     // Something bad happened, log it.
     catch (ValidationException $e) {
-      $state->failed++;
+      $state->report(StateType::FAIL, $e->getFormattedMessage(), [
+        'feed' => $feed,
+        'item' => $item,
+        'entity' => $entity,
+        'entity_label' => $this->identifyEntity($entity, $feed),
+      ]);
       $state->setMessage($e->getFormattedMessage(), 'warning');
     }
     catch (\Exception $e) {
-      $state->failed++;
+      $state->report(StateType::FAIL, $e->getMessage(), [
+        'feed' => $feed,
+        'item' => $item,
+        'entity' => $entity,
+        'entity_label' => $this->identifyEntity($entity, $feed),
+      ]);
       $state->setMessage($e->getMessage(), 'warning');
     }
   }
@@ -302,6 +333,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     $ids = $this->entityTypeManager
       ->getStorage($this->entityType())
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('feeds_item.target_id', $feed->id())
       ->condition('feeds_item.hash', $this->getConfiguration('update_non_existent'), '<>')
       ->execute();
@@ -322,6 +354,9 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       return;
     }
 
+    $message = '';
+    $variables = [];
+
     switch ($update_non_existent) {
       case static::KEEP_NON_EXISTENT:
         // No action to take on this entity.
@@ -329,14 +364,16 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
 
       case static::DELETE_NON_EXISTENT:
         $entity->delete();
+        $message = 'Deleted because the item was no longer in the source.';
         break;
 
       default:
         try {
           // Apply action on entity.
-          $this->actionManager
-            ->createInstance($update_non_existent)
-            ->execute($entity);
+          $action = $this->actionManager->createInstance($update_non_existent);
+          $action->execute($entity);
+          $message = 'Applied action @action because the item was no longer in the source.';
+          $variables['@action'] = $action->getPluginDefinition()['label'];
         }
         catch (PluginNotFoundException $e) {
           $state->setMessage($this->t('Cleaning %entity failed because of non-existing action plugin %name.', [
@@ -350,17 +387,21 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     }
 
     // Check if the entity was deleted.
-    $entity = $this->storageController->load($entity->id());
+    $entity_reloaded = $this->storageController->load($entity->id());
 
     // If the entity was not deleted, update hash.
-    if (isset($entity->feeds_item)) {
-      $entity->get('feeds_item')->getItemByFeed($feed)->hash = $update_non_existent;
-      $this->storageController->save($entity);
+    if (isset($entity_reloaded->feeds_item)) {
+      $entity_reloaded->get('feeds_item')->getItemByFeed($feed)->hash = $update_non_existent;
+      $this->storageController->save($entity_reloaded);
     }
 
     // State progress.
-    $state->updated++;
-    $state->progress($state->total, $state->updated);
+    $state->report(StateType::CLEAN, $message, [
+      'feed' => $feed,
+      'entity' => $entity,
+      'entity_label' => $this->identifyEntity($entity, $feed),
+    ] + $variables);
+    $state->progress($state->total, $state->cleaned);
   }
 
   /**
@@ -371,6 +412,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     $query = $this->entityTypeManager
       ->getStorage($this->entityType())
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('feeds_item.target_id', $feed->id());
 
     // If there is no total, query it.
@@ -585,6 +627,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     if ($entity->id()) {
       $result = $this->storageController
         ->getQuery()
+        ->accessCheck(FALSE)
         ->condition($this->entityType->getKey('id'), $entity->id())
         ->execute();
       return !empty($result);
@@ -642,28 +685,43 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       '#items' => $errors,
     ];
 
-    // Compose error message. If available, use the entity label to indicate
-    // which item failed. Fallback to the GUID value (if available) or else
-    // no indication.
-    $label = (string) $entity->label();
-    $guid = (string) $entity->get('feeds_item')->getItemByFeed($feed)->guid;
-
+    $entity_details = $this->identifyEntity($entity, $feed);
     $messages = [];
     $args = [
       '@entity' => mb_strtolower($this->entityTypeLabel()),
-      '%label' => $label,
-      '%guid' => $guid,
+      '%label' => $entity_details['label'] ?? '',
+      '@id' => $entity_details['id'] ?? '',
       '@errors' => $this->renderer->renderRoot($element),
       ':url' => $this->url('entity.feeds_feed_type.mapping', ['feeds_feed_type' => $this->feedType->id()]),
     ];
-    if ($label || $label === '0') {
-      $messages[] = $this->t('The @entity %label failed to validate with the following errors: @errors', $args);
-    }
-    elseif ($guid || $guid === '0') {
-      $messages[] = $this->t('The @entity with GUID %guid failed to validate with the following errors: @errors', $args);
+
+    if (empty($entity_details['type'])) {
+      $messages[] = $this->t('An entity of type "@entity" failed to validate with the following errors: @errors', $args);
     }
     else {
-      $messages[] = $this->t('An entity of type "@entity" failed to validate with the following errors: @errors', $args);
+      switch ($entity_details['type']) {
+        case 'label':
+          if ($entity_details['id'] || $entity_details['id'] === '0') {
+            $messages[] = $this->t('The @entity %label (@id) failed to validate with the following errors: @errors', $args);
+          }
+          else {
+            $messages[] = $this->t('The @entity %label failed to validate with the following errors: @errors', $args);
+          }
+          break;
+
+        case 'guid':
+          if ($entity_details['id'] || $entity_details['id'] === '0') {
+            $messages[] = $this->t('The @entity with GUID %label (@id) failed to validate with the following errors: @errors', $args);
+          }
+          else {
+            $messages[] = $this->t('The @entity with GUID %label failed to validate with the following errors: @errors', $args);
+          }
+          break;
+
+        case 'id':
+          $messages[] = $this->t('The @entity with ID %label failed to validate with the following errors: @errors', $args);
+          break;
+      }
     }
     $messages[] = $this->t('Please check your <a href=":url">mappings</a>.', $args);
 
@@ -674,6 +732,62 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     $message = $this->renderer->renderRoot($message_element);
 
     throw new ValidationException($message);
+  }
+
+  /**
+   * Tries to identify the entity, even if it is new.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to identify.
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed that is importing the entity.
+   *
+   * @return array|null
+   *   An array with the following data (in this order):
+   *   - label (string): the label of the entity.
+   *   - type (string): the type of identification.
+   *   - id (int): the entity ID, if there is one.
+   *   Or null if the entity couldn't be identified.
+   */
+  protected function identifyEntity(EntityInterface $entity, FeedInterface $feed): ?array {
+    $identify_keys = [
+      'label',
+      'guid',
+      'id',
+    ];
+    foreach ($identify_keys as $key) {
+      switch ($key) {
+        case 'label':
+          $label = (string) $entity->label();
+          break;
+
+        case 'guid':
+          if ($entity->hasField('feeds_item')) {
+            $label = (string) $entity->get('feeds_item')->getItemByFeed($feed)->guid;
+          }
+          else {
+            $label = NULL;
+          }
+          break;
+
+        case 'id':
+          $label = (string) $entity->id();
+          break;
+      }
+      if ($label || $label === '0') {
+        // An identification method has worked. Break out of the loop.
+        break;
+      }
+    }
+
+    if ($label || $label === '0') {
+      return [
+        'label' => $label,
+        'type' => $key,
+        'id' => $entity->id(),
+      ];
+    }
+    return NULL;
   }
 
   /**
@@ -885,6 +999,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     return $this->entityTypeManager
       ->getStorage($this->entityType())
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('feeds_item.target_id', $feed->id())
       ->condition('feeds_item.imported', $expire_time, '<')
       ->execute();
@@ -905,6 +1020,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     return $this->entityTypeManager
       ->getStorage($this->entityType())
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('feeds_item.target_id', $feed->id())
       ->count()
       ->execute();
@@ -917,6 +1033,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     return $this->entityTypeManager
       ->getStorage($this->entityType())
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('feeds_item.target_id', $feed->id())
       ->execute();
   }
@@ -1059,6 +1176,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       $this->isLocked = (bool) $this->entityTypeManager
         ->getStorage('feeds_feed')
         ->getQuery()
+        ->accessCheck(FALSE)
         ->condition('type', $this->feedType->id())
         ->range(0, 1)
         ->execute();

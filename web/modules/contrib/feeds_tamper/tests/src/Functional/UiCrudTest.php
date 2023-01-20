@@ -33,7 +33,7 @@ class UiCrudTest extends FeedsTamperBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Add body field.
@@ -98,6 +98,38 @@ class UiCrudTest extends FeedsTamperBrowserTestBase {
   }
 
   /**
+   * Tests adding the Tamper plugin 'feeds_tamper_test'.
+   */
+  public function testAddTestPlugin() {
+    $this->drupalGet($this->url->toString() . '/add/content');
+
+    // Select plugin.
+    $edit = [
+      'tamper_id' => 'feeds_tamper_test',
+    ];
+    $this->submitForm($edit, 'Submit');
+
+    // Configure plugin.
+    $edit = [
+      'plugin_configuration[text]' => 'Foo Bar',
+    ];
+    $this->submitForm($edit, 'Submit');
+
+    // And assert that the tamper plugin was added.
+    $this->feedType = $this->reloadEntity($this->feedType);
+    $plugin_collection = $this->feedTypeTamperManager
+      ->getTamperMeta($this->feedType, TRUE)
+      ->getTampers();
+    $this->assertCount(1, $plugin_collection);
+
+    $tamper = $plugin_collection->getIterator()->current();
+    $this->assertEquals('feeds_tamper_test', $tamper->getPluginId());
+    $this->assertEquals('Foo Bar', $tamper->getSetting('text'));
+    $this->assertEquals(TRUE, $tamper->getSetting('enabled'));
+    $this->assertEquals(7.0, $tamper->getSetting('number'));
+  }
+
+  /**
    * Tests editing a Tamper plugin using the UI.
    */
   public function testEditTamperInstance() {
@@ -140,6 +172,51 @@ class UiCrudTest extends FeedsTamperBrowserTestBase {
     $this->assertEquals($uuid, $tamper->getSetting('uuid'));
     $this->assertEquals('ucfirst', $tamper->getSetting('operation'));
     $this->assertEquals('title', $tamper->getSetting('source'));
+  }
+
+  /**
+   * Tests editing the Tamper plugin 'feeds_tamper_test'.
+   */
+  public function testEditTestPlugin() {
+    // Programmatically add a tamper plugin instance.
+    $uuid = $this->feedTypeTamperManager
+      ->getTamperMeta($this->feedType)
+      ->addTamper([
+        'plugin' => 'feeds_tamper_test',
+        'text' => 'Hello Goodbye',
+        'label' => 'Tamper form test',
+        'source' => 'title',
+        'description' => 'Testing that validateConfigurationForm() and submitConfigurationForm() are called.',
+      ]);
+    $this->feedType->save();
+
+    // Go to the tamper listing.
+    $this->drupalGet($this->url);
+
+    // Click link for editing this tamper plugin.
+    $this->getSession()
+      ->getPage()
+      ->find('css', '#edit-title ul.dropbutton li:nth-child(1) a')
+      ->click();
+
+    // Configure plugin.
+    $edit = [
+      'plugin_configuration[text]' => 'Penny Lane',
+    ];
+    $this->submitForm($edit, 'Submit');
+
+    // And assert that the tamper plugin was added.
+    $this->feedType = $this->reloadEntity($this->feedType);
+    $plugin_collection = $this->feedTypeTamperManager
+      ->getTamperMeta($this->feedType, TRUE)
+      ->getTampers();
+    $this->assertCount(1, $plugin_collection);
+
+    $tamper = $plugin_collection->getIterator()->current();
+    $this->assertEquals('feeds_tamper_test', $tamper->getPluginId());
+    $this->assertEquals('Penny Lane', $tamper->getSetting('text'));
+    $this->assertEquals(TRUE, $tamper->getSetting('enabled'));
+    $this->assertEquals(10.0, $tamper->getSetting('number'));
   }
 
   /**

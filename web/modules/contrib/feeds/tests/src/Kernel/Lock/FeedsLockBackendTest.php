@@ -172,6 +172,33 @@ class FeedsLockBackendTest extends FeedsKernelTestBase {
 
     // Assert that the lock has been extended.
     $this->assertGreaterThanOrEqual($this->getRequestTime() + static::DEFAULT_LOCK_TIMEOUT, $this->getExpireTime($this->lockName));
+
+    // Clear the logged messages so no failure is reported on tear down.
+    $this->logger->clearMessages();
+  }
+
+  /**
+   * Tests releasing a lock when only queue tasks for other feeds exists.
+   *
+   * This should cover the case that hasQueueTasks() doesn't return TRUE if the
+   * feed in question doesn't have a queue task, but other feeds do.
+   */
+  public function testLockReleaseWhenQueueTasksExistForOtherFeeds() {
+    // Create queue tasks for other feeds.
+    for ($i = 2; $i < 100; $i++) {
+      $this->container->get('queue')
+        ->get('feeds_feed_refresh:' . $this->feed->bundle())
+        ->createItem([$i, FeedsExecutableInterface::BEGIN, []]);
+    }
+
+    // Create a lock for the feed, set expire time more than an hour in the
+    // past.
+    $this->lock->acquire($this->lockName, 3600);
+    $this->setExpireTime($this->lockName, $this->getRequestTime() - 3601);
+
+    // Assert that the lock gets released because for the feed in question
+    // no queue task exists.
+    $this->assertTrue($this->lock->lockMayBeAvailable($this->lockName));
   }
 
   /**
@@ -192,6 +219,9 @@ class FeedsLockBackendTest extends FeedsKernelTestBase {
 
     // Assert that the lock has been extended.
     $this->assertGreaterThanOrEqual($this->getRequestTime() + static::DEFAULT_LOCK_TIMEOUT, $this->getExpireTime($this->lockName));
+
+    // Clear the logged messages so no failure is reported on tear down.
+    $this->logger->clearMessages();
   }
 
   /**
@@ -225,6 +255,9 @@ class FeedsLockBackendTest extends FeedsKernelTestBase {
 
     // Assert that the lock has been extended.
     $this->assertGreaterThan($this->getRequestTime() + 1800, $this->getExpireTime($this->lockName));
+
+    // Clear the logged messages so no failure is reported on tear down.
+    $this->logger->clearMessages();
   }
 
   /**
@@ -236,6 +269,9 @@ class FeedsLockBackendTest extends FeedsKernelTestBase {
   public function testExtendNonExistingLock() {
     // Try to extend a non-existing lock.
     $this->assertFalse($this->lock->extendLock('feeds_feed:123', 1800));
+
+    // Clear the logged messages so no failure is reported on tear down.
+    $this->logger->clearMessages();
   }
 
 }

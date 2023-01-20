@@ -63,6 +63,13 @@ class LeafletService {
   protected $requestStack;
 
   /**
+   * Static cache for icon sizes.
+   *
+   * @var array
+   */
+  protected $iconSizes = [];
+
+  /**
    * Creates an absolute web-accessible URL string.
    *
    * @todo switch to this same method of the @file_url_generator Drupal Core
@@ -438,49 +445,68 @@ class LeafletService {
    *   The feature.
    */
   public function setFeatureIconSizesIfEmptyOrInvalid(array &$feature) {
-    $icon_url = !empty($feature["icon"]["iconUrl"]) ? $this->generateAbsoluteString((string) $feature["icon"]["iconUrl"]) : NULL;
+    $icon_url = $feature["icon"]["iconUrl"] ?? NULL;
     if (isset($icon_url) && isset($feature["icon"]["iconSize"])
       && (empty(intval($feature["icon"]["iconSize"]["x"])) && empty(intval($feature["icon"]["iconSize"]["y"])))
-      && (!empty($feature["icon"]["iconUrl"]) && $this->fileExists($icon_url))) {
+      && (!empty($feature["icon"]["iconUrl"]))) {
 
-      $file_parts = pathinfo($icon_url);
-      switch ($file_parts['extension']) {
-        case "svg":
-          if ($xml = simplexml_load_file($icon_url)) {
-            $attr = $xml->attributes();
-            $feature["icon"]["iconSize"]["x"] = $attr->width->__toString();
-            $feature["icon"]["iconSize"]["y"] = $attr->height->__toString();
-          }
-          break;
+      // Use the cached IconSize is present for this Icon Url.
+      if (isset($this->iconSizes[$feature["icon"]["iconUrl"]])) {
+        $feature["icon"]["iconSize"]["x"] = $this->iconSizes[$feature["icon"]["iconUrl"]]["x"];
+        $feature["icon"]["iconSize"]["y"] = $this->iconSizes[$feature["icon"]["iconUrl"]]["y"];
+      }
+      elseif ($this->fileExists($feature["icon"]["iconUrl"])) {
+        $file_parts = pathinfo($icon_url);
+        switch ($file_parts['extension']) {
+          case "svg":
+            if ($xml = simplexml_load_file($icon_url)) {
+              $attr = $xml->attributes();
+              $feature["icon"]["iconSize"]["x"] = $attr->width->__toString();
+              $feature["icon"]["iconSize"]["y"] = $attr->height->__toString();
+            }
+            break;
 
-        default:
-          if ($iconSize = getimagesize($icon_url)) {
-            $feature["icon"]["iconSize"]["x"] = $iconSize[0];
-            $feature["icon"]["iconSize"]["y"] = $iconSize[1];
-          }
+          default:
+            if ($iconSize = getimagesize($icon_url)) {
+              $feature["icon"]["iconSize"]["x"] = $iconSize[0];
+              $feature["icon"]["iconSize"]["y"] = $iconSize[1];
+            }
+        }
+        // Cache the IconSize, so we don't fetch the same icon multiple times.
+        $this->iconSizes[$feature["icon"]["iconUrl"]] = $feature["icon"]["iconSize"];
       }
     }
 
-    $shadow_url = !empty($feature["icon"]["shadowUrl"]) ? $this->generateAbsoluteString($feature["icon"]["shadowUrl"]) : NULL;
+    $shadow_url = $feature["icon"]["shadowUrl"] ?? NULL;
     if (isset($shadow_url) && isset($feature["icon"]["shadowSize"])
       && (empty(intval($feature["icon"]["shadowSize"]["x"])) && empty(intval($feature["icon"]["shadowSize"]["y"])))
-      && (!empty($feature["icon"]["shadowUrl"]) && $this->fileExists($shadow_url))) {
+      && (!empty($feature["icon"]["shadowUrl"]))) {
 
-      $file_parts = pathinfo($shadow_url);
-      switch ($file_parts['extension']) {
-        case "svg":
-          if ($xml = simplexml_load_file($shadow_url)) {
-            $attr = $xml->attributes();
-            $feature["icon"]["shadowSize"]["x"] = $attr->width->__toString();
-            $feature["icon"]["shadowSize"]["y"] = $attr->height->__toString();
-          }
-          break;
+      // Use the cached Shadow IconSize is present for this Icon Url.
+      if (isset($this->iconSizes[$feature["icon"]["shadowUrl"]])) {
+        $feature["icon"]["shadowSize"]["x"] = $this->iconSizes[$feature["icon"]["shadowUrl"]]["x"];
+        $feature["icon"]["shadowSize"]["y"] = $this->iconSizes[$feature["icon"]["shadowUrl"]]["y"];
+      }
+      elseif ($this->fileExists($feature["icon"]["shadowUrl"])) {
+        $file_parts = pathinfo($shadow_url);
+        switch ($file_parts['extension']) {
+          case "svg":
+            if ($xml = simplexml_load_file($shadow_url)) {
+              $attr = $xml->attributes();
+              $feature["icon"]["shadowSize"]["x"] = $attr->width->__toString();
+              $feature["icon"]["shadowSize"]["y"] = $attr->height->__toString();
+            }
+            break;
 
-        default:
-          if ($shadowSize = getimagesize($shadow_url)) {
-            $feature["icon"]["shadowSize"]["x"] = $shadowSize[0];
-            $feature["icon"]["shadowSize"]["y"] = $shadowSize[1];
-          }
+          default:
+            if ($shadowSize = getimagesize($shadow_url)) {
+              $feature["icon"]["shadowSize"]["x"] = $shadowSize[0];
+              $feature["icon"]["shadowSize"]["y"] = $shadowSize[1];
+            }
+        }
+        // Cache the Shadow IconSize, so we don't fetch the same icon multiple
+        // times.
+        $this->iconSizes[$feature["icon"]["shadowUrl"]] = $feature["icon"]["shadowSize"];
       }
     }
   }

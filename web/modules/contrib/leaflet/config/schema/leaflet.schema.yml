@@ -197,12 +197,12 @@ field.formatter.settings.leaflet_formatter_default:
     hide_empty_map:
       type: boolean
       label: 'Hide empty map'
-    disable_wheel:
-      type: boolean
-      label: 'Disable wheel'
     gesture_handling:
       type: boolean
       label: 'Gesture handling'
+    disable_wheel:
+      type: boolean
+      label: 'Disable wheel'
     reset_map:
       type: mapping
       label: 'Reset map'

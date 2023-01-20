@@ -100,12 +100,27 @@ class FeedImportHandler extends FeedHandlerBase {
 
     $result = $this->database->select('queue')
       ->fields('queue', [])
-      ->condition('data', 'a:3:{i:0;i:' . $feed->id() . '%', 'LIKE')
+      ->condition('data', 'a:3:{i:0;i:' . $feed->id() . ';%', 'LIKE')
       ->countQuery()
       ->execute()
       ->fetchField();
 
     return $result > 0;
+  }
+
+  /**
+   * Removes all queue tasks for the given feed.
+   *
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed for which to remove queue tasks.
+   */
+  public function clearQueueTasks(FeedInterface $feed): void {
+    if (!$this->database->schema()->tableExists('queue')) {
+      return;
+    }
+    $this->database->delete('queue')
+      ->condition('data', 'a:3:{i:0;i:' . $feed->id() . ';%', 'LIKE')
+      ->execute();
   }
 
   /**

@@ -2,6 +2,7 @@
 
 namespace Drupal\leaflet\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\geofield\Plugin\GeofieldBackendManager;
 use Drupal\leaflet\LeafletSettingsElementsTrait;
@@ -395,26 +396,39 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
   ) {
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
 
-    // Determine map settings and add map element.
+    /* @var \Drupal\Core\Entity\EntityInterface $entity */
+    $entity = $items->getEntity();
+    $entity_type = $entity->getEntityTypeId();
+    $bundle = $entity->bundle();
+    $entity_id = $entity->id();
+    /* @var \Drupal\Core\Field\FieldDefinitionInterface $field */
+    $field = $items->getFieldDefinition();
+
+    // Determine the widget map, default and input settings.
     $map_settings = $this->getSetting('map');
     $default_settings = self::defaultSettings();
     $input_settings = $this->getSetting('input');
-    $js_settings = [];
+
+    // Get the base Map info.
     $map = leaflet_map_get_info($map_settings['leaflet_map'] ?? $default_settings['map']['leaflet_map']);
+
+    // Add a specific map id.
+    $map['id'] = Html::getUniqueId("leaflet_map_widget_{$entity_type}_{$bundle}_{$entity_id}_{$field->getName()}");
+
+    // Get and set the Geofield cardinality.
+    $map['geofield_cardinality'] = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
+
+    // Set the widget context info into the map.
     $map['context'] = 'widget';
 
-    // Get token context.
-    $token_context = [
-      'field' => $items,
-      $this->fieldDefinition->getTargetEntityTypeId() => $items->getEntity(),
-    ];
-
-    // Extend options to reset_map and geocoder to uniform with Leaflet
-    // Formatter and Leaflet View processing.
-    $map_settings['reset_map'] = $this->getSetting('reset_map');
-    $map_settings['fullscreen'] = $this->getSetting('fullscreen');
-    $map_settings['path'] = $this->getSetting('path');
-    $map_settings['geocoder'] = $this->getSetting('geocoder');
+    // Extend map settings to additional options
+    // to uniform with Leaflet Formatter and Leaflet View processing.
+    $map_settings = array_merge($map_settings, [
+      'reset_map' => $this->getSetting('reset_map'),
+      'fullscreen' => $this->getSetting('fullscreen'),
+      'path' => $this->getSetting('path'),
+      'geocoder' => $this->getSetting('geocoder'),
+    ]);
 
     // Set Map additional map Settings.
     $this->setAdditionalMapOptions($map, $map_settings);
@@ -423,49 +437,47 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
     $json_element_name = 'leaflet-widget-input';
     $element['value']['#attributes']['class'][] = $json_element_name;
     // Set the readonly for styling, if readonly.
-    if (isset($input_settings["readonly"]) &&  $input_settings["readonly"]) {
+    if (isset($settings['input']["readonly"]) &&  $settings['input']["readonly"]) {
       $element['value']['#attributes']['class'][] = "readonly";
-    }
-
-    if (!empty($map_settings['locate'])) {
-      $js_settings['locate'] = TRUE;
     }
 
     // Allow other modules to add/alter the map js settings.
     $this->moduleHandler->alter('leaflet_default_widget', $map, $this);
 
     $element['map'] = $this->leafletService->leafletRenderMap($map, [], $map_settings['height'] . 'px');
+
+    // Set the Element Map weight, to put it ahead of the Title.
     $element['map']['#weight'] = -1;
 
-    $element['title']['#type'] = 'item';
-    $element['title']['#title'] = $element['value']['#title'];
-    $element['title']['#weight'] = -2;
+    $element['title'] = [
+      '#type' => 'item',
+      '#title' => $element['value']['#title'],
+      '#weight' => -2,
+    ];
+
+    // Alter/customise the Value Title property.
     $element['value']['#title'] = $this->t('GeoJson Data');
 
-    // Build JS settings for leaflet widget.
-    $js_settings['map_id'] = $element['map']['#map_id'];
-    $js_settings['jsonElement'] = '.' . $json_element_name;
-    $cardinality = $items->getFieldDefinition()
-      ->getFieldStorageDefinition()
-      ->getCardinality();
-    $js_settings['multiple'] = $cardinality == 1 ? FALSE : TRUE;
-    $js_settings['cardinality'] = $cardinality > 0 ? $cardinality : 0;
-    $js_settings['autoCenter'] = $map_settings['auto_center'] ?? $default_settings['auto_center'];
-    $js_settings['inputHidden'] = empty($input_settings['show']);
-    $js_settings['inputReadonly'] = !empty($input_settings['readonly']);
-    $js_settings['toolbarSettings'] = $this->getSetting('toolbar') ?? $default_settings['toolbar'];
-    $js_settings['scrollZoomEnabled'] = !empty($map_settings['scroll_zoom_enabled']) ? $map_settings['scroll_zoom_enabled'] : FALSE;
-    $js_settings['fullscreen'] = $this->getSetting('fullscreen');
-    $js_settings['path'] = str_replace(["\n", "\r"], "", $this->token->replace($this->getSetting('path'), $token_context));
-    $js_settings['geocoder'] = $this->getSetting('geocoder');
-    $js_settings['map_position'] = $map_settings['map_position'] ?? [];
-    $js_settings['langcode'] = $this->languageManager->getCurrentLanguage()->getId();
+    // Build JS settings for the Leaflet Widget.
+    $leaflet_widget_js_settings = [
+      'map_id' => $element['map']['#map_id'],
+      'jsonElement' => '.' . $json_element_name,
+      'multiple' => !($map['geofield_cardinality'] == 1),
+      'cardinality' => max($map['geofield_cardinality'], 0),
+      'autoCenter' => $map_settings['auto_center'] ?? $default_settings['auto_center'],
+      'inputHidden' => empty($input_settings['show']),
+      'inputReadonly' => !empty($input_settings['readonly']),
+      'toolbarSettings' => $this->getSetting('toolbar') ?? $default_settings['toolbar'],
+      'scrollZoomEnabled' => !empty($map_settings['scroll_zoom_enabled']) ? $map_settings['scroll_zoom_enabled'] : FALSE,
+      'map_position' => $map_settings['map_position'] ?? [],
+      'langcode' => $this->languageManager->getCurrentLanguage()->getId(),
+    ];
 
     // Leaflet.widget plugin.
     $element['map']['#attached']['library'][] = 'leaflet/leaflet-widget';
 
     // Settings and geo-data are passed to the widget keyed by field id.
-    $element['map']['#attached']['drupalSettings']['leaflet_widget'][$element['map']['#map_id']] = $js_settings;
+    $element['map']['#attached']['drupalSettings']['leaflet_widget'][$element['map']['#map_id']] = $leaflet_widget_js_settings;
 
     // Convert default value to geoJSON format.
     if ($geom = $this->geoPhpWrapper->load($element['value']['#default_value'])) {

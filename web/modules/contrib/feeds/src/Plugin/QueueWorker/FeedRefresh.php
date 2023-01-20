@@ -76,7 +76,11 @@ class FeedRefresh extends FeedQueueWorkerBase {
    */
   protected function feedExists(FeedInterface $feed) {
     // Check if the feed still exists.
-    $result = $this->entityTypeManager->getStorage($feed->getEntityTypeId())->getQuery()->condition('fid', $feed->id())->execute();
+    $result = $this->entityTypeManager->getStorage($feed->getEntityTypeId())
+      ->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('fid', $feed->id())
+      ->execute();
     if (empty($result)) {
       // The feed in question has been deleted.
       return FALSE;

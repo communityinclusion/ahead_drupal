@@ -286,7 +286,7 @@ class ConfigEntityReference extends FieldTargetBase implements ConfigurableTarge
     // Hack to find out the target delta.
     foreach ($form_state->getValues() as $key => $value) {
       if (strpos($key, 'target-settings-') === 0) {
-        list(, , $delta) = explode('-', $key);
+        [, , $delta] = explode('-', $key);
         break;
       }
     }

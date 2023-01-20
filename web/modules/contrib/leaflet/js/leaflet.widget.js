@@ -1,5 +1,5 @@
 /**
- * Attach functionality for modifying map markers.
+ * Attach functionality for Leaflet Widget behaviours.
  */
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.leaflet_widget = {
@@ -27,7 +27,9 @@
 
     // A FeatureGroup is required to store editable layers
     this.drawnItems = new L.LayerGroup();
+
     this.settings = widgetSettings;
+    this.mapid = this.settings.map_id;
     this.settings.path_style = this.settings.path ? JSON.parse(this.settings.path) : {};
 
     this.container = $(map_container).parent();
@@ -37,8 +39,8 @@
     if (widgetSettings['langcode']) {
       lMap.pm.setLang(widgetSettings['langcode']);
     }
-
     this.map = undefined;
+
     this.set_leaflet_map(lMap);
 
     // If map is initialised (or re-initialised) then use the new instance.
@@ -235,8 +237,8 @@
           this.map.setView(start_center, start_zoom);
         }
 
-        Drupal.Leaflet[this.settings.map_id].start_zoom = start_zoom;
-        Drupal.Leaflet[this.settings.map_id].start_center = start_center;
+        Drupal.Leaflet[this.mapid].start_zoom = start_zoom;
+        Drupal.Leaflet[this.mapid].start_center = start_center;
 
       }
     } catch (error) {

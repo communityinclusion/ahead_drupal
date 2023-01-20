@@ -5,7 +5,6 @@ namespace Drupal\Tests\feeds\Functional\Update;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\field\FieldStorageConfigInterface;
-use Drupal\FunctionalTests\Update\UpdatePathTestBase;
 use Drupal\Tests\feeds\Traits\FeedCreationTrait;
 use Drupal\Tests\feeds\Traits\FeedsCommonTrait;
 
@@ -24,19 +23,9 @@ class UpdateFeedsItemFieldsCardinalityUpdateTest extends UpdatePathTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'stark';
-
-  /**
-   * {@inheritdoc}
-   */
-  protected static $modules = ['feeds', 'node'];
-
-  /**
-   * {@inheritdoc}
-   */
   protected function setDatabaseDumpFiles() {
     $this->databaseDumpFiles = [
-      DRUPAL_ROOT . '/core/modules/system/tests/fixtures/update/drupal-9.3.0.bare.standard.php.gz',
+      $this->getCoreFixturePath(9),
       __DIR__ . '/../../../fixtures/feeds-8.x-3.0-beta1-feeds_installed.php',
     ];
   }

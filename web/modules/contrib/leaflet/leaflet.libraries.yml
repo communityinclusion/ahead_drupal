@@ -63,9 +63,9 @@ leaflet.fullscreen:
     gpl-compatible: true
   css:
     component:
-      'https://cdn.jsdelivr.net/npm/leaflet-fullscreen@1.0.2/dist/leaflet.fullscreen.min.css': { type: external}
+      'js/Leaflet.fullscreen-gh-pages/dist/leaflet.fullscreen.css': {}
   js:
-    'https://cdn.jsdelivr.net/npm/leaflet-fullscreen@1.0.2/dist/Leaflet.fullscreen.min.js': { type: external, minified: true }
+    'js/Leaflet.fullscreen-gh-pages/dist/Leaflet.fullscreen.js': {}
   dependencies:
     - leaflet/leaflet
 
@@ -73,16 +73,16 @@ leaflet.fullscreen:
 leaflet.gesture_handling:
   header: true
   remote: https://github.com/elmarquis/Leaflet.GestureHandling
-  version: '1.0.1'
+  version: '1.2.2'
   license:
     name: MIT License
     url: https://raw.githubusercontent.com/elmarquis/Leaflet.GestureHandling/master/LICENSE
-    gpl-compatible: no
+    gpl-compatible: false
   css:
     component:
-      'https://unpkg.com/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.min.css': { type: external}
+      'js/Leaflet.GestureHandling-1.2.2/dist/leaflet-gesture-handling.min.css': { minified: true}
   js:
-    'https://unpkg.com/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.min.js': { type: external, minified: true }
+    'js/Leaflet.GestureHandling-1.2.2/dist/leaflet-gesture-handling.min.js': { minified: true }
   dependencies:
     - leaflet/leaflet
 

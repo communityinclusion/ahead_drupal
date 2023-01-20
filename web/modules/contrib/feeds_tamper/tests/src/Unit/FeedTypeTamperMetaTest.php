@@ -33,7 +33,7 @@ class FeedTypeTamperMetaTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $mapping_sources = [
