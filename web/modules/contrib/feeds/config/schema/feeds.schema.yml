@@ -63,10 +63,20 @@ feeds.feed_type.*:
           unique:
             type: ignore
 
+# Bulk actions.
+action.configuration.feeds_feed_clear_action:
+  type: action_configuration_default
+  label: 'Delete items of feeds configuration'
+
 action.configuration.feeds_feed_delete_action:
   type: action_configuration_default
   label: 'Delete feeds configuration'
 
+action.configuration.feeds_feed_import_action:
+  type: action_configuration_default
+  label: 'Import feeds configuration'
+
+# Feeds item field.
 field.storage_settings.feeds_item:
   type: base_entity_reference_field_settings
   label: 'Feeds item settings'

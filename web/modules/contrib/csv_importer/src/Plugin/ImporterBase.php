@@ -145,7 +145,10 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
     }
 
     $context['sandbox']['progress']++;
-    $context['message'] = t('Import entity %index out of %max', ['%index' => $context['sandbox']['progress'], '%max' => $context['sandbox']['max']]);
+    $context['message'] = t('Import entity %index out of %max', [
+      '%index' => $context['sandbox']['progress'],
+      '%max' => $context['sandbox']['max'],
+    ]);
 
     $entity_type = $this->configuration['entity_type'];
     $entity_type_bundle = $this->configuration['entity_type_bundle'];
@@ -205,7 +208,10 @@ abstract class ImporterBase extends PluginBase implements ImporterInterface {
     $message = '';
 
     if ($success) {
-      $message = $this->t('@count_added content added and @count_updated updated', ['@count_added' => isset($results['added']) ? count($results['added']) : 0, '@count_updated' => isset($results['updated']) ? count($results['updated']) : 0]);
+      $message = $this->t('@count_added content added and @count_updated updated', [
+        '@count_added' => isset($results['added']) ? count($results['added']) : 0,
+        '@count_updated' => isset($results['updated']) ? count($results['updated']) : 0,
+      ]);
     }
 
     $this->messenger()->addMessage($message);
