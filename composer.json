@@ -84,11 +84,12 @@
         "drupal/geofield_map": "^2.57",
         "drupal/google_analytics": "^3.0",
         "drupal/google_tag": "^1.4",
+        "drupal/imce": "^3.0",
         "drupal/jquery_ui_accordion": "1.x-dev@dev",
         "drupal/jquery_ui_slider": "^1.1",
         "drupal/jquery_ui_touch_punch": "^1.0",
         "drupal/leaflet": "^2.1",
-        "drupal/mailgun": "^1.0@beta",
+        "drupal/mailgun": "^2.0",
         "drupal/memcache": "^2.0",
         "drupal/menu_block": "^1.5",
         "drupal/menu_breadcrumb": "^1.8",
@@ -179,6 +180,9 @@
             "drush/Commands/{$name}": ["type:drupal-drush"]
         },
         "drupal-scaffold": {
+            "locations": {
+                "web-root": "web/"
+            },
             "initial": {
                 ".editorconfig": "../.editorconfig",
                 ".gitattributes": "../.gitattributes"

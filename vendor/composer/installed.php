@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '6b54113689547f724fa286d54664518cf80ae2fb',
+        'reference' => 'ea8640b2684232d2efd1c5eeecd901bccf5922ef',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -406,7 +406,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '6b54113689547f724fa286d54664518cf80ae2fb',
+            'reference' => 'ea8640b2684232d2efd1c5eeecd901bccf5922ef',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -947,6 +947,15 @@
             'reference' => '8.x-1.6',
             'dev_requirement' => false,
         ),
+        'drupal/imce' => array(
+            'pretty_version' => '3.0.9',
+            'version' => '3.0.9.0',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/imce',
+            'aliases' => array(),
+            'reference' => '3.0.9',
+            'dev_requirement' => false,
+        ),
         'drupal/jquery_ui' => array(
             'pretty_version' => '1.6.0',
             'version' => '1.6.0.0',
@@ -1013,12 +1022,12 @@
             'dev_requirement' => false,
         ),
         'drupal/mailgun' => array(
-            'pretty_version' => '1.1.0',
-            'version' => '1.1.0.0',
+            'pretty_version' => '2.0.0',
+            'version' => '2.0.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/mailgun',
             'aliases' => array(),
-            'reference' => '8.x-1.1',
+            'reference' => '2.0.0',
             'dev_requirement' => false,
         ),
         'drupal/mailsystem' => array(
@@ -1689,7 +1698,6 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
-                1 => '1.0',
             ),
         ),
         'php-http/client-common' => array(
@@ -1705,7 +1713,6 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
-                1 => '1.0',
             ),
         ),
         'php-http/discovery' => array(
@@ -1715,15 +1722,6 @@
             'install_path' => __DIR__ . '/../php-http/discovery',
             'aliases' => array(),
             'reference' => '57f3de01d32085fea20865f9b16fb0e69347c39e',
-            'dev_requirement' => false,
-        ),
-        'php-http/guzzle6-adapter' => array(
-            'pretty_version' => 'v2.0.2',
-            'version' => '2.0.2.0',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../php-http/guzzle6-adapter',
-            'aliases' => array(),
-            'reference' => '9d1a45eb1c59f12574552e81fb295e9e53430a56',
             'dev_requirement' => false,
         ),
         'php-http/httplug' => array(
@@ -1956,7 +1954,6 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
-                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
