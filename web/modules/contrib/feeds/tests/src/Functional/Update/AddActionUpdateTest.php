@@ -11,12 +11,16 @@ use Drupal\Tests\feeds\Traits\FeedsCommonTrait;
  *
  * @group feeds
  * @group Update
- * @group legacy
  */
 class AddActionUpdateTest extends UpdatePathTestBase {
 
   use FeedCreationTrait;
   use FeedsCommonTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static $modules = ['feeds', 'node', 'views'];
 
   /**
    * {@inheritdoc}
@@ -36,6 +40,9 @@ class AddActionUpdateTest extends UpdatePathTestBase {
    * - feeds_feed_import_action.
    */
   public function testAddFeedActions() {
+    // Run the updates.
+    $this->runUpdates();
+
     // Install the feeds_feed view.
     $source = new FileStorage($this->absolutePath() . '/config/optional');
     $this->container->get('config.storage')
@@ -54,9 +61,6 @@ class AddActionUpdateTest extends UpdatePathTestBase {
       'access feed overview',
     ]);
     $this->drupalLogin($admin);
-
-    // Run the updates.
-    $this->runUpdates();
 
     // Ensure that the new action options are available now.
     $this->drupalGet('/admin/content/feed');

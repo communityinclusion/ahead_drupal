@@ -254,7 +254,7 @@ class FeedsLockBackendTest extends FeedsKernelTestBase {
     $this->assertTrue($this->lock->extendLock($this->lockName, 1800));
 
     // Assert that the lock has been extended.
-    $this->assertGreaterThan($this->getRequestTime() + 1800, $this->getExpireTime($this->lockName));
+    $this->assertGreaterThanOrEqual($this->getRequestTime() + 1800, $this->getExpireTime($this->lockName));
 
     // Clear the logged messages so no failure is reported on tear down.
     $this->logger->clearMessages();

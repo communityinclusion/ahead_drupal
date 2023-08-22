@@ -3,6 +3,10 @@ feeds.settings:
   type: config_object
   label: 'Feeds settings'
   mapping:
+    in_progress_dir:
+      type: string
+      label: 'Feeds in progress directory'
+      description: 'The location on the file system where temporary files are stored that are in progress of being imported.'
     lock_timeout:
       type: integer
       label: 'Feed lock timeout'
@@ -94,18 +98,8 @@ field.field_settings.feeds_item:
 
 # Field formatter configurations.
 field.formatter.settings.feeds_item_imported:
-  type: mapping
+  type: field.formatter.settings.timestamp
   label: 'Feeds item imported display format settings'
-  mapping:
-    date_format:
-      type: string
-      label: 'Date format'
-    custom_date_format:
-      type: string
-      label: 'Custom date format'
-    timezone:
-      type: string
-      label: 'Time zone'
 
 field.formatter.settings.feeds_item_url:
   type: mapping

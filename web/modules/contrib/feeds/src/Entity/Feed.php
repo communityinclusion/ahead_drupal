@@ -537,6 +537,9 @@ class Feed extends ContentEntityBase implements FeedInterface {
     $this->setQueuedTime(0);
     $this->clearQueueTasks();
     $this->save();
+
+    // Clean up stuff.
+    \Drupal::service('feeds.file_system.in_progress')->removeFiles((string) $this->id());
   }
 
   /**

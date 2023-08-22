@@ -1,7 +1,7 @@
 name: Adminimal
 type: theme
 description: 'Drupal administration theme with modern minimalist design.'
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^9.3 || ^10
 base theme: seven
 
 libraries:
@@ -27,7 +27,7 @@ regions:
 regions_hidden:
   - sidebar_first
 
-# Information added by Drupal.org packaging script on 2020-10-06
-version: '8.x-1.6'
+# Information added by Drupal.org packaging script on 2023-08-08
+version: '8.x-1.7'
 project: 'adminimal_theme'
-datestamp: 1602006939
+datestamp: 1691504488

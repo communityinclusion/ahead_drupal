@@ -48,6 +48,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class EntityProcessorBase extends ProcessorBase implements EntityProcessorInterface, ContainerFactoryPluginInterface, MappingPluginFormInterface {
 
   /**
+   * The maximum length of a hash saved on the feed item.
+   *
+   * @var int
+   */
+  const FEED_ITEM_HASH_MAX_LENGTH = 32;
+
+  /**
    * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -335,7 +342,10 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       ->getQuery()
       ->accessCheck(FALSE)
       ->condition('feeds_item.target_id', $feed->id())
-      ->condition('feeds_item.hash', $this->getConfiguration('update_non_existent'), '<>')
+      // Filter out items on which the current clean action has already applied.
+      // The plugin name is truncated to 32 characters, because that is the
+      // maximum length of the hash.
+      ->condition('feeds_item.hash', substr($this->getConfiguration('update_non_existent'), 0, static::FEED_ITEM_HASH_MAX_LENGTH), '<>')
       ->execute();
     $state->setList($ids);
 
@@ -391,7 +401,9 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
 
     // If the entity was not deleted, update hash.
     if (isset($entity_reloaded->feeds_item)) {
-      $entity_reloaded->get('feeds_item')->getItemByFeed($feed)->hash = $update_non_existent;
+      // The name of the plugin is saved as the hash. However, because the hash
+      // length has a limit of 32 characters, the plugin name gets truncated.
+      $entity_reloaded->get('feeds_item')->getItemByFeed($feed)->hash = substr($update_non_existent, 0, static::FEED_ITEM_HASH_MAX_LENGTH);
       $this->storageController->save($entity_reloaded);
     }
 
@@ -1224,7 +1236,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       }
 
       // Clear the target.
-      $this->clearTarget($entity, $this->feedType->getTargetPlugin($delta), $mapping['target']);
+      $this->clearTarget($feed, $entity, $this->feedType->getTargetPlugin($delta), $mapping['target']);
     }
 
     // Gather all of the values for this item.
@@ -1285,6 +1297,8 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
   /**
    * Clears the target on the entity.
    *
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed object.
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to clear the target on.
    * @param \Drupal\feeds\Plugin\Type\Target\TargetInterface $target
@@ -1292,7 +1306,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
    * @param string $target_name
    *   The property to clear on the entity.
    */
-  protected function clearTarget(EntityInterface $entity, TargetInterface $target, $target_name) {
+  protected function clearTarget(FeedInterface $feed, EntityInterface $entity, TargetInterface $target, $target_name) {
     if (!$target->isMutable()) {
       // Don't clear immutable targets.
       return;
@@ -1322,7 +1336,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       }
     }
 
-    unset($entity_target->{$target_name});
+    $target->clearTarget($feed, $entity_target, $target_name);
   }
 
   /**
