@@ -26,6 +26,7 @@ abstract class FileWriterBase extends QueueWorkerBase {
     $items_per_batch = $data['items_per_batch'];
     $output_file = $data['output_file'];
     $export_items = $data['export_items'];
+    $first_batch = $data['first_batch'];
 
     // It is necessary to have $view->query for future use
     // into $this->renderViewChunk.
@@ -34,7 +35,7 @@ abstract class FileWriterBase extends QueueWorkerBase {
     $render = $this->renderViewChunk($view, $export_count, $items_per_batch);
 
     // Write results to file.
-    $formatManipulator->handle($output_file, $render, $export_count, $export_items);
+    $formatManipulator->handle($output_file, $render, $export_count, $export_items, $first_batch);
 
     // Release the cache.
     $this->entityCacheClear($view);

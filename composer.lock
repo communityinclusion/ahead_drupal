@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce06b0e8ecb6566beec32c8001968b31",
+    "content-hash": "6187ac43c39be81eef0b5af4de5141a1",
     "packages": [
         {
             "name": "alchemy/zippy",
@@ -3115,52 +3115,6 @@
             }
         },
         {
-            "name": "drupal/adminimal_admin_toolbar",
-            "version": "1.11.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/adminimal_admin_toolbar.git",
-                "reference": "8.x-1.11"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/adminimal_admin_toolbar-8.x-1.11.zip",
-                "reference": "8.x-1.11",
-                "shasum": "913dd21e07dd60aa20807a2e0650e11b4c15cc17"
-            },
-            "require": {
-                "drupal/admin_toolbar": "*",
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.11",
-                    "datestamp": "1588102631",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "Ted Slesinski",
-                    "homepage": "https://www.drupal.org/u/energee"
-                }
-            ],
-            "description": "Adminimal styling brought to admin toolbar.",
-            "homepage": "https://www.drupal.org/project/adminimal_admin_toolbar",
-            "support": {
-                "source": "http://cgit.drupalcode.org/adminimal_admin_toolbar",
-                "issues": "https://www.drupal.org/project/issues/adminimal_admin_toolbar"
-            }
-        },
-        {
             "name": "drupal/adminimal_theme",
             "version": "1.7.0",
             "source": {
@@ -5757,77 +5711,6 @@
             }
         },
         {
-            "name": "drupal/google_analytics",
-            "version": "3.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/google_analytics.git",
-                "reference": "8.x-3.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/google_analytics-8.x-3.1.zip",
-                "reference": "8.x-3.1",
-                "shasum": "171dcac5a67cde66201754baaa52711f45e47a3b"
-            },
-            "require": {
-                "drupal/core": "^8.8.6|^9.0"
-            },
-            "require-dev": {
-                "drupal/token": "^1.7"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-3.1",
-                    "datestamp": "1591298584",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                },
-                "branch-alias": {
-                    "dev-8.x-2.x": "2.x-dev"
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "See contributors",
-                    "homepage": "https://www.drupal.org/node/49388/committers"
-                },
-                {
-                    "name": "budda",
-                    "homepage": "https://www.drupal.org/user/13164"
-                },
-                {
-                    "name": "ixismark",
-                    "homepage": "https://www.drupal.org/user/3632333"
-                },
-                {
-                    "name": "japerry",
-                    "homepage": "https://www.drupal.org/user/45640"
-                },
-                {
-                    "name": "mglaman",
-                    "homepage": "https://www.drupal.org/user/2416470"
-                },
-                {
-                    "name": "roberto.rivera.ixis",
-                    "homepage": "https://www.drupal.org/user/3632325"
-                }
-            ],
-            "description": "Allows your site to be tracked by Google Analytics by adding a Javascript tracking code to every page.",
-            "homepage": "https://www.drupal.org/project/google_analytics",
-            "support": {
-                "source": "https://git.drupal.org/project/google_analytics.git",
-                "issues": "https://www.drupal.org/project/issues/google_analytics"
-            }
-        },
-        {
             "name": "drupal/google_tag",
             "version": "1.6.0",
             "source": {
@@ -6649,70 +6532,6 @@
             "homepage": "https://www.drupal.org/project/menu_block",
             "support": {
                 "source": "https://git.drupalcode.org/project/menu_block"
-            }
-        },
-        {
-            "name": "drupal/menu_breadcrumb",
-            "version": "1.16.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/menu_breadcrumb.git",
-                "reference": "8.x-1.16"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/menu_breadcrumb-8.x-1.16.zip",
-                "reference": "8.x-1.16",
-                "shasum": "e7faa28edcd703c5512b480117d35718d0dd7441"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.16",
-                    "datestamp": "1620238102",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "aaron",
-                    "homepage": "https://www.drupal.org/user/33420"
-                },
-                {
-                    "name": "gdevlugt",
-                    "homepage": "https://www.drupal.org/user/167273"
-                },
-                {
-                    "name": "rphair",
-                    "homepage": "https://www.drupal.org/user/3196607"
-                },
-                {
-                    "name": "RyanPrice",
-                    "homepage": "https://www.drupal.org/user/873848"
-                },
-                {
-                    "name": "vaibhavjain",
-                    "homepage": "https://www.drupal.org/user/1159692"
-                },
-                {
-                    "name": "xurizaemon",
-                    "homepage": "https://www.drupal.org/user/76026"
-                }
-            ],
-            "description": "Create breadcrumbs from nested menu titles and/or taxonomy membership.",
-            "homepage": "https://www.drupal.org/project/menu_breadcrumb",
-            "support": {
-                "source": "https://git.drupalcode.org/project/menu_breadcrumb"
             }
         },
         {
@@ -8339,6 +8158,82 @@
             "homepage": "http://drupal.org/project/upgrade_status",
             "support": {
                 "source": "https://git.drupalcode.org/project/upgrade_status"
+            }
+        },
+        {
+            "name": "drupal/vde_drush",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/vde_drush.git",
+                "reference": "2.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/vde_drush-2.1.0.zip",
+                "reference": "2.1.0",
+                "shasum": "bc99096c54212bc8d3fff689628748148b683e52"
+            },
+            "require": {
+                "drupal/core": "^8 || ^9 || ^10",
+                "drupal/views_data_export": "*",
+                "php": ">=7.1.0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "2.1.0",
+                    "datestamp": "1685073341",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Domasevich",
+                    "homepage": "https://www.drupal.org/user/3547980",
+                    "email": "domaalex@gmail.com"
+                },
+                {
+                    "name": "Artem Ilyin",
+                    "homepage": "https://www.drupal.org/user/3332157",
+                    "email": "kupnoh25@gmail.com"
+                },
+                {
+                    "name": "Anton Lupov",
+                    "homepage": "https://www.drupal.org/user/3557055",
+                    "email": "anthony.lupow@gmail.com"
+                },
+                {
+                    "name": "Pavel Vashchyla",
+                    "homepage": "https://www.drupal.org/user/3557962",
+                    "email": "empty.12.95@gmail.com"
+                },
+                {
+                    "name": "Sergey Semchyk",
+                    "homepage": "https://www.drupal.org/user/3534805",
+                    "email": "ygstand77@gmail.com"
+                },
+                {
+                    "name": "smulvih2",
+                    "homepage": "https://www.drupal.org/user/795442"
+                }
+            ],
+            "description": "Drush support for Views Data Export.",
+            "homepage": "https://www.drupal.org/project/vde_drush",
+            "support": {
+                "source": "https://git.drupalcode.org/project/vde_drush"
             }
         },
         {

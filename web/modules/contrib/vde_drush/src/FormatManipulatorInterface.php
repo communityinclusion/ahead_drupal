@@ -20,10 +20,12 @@ interface FormatManipulatorInterface {
    *   Current batch position.
    * @param int $total_items
    *   Total number of items.
+   * @param boolean $first_batch
+   *   Total number of items.
    *
    * @return bool
    *   TRUE in case of success, FALSE otherwise.
    */
-  public function handle($output_file, &$content, $current_position, $total_items);
+  public function handle($output_file, &$content, $current_position, $total_items, $first_batch);
 
 }
