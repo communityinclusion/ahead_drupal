@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '0d9f0162d9477ad668d052f7a96bdce62329ee07',
+        'reference' => '6b54113689547f724fa286d54664518cf80ae2fb',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -406,7 +406,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '0d9f0162d9477ad668d052f7a96bdce62329ee07',
+            'reference' => '6b54113689547f724fa286d54664518cf80ae2fb',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -856,14 +856,12 @@
             'dev_requirement' => false,
         ),
         'drupal/field_display_label' => array(
-            'pretty_version' => 'dev-1.x',
-            'version' => 'dev-1.x',
+            'pretty_version' => '1.3.0',
+            'version' => '1.3.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/field_display_label',
-            'aliases' => array(
-                0 => '1.x-dev',
-            ),
-            'reference' => '90190566bf12483eb2cad9906c892ca220e374c6',
+            'aliases' => array(),
+            'reference' => '8.x-1.3',
             'dev_requirement' => false,
         ),
         'drupal/field_group' => array(
@@ -1690,8 +1688,8 @@
         'php-http/async-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/client-common' => array(
@@ -1706,8 +1704,8 @@
         'php-http/client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/discovery' => array(
@@ -1957,8 +1955,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
@@ -1973,8 +1971,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-message' => array(
