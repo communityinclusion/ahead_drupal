@@ -48,7 +48,6 @@
         "d3/d3": "3.5.*",
         "drupal/address": "^1.4",
         "drupal/admin_toolbar": "^3.2",
-        "drupal/adminimal_theme": "^1.4",
         "drupal/auto_entitylabel": "^3.0",
         "drupal/block_class": "^1.2",
         "drupal/bootstrap_barrio": "^5.5",
