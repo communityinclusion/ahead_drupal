@@ -4,7 +4,7 @@
  * https://www.codeply.com/users/skelly
  *
  */
-(function ($, Drupal, once) {
+(function ($, Drupal) {
 
   'use strict';
 
@@ -26,7 +26,7 @@
 
       };
 
-      once('affixed', '[data-toggle="affix"]', context).forEach(function () {
+      $(once('affixed', '[data-toggle="affix"]', context)).each(function () {
         var ele = $(this),
             wrapper = $('<div></div>');
 
@@ -40,4 +40,4 @@
       });
     }
   }
-})(jQuery, Drupal, once);
+})(jQuery, Drupal);
