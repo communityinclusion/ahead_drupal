@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '5cec4ed887f9bce5037f440d90873692e8145e79',
+        'reference' => '6b9c94aad2a04ad17373de5fb1c2e93a0fc737b6',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -406,7 +406,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '5cec4ed887f9bce5037f440d90873692e8145e79',
+            'reference' => '6b9c94aad2a04ad17373de5fb1c2e93a0fc737b6',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -876,12 +876,14 @@
             'dev_requirement' => false,
         ),
         'drupal/fontyourface' => array(
-            'pretty_version' => '3.6.0',
-            'version' => '3.6.0.0',
+            'pretty_version' => 'dev-3.x',
+            'version' => 'dev-3.x',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/fontyourface',
-            'aliases' => array(),
-            'reference' => '8.x-3.6',
+            'aliases' => array(
+                0 => '3.x-dev',
+            ),
+            'reference' => '8e5514d3b14022a7bc98931cf625da047045bdb8',
             'dev_requirement' => false,
         ),
         'drupal/force_password_change' => array(
@@ -939,14 +941,12 @@
             'dev_requirement' => false,
         ),
         'drupal/jquery_ui_accordion' => array(
-            'pretty_version' => 'dev-1.x',
-            'version' => 'dev-1.x',
+            'pretty_version' => '2.0.0',
+            'version' => '2.0.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/jquery_ui_accordion',
-            'aliases' => array(
-                0 => '1.x-dev',
-            ),
-            'reference' => '9d089e830f6c69a599f679f8d47e256c11482796',
+            'aliases' => array(),
+            'reference' => '2.0.0',
             'dev_requirement' => false,
         ),
         'drupal/jquery_ui_draggable' => array(
