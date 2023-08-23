@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '816a9c1b3ee3a20c938bc6b41154dd928967337c',
+        'reference' => '4358a7cdbfa99440ebcab5c0c8e4acacb5be0a57',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -406,7 +406,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '816a9c1b3ee3a20c938bc6b41154dd928967337c',
+            'reference' => '4358a7cdbfa99440ebcab5c0c8e4acacb5be0a57',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -744,12 +744,12 @@
             'dev_requirement' => false,
         ),
         'drupal/devel' => array(
-            'pretty_version' => '4.2.1',
-            'version' => '4.2.1.0',
+            'pretty_version' => '5.1.2',
+            'version' => '5.1.2.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/devel',
             'aliases' => array(),
-            'reference' => '4.2.1',
+            'reference' => '5.1.2',
             'dev_requirement' => false,
         ),
         'drupal/ds' => array(
