@@ -49,7 +49,7 @@
         "drupal/address": "^1.4",
         "drupal/admin_toolbar": "^3.2",
         "drupal/auto_entitylabel": "^3.0",
-        "drupal/block_class": "^1.2",
+        "drupal/block_class": "^2.0",
         "drupal/bootstrap_barrio": "^5.5",
         "drupal/bootstrap_library": "^1.11",
         "drupal/captcha": "^1.0@beta",

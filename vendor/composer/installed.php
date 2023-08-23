@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'ab41adeb3570b6e122dc7015d3c06147851a6be5',
+        'reference' => '816a9c1b3ee3a20c938bc6b41154dd928967337c',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -406,7 +406,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'ab41adeb3570b6e122dc7015d3c06147851a6be5',
+            'reference' => '816a9c1b3ee3a20c938bc6b41154dd928967337c',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -437,12 +437,12 @@
             'dev_requirement' => false,
         ),
         'drupal/block_class' => array(
-            'pretty_version' => '1.3.0',
-            'version' => '1.3.0.0',
+            'pretty_version' => '2.0.11',
+            'version' => '2.0.11.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/block_class',
             'aliases' => array(),
-            'reference' => '8.x-1.3',
+            'reference' => '2.0.11',
             'dev_requirement' => false,
         ),
         'drupal/bootstrap_barrio' => array(
