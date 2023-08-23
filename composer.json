@@ -110,7 +110,7 @@
         "drupal/tamper": "1.x-dev",
         "drupal/token": "^1.5",
         "drupal/token_custom": "^1.0@alpha",
-        "drupal/token_filter": "^1.1",
+        "drupal/token_filter": "^2.0",
         "drupal/upgrade_status": "3.x-dev@dev",
         "drupal/vde_drush": "^2.1",
         "drupal/viewfield": "^3.0@alpha",

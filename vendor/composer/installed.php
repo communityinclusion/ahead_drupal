@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '6b9c94aad2a04ad17373de5fb1c2e93a0fc737b6',
+        'reference' => '968aa65cc6defc1c4381acbf92e396b85ec543cc',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -406,7 +406,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '6b9c94aad2a04ad17373de5fb1c2e93a0fc737b6',
+            'reference' => '968aa65cc6defc1c4381acbf92e396b85ec543cc',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -1222,12 +1222,12 @@
             'dev_requirement' => false,
         ),
         'drupal/token_filter' => array(
-            'pretty_version' => '1.4.0',
-            'version' => '1.4.0.0',
+            'pretty_version' => '2.0.0',
+            'version' => '2.0.0.0',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/token_filter',
             'aliases' => array(),
-            'reference' => '8.x-1.4',
+            'reference' => '2.0.0',
             'dev_requirement' => false,
         ),
         'drupal/upgrade_status' => array(
