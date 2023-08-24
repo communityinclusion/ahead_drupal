@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '7e580d19e5a35f7d62513ee1d601e51afcd82d53',
+        'reference' => 'bd1ab409936ccd326a6f529aed808ac7c47e7416',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -406,7 +406,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '7e580d19e5a35f7d62513ee1d601e51afcd82d53',
+            'reference' => 'bd1ab409936ccd326a6f529aed808ac7c47e7416',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -1154,15 +1154,6 @@
             'install_path' => __DIR__ . '/../../web/modules/contrib/search_api_solr',
             'aliases' => array(),
             'reference' => '4.2.12',
-            'dev_requirement' => false,
-        ),
-        'drupal/simple_mail' => array(
-            'pretty_version' => '2.0.0',
-            'version' => '2.0.0.0',
-            'type' => 'drupal-module',
-            'install_path' => __DIR__ . '/../../web/modules/contrib/simple_mail',
-            'aliases' => array(),
-            'reference' => '2.0.0',
             'dev_requirement' => false,
         ),
         'drupal/smtp' => array(

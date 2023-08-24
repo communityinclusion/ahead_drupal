@@ -104,7 +104,6 @@
         "drupal/search_api_page": "^1.0",
         "drupal/search_api_saved_searches": "^1.0",
         "drupal/search_api_solr": "^4.2",
-        "drupal/simple_mail": "^2.0",
         "drupal/smtp": "^1.0@beta",
         "drupal/subpathauto": "^1.0",
         "drupal/superfish": "^1.3",
