@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '968aa65cc6defc1c4381acbf92e396b85ec543cc',
+        'reference' => '7e580d19e5a35f7d62513ee1d601e51afcd82d53',
         'name' => 'drupal-composer/drupal-project',
         'dev' => true,
     ),
@@ -406,7 +406,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '968aa65cc6defc1c4381acbf92e396b85ec543cc',
+            'reference' => '7e580d19e5a35f7d62513ee1d601e51afcd82d53',
             'dev_requirement' => false,
         ),
         'drupal/address' => array(
@@ -1662,6 +1662,7 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/client-common' => array(
@@ -1677,6 +1678,7 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
+                1 => '1.0',
             ),
         ),
         'php-http/discovery' => array(
@@ -1686,6 +1688,15 @@
             'install_path' => __DIR__ . '/../php-http/discovery',
             'aliases' => array(),
             'reference' => '57f3de01d32085fea20865f9b16fb0e69347c39e',
+            'dev_requirement' => false,
+        ),
+        'php-http/guzzle6-adapter' => array(
+            'pretty_version' => 'v2.0.2',
+            'version' => '2.0.2.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../php-http/guzzle6-adapter',
+            'aliases' => array(),
+            'reference' => '9d1a45eb1c59f12574552e81fb295e9e53430a56',
             'dev_requirement' => false,
         ),
         'php-http/httplug' => array(
@@ -1918,6 +1929,7 @@
             'dev_requirement' => false,
             'provided' => array(
                 0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
