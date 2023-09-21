@@ -28,10 +28,14 @@ class AccessDeprecatedStaticPropertyRule implements Rule
 	/** @var RuleLevelHelper */
 	private $ruleLevelHelper;
 
-	public function __construct(ReflectionProvider $reflectionProvider, RuleLevelHelper $ruleLevelHelper)
+	/** @var DeprecatedScopeHelper */
+	private $deprecatedScopeHelper;
+
+	public function __construct(ReflectionProvider $reflectionProvider, RuleLevelHelper $ruleLevelHelper, DeprecatedScopeHelper $deprecatedScopeHelper)
 	{
 		$this->reflectionProvider = $reflectionProvider;
 		$this->ruleLevelHelper = $ruleLevelHelper;
+		$this->deprecatedScopeHelper = $deprecatedScopeHelper;
 	}
 
 	public function getNodeType(): string
@@ -41,7 +45,7 @@ class AccessDeprecatedStaticPropertyRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if (DeprecatedScopeHelper::isScopeDeprecated($scope)) {
+		if ($this->deprecatedScopeHelper->isScopeDeprecated($scope)) {
 			return [];
 		}
 
@@ -53,7 +57,7 @@ class AccessDeprecatedStaticPropertyRule implements Rule
 		$referencedClasses = [];
 
 		if ($node->class instanceof Name) {
-			$referencedClasses[] = (string) $node->class;
+			$referencedClasses[] = $scope->resolveName($node->class);
 		} else {
 			$classTypeResult = $this->ruleLevelHelper->findTypeToCheck(
 				$scope,
@@ -87,14 +91,14 @@ class AccessDeprecatedStaticPropertyRule implements Rule
 					return [sprintf(
 						'Access to deprecated static property $%s of class %s.',
 						$propertyName,
-						$referencedClass
+						$property->getDeclaringClass()->getName()
 					)];
 				}
 
 				return [sprintf(
 					"Access to deprecated static property $%s of class %s:\n%s",
 					$propertyName,
-					$referencedClass,
+					$property->getDeclaringClass()->getName(),
 					$description
 				)];
 			}

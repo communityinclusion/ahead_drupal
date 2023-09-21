@@ -259,7 +259,7 @@ class TestImporter extends FpmTestBase
     $result = $method->invokeArgs($this->importer, $args);
     self::assertCount(3, $result);
     for ($i = 0; $i < count($result); $i++) {
-      self::assertArrayEquals($values[$i], $result[$i]['value']);
+      self::assertEquals($values[$i], $result[$i]['value']);
       self::assertInstanceOf(Paragraph::class, $result[$i]['paragraph']);
     }
   }
@@ -281,7 +281,7 @@ class TestImporter extends FpmTestBase
     $result = $method->invokeArgs($this->importer, $args);
     self::assertCount(1, $result);
     for ($i = 0; $i < count($result); $i++) {
-      self::assertArrayEquals($values[$i], $result[$i]['value']);
+      self::assertEquals($values[$i], $result[$i]['value']);
       self::assertInstanceOf(Paragraph::class, $result[$i]['paragraph']);
       self::assertArrayHasKey('state', $result[$i]);
     }
@@ -316,11 +316,11 @@ class TestImporter extends FpmTestBase
     $result = $method->invokeArgs($this->importer, $args);
     self::assertCount(3, $result);
     for ($i = 0; $i < count($result); $i++) {
-      self::assertArrayEquals($values[$i], $result[$i]['value']);
+      self::assertEquals($values[$i], $result[$i]['value']);
       self::assertInstanceOf(Paragraph::class, $result[$i]['paragraph']);
       self::assertArrayHasKey('state', $result[$i]);
       $host_info = $result[$i]['paragraph']->host_info;
-      self::assertArrayEquals($paragraph->host_info, $host_info);
+      self::assertEquals($paragraph->host_info, $host_info);
     }
   }
 

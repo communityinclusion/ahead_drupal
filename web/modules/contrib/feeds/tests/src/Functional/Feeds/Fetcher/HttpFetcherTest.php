@@ -25,6 +25,7 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
     'file',
     'block',
     'taxonomy',
+    'feeds_test_files',
   ];
 
   /**
@@ -119,6 +120,9 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
     $this->submitForm([], t('Import'));
     $this->assertSession()->pageTextContains('Created 6');
     $this->assertNodeCount(6);
+
+    // Assert that the temporary file is cleaned up.
+    $this->assertCountFilesInProgressDir(0);
 
     $xml = new \SimpleXMLElement($filepath, 0, TRUE);
 
@@ -251,6 +255,67 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
 
     $this->batchImport($feed);
     $this->assertSession()->pageTextContains('Updated 2');
+  }
+
+  /**
+   * Tests if the file to import gets removed when unlocking a feed.
+   */
+  public function testRemoveTempFileAfterUnlock() {
+    $feed = $this->createFeed($this->feedType->id(), [
+      'source' => $this->resourcesUrl() . '/rss/googlenewstz.rss2',
+    ]);
+
+    // Start a cron import. This will put items on the queue.
+    $feed->startCronImport();
+
+    // Run the first queue task, which is fetching the http source. This will
+    // create the file in the Feeds in progress dir.
+    $this->runQueue('feeds_feed_refresh:' . $this->feedType->id(), 1);
+    // Assert that a file exist in the Feeds in progress dir.
+    $this->assertCountFilesInProgressDir(1, '', 'public');
+    $this->assertCountFilesInProgressDir(1, $feed->id(), 'public');
+
+    // Now unlock the feed and assert that the file to import gets removed.
+    $feed->unlock();
+    $this->assertCountFilesInProgressDir(0, '', 'public');
+  }
+
+  /**
+   * Tests if the fetch fails when setting the request timeout to a low value.
+   */
+  public function testRequestTimeoutSetting() {
+    // Create a feed type.
+    $feed_type = $this->createFeedTypeForCsv([
+      'guid' => 'GUID',
+      'title' => 'Title',
+    ], [
+      'fetcher' => 'http',
+      'fetcher_configuration' => [
+        'request_timeout' => 1,
+      ],
+    ]);
+
+    // Set two seconds for a time for a fetch delay.
+    \Drupal::state()->set('feeds_timeout', 2);
+
+    // Create a feed that contains 9 items.
+    $feed = $this->createFeed($feed_type->id(), [
+      'source' => \Drupal::request()->getSchemeAndHttpHost() . '/testing/feeds/nodes.csv',
+    ]);
+
+    // Try to import the feed using the UI.
+    $this->batchImport($feed);
+    $this->assertSession()->pageTextContains('Operation timed out');
+
+    // Assert that no nodes were imported.
+    $this->assertNodeCount(0);
+
+    // Try via cron import too.
+    $feed->startCronImport();
+    $this->cronRun();
+
+    // Assert that still no nodes were imported.
+    $this->assertNodeCount(0);
   }
 
 }

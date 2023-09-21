@@ -73,6 +73,9 @@ services:
   feeds.entity_finder:
     class: Drupal\feeds\EntityFinder
     arguments: ['@entity_type.manager', '@entity.repository']
+  feeds.file_system.in_progress:
+    class: Drupal\feeds\File\InProgress
+    arguments: ['@config.factory', '@file_system', '@stream_wrapper_manager']
   feeds.lock:
     class: Drupal\feeds\Lock\FeedsLockBackend
     arguments: ['@database', '@entity_type.manager', '@config.factory', '@logger.channel.feeds']

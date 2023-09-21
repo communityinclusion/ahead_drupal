@@ -30,11 +30,9 @@ class FormatManipulatorDefault implements FormatManipulatorInterface {
   /**
    * {@inheritdoc}
    */
-  public function handle($output_file, &$content, $current_position, $total_items) {
-    // Detect whether the output file exists and if so, do not include
-    // the header by default, since we can assume the file already contains
-    // it.
-    if (file_exists($output_file)) {
+  public function handle($output_file, &$content, $current_position, $total_items, $first_batch) {
+    // If this is not the first batch then remove the header.
+    if (!$first_batch) {
       $this->extractHeader($content);
     }
 
@@ -44,8 +42,14 @@ class FormatManipulatorDefault implements FormatManipulatorInterface {
       $this->extractFooter($content);
     }
 
-    // Write content to the output file.
-    return file_put_contents($output_file, $content, FILE_APPEND);
+    if ($first_batch) {
+      // First batch overwrite file.
+      return file_put_contents($output_file, $content);
+    }
+    else {
+      // Subsequent batches append to the file.
+      return file_put_contents($output_file, $content, FILE_APPEND);
+    }
   }
 
 }

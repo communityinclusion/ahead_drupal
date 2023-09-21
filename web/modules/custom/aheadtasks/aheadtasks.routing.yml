@@ -1,8 +1,0 @@
-
-aheadtasks.ahead_tasks_controller_Ahead:
-  path: '/aheadtasks/Ahead'
-  defaults:
-    _controller: '\Drupal\aheadtasks\Controller\AheadTasksController::Ahead'
-    _title: 'AheadTasks'
-  requirements:
-    _permission: 'access content'

@@ -328,11 +328,14 @@ class VdeDrushCommands extends DrushCommands {
 
     $this->logger()->info(dt('Queue filled. Starting executing items'));
     $queue_worker = $this->queueManager->createInstance('vde_drush_queue');
+    $first_batch = TRUE;
 
     while ($item = $queue->claimItem()) {
       if ($item->data['export_count'] != ($export_items - $item->data['items_per_batch'])) {
         try {
+          $item->data['first_batch'] = $first_batch;
           $queue_worker->processItem($item->data);
+          $first_batch = FALSE;
 
           $this->logger()->info(dt('Exporting records !from to !to.', [
             '!from' => $item->data['export_count'],

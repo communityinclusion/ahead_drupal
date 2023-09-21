@@ -2,7 +2,7 @@ name: Feeds Paragraphs
 type: module
 description: 'Allows mapping to Paragraphs fields.'
 #core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9|| ^10
 package: Feeds
 dependencies:
   - feeds:feeds
