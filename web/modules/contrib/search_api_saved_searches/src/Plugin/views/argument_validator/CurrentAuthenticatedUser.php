@@ -2,8 +2,7 @@
 
 namespace Drupal\search_api_saved_searches\Plugin\views\argument_validator;
 
-use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -58,7 +57,7 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
    * @return \Drupal\Core\Session\AccountInterface
    *   The current user.
    */
-  public function getCurrentUser() {
+  public function getCurrentUser(): AccountInterface {
     return $this->currentUser ?: \Drupal::service('current_user');
   }
 
@@ -70,7 +69,7 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
    *
    * @return $this
    */
-  public function setCurrentUser(AccountInterface $current_user) {
+  public function setCurrentUser(AccountInterface $current_user): self {
     $this->currentUser = $current_user;
     return $this;
   }
@@ -81,7 +80,7 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
    * @return \Drupal\Core\Entity\EntityTypeManagerInterface
    *   The entity type manager.
    */
-  public function getEntityTypeManager() {
+  public function getEntityTypeManager(): EntityTypeManagerInterface {
     return $this->entityTypeManager ?: \Drupal::service('entity_type.manager');
   }
 
@@ -93,7 +92,7 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
    *
    * @return $this
    */
-  public function setEntityTypeManager(EntityTypeManagerInterface $entity_type_manager) {
+  public function setEntityTypeManager(EntityTypeManagerInterface $entity_type_manager): self {
     $this->entityTypeManager = $entity_type_manager;
     return $this;
   }
@@ -101,9 +100,9 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
   /**
    * {@inheritdoc}
    */
-  public function validateArgument($argument) {
+  public function validateArgument($arg): bool {
     // A non-numeric argument can't be a valid UID.
-    if (!is_numeric($argument)) {
+    if (!is_numeric($arg)) {
       return FALSE;
     }
 
@@ -111,18 +110,15 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
     $is_admin = $this->getCurrentUser()->hasPermission($admin_permission);
 
     // Only admins are allowed to view the list of anonymous users' searches.
-    if ($argument == 0) {
+    if ($arg == 0) {
       return $is_admin;
     }
 
     try {
       $user_storage = $this->getEntityTypeManager()->getStorage('user');
-      $user = $user_storage->load($argument);
+      $user = $user_storage->load($arg);
     }
-    // @todo Use a multi-catch once we can depend on PHP 7.1+.
-    catch (InvalidPluginDefinitionException $e) {
-    }
-    catch (PluginNotFoundException $e) {
+    catch (PluginException $e) {
     }
 
     if (empty($user)) {
@@ -134,21 +130,21 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
   /**
    * {@inheritdoc}
    */
-  public function getCacheMaxAge() {
+  public function getCacheMaxAge(): int {
     return Cache::PERMANENT;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getCacheContexts() {
+  public function getCacheContexts(): array {
     return ['user'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getCacheTags() {
+  public function getCacheTags(): array {
     return [];
   }
 

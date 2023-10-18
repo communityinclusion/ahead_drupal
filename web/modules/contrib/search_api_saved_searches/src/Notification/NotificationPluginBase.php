@@ -3,6 +3,7 @@
 namespace Drupal\search_api_saved_searches\Notification;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -59,14 +60,14 @@ abstract class NotificationPluginBase extends ConfigurablePluginBase implements 
   /**
    * {@inheritdoc}
    */
-  public function getSavedSearchType() {
+  public function getSavedSearchType(): SavedSearchTypeInterface {
     return $this->savedSearchType;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setSavedSearchType(SavedSearchTypeInterface $type) {
+  public function setSavedSearchType(SavedSearchTypeInterface $type): NotificationPluginInterface {
     $this->savedSearchType = $type;
     return $this;
   }
@@ -74,21 +75,21 @@ abstract class NotificationPluginBase extends ConfigurablePluginBase implements 
   /**
    * {@inheritdoc}
    */
-  public function getFieldDefinitions() {
+  public function getFieldDefinitions(): array {
     return [];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDefaultFieldFormDisplay() {
+  public function getDefaultFieldFormDisplay(): array {
     return [];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL): AccessResultInterface {
     return AccessResult::allowed();
   }
 

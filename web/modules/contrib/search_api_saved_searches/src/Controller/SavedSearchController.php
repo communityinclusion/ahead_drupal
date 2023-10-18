@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\search_api_saved_searches\SavedSearchInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -25,7 +26,7 @@ class SavedSearchController extends ControllerBase {
    * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    *   Thrown if the search didn't specify a search page path.
    */
-  public function viewSearch(SavedSearchInterface $search_api_saved_search) {
+  public function viewSearch(SavedSearchInterface $search_api_saved_search): Response {
     $path = $search_api_saved_search->getPath();
     if (!$path) {
       throw new NotFoundHttpException();
@@ -46,9 +47,9 @@ class SavedSearchController extends ControllerBase {
    * @throws \Drupal\Core\Entity\EntityStorageException
    *   Thrown if saving the saved search failed.
    */
-  public function activateSearch(SavedSearchInterface $search_api_saved_search) {
+  public function activateSearch(SavedSearchInterface $search_api_saved_search): Response {
     // Not possible for saved searches that are already active.
-    if ($search_api_saved_search->get('status')->value) {
+    if ($search_api_saved_search->get('status')->__get('value')) {
       throw new NotFoundHttpException();
     }
 

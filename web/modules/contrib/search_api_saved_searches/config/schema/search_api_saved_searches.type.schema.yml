@@ -48,6 +48,9 @@ search_api_saved_searches.type.*:
         description:
           type: text
           label: 'User interface description'
-        allow_keys_change:
-          type: boolean
-          label: 'Whether to allow editing of search keywords for existing saved searches'
+        max_results:
+          type: integer
+          label: 'Maximum number of new results to report'
+        query_limit:
+          type: integer
+          label: 'Limit to set on the search query for retrieving new results (if method for determining new results is "via result IDs")'

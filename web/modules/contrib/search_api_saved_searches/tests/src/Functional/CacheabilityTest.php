@@ -15,11 +15,8 @@ class CacheabilityTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'block',
-    // @todo Remove "rest" dependency once we depend on Search API 1.8. See
-    //   #2953267.
-    'rest',
     'search_api_saved_searches',
     'search_api_test_views',
   ];
@@ -39,7 +36,7 @@ class CacheabilityTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $permissions = [

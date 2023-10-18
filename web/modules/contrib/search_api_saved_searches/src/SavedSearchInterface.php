@@ -20,7 +20,16 @@ interface SavedSearchInterface extends ContentEntityInterface, EntityOwnerInterf
    * @throws \Drupal\search_api_saved_searches\SavedSearchesException
    *   Thrown if the type is unknown.
    */
-  public function getType();
+  public function getType(): SavedSearchTypeInterface;
+
+  /**
+   * Returns the language code with which the search was created.
+   *
+   * @return string|null
+   *   The language code with which the saved search was created, or NULL if it
+   *   could not be determined.
+   */
+  public function getLangcode(): ?string;
 
   /**
    * Retrieves the search query of this saved search.
@@ -29,7 +38,7 @@ interface SavedSearchInterface extends ContentEntityInterface, EntityOwnerInterf
    *   The search query of this saved search, or NULL if it couldn't be
    *   retrieved.
    */
-  public function getQuery();
+  public function getQuery(): ?QueryInterface;
 
   /**
    * Sets the search query.
@@ -39,7 +48,7 @@ interface SavedSearchInterface extends ContentEntityInterface, EntityOwnerInterf
    *
    * @return $this
    */
-  public function setQuery(QueryInterface $query);
+  public function setQuery(QueryInterface $query): self;
 
   /**
    * Retrieves the path to the saved search's original search page.
@@ -48,7 +57,7 @@ interface SavedSearchInterface extends ContentEntityInterface, EntityOwnerInterf
    *   An internal path to the original search page for this saved search, or
    *   NULL if there was none set.
    */
-  public function getPath();
+  public function getPath(): ?string;
 
   /**
    * Generates an access token specific to this saved search.
@@ -64,6 +73,6 @@ interface SavedSearchInterface extends ContentEntityInterface, EntityOwnerInterf
    * @return string
    *   The access token for executing the given operation on this search.
    */
-  public function getAccessToken($operation);
+  public function getAccessToken($operation): string;
 
 }

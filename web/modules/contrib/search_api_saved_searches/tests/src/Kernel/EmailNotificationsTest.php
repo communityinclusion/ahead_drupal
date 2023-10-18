@@ -5,6 +5,7 @@ namespace Drupal\Tests\search_api_saved_searches\Kernel;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api_saved_searches\Entity\SavedSearch;
+use Drupal\search_api_saved_searches\Entity\SavedSearchType;
 use Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\notification\Email;
 use Drupal\Tests\search_api\Functional\ExampleContentTrait;
 use Drupal\user\Entity\User;
@@ -41,7 +42,7 @@ class EmailNotificationsTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');
@@ -108,12 +109,15 @@ Your saved search "[search-api-saved-search:label]" has [search-api-saved-search
 [foo:bar]
 
 -- The [site:name] team';
+    $type = SavedSearchType::load('default');
+    $this->plugin = $type->getNotificationPlugin('email');
     $this->plugin->setConfiguration([
       'notification' => [
         'title' => $title,
         'body' => $body,
       ],
     ]);
+    $type->save();
 
     $search_label = 'Test search';
     $search_mail = 'foo@example.com';

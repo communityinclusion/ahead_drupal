@@ -5,10 +5,14 @@
  * Install and update functions for the Search API Saved Searches module.
  */
 
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Config\ConfigException;
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Implements hook_schema().
  */
-function search_api_saved_searches_schema() {
+function search_api_saved_searches_schema(): array {
   $schema['search_api_saved_searches_old_results'] = [
     'description' => 'Stores the known results for a search.',
     'fields' => [
@@ -38,4 +42,119 @@ function search_api_saved_searches_schema() {
   ];
 
   return $schema;
+}
+
+/**
+ * Change the storage type of the saved searches' "query" property.
+ */
+function search_api_saved_searches_update_8101(): void {
+  // Luckily, the column in the database stays exactly the same, both regarding
+  // its definition and its contained data. We just need to trick Drupal into
+  // thinking it actually installed this new version. This ensures that the
+  // update doesn't fail if there are already some saved searches in the
+  // database.
+  $field = BaseFieldDefinition::create('search_api_saved_searches_query')
+    ->setTargetEntityTypeId('search_api_saved_search')
+    ->setName('query')
+    ->setLabel(t('Search query'))
+    ->setDescription(t('The saved search query.'))
+    ->setDisplayOptions('view', [
+      'region' => 'hidden',
+    ])
+    ->setDisplayOptions('form', [
+      'region' => 'hidden',
+    ]);
+  \Drupal::getContainer()->get('entity.last_installed_schema.repository')
+    ->setLastInstalledFieldStorageDefinition($field);
+
+  $installed_storage_schema = \Drupal::keyValue('entity.storage_schema.sql');
+  $key = 'search_api_saved_search.field_schema_data.query';
+  $definition = $installed_storage_schema->get($key, []);
+  $definition['search_api_saved_search']['fields']['query']['serialize'] = TRUE;
+  $installed_storage_schema->set($key, $definition);
+}
+
+/**
+ * Remove the "Allow changing of keywords" option from the bundle settings.
+ */
+function search_api_saved_searches_update_8102(): FormattableMarkup {
+  $config_factory = \Drupal::configFactory();
+  $updated = [];
+  $errors = [];
+  foreach ($config_factory->listAll('search_api_saved_searches.type.') as $config_id) {
+    $type = $config_factory->getEditable($config_id);
+    $options = $type->get('options');
+    if (!isset($options['allow_keys_change'])) {
+      continue;
+    }
+    $allow_keys_change = $options['allow_keys_change'];
+    unset($options['allow_keys_change']);
+    $type->set('options', $options);
+    $type->save(TRUE);
+    $type_id = $type->get('id');
+    $updated[] = $type_id;
+
+    // If "allow_keys_change" was set, make the "search_keywords" form field
+    // visible.
+    if ($allow_keys_change) {
+      $form_display = $config_factory->getEditable("core.entity_form_display.search_api_saved_search.$type_id.default");
+      // Do not create a new form display config, nor add a "content" region if
+      // there is none yet.
+      if ($form_display->isNew() || !$form_display->get('content')) {
+        continue;
+      }
+      $region_content = $form_display->get('content');
+      $region_hidden = $form_display->get('hidden');
+      // In case the user already added "search_keywords" to a region, do not
+      // make automatic adjustments in this update.
+      if (!empty($region_content['search_keywords'])
+          || !empty($region_hidden['search_keywords'])) {
+        continue;
+      }
+      $region_content['search_keywords'] = [
+        'type' => 'string_textfield',
+        'weight' => count($region_content),
+        'region' => 'content',
+        'settings' => [
+          'size' => 60,
+          'placeholder' => '',
+        ],
+      ];
+      $form_display->set('content', $region_content);
+      try {
+        // Do NOT mark as trusted, as we do not control the "form display"
+        // entity type so cannot guarantee that we didn't mess something up.
+        $form_display->save();
+      }
+      catch (ConfigException $e) {
+        $errors[] = t('Failed to save the form display of the %type saved search type. If you want the search keywords to be editable for saved searches of this type (as the setting previously was), you have to enable the "@keywords" form field manually. (Reason: @error)', [
+          '%type' => $type->get('label'),
+          '@keywords' => t('Fulltext keywords'),
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+  }
+
+  if (!$updated) {
+    return t('No saved search types needed to be updated.');
+  }
+
+  $updated = implode(', ', $updated);
+  $message = t('Updated the following saved search types: @types.', ['@types' => $updated]);
+
+  if ($errors) {
+    $vars = [
+      '@msg' => $message,
+    ];
+    $template = '@msg';
+    foreach ($errors as $i => $error) {
+      $placeholder = "@error$i";
+      $vars[$placeholder] = $error;
+      $template .= "<br />$placeholder";
+    }
+    $message = new FormattableMarkup($template, $vars);
+  }
+
+  return $message;
 }

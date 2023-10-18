@@ -4,10 +4,12 @@ namespace Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\noti
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -58,6 +60,13 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
   protected $configFactory;
 
   /**
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface|null
+   */
+  protected $languageManager;
+
+  /**
    * The token service.
    *
    * @var \Drupal\Core\Utility\Token|null
@@ -73,6 +82,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
 
     $plugin->setMailService($container->get('plugin.manager.mail'));
     $plugin->setConfigFactory($container->get('config.factory'));
+    $plugin->setLanguageManager($container->get('language_manager'));
     $plugin->setTokenService($container->get('token'));
 
     return $plugin;
@@ -84,7 +94,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
    * @return \Drupal\Core\Mail\MailManagerInterface
    *   The mail service.
    */
-  public function getMailService() {
+  public function getMailService(): MailManagerInterface {
     return $this->mailService ?: \Drupal::service('plugin.manager.mail');
   }
 
@@ -96,7 +106,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
    *
    * @return $this
    */
-  public function setMailService(MailManagerInterface $mail_service) {
+  public function setMailService(MailManagerInterface $mail_service): self {
     $this->mailService = $mail_service;
     return $this;
   }
@@ -107,7 +117,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
    * @return \Drupal\Core\Config\ConfigFactoryInterface
    *   The config factory.
    */
-  public function getConfigFactory() {
+  public function getConfigFactory(): ConfigFactoryInterface {
     return $this->configFactory ?: \Drupal::service('config.factory');
   }
 
@@ -119,8 +129,31 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
    *
    * @return $this
    */
-  public function setConfigFactory(ConfigFactoryInterface $config_factory) {
+  public function setConfigFactory(ConfigFactoryInterface $config_factory): self {
     $this->configFactory = $config_factory;
+    return $this;
+  }
+
+  /**
+   * Retrieves the language manager.
+   *
+   * @return \Drupal\Core\Language\LanguageManagerInterface
+   *   The language manager.
+   */
+  public function getLanguageManager(): LanguageManagerInterface {
+    return $this->languageManager ?: \Drupal::service('language_manager');
+  }
+
+  /**
+   * Sets the language manager.
+   *
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The new language manager.
+   *
+   * @return $this
+   */
+  public function setLanguageManager(LanguageManagerInterface $language_manager): self {
+    $this->languageManager = $language_manager;
     return $this;
   }
 
@@ -130,7 +163,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
    * @return \Drupal\Core\Utility\Token
    *   The token service.
    */
-  public function getTokenService() {
+  public function getTokenService(): Token {
     return $this->tokenService ?: \Drupal::service('token');
   }
 
@@ -142,7 +175,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
    *
    * @return $this
    */
-  public function setTokenService(Token $token_service) {
+  public function setTokenService(Token $token_service): self {
     $this->tokenService = $token_service;
     return $this;
   }
@@ -150,7 +183,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     $configuration = parent::defaultConfiguration();
 
     $configuration += [
@@ -172,7 +205,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form['registered_choose_mail'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Let logged-in users also enter a different mail address'),
@@ -289,7 +322,7 @@ There are new results for your saved search "@search_label":
    *   A form/render element for displaying the available tokens for the given
    *   types.
    */
-  protected function getAvailableTokensList(array $types) {
+  protected function getAvailableTokensList(array $types): array {
     // Code taken from \Drupal\views\Plugin\views\PluginBase::globalTokenForm().
     $token_items = [];
     $infos = $this->getTokenService()->getInfo();
@@ -321,7 +354,7 @@ There are new results for your saved search "@search_label":
   /**
    * {@inheritdoc}
    */
-  public function getFieldDefinitions() {
+  public function getFieldDefinitions(): array {
     $fields['mail'] = BundleFieldDefinition::create('email')
       ->setLabel(t('E-mail'))
       ->setDescription(t('The email address to which notifications should be sent.'))
@@ -346,7 +379,7 @@ There are new results for your saved search "@search_label":
    * @return array
    *   An array with the default value.
    */
-  public static function getDefaultMail() {
+  public static function getDefaultMail(): array {
     $mail = \Drupal::currentUser()->getEmail();
     return $mail ? [$mail] : [];
   }
@@ -354,7 +387,7 @@ There are new results for your saved search "@search_label":
   /**
    * {@inheritdoc}
    */
-  public function getDefaultFieldFormDisplay() {
+  public function getDefaultFieldFormDisplay(): array {
     return [
       'mail' => [
         'type' => 'email_default',
@@ -372,7 +405,7 @@ There are new results for your saved search "@search_label":
   /**
    * {@inheritdoc}
    */
-  public function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL): AccessResultInterface {
     // Make sure this is really our e-mail field.
     if ($field_definition->getName() !== 'mail') {
       return parent::checkFieldAccess($operation, $field_definition, $account, $items);
@@ -391,14 +424,14 @@ There are new results for your saved search "@search_label":
   /**
    * {@inheritdoc}
    */
-  public function notify(SavedSearchInterface $search, ResultSetInterface $results) {
+  public function notify(SavedSearchInterface $search, ResultSetInterface $results): void {
     $params = [
       'search' => $search,
       'results' => $results,
       'plugin' => $this,
     ];
     $this->getMailService()
-      ->mail('search_api_saved_searches', self::MAIL_NEW_RESULTS, $search->get('mail')->value, $this->getPreferredLangcode($search), $params);
+      ->mail('search_api_saved_searches', self::MAIL_NEW_RESULTS, $search->get('mail')->__get('value'), $this->getPreferredLangcode($search), $params);
   }
 
   /**
@@ -434,26 +467,7 @@ There are new results for your saved search "@search_label":
    * @see search_api_saved_searches_mail()
    */
   public function getNewResultsMail(&$message, $params) {
-    /** @var \Drupal\search_api_saved_searches\SavedSearchInterface $search */
-    $search = $params['search'];
-    $account = $search->getOwner();
-    /** @var \Drupal\search_api\Query\ResultSetInterface $results */
-    $results = $params['results'];
-    $data = [
-      'search_api_saved_search' => $search,
-      'search_api_results' => $results,
-      'user' => $account,
-    ];
-    $options['langcode'] = $this->getPreferredLangcode($search);
-    $options['clear'] = TRUE;
-
-    $subject = $this->configuration['notification']['title'];
-    $subject = $this->getTokenService()->replace($subject, $data, $options);
-    $body = $this->configuration['notification']['body'];
-    $body = $this->getTokenService()->replace($body, $data, $options);
-
-    $message['subject'] = $subject;
-    $message['body'][] = $body;
+    $this->getMail('notification', $message, $params);
   }
 
   /**
@@ -488,6 +502,43 @@ There are new results for your saved search "@search_label":
    * @see search_api_saved_searches_mail()
    */
   public function getActivationMail(&$message, $params) {
+    $this->getMail('activate', $message, $params);
+  }
+
+  /**
+   * Prepares a mail message.
+   *
+   * @param string $mail_type
+   *   The type of mail, which determines the configuration key where subject
+   *   and body are retrieved.
+   * @param array|\ArrayAccess $message
+   *   An array to be filled in. Elements in this array include:
+   *   - id: An ID to identify the mail sent. Look at module source code or
+   *     MailManagerInterface->mail() for possible id values.
+   *   - to: The address or addresses the message will be sent to. The
+   *     formatting of this string must comply with RFC 2822.
+   *   - subject: Subject of the email to be sent. This must not contain any
+   *     newline characters, or the mail may not be sent properly.
+   *     MailManagerInterface->mail() sets this to an empty string when the hook
+   *     is invoked.
+   *   - body: An array of lines containing the message to be sent. Drupal will
+   *     format the correct line endings for you. MailManagerInterface->mail()
+   *     sets this to an empty array when the hook is invoked. The array may
+   *     contain either strings or objects implementing
+   *     \Drupal\Component\Render\MarkupInterface.
+   *   - from: The address the message will be marked as being from, which is
+   *     set by MailManagerInterface->mail() to either a custom address or the
+   *     site-wide default email address when the hook is invoked.
+   *   - headers: Associative array containing mail headers, such as From,
+   *     Sender, MIME-Version, Content-Type, etc.
+   *     MailManagerInterface->mail() pre-fills several headers in this array.
+   * @param array|\ArrayAccess $params
+   *   An associative array with the following keys:
+   *   - search: The saved search entity which can be activated.
+   *   - results: (optional) In case of a "notification" mail, the search
+   *     results.
+   */
+  protected function getMail(string $mail_type, &$message, $params): void {
     /** @var \Drupal\search_api_saved_searches\SavedSearchInterface $search */
     $search = $params['search'];
     $account = $search->getOwner();
@@ -495,34 +546,57 @@ There are new results for your saved search "@search_label":
       'search_api_saved_search' => $search,
       'user' => $account,
     ];
-    $options['langcode'] = $this->getPreferredLangcode($search);
-    $options['clear'] = TRUE;
+    if (isset($params['results'])) {
+      $data['search_api_results'] = $params['results'];
+    }
 
-    $subject = $this->configuration['activate']['title'];
+    $language_manager = $this->getLanguageManager();
+    $language = $language_manager->getLanguage($message['langcode']);
+    $original_language = $language_manager->getConfigOverrideLanguage();
+    $language_manager->setConfigOverrideLanguage($language);
+
+    $config_key = 'search_api_saved_searches.type.' . $search->bundle();
+    $type_config = $this->getConfigFactory()->get($config_key);
+
+    $options = [
+      'langcode' => $message['langcode'],
+      'clear' => TRUE,
+    ];
+    $settings_prefix = "notification_settings.email.$mail_type";
+    $subject = $type_config->get("$settings_prefix.title");
     $subject = $this->getTokenService()->replace($subject, $data, $options);
-    $body = $this->configuration['activate']['body'];
+    $body = $type_config->get("$settings_prefix.body");
     $body = $this->getTokenService()->replace($body, $data, $options);
 
     $message['subject'] = $subject;
     $message['body'][] = $body;
+
+    $language_manager->setConfigOverrideLanguage($original_language);
   }
 
   /**
-   * Retrieves the preferred langcode to use in mails for the given search.
+   * Retrieves the language code to use in mails for the given search.
    *
    * @param \Drupal\search_api_saved_searches\SavedSearchInterface $search
    *   The saved search in question.
    *
    * @return string
-   *   The search's owner's preferred langcode, if one could be determined. The
-   *   site default language otherwise.
+   *   The search's owner's preferred langcode, if they have one set; otherwise
+   *   either the language code of the saved search itself (if available) or the
+   *   site default language as the final fallback.
    */
-  protected function getPreferredLangcode(SavedSearchInterface $search) {
+  public function getPreferredLangcode(SavedSearchInterface $search): string {
+    $langcode = $search->getLangcode();
     $account = $search->getOwner();
-    if ($account) {
-      return $account->getPreferredLangcode();
+    if ($account && !$account->isAnonymous()) {
+      $langcode = $account->getPreferredLangcode(FALSE) ?: $langcode;
     }
-    return \Drupal::languageManager()->getDefaultLanguage()->getId();
+    $language_manager = $this->getLanguageManager();
+    if ($langcode && $language_manager->getLanguage($langcode)
+        && !isset($language_manager->getDefaultLockedLanguages()[$langcode])) {
+      return $langcode;
+    }
+    return $language_manager->getDefaultLanguage()->getId();
   }
 
 }

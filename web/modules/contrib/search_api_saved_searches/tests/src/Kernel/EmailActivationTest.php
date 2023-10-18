@@ -2,11 +2,13 @@
 
 namespace Drupal\Tests\search_api_saved_searches\Kernel;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api_saved_searches\Controller\SavedSearchController;
 use Drupal\search_api_saved_searches\Entity\SavedSearch;
 use Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler;
 use Drupal\search_api_saved_searches\Entity\SavedSearchType;
+use Drupal\Tests\search_api\Kernel\TestLogger;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -45,7 +47,7 @@ class EmailActivationTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');
@@ -99,11 +101,19 @@ END;
       ],
     ]);
     $type->save();
+  }
 
-    // Report all log messages as errors.
+  /**
+   * {@inheritdoc}
+   */
+  public function register(ContainerBuilder $container): void {
+    parent::register($container);
+
+    // Set a logger that will throw exceptions when warnings/errors are logged.
     $logger = new TestLogger('');
-    $this->container->set('logger.factory', $logger);
-    $this->container->set('logger.channel.search_api_saved_searches', $logger);
+    $container->set('logger.factory', $logger);
+    $container->set('logger.channel.search_api', $logger);
+    $container->set('logger.channel.search_api_saved_searches', $logger);
   }
 
   /**
@@ -126,7 +136,7 @@ END;
    *
    * @dataProvider activationMailDataProvider
    */
-  public function testActivationMail($current_user, $owner, $mail_address, $status, $expected_status, $mail_expected) {
+  public function testActivationMail(int $current_user, int $owner, ?string $mail_address, bool $status, bool $expected_status, bool $mail_expected): void {
     $current_user = $this->users[$current_user];
     $owner = $this->users[$owner];
 
@@ -200,7 +210,7 @@ END;
    *
    * @see \Drupal\Tests\search_api_saved_searches\Kernel\EmailActivationTest::testActivationMail()
    */
-  public function activationMailDataProvider() {
+  public function activationMailDataProvider(): array {
     return [
       'already disabled' => [
         0,
@@ -281,7 +291,7 @@ END;
 
     // Activate the saved search.
     $controller = new SavedSearchController();
-    $response = $controller->activateSearch($search, $search->getAccessToken('activate'));
+    $response = $controller->activateSearch($search);
     $this->assertInstanceOf(RedirectResponse::class, $response);
     $this->assertTrue($search->get('status')->value);
 

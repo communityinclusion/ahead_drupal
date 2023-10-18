@@ -3,6 +3,7 @@
 namespace Drupal\search_api_saved_searches;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Utility\QueryHelperInterface;
 use Drupal\search_api_saved_searches\Notification\NotificationPluginInterface;
 
@@ -14,10 +15,11 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
   /**
    * Retrieves the type's description.
    *
-   * @return string
-   *   The (admin) description of this saved search type.
+   * @return string|null
+   *   The (admin) description of this saved search type, or NULL for newly
+   *   created types.
    */
-  public function getDescription();
+  public function getDescription(): ?string;
 
   /**
    * Retrieves this saved search type's notification plugins.
@@ -26,7 +28,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *   The notification plugins used by this saved search type, keyed by plugin
    *   ID.
    */
-  public function getNotificationPlugins();
+  public function getNotificationPlugins(): array;
 
   /**
    * Retrieves the IDs of all notification plugins enabled for this type.
@@ -34,7 +36,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    * @return string[]
    *   The IDs of the notification plugins used by this saved search type.
    */
-  public function getNotificationPluginIds();
+  public function getNotificationPluginIds(): array;
 
   /**
    * Determines whether the given notification plugin ID is valid for this type.
@@ -50,7 +52,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *   TRUE if the notification plugin with the given ID is enabled for this
    *   saved search type and can be loaded. FALSE otherwise.
    */
-  public function isValidNotificationPlugin($notification_plugin_id);
+  public function isValidNotificationPlugin(string $notification_plugin_id): bool;
 
   /**
    * Retrieves a specific notification plugin for this saved search type.
@@ -65,7 +67,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *   Thrown if the specified notification plugin isn't enabled for this saved
    *   search type, or couldn't be loaded.
    */
-  public function getNotificationPlugin($notification_plugin_id);
+  public function getNotificationPlugin(string $notification_plugin_id): NotificationPluginInterface;
 
   /**
    * Adds a notification plugin to this saved search type.
@@ -77,7 +79,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *
    * @return $this
    */
-  public function addNotificationPlugin(NotificationPluginInterface $notification_plugin);
+  public function addNotificationPlugin(NotificationPluginInterface $notification_plugin): self;
 
   /**
    * Removes a notification plugin from this saved search type.
@@ -87,7 +89,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *
    * @return $this
    */
-  public function removeNotificationPlugin($notification_plugin_id);
+  public function removeNotificationPlugin(string $notification_plugin_id): self;
 
   /**
    * Sets this saved search type's notification plugins.
@@ -97,7 +99,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *
    * @return $this
    */
-  public function setNotificationPlugins(array $notification_plugins);
+  public function setNotificationPlugins(array $notification_plugins): self;
 
   /**
    * Retrieves all field definitions defined by notification plugins.
@@ -106,7 +108,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *   All field definitions defined by notification plugins for this type,
    *   keyed by field name.
    */
-  public function getNotificationPluginFieldDefinitions();
+  public function getNotificationPluginFieldDefinitions(): array;
 
   /**
    * Retrieves the type options.
@@ -114,7 +116,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    * @return array
    *   The options set for this type.
    */
-  public function getOptions();
+  public function getOptions(): array;
 
   /**
    * Retrieves a single, possibly nested, option.
@@ -127,7 +129,7 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    * @return mixed
    *   The value of the specified option if it exists, $default otherwise.
    */
-  public function getOption($key, $default = NULL);
+  public function getOption(string $key, $default = NULL);
 
   /**
    * Retrieves an active search query that can be saved with this type.
@@ -141,6 +143,6 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *   saved with this saved search type. Or NULL if no such query could be
    *   found.
    */
-  public function getActiveQuery(QueryHelperInterface $query_helper = NULL);
+  public function getActiveQuery(QueryHelperInterface $query_helper = NULL): ?QueryInterface;
 
 }

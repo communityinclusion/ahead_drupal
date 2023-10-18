@@ -7,8 +7,9 @@ use Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler;
 use Drupal\search_api_saved_searches\Entity\SavedSearchType;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\search_api\Functional\ExampleContentTrait;
-use Drupal\Tests\search_api_saved_searches\Kernel\TestLogger;
+use Drupal\Tests\search_api\Kernel\TestLogger;
 use Drupal\user\Entity\Role;
+use Drupal\user\RoleInterface;
 
 /**
  * Tests overall functionality of the module.
@@ -22,12 +23,12 @@ class IntegrationTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'block',
     'field_ui',
-    // @todo Remove "rest" dependency once we depend on Search API 1.8. See
-    //   #2953267.
-    'rest',
+    // The "language" module is only needed for the moment because of a bug in
+    // Core. See https://www.drupal.org/node/3273888.
+    'language',
     'search_api_saved_searches',
     'search_api_test_views',
   ];
@@ -61,7 +62,7 @@ class IntegrationTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create test users.
@@ -79,9 +80,10 @@ class IntegrationTest extends BrowserTestBase {
       ->set('interface.default', 'test_mail_collector')
       ->save();
 
-    // Report all log messages as errors.
+    // Set a logger that will throw exceptions when warnings/errors are logged.
     $logger = new TestLogger('');
     $this->container->set('logger.factory', $logger);
+    $this->container->set('logger.channel.search_api', $logger);
     $this->container->set('logger.channel.search_api_saved_searches', $logger);
 
     // Generate and index example content.
@@ -136,22 +138,47 @@ END;
       'options[displays][selected][views_page:search_api_test_view__page_1]' => TRUE,
       'notification_plugins[email]' => TRUE,
       'notification_configs[email][activate][body]' => $activation_mail,
-      'options[allow_keys_change]' => TRUE,
+      'options[max_results]' => 13,
       'options[description]' => 'Description for the default type.',
     ];
     $this->submitForm($edit, 'Save');
     $assert_session->pageTextContains('Your settings have been saved.');
 
+    $type = SavedSearchType::load('default');
+    $expected = [
+      'displays' => [
+        'default' => FALSE,
+        'selected' => [
+          'views_page:search_api_test_view__page_1',
+        ],
+      ],
+      'max_results' => 13,
+      'date_field' => [
+        'database_search_index' => '',
+      ],
+      'description' => 'Description for the default type.',
+    ];
+    $this->assertEquals($expected, $type->getOptions());
+
     $this->clickLink('Manage form display');
     $assert_session->pageTextContains('Label');
     $assert_session->pageTextContains('Notification interval');
     $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Fulltext keywords');
     $assert_session->checkboxChecked('display_modes_custom[create]');
+
+    // Enable the "Fulltext keywords" field.
+    $edit = [
+      'fields[search_keywords][region]' => 'content',
+      'fields[search_keywords][weight]' => 10,
+    ];
+    $this->submitForm($edit, 'Save');
 
     $this->clickLink('Create');
     $assert_session->pageTextContains('Label');
     $assert_session->pageTextContains('Notification interval');
     $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Fulltext keywords');
 
     $this->placeBlock('search_api_saved_searches', [
       'label' => 'Default saved searches block',
@@ -177,6 +204,7 @@ END;
       'options[displays][selected][views_page:search_api_test_view__page_1]' => TRUE,
       'options[displays][selected][views_page:search_api_test_sorts__page_1]' => TRUE,
       'notification_plugins[email]' => TRUE,
+      'options[max_results]' => '',
       'options[description]' => 'Description for the foobar type.',
     ];
     $this->submitForm($edit, 'Save');
@@ -200,12 +228,14 @@ END;
     $assert_session->pageTextContains('Label');
     $assert_session->pageTextContains('Notification interval');
     $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Fulltext keywords');
     $assert_session->checkboxChecked('display_modes_custom[create]');
 
     $this->clickLink('Create');
     $assert_session->pageTextContains('Label');
     $assert_session->pageTextContains('Notification interval');
     $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Fulltext keywords');
 
     $this->placeBlock('search_api_saved_searches', [
       'label' => 'Foo &amp; Bar saved searches block',
@@ -239,7 +269,7 @@ END;
     $assert_session->pageTextNotContains('Description for the');
 
     // Grant the permissions.
-    $role = Role::load(Role::ANONYMOUS_ID);
+    $role = Role::load(RoleInterface::ANONYMOUS_ID);
     $this->grantPermissions($role, [
       'use default search_api_saved_searches',
       'use foobar search_api_saved_searches',
@@ -369,7 +399,7 @@ END;
     $assert_session->pageTextNotContains('Description for the');
 
     // Grant the permissions.
-    $role = Role::load(Role::AUTHENTICATED_ID);
+    $role = Role::load(RoleInterface::AUTHENTICATED_ID);
     $this->grantPermissions($role, [
       'use default search_api_saved_searches',
       'use foobar search_api_saved_searches',
@@ -463,8 +493,8 @@ END;
     // Make sure we really have all the expected saved searches present, to
     // avoid confusing assertion failures later.
     $total = \Drupal::entityQuery('search_api_saved_search')
-      ->accessCheck(FALSE)
       ->count()
+      ->accessCheck(FALSE)
       ->execute();
     $this->assertEquals(4, $total);
 
@@ -496,9 +526,6 @@ END;
       }
 
       foreach ([0, $user1_uid] as $uid) {
-        // Unfortunately, web assertions don't let us pass a message, so we have
-        // to use this to get any information on where this failed.
-        $this->verbose("Testing view for saved searches of user #$uid as $key user.");
         $this->drupalGet("user/$uid/saved-searches");
         if (in_array($uid, $info['access'])) {
           $assert_session->pageTextNotContains('The requested page could not be found.');
@@ -523,6 +550,7 @@ END;
     $count_foobar_searches = \Drupal::entityQuery('search_api_saved_search')
       ->condition('type', 'foobar')
       ->count()
+      ->accessCheck(FALSE)
       ->execute();
     $this->assertGreaterThan(0, $count_foobar_searches);
 

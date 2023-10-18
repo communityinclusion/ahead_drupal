@@ -385,6 +385,7 @@ function fontyourface_delete($provider) {
     $storage_handler = \Drupal::entityTypeManager()->getStorage('font');
     $fids = \Drupal::entityQuery('font')
       ->condition('pid', $provider)
+      ->accessCheck(FALSE)
       ->range(0, 50)
       ->execute();
     if (!empty($fids)) {

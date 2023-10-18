@@ -2,13 +2,16 @@
 
 namespace Drupal\search_api_saved_searches\Form;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\search_api\Display\DisplayPluginManager;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
 use Drupal\search_api_saved_searches\Notification\NotificationPluginManagerInterface;
+use Drupal\search_api_saved_searches\SavedSearchesException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -47,8 +50,7 @@ class SavedSearchTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
-    /** @var static $form */
+  public static function create(ContainerInterface $container): self {
     $form = parent::create($container);
 
     $form->setStringTranslation($container->get('string_translation'));
@@ -66,7 +68,7 @@ class SavedSearchTypeForm extends EntityForm {
    * @return \Drupal\Core\Entity\EntityTypeManagerInterface
    *   The entity type manager.
    */
-  public function getEntityTypeManager() {
+  public function getEntityTypeManager(): EntityTypeManagerInterface {
     return $this->entityTypeManager;
   }
 
@@ -76,7 +78,7 @@ class SavedSearchTypeForm extends EntityForm {
    * @return \Drupal\search_api_saved_searches\Notification\NotificationPluginManagerInterface
    *   The notification plugin manager.
    */
-  public function getNotificationPluginManager() {
+  public function getNotificationPluginManager(): NotificationPluginManagerInterface {
     return $this->notificationPluginManager ?: \Drupal::service('plugin.manager.search_api_saved_searches.notification');
   }
 
@@ -88,7 +90,7 @@ class SavedSearchTypeForm extends EntityForm {
    *
    * @return $this
    */
-  public function setNotificationPluginManager(NotificationPluginManagerInterface $notification_plugin_manager) {
+  public function setNotificationPluginManager(NotificationPluginManagerInterface $notification_plugin_manager): self {
     $this->notificationPluginManager = $notification_plugin_manager;
     return $this;
   }
@@ -99,7 +101,7 @@ class SavedSearchTypeForm extends EntityForm {
    * @return \Drupal\search_api\Display\DisplayPluginManager
    *   The display plugin manager.
    */
-  public function getDisplayPluginManager() {
+  public function getDisplayPluginManager(): DisplayPluginManager {
     return $this->displayPluginManager ?: \Drupal::service('plugin.manager.search_api.display');
   }
 
@@ -111,7 +113,7 @@ class SavedSearchTypeForm extends EntityForm {
    *
    * @return $this
    */
-  public function setDisplayPluginManager(DisplayPluginManager $display_plugin_manager) {
+  public function setDisplayPluginManager(DisplayPluginManager $display_plugin_manager): self {
     $this->displayPluginManager = $display_plugin_manager;
     return $this;
   }
@@ -122,7 +124,7 @@ class SavedSearchTypeForm extends EntityForm {
    * @return \Drupal\search_api\Utility\DataTypeHelperInterface
    *   The data type helper.
    */
-  public function getDataTypeHelper() {
+  public function getDataTypeHelper(): DataTypeHelperInterface {
     return $this->dataTypeHelper ?: \Drupal::service('search_api.data_type_helper');
   }
 
@@ -134,7 +136,7 @@ class SavedSearchTypeForm extends EntityForm {
    *
    * @return $this
    */
-  public function setDataTypeHelper(DataTypeHelperInterface $data_type_helper) {
+  public function setDataTypeHelper(DataTypeHelperInterface $data_type_helper): self {
     $this->dataTypeHelper = $data_type_helper;
     return $this;
   }
@@ -142,7 +144,7 @@ class SavedSearchTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state) {
+  public function form(array $form, FormStateInterface $form_state): array {
     $form = parent::form($form, $form_state);
 
     $type = $this->entity;
@@ -242,9 +244,15 @@ class SavedSearchTypeForm extends EntityForm {
       ],
     ];
     $notification_plugin_options = [];
-    foreach ($this->getNotificationPluginManager()->createPlugins($type) as $plugin_id => $notification_plugin) {
-      $notification_plugin_options[$plugin_id] = $notification_plugin->label();
-      $form['notification_plugins'][$plugin_id]['#description'] = $notification_plugin->getDescription();
+    try {
+      foreach ($this->getNotificationPluginManager()->createPlugins($type) as $plugin_id => $notification_plugin) {
+        $notification_plugin_options[$plugin_id] = $notification_plugin->label();
+        $form['notification_plugins'][$plugin_id]['#description'] = $notification_plugin->getDescription();
+      }
+    }
+    catch (SavedSearchesException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+      $this->messenger()->addError($this->t('An error occurred loading the notification plugins: @message.', ['@message' => $e->getMessage()]));
     }
     asort($notification_plugin_options, SORT_NATURAL | SORT_FLAG_CASE);
     $form['notification_plugins']['#options'] = $notification_plugin_options;
@@ -277,22 +285,59 @@ class SavedSearchTypeForm extends EntityForm {
       '#title' => $this->t('Miscellaneous'),
       '#open' => $type->isNew(),
     ];
-    $form['misc']['allow_keys_change'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Allow changing of keywords'),
-      '#description' => $this->t('Enable to allow users to change the search keywords for existing saved searches.'),
-      '#default_value' => $type->getOption('allow_keys_change', FALSE),
-      '#parents' => ['options', 'allow_keys_change'],
-    ];
+    $date_field_title = $this->t('Method for determining new results');
     $form['misc']['date_field'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t('Method for determining new results'),
+      '#title' => $date_field_title,
       '#description' => $this->t('The method by which to decide which results are new. "Determine by result ID" will internally save the IDs of all results that were previously found by the user and only report results not already reported. (This might use a lot of memory for large result sets.) The other options check whether the date in the selected field is later than the date of last notification.'),
     ];
-    /** @var \Drupal\search_api\IndexInterface[] $indexes */
-    $indexes = $this->getEntityTypeManager()
-      ->getStorage('search_api_index')
-      ->loadMultiple();
+    $form['misc']['max_results'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Maximum number of new results to report'),
+      '#description' => $this->t('Set this to a value greater than 0 to cap the number of new results reported in a single notification at that number.'),
+      '#min' => 1,
+      '#default_value' => $type->getOption('max_results', ''),
+      '#parents' => ['options', 'max_results'],
+    ];
+    $determine_by_result_id = $this->t('Determine by result ID');
+    $vars = [
+      '@determine_by_result_id' => $determine_by_result_id,
+      '@method_for_determining_new_results' => $date_field_title,
+    ];
+    $form['misc']['query_limit'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Limit to set on the search query'),
+      '#description' => $this->t('If "@determine_by_result_id" is selected as the "@method_for_determining_new_results" below, then more results than are shown to the user need to be retrieved from the search server in order to determine the new ones. To avoid overloading the search server, encountering "out of memory" exceptions or similar, you can set a query limit here. Do note, however, that this means that not all new results might be reported in some cases, or even none at all.', $vars),
+      '#min' => 1,
+      '#default_value' => $type->getOption('query_limit', ''),
+      '#parents' => ['options', 'query_limit'],
+      '#states' => [
+        // Will be set below to only be visible if at least one index is set to
+        // "Determine by result ID". (Cannot use "visible" here since that
+        // doesn't work reliably with "or".)
+        'invisible' => [],
+      ],
+    ];
+    $form['misc']['description'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('User interface description'),
+      '#description' => $this->t('Enter a text that will be displayed to users when creating a saved search. You can use HTML in this field.'),
+      '#default_value' => $type->getOption('description', ''),
+      '#parents' => ['options', 'description'],
+    ];
+
+    // Populate the actual options for "date_field", along with the #states for
+    // "query_limit".
+    try {
+      /** @var \Drupal\search_api\IndexInterface[] $indexes */
+      $indexes = $this->getEntityTypeManager()
+        ->getStorage('search_api_index')
+        ->loadMultiple();
+    }
+    catch (PluginException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+      $indexes = [];
+    }
     $data_type_helper = $this->getDataTypeHelper();
     foreach ($indexes as $index_id => $index) {
       $fields = [];
@@ -302,31 +347,24 @@ class SavedSearchTypeForm extends EntityForm {
           $fields[$key] = $this->t('Determine by @name', ['@name' => $field->getLabel()]);
         }
       }
-      if ($fields) {
-        $fields = [NULL => $this->t('Determine by result ID')] + $fields;
-        $form['misc']['date_field'][$index_id] = [
-          '#type' => 'select',
-          '#title' => count($indexes) === 1 ? NULL : $this->t('Searches on index %index', ['%index' => $index->label()]),
-          '#options' => $fields,
-          '#default_value' => $type->getOption("date_field.$index_id"),
-          '#parents' => ['options', 'date_field', $index_id],
-        ];
-      }
-      else {
-        $form['misc']['date_field'][$index_id] = [
-          '#type' => 'value',
-          '#value' => NULL,
-          '#parents' => ['options', 'date_field', $index_id],
-        ];
-      }
+      $fields = [NULL => $determine_by_result_id] + $fields;
+      $form['misc']['date_field'][$index_id] = [
+        '#type' => 'select',
+        '#title' => count($indexes) === 1 ? NULL : $this->t('Searches on index %index', ['%index' => $index->label()]),
+        '#options' => $fields,
+        '#disabled' => count($fields) === 1,
+        '#default_value' => $type->getOption("date_field.$index_id"),
+        '#parents' => ['options', 'date_field', $index_id],
+      ];
+
+      // Add a condition for the "query_limit" state, to hide it if all indexes
+      // have a date field (and not "Determine by result ID") selected.
+      $form['misc']['query_limit']['#states']['invisible'] += [
+        ':input[name="options[date_field][' . $index_id . ']"]' => [
+          '!value' => '',
+        ],
+      ];
     }
-    $form['misc']['description'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('User interface description'),
-      '#description' => $this->t('Enter a text that will be displayed to users when creating a saved search. You can use HTML in this field.'),
-      '#default_value' => $type->getOption('description', ''),
-      '#parents' => ['options', 'description'],
-    ];
 
     return $form;
   }
@@ -339,7 +377,7 @@ class SavedSearchTypeForm extends EntityForm {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current form state.
    */
-  protected function buildNotificationPluginConfigForm(array &$form, FormStateInterface $form_state) {
+  protected function buildNotificationPluginConfigForm(array &$form, FormStateInterface $form_state): void {
     $type = $this->entity;
 
     $selected_plugins = $form_state->getValue('notification_plugins');
@@ -351,8 +389,15 @@ class SavedSearchTypeForm extends EntityForm {
     else {
       // The form is being rebuilt – use the notification plugins selected by
       // the user instead of the ones saved in the config.
-      $plugins = $this->getNotificationPluginManager()
-        ->createPlugins($type, $selected_plugins);
+      try {
+        $plugins = $this->getNotificationPluginManager()
+          ->createPlugins($type, $selected_plugins);
+      }
+      catch (SavedSearchesException $e) {
+        watchdog_exception('search_api_saved_searches', $e);
+        $this->messenger()->addError($this->t('An error occurred loading the notification plugins: @message.', ['@message' => $e->getMessage()]));
+        return;
+      }
     }
     $form_state->set('notification_plugins', array_keys($plugins));
 
@@ -393,8 +438,10 @@ class SavedSearchTypeForm extends EntityForm {
    *
    * @return array
    *   The part of the form to return as AJAX.
+   *
+   * @noinspection PhpUnusedParameterInspection
    */
-  public function buildAjaxNotificationPluginConfigForm(array $form, FormStateInterface $form_state) {
+  public function buildAjaxNotificationPluginConfigForm(array $form, FormStateInterface $form_state): array {
     return $form['notification_configs'];
   }
 
@@ -407,8 +454,10 @@ class SavedSearchTypeForm extends EntityForm {
    *   The current form array.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current form state.
+   *
+   * @noinspection PhpUnusedParameterInspection
    */
-  public function submitAjaxNotificationPluginConfigForm(array $form, FormStateInterface $form_state) {
+  public function submitAjaxNotificationPluginConfigForm(array $form, FormStateInterface $form_state): void {
     $form_state->setValue('id', NULL);
     $form_state->setRebuild();
   }
@@ -432,10 +481,38 @@ class SavedSearchTypeForm extends EntityForm {
     $plugin_ids = array_values(array_filter($form_state->getValue('notification_plugins', [])));
     $form_state->setValue('notification_plugins', $plugin_ids);
 
+    // Make sure "query_limit" is not less than the "max_results", if both are
+    // set.
+    $max_results = $form_state->getValue(['options', 'max_results']);
+    $query_limit = $form_state->getValue(['options', 'query_limit']);
+    if ($max_results && $query_limit && $max_results > $query_limit) {
+      $vars = [
+        '@query_limit' => $form['misc']['query_limit']['#title'],
+        '@max_results' => $form['misc']['max_results']['#title'],
+      ];
+      $form_state->setErrorByName('options][query_limit', $this->t('"@query_limit" must not be less than "@max_results", if both are specified.', $vars));
+    }
+    else {
+      if ($max_results === '') {
+        $form_state->unsetValue(['options', 'max_results']);
+      }
+      if ($query_limit === '') {
+        $form_state->unsetValue(['options', 'query_limit']);
+      }
+    }
+
     // Call validateConfigurationForm() for each enabled notification plugin
     // with a form.
-    $plugins = $this->getNotificationPluginManager()
-      ->createPlugins($type, $plugin_ids);
+    try {
+      $plugins = $this->getNotificationPluginManager()
+        ->createPlugins($type, $plugin_ids);
+    }
+    catch (SavedSearchesException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+      $error = $this->t('An error occurred loading the notification plugins: @message.', ['@message' => $e->getMessage()]);
+      $form_state->setError($form['notification_plugins'], $error);
+      return;
+    }
     $previous_plugins = $form_state->get('notification_plugins');
     foreach ($plugins as $plugin_id => $plugin) {
       if ($plugin instanceof PluginFormInterface) {
@@ -451,7 +528,15 @@ class SavedSearchTypeForm extends EntityForm {
   }
 
   /**
-   * {@inheritdoc}
+   * Form submission handler.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @throws \Drupal\search_api_saved_searches\SavedSearchesException
+   *   Thrown if the plugins could not be loaded.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
@@ -480,7 +565,7 @@ class SavedSearchTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {
+  public function save(array $form, FormStateInterface $form_state): int {
     $return = parent::save($form, $form_state);
 
     $this->messenger()->addStatus($this->t('Your settings have been saved.'));

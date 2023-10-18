@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_saved_searches\Notification;
 
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -26,7 +27,7 @@ interface NotificationPluginInterface extends ConfigurablePluginInterface {
    * @return \Drupal\search_api_saved_searches\SavedSearchTypeInterface
    *   The saved search type to which this plugin is attached.
    */
-  public function getSavedSearchType();
+  public function getSavedSearchType(): SavedSearchTypeInterface;
 
   /**
    * Sets the saved search type.
@@ -36,7 +37,7 @@ interface NotificationPluginInterface extends ConfigurablePluginInterface {
    *
    * @return $this
    */
-  public function setSavedSearchType(SavedSearchTypeInterface $type);
+  public function setSavedSearchType(SavedSearchTypeInterface $type): self;
 
   /**
    * Retrieves the field definitions to add to saved searches for this plugin.
@@ -51,7 +52,7 @@ interface NotificationPluginInterface extends ConfigurablePluginInterface {
    * @return \Drupal\search_api_saved_searches\BundleFieldDefinition[]
    *   An array of bundle field definitions, keyed by field name.
    */
-  public function getFieldDefinitions();
+  public function getFieldDefinitions(): array;
 
   /**
    * Retrieves default form display settings for the plugin's custom fields.
@@ -61,7 +62,7 @@ interface NotificationPluginInterface extends ConfigurablePluginInterface {
    *   defined by this plugin. Fields can easily be hidden by default by just
    *   omitting them from this array.
    */
-  public function getDefaultFieldFormDisplay();
+  public function getDefaultFieldFormDisplay(): array;
 
   /**
    * Checks access to an operation on a given entity field.
@@ -76,7 +77,7 @@ interface NotificationPluginInterface extends ConfigurablePluginInterface {
    *   The field definition.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user session for which to check access.
-   * @param \Drupal\Core\Field\FieldItemListInterface $items
+   * @param \Drupal\Core\Field\FieldItemListInterface|null $items
    *   (optional) The field values for which to check access, or NULL if access
    *   is checked for the field definition, without any specific value
    *   available.
@@ -86,7 +87,7 @@ interface NotificationPluginInterface extends ConfigurablePluginInterface {
    *
    * @see \Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler::checkFieldAccess()
    */
-  public function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL);
+  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL): AccessResultInterface;
 
   /**
    * Notifies the search's owner of new results.
@@ -96,6 +97,6 @@ interface NotificationPluginInterface extends ConfigurablePluginInterface {
    * @param \Drupal\search_api\Query\ResultSetInterface $results
    *   The new results.
    */
-  public function notify(SavedSearchInterface $search, ResultSetInterface $results);
+  public function notify(SavedSearchInterface $search, ResultSetInterface $results): void;
 
 }

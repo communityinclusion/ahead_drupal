@@ -1,5 +1,0 @@
-name: 'Upgrade status test 9 compatible'
-type: module
-description: 'Support module for upgrade status module testing.'
-package: Testing
-core_version_requirement: ^8 || ^9

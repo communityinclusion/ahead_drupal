@@ -13,7 +13,7 @@ use Drupal\user\Entity\User;
 /**
  * Implements hook_token_info().
  */
-function search_api_saved_searches_token_info() {
+function search_api_saved_searches_token_info(): array {
   $types['search-api-saved-search'] = [
     'name' => t('Search API saved search'),
     'description' => t('Tokens related to a saved search.'),
@@ -88,7 +88,7 @@ function search_api_saved_searches_token_info() {
 /**
  * Implements hook_tokens().
  */
-function search_api_saved_searches_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+function search_api_saved_searches_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata): array {
   $token_service = \Drupal::token();
 
   $url_options = ['absolute' => TRUE];
@@ -115,7 +115,7 @@ function search_api_saved_searches_tokens($type, $tokens, array $data, array $op
           'user' => $user->id(),
         ];
         $url = Url::fromRoute('view.saved_searches.page', $params, $url_options);
-        $replacements[$original] = $url;
+        $replacements[$original] = $url->toString();
       }
       catch (\Exception $e) {
         // This will happen when the user deleted the view, or when Views isn't
@@ -148,7 +148,7 @@ function search_api_saved_searches_tokens($type, $tokens, array $data, array $op
 
           // Default values for the chained tokens handled below.
           case 'created':
-            $created = $search->get('created')->value;
+            $created = $search->get('created')->__get('value');
             $replacements[$original] = \Drupal::getContainer()
               ->get('date.formatter')
               ->format($created, 'medium', '', NULL, $langcode);
@@ -187,7 +187,7 @@ function search_api_saved_searches_tokens($type, $tokens, array $data, array $op
 
     $created_tokens = $token_service->findWithPrefix($tokens, 'created');
     if ($created_tokens) {
-      $created = $search->get('created')->value;
+      $created = $search->get('created')->__get('value');
       $replacements += $token_service->generate('date', $created_tokens, ['date' => $created], $options, $bubbleable_metadata);
     }
   }

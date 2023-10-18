@@ -18,6 +18,7 @@ use Drupal\Tests\feeds_para_mapper\Unit\Helpers\FieldHelper;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
+use function Prophecy\PhpUnit\ProphecyTrait\prophesize;
 use ReflectionClass;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 abstract class FpmTestBase extends UnitTestCase

@@ -1,18 +1,19 @@
 name: Search API Saved Searches
 description: "Allows visitors to bookmark searches and get notifications for new results."
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^9.2 || ^10
 type: module
 package: Search
+lifecycle: experimental
 configure: entity.search_api_saved_search_type.collection
 dependencies:
-  - search_api:search_api
+  - search_api:search_api (>= 8.x-1.20)
   - drupal:options
   - drupal:user
 test_dependencies:
   - facets:facets
   - search_api_page:search_api_page
 
-# Information added by Drupal.org packaging script on 2021-02-21
-version: '8.x-1.0-alpha3'
+# Information added by Drupal.org packaging script on 2023-10-15
+version: '8.x-1.0-alpha4'
 project: 'search_api_saved_searches'
-datestamp: 1613930454
+datestamp: 1697360868

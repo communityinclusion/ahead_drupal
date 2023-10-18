@@ -190,7 +190,7 @@ abstract class FeedsParaMapperTestBase extends BrowserTestBase {
       'processor' => 'entity:node',
       'processor_wrapper[advanced][values][type]' => $contentType,
     );
-    $this->submitForm($edit, t("Save and add mappings"));
+    $this->submitForm(null, $edit, t("Save and add mappings"));
     //@todo: error on save "The referenced entity (user: 0) does not exist"
   }
 
@@ -206,7 +206,7 @@ abstract class FeedsParaMapperTestBase extends BrowserTestBase {
       'label' => $bundle['name'],
       'id' => $bundle['name'],
     );
-    $this->submitForm($edit, t('Save and manage fields'));
+    $this->submitForm(NULL, $edit, t('Save and manage fields'));
     #$message = format_string("Created the paragraph bundle @name.", array('@name' => $bundle['name']));
     $text = t("Saved the @name Paragraphs type.", array('@name' => $bundle['name']));
     $this->assertSession()->pageTextContains($text);
@@ -245,7 +245,7 @@ abstract class FeedsParaMapperTestBase extends BrowserTestBase {
       'label' => $field_name,
       'field_name' => $field_name,
     );
-    $this->submitForm($edit, t('Save and continue'));
+    $this->submitForm(NULL, $edit, t('Save and continue'));
     $edit = array(
       'cardinality_number' => (string) $cardinality,
     );
@@ -254,7 +254,7 @@ abstract class FeedsParaMapperTestBase extends BrowserTestBase {
         'cardinality' => "-1",
       );
     }
-    $this->submitForm($edit, t('Save field settings'));
+    $this->submitForm(NULL, $edit, t('Save field settings'));
     // There are no settings for this, so just press the button.
     $edit = array();
     if (isset($bundles) && count($bundles)) {
@@ -263,7 +263,7 @@ abstract class FeedsParaMapperTestBase extends BrowserTestBase {
       }
     }
     // Using all the default settings, so press the button.
-    $this->submitForm($edit, t('Save settings'));
+    $this->submitForm(NULL, $edit, t('Save settings'));
     #$message = format_string("Field @field added successfully", array("@field" => $field_name));
     $this->assertSession()->pageTextContains(t('Saved @name configuration.', array('@name' => $field_name)));
   }

@@ -4,6 +4,7 @@ namespace Drupal\Tests\search_api_saved_searches\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api\Entity\Index;
+use Drupal\search_api\Entity\Server;
 use Drupal\search_api_saved_searches\Entity\SavedSearch;
 use Drupal\search_api_saved_searches\Entity\SavedSearchType;
 use Drupal\search_api_saved_searches\Service\NewResultsCheck;
@@ -28,6 +29,7 @@ class SavedSearchCrudTest extends KernelTestBase {
     'options',
     'search_api',
     'search_api_saved_searches',
+    'search_api_test',
     'system',
     'user',
   ];
@@ -49,15 +51,27 @@ class SavedSearchCrudTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');
     $this->installEntitySchema('search_api_saved_search');
     $this->installEntitySchema('search_api_task');
+    $this->installConfig('search_api');
     $this->installConfig('search_api_saved_searches');
-    $this->installSchema('system', ['key_value_expire', 'sequences']);
+    $this->installSchema('system', ['sequences']);
     $this->installSchema('search_api_saved_searches', 'search_api_saved_searches_old_results');
+
+    $server = Server::create([
+      'id' => 'test',
+      'backend' => 'search_api_test',
+    ]);
+    $server->save();
+    $this->index = Index::create([
+      'id' => 'test',
+      'server' => 'test',
+    ]);
+    $this->index->save();
 
     $this->newResultsCheck = $this->createMock(NewResultsCheck::class);
     // Using an object instead of an array gives us automatic pass-by-reference.
@@ -65,10 +79,12 @@ class SavedSearchCrudTest extends KernelTestBase {
     $this->newResultsCheck->method('getNewResults')
       ->willReturnCallback(function (SavedSearchInterface $search) use ($method_log) {
         $method_log->getNewResults[] = [$search->id()];
+        return [];
       });
     $this->newResultsCheck->method('saveKnownResults')
       ->willReturnCallback(function (SavedSearchInterface $search) use ($method_log) {
         $method_log->saveKnownResults[] = [$search->id()];
+        return TRUE;
       });
     $this->newResultsCheckMethodCalls = $method_log;
     $this->container->set('search_api_saved_searches.new_results_check', $this->newResultsCheck);
@@ -89,8 +105,8 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @dataProvider postCreateDataProvider
    */
-  public function testPostCreate($set_label, $keys, $expected_label) {
-    $query = Index::create()->query();
+  public function testPostCreate(?string $set_label, $keys, string $expected_label): void {
+    $query = $this->index->query();
     $query->keys($keys);
 
     $values = [
@@ -113,7 +129,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api_saved_searches\Kernel\SavedSearchCrudTest::testPostCreate()
    */
-  public function postCreateDataProvider() {
+  public function postCreateDataProvider(): array {
     return [
       'existing label' => [
         'Foobar',
@@ -161,10 +177,8 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @dataProvider preSaveDataProvider
    */
-  public function testPreSave($notify_interval, $last_executed, $index_id, $expected_next_execution, $expected_index_id) {
-    $query = Index::create([
-      'id' => 'test',
-    ])->query();
+  public function testPreSave(int $notify_interval, int $last_executed, ?string $index_id, ?int $expected_next_execution, string $expected_index_id): void {
+    $query = $this->index->query();
 
     $values = [
       'type' => 'default',
@@ -206,7 +220,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api_saved_searches\Kernel\SavedSearchCrudTest::testPreSave()
    */
-  public function preSaveDataProvider() {
+  public function preSaveDataProvider(): array {
     return [
       'with notifications, index_id set' => [
         10,
@@ -249,10 +263,9 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @dataProvider postSaveDataProvider
    */
-  public function testPostSave($set_date_field, $set_query, $expect_check) {
-    $index_id = 'test';
+  public function testPostSave(bool $set_date_field, bool $set_query, bool $expect_check): void {
     if ($set_date_field) {
-      $options['date_field'][$index_id] = 'created';
+      $options['date_field'][$this->index->id()] = 'created';
       SavedSearchType::load('default')->set('options', $options)->save();
     }
 
@@ -260,9 +273,7 @@ class SavedSearchCrudTest extends KernelTestBase {
       'type' => 'default',
     ];
     if ($set_query) {
-      $query = Index::create([
-        'id' => $index_id,
-      ])->query();
+      $query = $this->index->query();
       $values['query'] = $query;
     }
     $search = SavedSearch::create($values);
@@ -271,17 +282,16 @@ class SavedSearchCrudTest extends KernelTestBase {
     $method_log = $this->newResultsCheckMethodCalls;
     if ($expect_check) {
       $this->assertEquals([[$search->id()]], $method_log->saveKnownResults);
-      $this->assertObjectNotHasAttribute('getNewResults', $method_log);
     }
     else {
-      $this->assertObjectNotHasAttribute('saveKnownResults', $method_log);
-      $this->assertObjectNotHasAttribute('getNewResults', $method_log);
+      $this->assertFalse(property_exists($method_log, 'saveKnownResults'));
     }
+    $this->assertFalse(property_exists($method_log, 'getNewResults'));
 
     // Re-saving should never trigger a "new results" check.
     unset($method_log->getNewResults);
     $search->save();
-    $this->assertObjectNotHasAttribute('getNewResults', $method_log);
+    $this->assertFalse(property_exists($method_log, 'getNewResults'));
   }
 
   /**
@@ -292,7 +302,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api_saved_searches\Kernel\SavedSearchCrudTest::testPostSave()
    */
-  public function postSaveDataProvider() {
+  public function postSaveDataProvider(): array {
     return [
       'with date field' => [
         TRUE,
@@ -357,17 +367,9 @@ class SavedSearchCrudTest extends KernelTestBase {
    * Tests the correct reaction to the deletion of a search index.
    */
   public function testIndexDelete() {
-    $index_id = 'test';
-
-    $index = Index::create([
-      'id' => $index_id,
-    ]);
-    // Act as if the index was already saved, to make things easier.
-    $index->enforceIsNew(FALSE);
-
     $search = SavedSearch::create([
       'type' => 'default',
-      'index_id' => $index_id,
+      'index_id' => $this->index->id(),
     ]);
     $search->save();
 
@@ -375,7 +377,7 @@ class SavedSearchCrudTest extends KernelTestBase {
     $search = SavedSearch::load($search->id());
     $this->assertNotNull($search);
 
-    $index->delete();
+    $this->index->delete();
 
     // Verify that the search was deleted.
     $search = SavedSearch::load($search->id());

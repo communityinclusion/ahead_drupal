@@ -20,7 +20,7 @@ class SavedSearchTypeStorage extends ConfigEntityStorage {
    * @return string[]
    *   The IDs of all types that use the given notification plugin.
    */
-  public function getTypesForNotificationPlugin($plugin_id) {
+  public function getTypesForNotificationPlugin(string $plugin_id): array {
     return $this->getQuery()
       ->exists("notification_settings.$plugin_id")
       ->accessCheck(FALSE)

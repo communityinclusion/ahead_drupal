@@ -8,6 +8,7 @@ use Drupal\KernelTests\KernelTestBase;
  * Tests CRUD functionality for saved search types.
  *
  * @group search_api_saved_searches
+ *
  * @coversDefaultClass \Drupal\search_api_saved_searches\Entity\SavedSearchType
  */
 class SavedSearchTypeCrudTest extends KernelTestBase {

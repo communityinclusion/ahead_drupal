@@ -1,16 +1,14 @@
 name: 'Search API Saved Searches – Facets Test'
 type: module
 description: 'Support module for Search API Saved Searches tests using facets'
-package: Search
+package: Testing
 dependencies:
   - drupal:block
   - facets:facets
   - search_api_saved_searches:search_api_saved_searches
   - search_api:search_api_test_views
-core_version_requirement: ^8.8 || ^9
-hidden: true
 
-# Information added by Drupal.org packaging script on 2021-02-21
-version: '8.x-1.0-alpha3'
+# Information added by Drupal.org packaging script on 2023-10-15
+version: '8.x-1.0-alpha4'
 project: 'search_api_saved_searches'
-datestamp: 1613930454
+datestamp: 1697360868

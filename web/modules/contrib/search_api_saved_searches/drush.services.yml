@@ -1,0 +1,6 @@
+services:
+  search_api_saved_searches.commands:
+    class: Drupal\search_api_saved_searches\Commands\SavedSearchCommands
+    arguments: ['@search_api_saved_searches.new_results_check']
+    tags:
+      - { name: drush.command }

@@ -3,14 +3,18 @@
 /**
  * @file
  * Allows visitors to bookmark searches and get notifications for new results.
+ *
+ * @noinspection PhpRedundantCatchClauseInspection
  */
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\Query\QueryException;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api_saved_searches\Entity\SavedSearch;
@@ -72,7 +76,7 @@ function search_api_saved_searches_query_search_api_saved_search_access_alter(Al
 /**
  * Implements hook_entity_field_storage_info().
  */
-function search_api_saved_searches_entity_field_storage_info(EntityTypeInterface $entity_type) {
+function search_api_saved_searches_entity_field_storage_info(EntityTypeInterface $entity_type): array {
   if ($entity_type->id() !== 'search_api_saved_search') {
     return [];
   }
@@ -165,7 +169,6 @@ function _search_api_saved_searches_claim_anonymous_searches(UserInterface $acco
   // Special case: This will silently fail if no saved search types use the
   // "E-mail" plugin – which is fine by us.
   $searches = _search_api_saved_searches_load_searches(0, $account->getEmail());
-  /** @var \Drupal\search_api_saved_searches\SavedSearchInterface $search */
   foreach ($searches as $search) {
     $search->setOwner($account);
     try {
@@ -186,7 +189,6 @@ function _search_api_saved_searches_claim_anonymous_searches(UserInterface $acco
  */
 function _search_api_saved_searches_deactivate_searches(UserInterface $account) {
   $searches = _search_api_saved_searches_load_searches($account->id());
-  /** @var \Drupal\search_api_saved_searches\SavedSearchInterface $search */
   foreach ($searches as $search) {
     $search->set('notify_interval', -1);
     try {
@@ -244,7 +246,7 @@ function search_api_saved_searches_user_delete(UserInterface $account) {
  * @return \Drupal\search_api_saved_searches\SavedSearchInterface[]
  *   The requested saved searches.
  */
-function _search_api_saved_searches_load_searches($uid = NULL, $mail = NULL) {
+function _search_api_saved_searches_load_searches(?int $uid = NULL, ?string $mail = NULL): array {
   try {
     $query = \Drupal::entityQuery('search_api_saved_search');
     if ($mail !== NULL) {
@@ -263,9 +265,7 @@ function _search_api_saved_searches_load_searches($uid = NULL, $mail = NULL) {
       ->loadMultiple($ids);
     return $searches;
   }
-  // @todo Use multi-catch for InvalidPluginDefinitionException, QueryException
-  //   and EntityStorageException once we depend on PHP 7.1+.
-  catch (\Exception $e) {
+  catch (QueryException | PluginException $e) {
     watchdog_exception('search_api_saved_searches', $e);
     return [];
   }
@@ -279,15 +279,15 @@ function _search_api_saved_searches_load_searches($uid = NULL, $mail = NULL) {
  * @param mixed $value
  *   The field value to look for.
  */
-function _search_api_saved_searches_delete_searches($field, $value) {
-  $ids = \Drupal::entityQuery('search_api_saved_search')
-    ->condition($field, $value)
-    ->accessCheck(FALSE)
-    ->execute();
-  if (!$ids) {
-    return;
-  }
+function _search_api_saved_searches_delete_searches(string $field, $value) {
   try {
+    $ids = \Drupal::entityQuery('search_api_saved_search')
+      ->condition($field, $value)
+      ->accessCheck(FALSE)
+      ->execute();
+    if (!$ids) {
+      return;
+    }
     $storage = \Drupal::entityTypeManager()
       ->getStorage('search_api_saved_search');
     $searches = $storage->loadMultiple($ids);
@@ -295,9 +295,7 @@ function _search_api_saved_searches_delete_searches($field, $value) {
       $storage->delete($searches);
     }
   }
-  // @todo Use multi-catch for InvalidPluginDefinitionException and
-  //   EntityStorageException once we depend on PHP 7.1+.
-  catch (\Exception $e) {
+  catch (QueryException | PluginException | EntityStorageException $e) {
     $args['@field'] = $field;
     $args['@value'] = $value;
     watchdog_exception('search_api_saved_searches', $e, '%type while trying to delete saved searches (condition: @field = @value): @message in %function (line %line of %file).', $args);
@@ -359,6 +357,7 @@ function search_api_saved_searches_search_api_saved_search_presave(EntityInterfa
       return;
     }
     // Otherwise, check whether the "Activation mail" setting is even enabled.
+    /** @var \Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\notification\Email $plugin */
     $plugin = $type->getNotificationPlugin('email');
     if (!$plugin->getConfiguration()['activate']['send']) {
       return;
@@ -400,14 +399,12 @@ function search_api_saved_searches_search_api_saved_search_presave(EntityInterfa
         'search_api_saved_searches',
         Email::MAIL_ACTIVATE,
         $mail,
-        $owner->getPreferredLangcode(),
+        $plugin->getPreferredLangcode($search),
         $params,
       ]);
 
   }
-  // @todo Use multi-catch for SavedSearchesException and
-  //   InvalidArgumentException once we depend on PHP 7.1+.
-  catch (\Exception $e) {
+  catch (SavedSearchesException | \InvalidArgumentException $e) {
     $context['%search_label'] = $search->label();
     if (!$search->isNew()) {
       $context['%search_label'] .= ' (#' . $search->id() . ')';

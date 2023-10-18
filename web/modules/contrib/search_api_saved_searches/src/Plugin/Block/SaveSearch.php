@@ -2,6 +2,8 @@
 
 namespace Drupal\search_api_saved_searches\Plugin\Block;
 
+use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\CacheableMetadata;
@@ -11,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\search_api\Utility\QueryHelperInterface;
+use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -74,7 +77,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    * @return \Drupal\Core\Entity\EntityTypeManagerInterface
    *   The entity type manager.
    */
-  public function getEntityTypeManager() {
+  public function getEntityTypeManager(): EntityTypeManagerInterface {
     return $this->entityTypeManager ?: \Drupal::entityTypeManager();
   }
 
@@ -86,7 +89,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    *
    * @return $this
    */
-  public function setEntityTypeManager(EntityTypeManagerInterface $entity_type_manager) {
+  public function setEntityTypeManager(EntityTypeManagerInterface $entity_type_manager): self {
     $this->entityTypeManager = $entity_type_manager;
     return $this;
   }
@@ -97,7 +100,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    * @return \Drupal\Core\Form\FormBuilderInterface
    *   The form builder.
    */
-  public function getFormBuilder() {
+  public function getFormBuilder(): FormBuilderInterface {
     return $this->formBuilder ?: \Drupal::formBuilder();
   }
 
@@ -109,7 +112,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    *
    * @return $this
    */
-  public function setFormBuilder(FormBuilderInterface $form_builder) {
+  public function setFormBuilder(FormBuilderInterface $form_builder): self {
     $this->formBuilder = $form_builder;
     return $this;
   }
@@ -120,7 +123,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    * @return \Drupal\search_api\Utility\QueryHelperInterface
    *   The query helper.
    */
-  public function getQueryHelper() {
+  public function getQueryHelper(): QueryHelperInterface {
     return $this->queryHelper ?: \Drupal::service('search_api.query_helper');
   }
 
@@ -132,7 +135,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    *
    * @return $this
    */
-  public function setQueryHelper(QueryHelperInterface $query_helper) {
+  public function setQueryHelper(QueryHelperInterface $query_helper): self {
     $this->queryHelper = $query_helper;
     return $this;
   }
@@ -143,7 +146,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    * @return \Symfony\Component\HttpFoundation\RequestStack
    *   The request stack.
    */
-  public function getRequestStack() {
+  public function getRequestStack(): RequestStack {
     return $this->requestStack ?: \Drupal::service('request_stack');
   }
 
@@ -155,7 +158,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    *
    * @return $this
    */
-  public function setRequestStack(RequestStack $request_stack) {
+  public function setRequestStack(RequestStack $request_stack): self {
     $this->requestStack = $request_stack;
     return $this;
   }
@@ -163,16 +166,30 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return [
       'type' => NULL,
     ];
   }
 
   /**
-   * {@inheritdoc}
+   * Returns the configuration form elements specific to this block plugin.
+   *
+   * Blocks that need to add form elements to the normal block configuration
+   * form should implement this method.
+   *
+   * @param array $form
+   *   The form definition array for the block configuration form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The renderable form array representing the entire configuration form.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   *   Thrown if the "Saved search type" entity storage could not be retrieved.
    */
-  public function blockForm($form, FormStateInterface $form_state) {
+  public function blockForm($form, FormStateInterface $form_state): array {
     $types = $this->getEntityTypeManager()
       ->getStorage('search_api_saved_search_type')
       ->loadMultiple();
@@ -216,7 +233,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function build() {
+  public function build(): array {
     $build = [];
     $cacheability = new CacheableMetadata();
 
@@ -224,10 +241,16 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
     //   cached, though.
     $type = $this->getSavedSearchType();
     if (!$type) {
-      $tags = $this->getEntityTypeManager()
-        ->getDefinition('search_api_saved_search_type')
-        ->getListCacheTags();
-      $cacheability->addCacheTags($tags);
+      try {
+        $tags = $this->getEntityTypeManager()
+          ->getDefinition('search_api_saved_search_type')
+          ->getListCacheTags();
+        $cacheability->addCacheTags($tags);
+      }
+      catch (PluginNotFoundException $e) {
+        watchdog_exception('search_api_saved_searches', $e);
+        $cacheability->setCacheMaxAge(0);
+      }
       $cacheability->applyTo($build);
       return $build;
     }
@@ -258,14 +281,20 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
       // Remember the page on which the search was created.
       'path' => $this->getCurrentPath(),
     ];
-    $saved_search = $this->getEntityTypeManager()
-      ->getStorage('search_api_saved_search')
-      ->create($values);
+    try {
+      $saved_search = $this->getEntityTypeManager()
+        ->getStorage('search_api_saved_search')
+        ->create($values);
 
-    $form_object = $this->getEntityTypeManager()
-      ->getFormObject('search_api_saved_search', 'create');
-    $form_object->setEntity($saved_search);
-    $build['form'] = $this->getFormBuilder()->getForm($form_object);
+      $form_object = $this->getEntityTypeManager()
+        ->getFormObject('search_api_saved_search', 'create');
+      $form_object->setEntity($saved_search);
+      $build['form'] = $this->getFormBuilder()->getForm($form_object);
+    }
+    catch (PluginException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+      $this->messenger()->addError($this->t('Saving this search is not possible due to an internal error.'));
+    }
 
     return $build;
   }
@@ -273,7 +302,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function calculateDependencies() {
+  public function calculateDependencies(): array {
     $dependencies = parent::calculateDependencies();
 
     $type = $this->getSavedSearchType();
@@ -290,15 +319,21 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    * @return \Drupal\search_api_saved_searches\SavedSearchTypeInterface|null
    *   The saved search type, or NULL if it couldn't be loaded.
    */
-  protected function getSavedSearchType() {
+  protected function getSavedSearchType(): ?SavedSearchTypeInterface {
     if (!$this->configuration['type']) {
       return NULL;
     }
-    /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */
-    $type = $this->getEntityTypeManager()
-      ->getStorage('search_api_saved_search_type')
-      ->load($this->configuration['type']);
-    return $type;
+    try {
+      /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */
+      $type = $this->getEntityTypeManager()
+        ->getStorage('search_api_saved_search_type')
+        ->load($this->configuration['type']);
+      return $type;
+    }
+    catch (PluginException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+      return NULL;
+    }
   }
 
   /**
@@ -307,7 +342,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
    * @return string
    *   The current path, relative to the Drupal installation.
    */
-  protected function getCurrentPath() {
+  protected function getCurrentPath(): string {
     // Get the current path.
     $path = $this->getRequestStack()->getCurrentRequest()->getRequestUri();
 

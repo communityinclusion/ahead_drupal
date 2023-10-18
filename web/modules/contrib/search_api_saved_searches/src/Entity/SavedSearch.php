@@ -2,21 +2,23 @@
 
 namespace Drupal\search_api_saved_searches\Entity;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\Exception\UnsupportedEntityTypeDefinitionException;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Site\Settings;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\search_api_saved_searches\Plugin\Field\KeywordsItemList;
 use Drupal\search_api_saved_searches\SavedSearchesException;
 use Drupal\search_api_saved_searches\SavedSearchInterface;
-use Drupal\user\UserInterface;
+use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
+use Drupal\user\EntityOwnerTrait;
 
 /**
  * Provides an entity type for saved searches.
- *
- * @todo Use EntityOwnerTrait once we depend on Drupal 8.6+.
  *
  * @ContentEntityType(
  *   id = "search_api_saved_search",
@@ -30,7 +32,7 @@ use Drupal\user\UserInterface;
  *   ),
  *   bundle_label = @Translation("Search type"),
  *   handlers = {
- *     "list_builder" = "Drupal\search_api_saved_searches\SavedSearchListBuilder",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "access" = "Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler",
  *     "views_data" = "Drupal\search_api_saved_searches\SavedSearchViewsData",
  *     "form" = {
@@ -51,6 +53,7 @@ use Drupal\user\UserInterface;
  *     "langcode" = "langcode",
  *     "uuid" = "uuid",
  *     "uid" = "uid",
+ *     "owner" = "uid",
  *   },
  *   bundle_entity_type = "search_api_saved_search_type",
  *   field_ui_base_route = "entity.search_api_saved_search_type.edit_form",
@@ -66,6 +69,8 @@ use Drupal\user\UserInterface;
  */
 class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
 
+  use EntityOwnerTrait;
+
   /**
    * Static cache for property getters that take some computation.
    *
@@ -76,12 +81,20 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array {
     /** @var \Drupal\Core\Field\BaseFieldDefinition[] $fields */
     $fields = parent::baseFieldDefinitions($entity_type);
+    try {
+      $fields += static::ownerBaseFieldDefinitions($entity_type);
+    }
+    catch (UnsupportedEntityTypeDefinitionException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+    }
 
-    // Make the form display of the language configurable.
-    $fields['langcode']->setDisplayConfigurable('form', TRUE);
+    // Make the form display of the language configurable, and provide a more
+    // sensible default value.
+    $fields['langcode']->setDisplayConfigurable('form', TRUE)
+      ->setDefaultValueCallback(__CLASS__ . '::getCurrentLanguage');
 
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Label'))
@@ -99,11 +112,10 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
       ])
       ->setDisplayConfigurable('form', TRUE);
 
-    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
+    $fields['uid']
       ->setLabel(t('Created by'))
       ->setDescription(t('The user who owns the saved search.'))
       ->setSetting('target_type', 'user')
-      ->setDefaultValueCallback('Drupal\search_api_saved_searches\Entity\SavedSearch::getCurrentUserId')
       ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'author',
@@ -202,17 +214,30 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
       ->setLabel(t('Index ID'))
       ->setSetting('max_length', 50);
 
-    // @todo Is there a better data type? Should we provide one?
-    $fields['query'] = BaseFieldDefinition::create('string_long')
+    $fields['query'] = BaseFieldDefinition::create('search_api_saved_searches_query')
       ->setLabel(t('Search query'))
       ->setDescription(t('The saved search query.'))
-      ->setSetting('case_sensitive', TRUE)
       ->setDisplayOptions('view', [
         'region' => 'hidden',
       ])
       ->setDisplayOptions('form', [
         'region' => 'hidden',
       ]);
+
+    $fields['search_keywords'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Fulltext keywords'))
+      ->setDescription(t('The fulltext keywords set on this search.'))
+      ->setComputed(TRUE)
+      ->setReadOnly(FALSE)
+      ->setInternal(FALSE)
+      ->setClass(KeywordsItemList::class)
+      ->setDisplayOptions('view', [
+        'region' => 'hidden',
+      ])
+      ->setDisplayOptions('form', [
+        'region' => 'hidden',
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
     $fields['path'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Path'))
@@ -232,31 +257,24 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+  public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions): array {
     $fields = parent::bundleFieldDefinitions($entity_type, $bundle, $base_field_definitions);
 
     /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */
-    $type = \Drupal::entityTypeManager()
-      ->getStorage('search_api_saved_search_type')
-      ->load($bundle);
-    // If we are called with an illegal $bundle, avoid a fatal error.
-    if ($type) {
-      $fields += $type->getNotificationPluginFieldDefinitions();
+    try {
+      $type = \Drupal::entityTypeManager()
+        ->getStorage('search_api_saved_search_type')
+        ->load($bundle);
+      // If we are called with an illegal $bundle, avoid a fatal error.
+      if ($type) {
+        $fields += $type->getNotificationPluginFieldDefinitions();
+      }
+    }
+    catch (PluginException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
     }
 
     return $fields;
-  }
-
-  /**
-   * Returns the default value for the "uid" base field definition.
-   *
-   * @return array
-   *   An array with the default value.
-   *
-   * @see \Drupal\search_api_saved_searches\Entity\SavedSearch::baseFieldDefinitions()
-   */
-  public static function getCurrentUserId() {
-    return [\Drupal::currentUser()->id()];
   }
 
   /**
@@ -265,9 +283,8 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   public static function preCreate(EntityStorageInterface $storage, array &$values) {
     parent::preCreate($storage, $values);
 
-    // Auto-serialize query, if necessary.
+    // Clean up and clone the search query before it gets serialized.
     if (isset($values['query']) && $values['query'] instanceof QueryInterface) {
-      /** @var \Drupal\search_api\Query\QueryInterface $query */
       $query = $values['query'];
 
       // Remember the executed query so we can avoid re-executing it in this
@@ -276,25 +293,10 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
 
       // Get the original, unexecuted query and clone it to not mess with the
       // original.
-      $query = static::getCleanQueryForStorage($query);
-
-      // Search queries created via Views will have a
-      // \Drupal\views\ViewExecutable object in the "search_api_view" option as
-      // possibly useful metadata for alter hooks, etc. The big problem with
-      // that is that those objects will automatically re-execute the view when
-      // they are unserialized, which is a huge, completely unnecessary overhead
-      // in our case (which might furthermore confuse modules reacting to
-      // searches, like Facets – or this one). It's hard to tell what a "proper"
-      // solution for this problem would look like, but probably just unsetting
-      // this option in the query we save will work well enough in almost all
-      // cases.
-      $options = &$query->getOptions();
-      unset($options['search_api_view']);
-
-      // Set to the cached property so we don't need to unserialize again in
-      // this page request.
-      $values['cachedProperties']['query'] = $query;
-      $values['query'] = serialize($query);
+      $values['query'] = static::getCleanQueryForStorage($query);
+    }
+    else {
+      unset($values['query']);
     }
   }
 
@@ -307,7 +309,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
    * @return \Drupal\search_api\Query\QueryInterface
    *   A cleaned-up copy of the search query.
    */
-  protected static function getCleanQueryForStorage(QueryInterface $query) {
+  protected static function getCleanQueryForStorage(QueryInterface $query): QueryInterface {
     // Clone the query to not mess with the original.
     $query = clone $query;
 
@@ -323,6 +325,11 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
     // work well enough in almost all cases.
     $options = &$query->getOptions();
     unset($options['search_api_view']);
+    unset($options);
+    $original_query = $query->getOriginalQuery();
+    $original_query_options = &$original_query->getOptions();
+    unset($original_query_options['search_api_view']);
+    unset($original_query_options);
 
     // Reset the result set to its original state (except for warnings and
     // ignored keywords which will usually be set during pre-execute).
@@ -426,9 +433,14 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
         $new_results_check->saveKnownResults($this, $items);
       }
       else {
-        // Otherwise, just use the "new results check" code, which will
-        // automatically save all results it encounters.
-        $new_results_check->getNewResults($this);
+        try {
+          // Otherwise, just use the "new results check" code, which will
+          // automatically save all results it encounters.
+          $new_results_check->getNewResults($this);
+        }
+        catch (SavedSearchesException $e) {
+          watchdog_exception('search_api_saved_searches', $e);
+        }
       }
     }
   }
@@ -452,7 +464,21 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  protected function urlRouteParameters($rel) {
+  public function onChange($name): void {
+    parent::onChange($name);
+
+    // Keywords are a computed field, but we allow editing. If an edit happens,
+    // just store the resulting keywords back in the query.
+    if ($name === 'search_keywords') {
+      $keys = $this->__get($name)->__get('value');
+      $this->getQuery()->keys($keys);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function urlRouteParameters($rel): array {
     $params = parent::urlRouteParameters($rel);
 
     // Since Drupal is still not able to reproduce field values in their correct
@@ -473,44 +499,31 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Returns the default value for the "langcode" base field.
+   *
+   * @return array
+   *   An array with the default value.
+   *
+   * @see \Drupal\search_api_saved_searches\Entity\SavedSearch::baseFieldDefinitions()
    */
-  public function getOwner() {
-    return $this->get('uid')->entity;
+  public static function getCurrentLanguage(): array {
+    return [\Drupal::languageManager()->getCurrentLanguage()->getId()];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setOwner(UserInterface $account) {
-    $this->set('uid', $account->id());
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOwnerId() {
-    return $this->get('uid')->target_id;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setOwnerId($uid) {
-    $this->set('uid', $uid);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getType() {
+  public function getType(): SavedSearchTypeInterface {
     if (!isset($this->cachedProperties['type'])) {
-      $type = \Drupal::entityTypeManager()
-        ->getStorage('search_api_saved_search_type')
-        ->load($this->bundle());
-      $this->cachedProperties['type'] = $type ?: FALSE;
+      try {
+        $type = \Drupal::entityTypeManager()
+          ->getStorage('search_api_saved_search_type')
+          ->load($this->bundle());
+      }
+      catch (PluginException $e) {
+        watchdog_exception('search_api_saved_searches', $e);
+      }
+      $this->cachedProperties['type'] = $type ?? FALSE;
     }
 
     if (!$this->cachedProperties['type']) {
@@ -522,38 +535,36 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  public function getQuery() {
-    if (!isset($this->cachedProperties['query'])) {
-      $this->cachedProperties['query'] = FALSE;
-      $query = $this->get('query')->value;
-      if ($query) {
-        $this->cachedProperties['query'] = unserialize($query);
-      }
-    }
-
-    return $this->cachedProperties['query'] ?: NULL;
+  public function getLangcode(): ?string {
+    return $this->get('langcode')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setQuery(QueryInterface $query) {
-    $this->cachedProperties['query'] = $query;
-    $this->set('query', serialize($query));
+  public function getQuery(): ?QueryInterface {
+    return $this->get('query')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setQuery(QueryInterface $query): SavedSearchInterface {
+    $this->set('query', $query);
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPath() {
+  public function getPath(): ?string {
     return $this->get('path')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAccessToken($operation) {
+  public function getAccessToken($operation): string {
     $key = $this->getEntityTypeId() . ':' . $this->id() . ':' . $operation;
     return Crypt::hmacBase64($key, Settings::getHashSalt());
   }

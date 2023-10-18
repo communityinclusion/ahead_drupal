@@ -40,9 +40,10 @@ class NotificationPluginManager extends DefaultPluginManager implements Notifica
   /**
    * {@inheritdoc}
    */
-  public function createPlugin(SavedSearchTypeInterface $type, $plugin_id, array $configuration = NULL) {
+  public function createPlugin(SavedSearchTypeInterface $type, string $plugin_id, array $configuration = NULL): NotificationPluginInterface {
     try {
       $configuration['#saved_search_type'] = $type;
+      /** @noinspection PhpIncompatibleReturnTypeInspection */
       return $this->createInstance($plugin_id, $configuration);
     }
     catch (PluginException $e) {
@@ -53,7 +54,7 @@ class NotificationPluginManager extends DefaultPluginManager implements Notifica
   /**
    * {@inheritdoc}
    */
-  public function createPlugins(SavedSearchTypeInterface $type, array $plugin_ids = NULL, array $configurations = []) {
+  public function createPlugins(SavedSearchTypeInterface $type, array $plugin_ids = NULL, array $configurations = []): array {
     if ($plugin_ids === NULL) {
       $plugin_ids = array_keys($this->getDefinitions());
     }

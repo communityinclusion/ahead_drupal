@@ -27,7 +27,7 @@ class FacetsIntegrationTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'olivero';
 
   /**
    * The test index's ID.
@@ -46,7 +46,7 @@ class FacetsIntegrationTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->setUpExampleStructure();

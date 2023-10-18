@@ -5,3 +5,8 @@ package: Field types
 core_version_requirement: ^8 || ^9 || ^10
 dependencies:
   - drupal:field
+
+# Information added by Drupal.org packaging script on 2022-06-16
+version: '8.x-1.3'
+project: 'field_display_label'
+datestamp: 1655383215

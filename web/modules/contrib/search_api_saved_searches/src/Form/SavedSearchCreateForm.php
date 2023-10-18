@@ -13,7 +13,7 @@ class SavedSearchCreateForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state) {
+  public function form(array $form, FormStateInterface $form_state): array {
     $form = parent::form($form, $form_state);
 
     $bundle = $this->entity->bundle();
@@ -27,7 +27,7 @@ class SavedSearchCreateForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  protected function actions(array $form, FormStateInterface $form_state) {
+  protected function actions(array $form, FormStateInterface $form_state): array {
     $actions = parent::actions($form, $form_state);
 
     // Change label.
@@ -58,7 +58,7 @@ class SavedSearchCreateForm extends ContentEntityForm {
    * @return array
    *   The part of the form to return as AJAX.
    */
-  public function saveFormAjax(array $form, FormStateInterface $form_state) {
+  public function saveFormAjax(array $form, FormStateInterface $form_state): array {
     return $form_state->getErrors() ? $form : ['#type' => 'status_messages'];
   }
 
@@ -71,9 +71,9 @@ class SavedSearchCreateForm extends ContentEntityForm {
     if ($return === SAVED_NEW) {
       /** @var \Drupal\search_api_saved_searches\SavedSearchInterface $search */
       $search = $this->entity;
-      $enabled = $this->entity->get('status')->value;
+      $enabled = $this->entity->get('status')->__get('value');
       if ($enabled) {
-        if ($search->get('notify_interval')->value < 0) {
+        if ($search->get('notify_interval')->__get('value') < 0) {
           $this->messenger()->addStatus($this->t('Your saved search was successfully created.'));
         }
         else {

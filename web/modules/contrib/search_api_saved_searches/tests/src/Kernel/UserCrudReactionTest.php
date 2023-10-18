@@ -43,14 +43,14 @@ class UserCrudReactionTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installConfig('search_api_saved_searches');
     $this->installEntitySchema('user');
     $this->installEntitySchema('search_api_saved_search');
     $this->installEntitySchema('search_api_task');
-    $this->installSchema('system', ['key_value_expire', 'sequences']);
+    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installSchema('search_api_saved_searches', 'search_api_saved_searches_old_results');
 

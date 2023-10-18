@@ -7,10 +7,10 @@ dependencies:
     - facets
     - system
   theme:
-    - classy
+    - olivero
 id: type_facet
-theme: classy
-region: sidebar_first
+theme: olivero
+region: sidebar
 weight: 0
 provider: facets
 plugin: 'facet_block:type'

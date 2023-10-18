@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_saved_searches;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -24,7 +25,7 @@ class Permissions implements ContainerInjectionInterface {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): self {
     $object = new static();
 
     $storage = $container->get('entity_type.manager')
@@ -40,8 +41,11 @@ class Permissions implements ContainerInjectionInterface {
    *
    * @return \Drupal\Core\Entity\EntityStorageInterface
    *   The saved search type storage.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   *   Thrown if the storage handler could not be retrieved.
    */
-  public function getStorage() {
+  public function getStorage(): EntityStorageInterface {
     return $this->storage ?: \Drupal::entityTypeManager()
       ->getStorage('search_api_saved_search_type');
   }
@@ -54,7 +58,7 @@ class Permissions implements ContainerInjectionInterface {
    *
    * @return $this
    */
-  public function setStorage(EntityStorageInterface $storage) {
+  public function setStorage(EntityStorageInterface $storage): self {
     $this->storage = $storage;
     return $this;
   }
@@ -65,14 +69,19 @@ class Permissions implements ContainerInjectionInterface {
    * @return array[]
    *   A list of permission definitions, keyed by permission machine name.
    */
-  public function bySavedSearchType() {
+  public function bySavedSearchType(): array {
     $perms = [];
 
-    foreach ($this->getStorage()->loadMultiple() as $id => $type) {
-      $args = ['%type' => $type->label()];
-      $perms['use ' . $id . ' search_api_saved_searches'] = [
-        'title' => $this->t('Use saved searches of type %type', $args),
-      ];
+    try {
+      foreach ($this->getStorage()->loadMultiple() as $id => $type) {
+        $args = ['%type' => $type->label()];
+        $perms['use ' . $id . ' search_api_saved_searches'] = [
+          'title' => $this->t('Use saved searches of type %type', $args),
+        ];
+      }
+    }
+    catch (PluginException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
     }
 
     return $perms;

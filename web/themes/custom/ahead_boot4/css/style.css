@@ -276,7 +276,7 @@ fieldset#group-specific-population-ques fieldset legend {
 
 .btnToggle {padding:5px;}
 
-#block-views-block-flag-bookmark-block-1, #block-views-block-flag-bookmark-block-1--2 {
+#block-ahead-boot4-views-block-flag-bookmark-block-1, #block-views-block-flag-bookmark-block-1--2 {
 	position:relative;
 	z-index:500;
 	background-color:#fff;
@@ -285,36 +285,36 @@ fieldset#group-specific-population-ques fieldset legend {
 	overflow: visible;
 	margin: 0 12px 6px 0;
 }
-#block-views-block-flag-bookmark-block-1 .item-list ul li, #block-views-block-flag-bookmark-block-1--2 .item-list ul li {
+#block-ahead-boot4-views-block-flag-bookmark-block-1 .item-list ul li, #block-views-block-flag-bookmark-block-1--2 .item-list ul li {
 	margin:8px 2px;
 }
 .navbar-toggler-right .navbar-toggler-icon {background-color: #ccc;}
 
-#block-views-block-flag-bookmark-block-1 .form-group,#block-views-block-flag-bookmark-block-1 .form-control, #block-views-block-flag-bookmark-block-1--2 .form-group,#block-views-block-flag-bookmark-block-1--2 .form-control  {
+#block-ahead-boot4-views-block-flag-bookmark-block-1 .form-group,#block-ahead-boot4-views-block-flag-bookmark-block-1 .form-control, #block-views-block-flag-bookmark-block-1--2 .form-group,#block-views-block-flag-bookmark-block-1--2 .form-control  {
 	display:block;
 	width:220px;
 }
 
-#block-views-block-flag-bookmark-block-1 .content, #block-views-block-flag-bookmark-block-1--2 .content {
+#block-ahead-boot4-views-block-flag-bookmark-block-1 .content, #block-views-block-flag-bookmark-block-1--2 .content {
 	display:none;
 }
 
-#block-views-block-flag-bookmark-block-1 .view-content.row, #block-views-block-flag-bookmark-block-1--2 .view-content.row {
+#block-ahead-boot4-views-block-flag-bookmark-block-1 .view-content.row, #block-views-block-flag-bookmark-block-1--2 .view-content.row {
 	width:225px;
 	margin:0;
 }
 
-#block-views-block-flag-bookmark-block-1.toggled .content, #block-views-block-flag-bookmark-block-1--2.toggled .content {
+#block-ahead-boot4-views-block-flag-bookmark-block-1.toggled .content, #block-views-block-flag-bookmark-block-1--2.toggled .content {
 	display:block;
 	width: 250px;
 	background-color: #fff;
 }
 
-#block-views-block-flag-bookmark-block-1 .content .col-auto, #block-views-block-flag-bookmark-block-1--2 .content .col-auto {
+#block-ahead-boot4-views-block-flag-bookmark-block-1 .content .col-auto, #block-views-block-flag-bookmark-block-1--2 .content .col-auto {
 	padding:5px;
 }
 
-#block-views-block-flag-bookmark-block-1 h2, #block-views-block-flag-bookmark-block-1--2 h2 {
+#block-ahead-boot4-views-block-flag-bookmark-block-1 h2, #block-views-block-flag-bookmark-block-1--2 h2 {
 	width:150px;
 	font-size:1em;
 	border:1px solid #333;
@@ -323,14 +323,14 @@ fieldset#group-specific-population-ques fieldset legend {
 	    padding: 7px;
 }
 
-#block-views-block-flag-bookmark-block-1 h2:hover, #block-views-block-flag-bookmark-block-1--2 h2:hover {
+#block-ahead-boot4-views-block-flag-bookmark-block-1 h2:hover, #block-views-block-flag-bookmark-block-1--2 h2:hover {
 	font-size:1em;
 	text-decoration:none;
 	background-color: #0071b3;
 	color:#fff;
 }
 
-#block-views-block-flag-bookmark-block-1 .content, #block-views-block-flag-bookmark-block-1--2 .content {
+#block-ahead-boot4-views-block-flag-bookmark-block-1 .content, #block-views-block-flag-bookmark-block-1--2 .content {
 	border:2px solid #333;
 	border-radius:6px;
 }
@@ -853,7 +853,7 @@ a.searchJump {
 }
 div.flag-bookmark { padding-left: 15px;
 	padding-bottom:15px; }
-#block-views-block-flag-bookmark-block-1 ul li .views-field-title, #block-views-block-flag-bookmark-block-1--2 ul li .views-field-title {font-size: 105%; font-weight: bold;}
+#block-ahead-boot4-views-block-flag-bookmark-block-1 ul li .views-field-title, #block-views-block-flag-bookmark-block-1--2 ul li .views-field-title {font-size: 105%; font-weight: bold;}
 .view-solr-search-content .view-header #home_header {display: none;}
 .view-solr-search-content .view-header .resultCount {display: block;}
 .view-solr-search-content .view-header.homeShow #home_header {display:block;}

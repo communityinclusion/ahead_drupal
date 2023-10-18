@@ -2,7 +2,9 @@
 
 namespace Drupal\search_api_saved_searches\Entity;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -12,6 +14,7 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\search_api_saved_searches\BundleFieldDefinition;
+use Drupal\search_api_saved_searches\SavedSearchesException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -59,7 +62,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
    * @return \Drupal\Core\Entity\EntityTypeManagerInterface
    *   The entity type manager.
    */
-  public function getEntityTypeManager() {
+  public function getEntityTypeManager(): EntityTypeManagerInterface {
     return $this->entityTypeManager ?: \Drupal::service('entity_type.manager');
   }
 
@@ -71,7 +74,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
    *
    * @return $this
    */
-  public function setEntityTypeManager(EntityTypeManagerInterface $entity_type_manager) {
+  public function setEntityTypeManager(EntityTypeManagerInterface $entity_type_manager): self {
     $this->entityTypeManager = $entity_type_manager;
     return $this;
   }
@@ -82,7 +85,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
    * @return \Symfony\Component\HttpFoundation\RequestStack
    *   The request stack.
    */
-  public function getRequestStack() {
+  public function getRequestStack(): RequestStack {
     return $this->requestStack ?: \Drupal::service('request_stack');
   }
 
@@ -94,7 +97,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
    *
    * @return $this
    */
-  public function setRequestStack(RequestStack $request_stack) {
+  public function setRequestStack(RequestStack $request_stack): self {
     $this->requestStack = $request_stack;
     return $this;
   }
@@ -102,7 +105,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     /** @var \Drupal\search_api_saved_searches\SavedSearchInterface $entity */
     $access = parent::checkAccess($entity, $operation, $account);
 
@@ -129,11 +132,11 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
   /**
    * {@inheritdoc}
    */
-  protected function checkCreateAccess(AccountInterface $account, array $context, $bundle = NULL) {
-    $access = parent::checkCreateAccess($account, $context, $bundle);
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResultInterface {
+    $access = parent::checkCreateAccess($account, $context, $entity_bundle);
 
     if (!$access->isAllowed()) {
-      $access = $access->orIf($this->checkBundleAccess($account, $bundle));
+      $access = $access->orIf($this->checkBundleAccess($account, $entity_bundle));
     }
 
     return $access;
@@ -176,13 +179,18 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
       $plugin_id = $field_definition->getSetting('notification_plugin');
       $bundle = $field_definition->getTargetBundle();
       if ($plugin_id && $bundle) {
-        /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */
-        $type = $this->getEntityTypeManager()
-          ->getStorage('search_api_saved_search_type')
-          ->load($bundle);
-        if ($type && $type->isValidNotificationPlugin($plugin_id)) {
-          return $type->getNotificationPlugin($plugin_id)
-            ->checkFieldAccess($operation, $field_definition, $account, $items);
+        try {
+          /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */
+          $type = $this->getEntityTypeManager()
+            ->getStorage('search_api_saved_search_type')
+            ->load($bundle);
+          if ($type && $type->isValidNotificationPlugin($plugin_id)) {
+            return $type->getNotificationPlugin($plugin_id)
+              ->checkFieldAccess($operation, $field_definition, $account, $items);
+          }
+        }
+        catch (PluginException | SavedSearchesException $e) {
+          watchdog_exception('search_api_saved_searches', $e);
         }
       }
       // In doubt (that is, when some part of the previous code didn't work
@@ -204,7 +212,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
-  protected function checkBundleAccess(AccountInterface $account, $bundle) {
+  protected function checkBundleAccess(AccountInterface $account, string $bundle): AccessResultInterface {
     $permission = "use $bundle search_api_saved_searches";
     return AccessResult::allowedIfHasPermission($account, $permission);
   }

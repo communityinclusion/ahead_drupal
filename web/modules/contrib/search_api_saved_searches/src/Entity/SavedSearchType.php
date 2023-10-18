@@ -3,12 +3,15 @@
 namespace Drupal\search_api_saved_searches\Entity;
 
 use Drupal\Component\Plugin\Definition\PluginDefinitionInterface;
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Utility\QueryHelperInterface;
+use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_saved_searches\Notification\NotificationPluginInterface;
 use Drupal\search_api_saved_searches\SavedSearchesException;
 use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
@@ -78,7 +81,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * The type's (admin) description.
    *
-   * @var string
+   * @var string|null
    */
   protected $description;
 
@@ -148,7 +151,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
    *
    * @return $this
    */
-  protected function writeChangesToSettings() {
+  protected function writeChangesToSettings(): self {
     // We only need to re-write the $notification_settings property if the
     // plugins were loaded.
     if ($this->notificationPluginInstances !== NULL) {
@@ -287,18 +290,23 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
 
     // Remove any searches for the deleted types. Normally, deleting a type with
     // existing searches should not be possible – but it's only forbidden via
-    // the UI, not via an access handler, so w can't rely on that.
+    // the UI, not via an access handler, so we can't rely on that.
     // NB: $entities is not documented to be keyed by entity ID, but since Core
     // relies on it (see \Drupal\comment\Entity\Comment::postDelete()), we
     // should be able to do the same.
-    $storage = \Drupal::entityTypeManager()
-      ->getStorage('search_api_saved_search');
-    $search_ids = $storage->getQuery()
-      ->condition('type', array_keys($entities), 'IN')
-      ->accessCheck(FALSE)
-      ->execute();
-    if ($search_ids) {
-      $storage->delete($storage->loadMultiple($search_ids));
+    try {
+      $storage = \Drupal::entityTypeManager()
+        ->getStorage('search_api_saved_search');
+      $search_ids = $storage->getQuery()
+        ->condition('type', array_keys($entities), 'IN')
+        ->accessCheck(FALSE)
+        ->execute();
+      if ($search_ids) {
+        $storage->delete($storage->loadMultiple($search_ids));
+      }
+    }
+    catch (PluginException | EntityStorageException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
     }
 
     /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */
@@ -311,18 +319,26 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function getDescription() {
+  public function getDescription(): ?string {
     return $this->description;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getNotificationPlugins() {
+  public function getNotificationPlugins(): array {
     if ($this->notificationPluginInstances === NULL) {
-      $this->notificationPluginInstances = \Drupal::getContainer()
-        ->get('plugin.manager.search_api_saved_searches.notification')
-        ->createPlugins($this, array_keys($this->notification_settings));
+      $this->notificationPluginInstances = [];
+      $notification_plugin_manager = \Drupal::getContainer()
+        ->get('plugin.manager.search_api_saved_searches.notification');
+      foreach ($this->notification_settings as $plugin_id => $configuration) {
+        try {
+          $this->notificationPluginInstances[$plugin_id] = $notification_plugin_manager->createPlugin($this, $plugin_id, $configuration);
+        }
+        catch (SavedSearchesException $e) {
+          watchdog_exception('search_api_saved_searches', $e);
+        }
+      }
     }
 
     return $this->notificationPluginInstances;
@@ -331,14 +347,14 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function getNotificationPluginIds() {
+  public function getNotificationPluginIds(): array {
     return array_keys($this->getNotificationPlugins());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isValidNotificationPlugin($notification_plugin_id) {
+  public function isValidNotificationPlugin(string $notification_plugin_id): bool {
     $notification_plugins = $this->getNotificationPlugins();
     return !empty($notification_plugins[$notification_plugin_id]);
   }
@@ -346,7 +362,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function getNotificationPlugin($notification_plugin_id) {
+  public function getNotificationPlugin(string $notification_plugin_id): NotificationPluginInterface {
     $notification_plugins = $this->getNotificationPlugins();
 
     if (empty($notification_plugins[$notification_plugin_id])) {
@@ -360,7 +376,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function addNotificationPlugin(NotificationPluginInterface $notification_plugin) {
+  public function addNotificationPlugin(NotificationPluginInterface $notification_plugin): SavedSearchTypeInterface {
     // Make sure the notificationPluginInstances are loaded before trying to add
     // a plugin to them.
     if ($this->notificationPluginInstances === NULL) {
@@ -374,7 +390,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function removeNotificationPlugin($notification_plugin_id) {
+  public function removeNotificationPlugin($notification_plugin_id): SavedSearchTypeInterface {
     // Make sure the notificationPluginInstances are loaded before trying to
     // remove a plugin from them.
     if ($this->notificationPluginInstances === NULL) {
@@ -388,7 +404,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function setNotificationPlugins(array $notification_plugins = NULL) {
+  public function setNotificationPlugins(array $notification_plugins = NULL): SavedSearchTypeInterface {
     $this->notificationPluginInstances = $notification_plugins;
     return $this;
   }
@@ -396,7 +412,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function getNotificationPluginFieldDefinitions() {
+  public function getNotificationPluginFieldDefinitions(): array {
     $fields = [];
 
     // Collect field definitions from our plugins.
@@ -430,16 +446,14 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function getOptions() {
+  public function getOptions(): array {
     return $this->options;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getOption($key, $default = NULL) {
-    // @todo Some of the options (mail texts) need to be translatable. Is this
-    //   the place to implement that (partly)?
+  public function getOption(string $key, $default = NULL) {
     $keys = explode('.', $key);
     $value = NestedArray::getValue($this->options, $keys, $exists);
     return $exists ? $value : $default;
@@ -448,7 +462,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function getActiveQuery(QueryHelperInterface $query_helper = NULL) {
+  public function getActiveQuery(QueryHelperInterface $query_helper = NULL): ?QueryInterface {
     if (!$query_helper) {
       $query_helper = \Drupal::service('search_api.query_helper');
     }
@@ -460,12 +474,8 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
         continue;
       }
       // Check whether the display matches the ones selected in the options.
-      // @todo Replace with \Drupal\search_api\Utility\Utility::matches() once
-      //   we can use it (Search API 1.8 dependency).
-      $display_id = $display->getPluginId();
-      $selected = $this->getOption('displays.selected', []);
-      $default = $this->getOption('displays.default', TRUE);
-      if (in_array($display_id, $selected) != $default) {
+      $settings = $this->getOption('displays', []);
+      if (Utility::matches($display->getPluginId(), $settings)) {
         return $query;
       }
     }
@@ -487,7 +497,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function onDependencyRemoval(array $dependencies) {
+  public function onDependencyRemoval(array $dependencies): bool {
     $changed = parent::onDependencyRemoval($dependencies);
 
     $all_plugins = $this->getNotificationPlugins();
@@ -613,7 +623,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
    *   and/or "notification" and values arrays of IDs mapped to their
    *   entities/plugins.
    */
-  protected function getDependencyData() {
+  protected function getDependencyData(): array {
     $dependency_data = [];
 
     // Since calculateDependencies() will work directly on the $dependencies

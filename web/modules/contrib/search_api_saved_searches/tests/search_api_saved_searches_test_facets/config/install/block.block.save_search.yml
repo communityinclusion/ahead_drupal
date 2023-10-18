@@ -6,10 +6,10 @@ dependencies:
   module:
     - search_api_saved_searches
   theme:
-    - classy
+    - olivero
 id: save_search
-theme: classy
-region: sidebar_first
+theme: olivero
+region: sidebar
 weight: 0
 provider: search_api_saved_searches
 plugin: search_api_saved_searches

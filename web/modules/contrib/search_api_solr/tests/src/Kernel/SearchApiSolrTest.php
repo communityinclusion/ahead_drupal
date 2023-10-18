@@ -33,15 +33,31 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * @var array
    */
   protected $languageIds = [
+    'de' => 'de',
+    'de-at' => 'de',
+    'en' => 'en',
+    'nl' => 'nl',
+  ];
+
+  /**
+   * More language IDs.
+   *
+   * Keeping all languages installed will lead to massive multilingual
+   * queries in search_api's tests. Therefore we split the language list
+   * into languages that should be available in all test and those only
+   * required for special tests.
+   *
+   * @see checkSchemaLanguages()
+   *
+   * @var array
+   */
+  protected $moreLanguageIds = [
     'ar' => 'ar',
     'bg' => 'bg',
     'ca' => 'ca',
     'cs' => 'cs',
     'da' => 'da',
-    'de' => 'de',
-    'de-at' => 'de',
     'el' => 'el',
-    'en' => 'en',
     'es' => 'es',
     'et' => 'et',
     'fa' => 'fa',
@@ -54,9 +70,9 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     'id' => 'id',
     'it' => 'it',
     'ja' => 'ja',
+    'ko' => 'ko',
     'lv' => 'lv',
     'nb' => 'nb',
-    'nl' => 'nl',
     'nn' => 'nn',
     'pl' => 'pl',
     'pt-br' => 'pt_br',
@@ -278,17 +294,26 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * Tests if all supported languages are deployed correctly.
    */
   protected function checkSchemaLanguages() {
+    $languages = [];
+    foreach (array_keys($this->moreLanguageIds) as $language_id) {
+      $language = ConfigurableLanguage::createFromLangcode($language_id);
+      $language->save();
+      $languages[$language->id()] = $language;
+    }
+
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = Server::load($this->serverId)->getBackend();
     $connector = $backend->getSolrConnector();
     $targeted_solr_major_version = (int) $connector->getSchemaTargetedSolrBranch();
-    $language_ids = $this->languageIds;
+    $language_ids = $this->languageIds + $this->moreLanguageIds;
     if (version_compare($targeted_solr_major_version, '9', '<')) {
       // 'et' requires Solr 8.2, the jump-start-config targets 8.0.
       $language_ids['et'] = FALSE;
       if (version_compare($targeted_solr_major_version, '8', '<')) {
         // 'ga' requires Solr 7.7, the jump-start-config targets 7.0.
         $language_ids['ga'] = FALSE;
+        // 'ko' requires Solr 7.5, the jump-start-config targets 7.0.
+        $language_ids['ko'] = FALSE;
         if (version_compare($targeted_solr_major_version, '7', '<')) {
           $language_ids['bg'] = FALSE;
           $language_ids['ca'] = FALSE;
@@ -324,6 +349,10 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     }
     $language_ids[LanguageInterface::LANGCODE_NOT_SPECIFIED] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
     $this->assertEquals($language_ids, $backend->getSchemaLanguageStatistics());
+
+    foreach ($languages as $language) {
+      $language->delete();
+    }
   }
 
   /**
@@ -1394,7 +1423,9 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    */
   public function testConfigGeneration(array $files) {
     $server = $this->getServer();
-    $solr_major_version = $server->getBackend()->getSolrConnector()->getSolrMajorVersion();
+    /** @var SolrBackendInterface $backend */
+    $backend = $server->getBackend();
+    $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
     $backend_config = $server->getBackendConfig();
     $solr_configset_controller = new SolrConfigSetController(\Drupal::service('extension.list.module'));
     $solr_configset_controller->setServer($server);
@@ -1408,7 +1439,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       }
     }
 
-    $config_name = 'name="drupal-' . SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION . '-solr-' . $solr_major_version . '.x-' . SEARCH_API_SOLR_JUMP_START_CONFIG_SET . '"';
+    $config_name = 'name="drupal-' . $backend->getPreferredSchemaVersion() . '-solr-' . $solr_major_version . '.x-' . SEARCH_API_SOLR_JUMP_START_CONFIG_SET . '"';
     $this->assertStringContainsString($config_name, $config_files['solrconfig.xml']);
     $this->assertStringContainsString($config_name, $config_files['schema.xml']);
     $this->assertStringContainsString($server->id(), $config_files['test.txt']);
@@ -1435,6 +1466,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $backend_config['disabled_caches'] = [
       'cache_document_default_7_0_0',
       'cache_filter_default_7_0_0',
+      'cache_document_default_9_0_0',
+      'cache_filter_default_9_0_0',
     ];
     $server->setBackendConfig($backend_config);
     $server->save();
@@ -1442,7 +1475,12 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $solr_configset_controller->setServer($server);
 
     $config_files = $solr_configset_controller->getConfigFiles();
-    $this->assertStringContainsString('<jmx />', $config_files['solrconfig_extra.xml']);
+    if (version_compare($solr_major_version, '9', '>=')) {
+      $this->assertStringNotContainsString('<jmx />', $config_files['solrconfig_extra.xml']);
+    }
+    else {
+      $this->assertStringContainsString('<jmx />', $config_files['solrconfig_extra.xml']);
+    }
     $this->assertStringContainsString('JtsSpatialContextFactory', $config_files['schema.xml']);
     $this->assertStringContainsString('text_en', $config_files['schema_extra_types.xml']);
     $this->assertStringNotContainsString('text_foo_en', $config_files['schema_extra_types.xml']);

@@ -3,11 +3,16 @@
 namespace Drupal\search_api_saved_searches\Service;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\Query\QueryException;
 use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_saved_searches\SavedSearchesException;
@@ -66,8 +71,11 @@ class NewResultsCheck {
    *
    * @return \Drupal\Core\Entity\EntityStorageInterface
    *   The saved search entity storage.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   *   Thrown if the storage could not be retrieved.
    */
-  protected function getSearchStorage() {
+  protected function getSearchStorage(): EntityStorageInterface {
     return $this->entityTypeManager->getStorage('search_api_saved_search');
   }
 
@@ -76,8 +84,11 @@ class NewResultsCheck {
    *
    * @return \Drupal\Core\Entity\EntityStorageInterface
    *   The saved search type entity storage.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   *   Thrown if the storage could not be retrieved.
    */
-  protected function getSearchTypeStorage() {
+  protected function getSearchTypeStorage(): EntityStorageInterface {
     return $this->entityTypeManager->getStorage('search_api_saved_search_type');
   }
 
@@ -92,7 +103,7 @@ class NewResultsCheck {
    *   The number of saved searches that were successfully checked for new
    *   results.
    */
-  public function checkAll($type_id = NULL) {
+  public function checkAll(?string $type_id = NULL): int {
     $search_ids = $this->getSearchesToCheck($type_id);
     if (!$search_ids) {
       return 0;
@@ -101,8 +112,16 @@ class NewResultsCheck {
     $count = 0;
     $now = $this->time->getRequestTime();
 
-    /** @var \Drupal\search_api_saved_searches\SavedSearchInterface $search */
-    foreach ($this->getSearchStorage()->loadMultiple($search_ids) as $search) {
+    try {
+      /** @var \Drupal\search_api_saved_searches\SavedSearchInterface[] $searches */
+      $searches = $this->getSearchStorage()->loadMultiple($search_ids);
+    }
+    catch (PluginException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+      return 0;
+    }
+
+    foreach ($searches as $search) {
       try {
         $results = $this->getNewResults($search);
         $search->set('last_executed', $now);
@@ -115,9 +134,7 @@ class NewResultsCheck {
           $plugin->notify($search, $results);
         }
       }
-      // @todo Use multi-catch for SavedSearchesException and
-      //   EntityStorageException once we're allowed to use PHP 7.1+.
-      catch (\Exception $e) {
+      catch (SavedSearchesException | EntityStorageException $e) {
         $args['@search_id'] = $search->id();
         watchdog_exception('search_api_saved_searches', $e, '%type while trying to find new results for saved search #@search_id: @message in %function (line %line of %file).', $args);
       }
@@ -136,15 +153,22 @@ class NewResultsCheck {
    * @return int[]
    *   The entity IDs of all saved searches that should be checked.
    */
-  public function getSearchesToCheck($type_id = NULL) {
+  public function getSearchesToCheck(?string $type_id = NULL): array {
     $now = $this->time->getRequestTime();
 
-    $query = $this->getSearchStorage()->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('status', TRUE)
-      // Add a small amount to the current time, so small differences in
-      // execution time don't result in a delay until the next cron run.
-      ->condition('next_execution', $now + 15, '<=');
+    try {
+      $query = $this->getSearchStorage()->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', TRUE)
+        // Add a small amount to the current time, so small differences in
+        // execution time don't result in a delay until the next cron run.
+        ->condition('next_execution', $now + 15, '<=');
+    }
+    /** @noinspection PhpRedundantCatchClauseInspection */
+    catch (PluginException | QueryException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+      return [];
+    }
     if ($type_id !== NULL) {
       $query->condition('type', $type_id);
     }
@@ -185,9 +209,15 @@ class NewResultsCheck {
    *   both enabled and have at least one notification plugin set (which might
    *   be an empty array). Or NULL if all existing types match these criteria.
    */
-  public function getTypesWithNotification() {
-    /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface[] $types */
-    $types = $this->getSearchTypeStorage()->loadMultiple();
+  public function getTypesWithNotification(): ?array {
+    try {
+      /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface[] $types */
+      $types = $this->getSearchTypeStorage()->loadMultiple();
+    }
+    catch (PluginException $e) {
+      watchdog_exception('search_api_saved_searches', $e);
+      return [];
+    }
     $all = TRUE;
 
     foreach ($types as $id => $type) {
@@ -213,7 +243,7 @@ class NewResultsCheck {
    *   Thrown if an error was encountered (like an invalid type or query, or the
    *   search query failing).
    */
-  public function getNewResults(SavedSearchInterface $search) {
+  public function getNewResults(SavedSearchInterface $search): ?ResultSetInterface {
     $search_id = $search->id();
     $type = $search->getType();
     $query = $search->getQuery();
@@ -226,13 +256,22 @@ class NewResultsCheck {
     $index_id = $query->getIndex()->id();
     $date_field = $type->getOption("date_field.$index_id");
     if ($date_field) {
-      $query->addCondition($date_field, $search->get('last_executed')->value, '>');
+      $query->addCondition($date_field, $search->get('last_executed')->__get('value'), '>');
     }
 
     // Unify some general query options.
     $query->setProcessingLevel(QueryInterface::PROCESSING_BASIC);
     $query->setSearchId("search_api_saved_searches:$search_id");
-    $query->range(NULL, NULL);
+
+    // If we're using the date field method, we can simply set the maximum
+    // result count as the search query limit. Otherwise, we always need to
+    // retrieve all results
+    $max_results = $type->getOption('max_results') ?: NULL;
+    $limit = $type->getOption('query_limit') ?: NULL;
+    if ($date_field && $max_results) {
+      $limit = $max_results;
+    }
+    $query->range(NULL, $limit);
 
     try {
       // Pass the query to the server directly (since the query is already
@@ -268,12 +307,15 @@ class NewResultsCheck {
 
     if ($items) {
       $results->setResultCount(count($items));
-      $results->setResultItems($items);
       if (!$this->saveKnownResults($search, $items)) {
         // To avoid reporting the same results again, better report no results
         // right now and hope the error gets resolved.
         return NULL;
       }
+      if ($max_results && count($items) > $max_results) {
+        $items = array_slice($items, 0, $max_results, TRUE);
+      }
+      $results->setResultItems($items);
     }
 
     return $items ? $results : NULL;
@@ -291,7 +333,7 @@ class NewResultsCheck {
    * @return bool
    *   TRUE if the operation succeeded, FALSE otherwise.
    */
-  public function saveKnownResults(SavedSearchInterface $search, array $items) {
+  public function saveKnownResults(SavedSearchInterface $search, array $items): bool {
     $insert = Database::getConnection()
       ->insert('search_api_saved_searches_old_results')
       ->fields(['search_id', 'search_type', 'item_id']);

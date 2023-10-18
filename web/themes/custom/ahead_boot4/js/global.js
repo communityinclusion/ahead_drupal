@@ -10,20 +10,20 @@
 
   Drupal.behaviors.ahead_boot4 = {
     attach: function (context, settings) {
-      $('.view-solr-search-content',context).once('initFadein').each(function() {
+      once('initFadein','.view-solr-search-content',context).forEach(function(value,i) {
           // When the page has loaded
           $('.view-solr-search-content').addClass('loaded');
         });
 
-      $('body',context).once('initHidden').each(function() {
-        
+      once('initHidden','body',context).forEach(function(value,i) {
+
         var beforePrint = function() {
           $(".ui-accordion-content").show();
         };
         var afterPrint = function() {
             console.log('Functionality to run after printing');
         };
-    
+
         if (window.matchMedia) {
             var mediaQueryList = window.matchMedia('print');
             mediaQueryList.addListener(function(mql) {
@@ -34,47 +34,61 @@
                 }
             });
         }
-    
+
         window.onbeforeprint = beforePrint;
         window.onafterprint = afterPrint;
      });
 
 
-      $( "#advButton",context ).once('advButton').click(function() {
-        if(!$('#firstb').hasClass('withCheck'))$('#firstb').addClass('withCheck');
-        else if ($('#firstb').hasClass('withCheck'))$('#firstb').removeClass('withCheck');
+      once('advButton',"#advButton").forEach(function(value,i) {
+        $(value).click(function() {
+          if(!$('#firstb').hasClass('withCheck'))$('#firstb').addClass('withCheck');
+          else if ($('#firstb').hasClass('withCheck'))$('#firstb').removeClass('withCheck');
+
+
+        });
 
 
       });
-      $('#instaddress',context).once('initHidden').each( function() {
-        $(this).prepend('<div id="printButt" class="printThis" tabindex="0" role="button" aria-pressed="false"><span>Print page</span></div>');
-          $(this).append('<div id="showAll" class="allHidden" tabindex="0" role="button" aria-pressed="false"><span>Open all sections.</span></div>');
+      once('initHidden','#instaddress',context).forEach( function(value,i) {
+        $(value).prepend('<div id="printButt" class="printThis" tabindex="0" role="button" aria-pressed="false"><span>Print page</span></div>');
+          $(value).append('<div id="showAll" class="allHidden" tabindex="0" role="button" aria-pressed="false"><span>Open all sections.</span></div>');
 
       });
 
-      $( "#showAll",context ).once('showAll').click(function() {
-        if($(this).hasClass('allHidden')) {$(".ui-accordion-content").show();
-        $(this).removeClass('allHidden');
-        $(this).html('<span>Hide all sections.</span>');
-        } else
-        {$(".ui-accordion-content").hide();
-          $(this).addClass('allHidden');
-          $(this).html('<span>Open all sections.</span>');
-        }
+    once('showAll',"#showAll").forEach(function(value,i) {
+      $(value).click(function() {
+          if($(this).hasClass('allHidden')) {$(".ui-accordion-content").show();
+          $(this).removeClass('allHidden');
+          $(this).html('<span>Hide all sections.</span>');
+          } else
+          {$(".ui-accordion-content").hide();
+            $(this).addClass('allHidden');
+            $(this).html('<span>Open all sections.</span>');
+          }
 
 
 
-      });
-      $( "#printButt",context ).once('printButt').click(function() {
-        $(".ui-accordion-content").show();
-          window.print();
-          return false;
+        });
 
 
 
       });
+      once('printBut',"#printButt").forEach(function(value,i) {
+        $(value).click(function() {
+          $(".ui-accordion-content").show();
+            window.print();
+            return false;
 
-      $('.view-display-id-page_1',context).once('solr-search-content').each(function(){
+
+
+        });
+
+
+
+      });
+
+      once('solr-search-content','.view-display-id-page_1',context).forEach(function(value,i){
           var m = window.location.search.indexOf("institution_size");
           var n = window.location.search.indexOf("disability_related");
           var o = window.location.search.indexOf("minority_serving");
@@ -105,7 +119,7 @@
         );
 
 
-      $('#firstb',context).once('initHidden').each( function() {
+      once('initHidden','#firstb',context).forEach( function(value,i) {
         if(!$('#block-savesearch h2').hasClass('toggler')) $('#block-savesearch h2').addClass('toggler');
           var m = window.location.search.indexOf("institution_size");
           var n = window.location.search.indexOf("disability_related");
@@ -125,55 +139,66 @@
         }
         );
 
-        $('legend.legendDescrip',context).once('initHidden').each( function() {
-          $(this).append('<p class="ratingKey">Rating key:</p><ul class="tableKey clearfix"><li><img src="/sites/default/files/cedar_imgs/commonly_provided.png" style="width:18px" alt="Commonly provided in the last three years" />&nbsp;&nbsp;Commonly provided in the last three years</li><li><img src="/sites/default/files/cedar_imgs/occasionally_provided.png" style="width:18px" alt="Occasionally provided in the last three years" />&nbsp;&nbsp;Occasionally provided in the last three years</li><li><img src="/sites/default/files/cedar_imgs/not_provided.png" style="width:18px" alt="Not provided in the last three years" />&nbsp;&nbsp;Not provided in the last three years</li></ul>');
+        once('initHiddenn','legend.legendDescrip',context).forEach( function(value,i) {
+          $(value).append('<p class="ratingKey">Rating key:</p><ul class="tableKey clearfix"><li><img src="/sites/default/files/cedar_imgs/commonly_provided.png" style="width:18px" alt="Commonly provided in the last three years" />&nbsp;&nbsp;Commonly provided in the last three years</li><li><img src="/sites/default/files/cedar_imgs/occasionally_provided.png" style="width:18px" alt="Occasionally provided in the last three years" />&nbsp;&nbsp;Occasionally provided in the last three years</li><li><img src="/sites/default/files/cedar_imgs/not_provided.png" style="width:18px" alt="Not provided in the last three years" />&nbsp;&nbsp;Not provided in the last three years</li></ul>');
 
         });
 
 
-        $('div#campus-access',context).once('initHidden').each( function() {
+        once('initHiddennn','div#campus-access',context).forEach( function(value,i) {
           if(!$('#block-savesearch h2').hasClass('toggler')) $('#block-savesearch h2').addClass('toggler');
           $(this).prepend('<div><p class="ratingKey">Rating key:</p><ul class="tableKey clearfix"><li><img src="/sites/default/files/cedar_imgs/commonly_provided.png" style="width:18px" alt="Completely accessible" />&nbsp;&nbsp;Completely accessible</li><li><img src="/sites/default/files/cedar_imgs/occasionally_provided.png" style="width:18px" alt="Somewhat accessible" />&nbsp;&nbsp;Somewhat accessible</li><li><img src="/sites/default/files/cedar_imgs/not_provided.png" style="width:18px" alt="Generally not accessible" />&nbsp;&nbsp;Generally not accessible</li></ul></div>');
 
         });
-        $('a.use-ajax', context).once('flag-bookmark').click(function(){
-          console.log('view name: ');
+        once('flag-bookmark','a.use-ajax').forEach(function(value,i){
+          $(value).click(function(){
+            console.log('view name: ');
 
 
-         setTimeout(function(){ $('.view-flag-bookmark').trigger('RefreshView');},2000);
+           setTimeout(function(){ $('.view-flag-bookmark').trigger('RefreshView');},2000);
+
+          });
 
         });
 
 
 
-        $('h2.searchToggle',context).once('toggleSearch').click( function() {
+        once('toggleSearch','h2.searchToggle',context).forEach( function(value,i) {
+          $(value).click( function() {
           if(!$('#block-savesearch').hasClass('toggled')) { $('#block-savesearch').addClass('toggled');}
           else { $('#block-savesearch').removeClass('toggled'); }
 
+          });
         });
 
-        $('h2.favToggle',context).once('toggleSearch2').click( function() {
-          if(!$('#block-views-block-flag-bookmark-block-1').hasClass('toggled')) { $('#block-views-block-flag-bookmark-block-1').addClass('toggled');}
-          else { $('#block-views-block-flag-bookmark-block-1').removeClass('toggled'); }
+        once('toggleSearch2','h2.favToggle',context).forEach( function(value,i) {
+          $(value).click( function() {
+            if(!$('#block-ahead-boot4-views-block-flag-bookmark-block-1').hasClass('toggled')) { $('#block-ahead-boot4-views-block-flag-bookmark-block-1').addClass('toggled');}
+            else { $('#block-ahead-boot4-views-block-flag-bookmark-block-1').removeClass('toggled'); }
+          });
 
         });
-        $(document,context).once('autoClose').mouseup(function(e) {
-          var container = $("#block-views-block-flag-bookmark-block-1");
+        once('autoClose',document,context).forEach(function(value,i) {
+          $(value).mouseup(function(e) {
+            var container = $("#block-ahead-boot4-views-block-flag-bookmark-block-1");
 
-          // if the target of the click isn't the container nor a descendant of the container
-          if (!container.is(e.target) && container.has(e.target).length === 0)
-          {
-            container.removeClass('toggled');
-          }
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0)
+            {
+              container.removeClass('toggled');
+            }
+          });
         });
-        $(document,context).once('autoClose2').mouseup(function(e) {
-          var container = $('#block-savesearch');
+        once('autoClose2',document,context).forEach(function(value,i) {
+          $(value).mouseup(function(e) {
+            var container = $('#block-savesearch');
 
-          // if the target of the click isn't the container nor a descendant of the container
-          if (!container.is(e.target) && container.has(e.target).length === 0)
-          {
-            container.removeClass('toggled');
-          }
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0)
+            {
+              container.removeClass('toggled');
+            }
+          });
         });
 
 

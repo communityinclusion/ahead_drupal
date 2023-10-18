@@ -13,7 +13,7 @@ class SavedSearchTypeListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function buildHeader() {
+  public function buildHeader(): array {
     return [
       'label' => $this->t('Name'),
       'description' => $this->t('Description'),
@@ -24,7 +24,7 @@ class SavedSearchTypeListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function buildRow(EntityInterface $entity) {
+  public function buildRow(EntityInterface $entity): array {
     /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $entity */
     $status = $entity->status();
     $status_label = $status ? $this->t('Enabled') : $this->t('Disabled');
@@ -62,7 +62,7 @@ class SavedSearchTypeListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function render() {
+  public function render(): array {
     $build = parent::render();
     $build['#attached']['library'][] = 'search_api/drupal.search_api.admin_css';
     return $build;
