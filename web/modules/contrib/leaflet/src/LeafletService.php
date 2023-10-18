@@ -2,10 +2,12 @@
 
 namespace Drupal\leaflet;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\File\Exception\InvalidStreamWrapperException;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\geofield\GeoPHP\GeoPHPInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Component\Utility\Html;
@@ -19,6 +21,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * Provides a  LeafletService class.
  */
 class LeafletService {
+
+  use StringTranslationTrait;
 
   /**
    * Current user service.
@@ -61,6 +65,13 @@ class LeafletService {
    * @var \Symfony\Component\HttpFoundation\RequestStack
    */
   protected $requestStack;
+
+  /**
+   * The cache backend default service..
+   *
+   * @var \Drupal\Core\Cache\CacheBackendInterface
+   */
+  protected $cache;
 
   /**
    * Static cache for icon sizes.
@@ -172,6 +183,8 @@ class LeafletService {
    *   The stream wrapper manager.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The stream wrapper manager.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+   *   The cache backend default service.
    */
   public function __construct(
     AccountInterface $current_user,
@@ -179,7 +192,8 @@ class LeafletService {
     ModuleHandlerInterface $module_handler,
     LinkGeneratorInterface $link_generator,
     StreamWrapperManagerInterface $stream_wrapper_manager,
-    RequestStack $request_stack
+    RequestStack $request_stack,
+    CacheBackendInterface $cache
   ) {
     $this->currentUser = $current_user;
     $this->geoPhpWrapper = $geophp_wrapper;
@@ -187,6 +201,7 @@ class LeafletService {
     $this->link = $link_generator;
     $this->streamWrapperManager = $stream_wrapper_manager;
     $this->requestStack = $request_stack;
+    $this->cache = $cache;
   }
 
   /**
@@ -203,9 +218,30 @@ class LeafletService {
    *   The leaflet_map render array.
    */
   public function leafletRenderMap(array $map, array $features = [], $height = '400px') {
-    $map_id = isset($map['id']) ? $map['id'] : Html::getUniqueId('leaflet_map');
+    $map_id = $map['id'] ?? Html::getUniqueId('leaflet_map');
 
     $attached_libraries = ['leaflet/general', 'leaflet/leaflet-drupal'];
+
+    // Add the intersection_observer library, if lazy load is enabled.
+    if (isset($map['settings']['map_lazy_load']) && $map['settings']['map_lazy_load']['lazy_load']) {
+      $attached_libraries[] = 'leaflet/intersection_observer';
+    }
+
+    // Add the Leaflet Reset View library, if requested.
+    if (isset($map['settings']['reset_map']) && $map['settings']['reset_map']['control']) {
+      $attached_libraries[] = 'leaflet/leaflet.reset_map_view';
+    }
+
+    // Add the Leaflet Locate library, if requested.
+    if (isset($map['settings']['locate']) && !empty($map['settings']['locate']['control'])) {
+      $attached_libraries[] = 'leaflet/leaflet.locatecontrol';
+    }
+
+    // Add the Leaflet Geocoder library and functionalities, if requested,
+    // and the user has access to Geocoder Api Enpoints.
+    if (!empty($map['settings']['geocoder']['control'])) {
+      $this->setGeocoderControlSettings($map['settings']['geocoder'], $attached_libraries);
+    }
 
     // Add the Leaflet Fullscreen library, if requested.
     if (isset($map['settings']['fullscreen']) && $map['settings']['fullscreen']['control']) {
@@ -221,12 +257,6 @@ class LeafletService {
     if ($this->moduleHandler->moduleExists('leaflet_markercluster') && isset($map['settings']['leaflet_markercluster']) && $map['settings']['leaflet_markercluster']['control']) {
       $attached_libraries[] = 'leaflet_markercluster/leaflet-markercluster';
       $attached_libraries[] = 'leaflet_markercluster/leaflet-markercluster-drupal';
-    }
-
-    // Add the Leaflet Geocoder library and functionalities, if requested,
-    // and the user has access to Geocoder Api Enpoints.
-    if (!empty($map['settings']['geocoder']['control'])) {
-      $this->setGeocoderControlSettings($map['settings']['geocoder'], $attached_libraries);
     }
 
     $settings[$map_id] = [
@@ -266,7 +296,7 @@ class LeafletService {
     $map_info = &$drupal_static_fast['leaflet_map_info'];
 
     if (empty($map_info)) {
-      if ($cached = \Drupal::cache()->get('leaflet_map_info')) {
+      if ($cached = $this->cache->get('leaflet_map_info')) {
         $map_info = $cached->data;
       }
       else {
@@ -275,7 +305,7 @@ class LeafletService {
         // Let other modules alter the map info.
         $this->moduleHandler->alter('leaflet_map_info', $map_info);
 
-        \Drupal::cache()->set('leaflet_map_info', $map_info);
+        $this->cache->set('leaflet_map_info', $map_info);
       }
     }
 
@@ -283,7 +313,7 @@ class LeafletService {
       return $map_info;
     }
     else {
-      return isset($map_info[$map]) ? $map_info[$map] : [];
+      return $map_info[$map] ?? [];
     }
 
   }
@@ -309,8 +339,8 @@ class LeafletService {
     $data = [];
     foreach ($items as $item) {
       // Auto-detect and parse the format (e.g. WKT, JSON etc).
-      /* @var \GeometryCollection $geom */
-      if (!($geom = $this->geoPhpWrapper->load(isset($item['wkt']) ? $item['wkt'] : $item))) {
+      /** @var \GeometryCollection $geom */
+      if (!($geom = $this->geoPhpWrapper->load($item['wkt'] ?? $item))) {
         continue;
       }
       $data[] = $this->leafletProcessGeometry($geom);
@@ -341,9 +371,9 @@ class LeafletService {
         break;
 
       case 'linestring':
-        /* @var \GeometryCollection $geom */
+        /** @var \GeometryCollection $geom */
         $components = $geom->getComponents();
-        /* @var \Geometry $component */
+        /** @var \Geometry $component */
         foreach ($components as $component) {
           $datum['points'][] = [
             'lat' => $component->getY(),
@@ -353,12 +383,12 @@ class LeafletService {
         break;
 
       case 'polygon':
-        /* @var \GeometryCollection $geom */
+        /** @var \GeometryCollection $geom */
         $tmp = $geom->getComponents();
-        /* @var \GeometryCollection $geom */
+        /** @var \GeometryCollection $geom */
         $geom = $tmp[0];
         $components = $geom->getComponents();
-        /* @var \Geometry $component */
+        /** @var \Geometry $component */
         foreach ($components as $component) {
           $datum['points'][] = [
             'lat' => $component->getY(),
@@ -373,12 +403,12 @@ class LeafletService {
           $datum['type'] = 'multipolyline';
           $datum['multipolyline'] = TRUE;
         }
-        /* @var \GeometryCollection $geom */
+        /** @var \GeometryCollection $geom */
         $components = $geom->getComponents();
-        /* @var \GeometryCollection $component */
+        /** @var \GeometryCollection $component */
         foreach ($components as $key => $component) {
           $subcomponents = $component->getComponents();
-          /* @var \Geometry $subcomponent */
+          /** @var \Geometry $subcomponent */
           foreach ($subcomponents as $subcomponent) {
             $datum['component'][$key]['points'][] = [
               'lat' => $subcomponent->getY(),
@@ -391,18 +421,18 @@ class LeafletService {
 
       case 'multipolygon':
         $components = [];
-        /* @var \GeometryCollection $geom */
+        /** @var \GeometryCollection $geom */
         $tmp = $geom->getComponents();
-        /* @var \GeometryCollection $polygon */
-        foreach ($tmp as $delta => $polygon) {
+        /** @var \GeometryCollection $polygon */
+        foreach ($tmp as $polygon) {
           $polygon_component = $polygon->getComponents();
-          foreach ($polygon_component as $k => $linestring) {
+          foreach ($polygon_component as $linestring) {
             $components[] = $linestring;
           }
         }
         foreach ($components as $key => $component) {
           $subcomponents = $component->getComponents();
-          /* @var \Geometry $subcomponent */
+          /** @var \Geometry $subcomponent */
           foreach ($subcomponents as $subcomponent) {
             $datum['component'][$key]['points'][] = [
               'lat' => $subcomponent->getY(),
@@ -414,7 +444,7 @@ class LeafletService {
 
       case 'geometrycollection':
       case 'multipoint':
-        /* @var \GeometryCollection $geom */
+        /** @var \GeometryCollection $geom */
         $components = $geom->getComponents();
         foreach ($components as $key => $component) {
           $datum['component'][$key] = $this->leafletProcessGeometry($component);
@@ -432,7 +462,7 @@ class LeafletService {
    *   The Leaflet Icon Documentation Link.
    */
   public function leafletIconDocumentationLink() {
-    return $this->link->generate(t('Leaflet Icon Documentation'), Url::fromUri('https://leafletjs.com/reference-1.3.0.html#icon', [
+    return $this->link->generate($this->t('Leaflet Icon Documentation'), Url::fromUri('https://leafletjs.com/reference.html#icon', [
       'absolute' => TRUE,
       'attributes' => ['target' => 'blank'],
     ]));
@@ -461,8 +491,8 @@ class LeafletService {
           case "svg":
             if ($xml = simplexml_load_file($icon_url)) {
               $attr = $xml->attributes();
-              $feature["icon"]["iconSize"]["x"] = $attr->width->__toString();
-              $feature["icon"]["iconSize"]["y"] = $attr->height->__toString();
+              $feature["icon"]["iconSize"]["x"] = isset($attr->width) ? $attr->width->__toString() : 40;
+              $feature["icon"]["iconSize"]["y"] = isset($attr->height) ? $attr->height->__toString() : 40;
             }
             break;
 

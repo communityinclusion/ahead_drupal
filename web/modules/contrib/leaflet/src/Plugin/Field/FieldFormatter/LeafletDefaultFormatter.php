@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Leaflet\LeafletService;
 use Drupal\leaflet\LeafletSettingsElementsTrait;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\core\Render\Renderer;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -171,20 +172,19 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $settings = $this->getSettings();
+
+    $form = parent::settingsForm($form, $form_state);
     $form['#tree'] = TRUE;
 
     // Get the Cardinality set for the Formatter Field.
     $field_cardinality = $this->fieldDefinition->getFieldStorageDefinition()
       ->getCardinality();
 
-    $elements = parent::settingsForm($form, $form_state);
-    $field_name = $this->fieldDefinition->getName();
-
     // Set Replacement Patterns Element.
-    $this->setReplacementPatternsElement($elements);
+    $this->setReplacementPatternsElement($form);
 
     if ($field_cardinality !== 1) {
-      $elements['multiple_map'] = [
+      $form['multiple_map'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Multiple Maps'),
         '#description' => $this->t('Check this option if you want to render a single Map for every single Geo Point.'),
@@ -193,71 +193,84 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
       ];
     }
     else {
-      $elements['multiple_map'] = [
+      $form['multiple_map'] = [
         '#type' => 'hidden',
         '#value' => 0,
       ];
     }
 
-    $elements['popup'] = [
-      '#title' => $this->t('Popup Infowindow'),
-      '#description' => $this->t('Show a Popup Infowindow on Marker click, with custom content.'),
-      '#type' => 'checkbox',
-      '#default_value' => $settings['popup'],
-    ];
+    // Insert the Tooltip Element.
+    $this->setTooltipElement($form, $settings);
 
-    $elements['popup_content'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Popup content'),
-      '#description' => $this->t('Define the custom content for the Pop Infowindow. If empty the Content Title will be output.<br>See "REPLACEMENT PATTERNS" above for available replacements.'),
-      '#default_value' => $settings['popup_content'],
-      '#states' => [
-        'visible' => [
-          'input[name="fields[' . $field_name . '][settings_edit_form][settings][popup]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
+    // Insert the Popup Element.
+    $this->setPopupElement($form, $settings);
 
     // Generate the Leaflet Map General Settings.
-    $this->generateMapGeneralSettings($elements, $settings);
+    $this->generateMapGeneralSettings($form, $settings);
+
+    // Set the FitBounds Options Element.
+    $this->setFitBoundsOptionsElement($form, $settings);
 
     // Generate the Leaflet Map Reset Control.
-    $this->setResetMapControl($elements, $settings);
+    $this->setResetMapViewControl($form, $settings);
+
+    // Generate the Leaflet Map Scale Control.
+    $this->setMapScaleControl($form, $settings);
 
     // Generate the Leaflet Map Position Form Element.
     $map_position_options = $settings['map_position'];
-    $elements['map_position'] = $this->generateMapPositionElement($map_position_options);
+    $form['map_position'] = $this->generateMapPositionElement($map_position_options);
 
     // Generate Icon form element.
     $icon_options = $settings['icon'];
-    $elements['icon'] = $this->generateIconFormElement($icon_options);
+    $form['icon'] = $this->generateIconFormElement($icon_options);
 
     // Set Map Marker Cluster Element.
-    $this->setMapMarkerclusterElement($elements, $settings);
+    $this->setMapMarkerclusterElement($form, $settings);
 
     // Set Fullscreen Element.
-    $this->setFullscreenElement($elements, $settings);
+    $this->setFullscreenElement($form, $settings);
 
     // Set Map Geometries Options Element.
-    $this->setMapPathOptionsElement($elements, $settings);
+    $this->setMapPathOptionsElement($form, $settings);
+
+    // Set the Feature Additional Properties Element.
+    $this->setFeatureAdditionalPropertiesElement($form, $settings);
+
+    // Set Locate User Position Control Element.
+    $this->setLocateControl($form, $settings);
 
     // Set Map Geocoder Control Element, if the Geocoder Module exists,
     // otherwise output a tip on Geocoder Module Integration.
-    $this->setGeocoderMapControl($elements, $settings);
+    $this->setGeocoderMapControl($form, $settings);
 
-    return $elements;
+    // Set Map Lazy Load Element.
+    $this->setMapLazyLoad($form, $settings);
+
+    return $form;
   }
 
   /**
    * {@inheritdoc}
    */
   public function settingsSummary() {
+    $settings = $this->getSettings();
+
+    // Define the Popup Control and Popup Content with backward
+    // compatibility with Leaflet release < 2.x.
+    $popup_control = !empty($settings['popup']) ? $settings['popup'] : ($settings['leaflet_popup']['control'] ?? NULL);
+    $popup_content = !empty($settings['popup_content']) ? $settings['popup_content'] : ($settings['leaflet_popup']['content'] ?? NULL);
+
     $summary = [];
-    $summary[] = $this->t('Leaflet Map: @map', ['@map' => $this->getSetting('leaflet_map')]);
-    $summary[] = $this->t('Map height: @height @height_unit', ['@height' => $this->getSetting('height'), '@height_unit' => $this->getSetting('height_unit')]);
-    $summary[] = $this->t('Popup Infowindow: @popup', ['@popup' => $this->getSetting('popup') ? $this->t('Yes') : $this->t('No')]);
-    if ($this->getSetting('popup') && $this->getSetting('popup_content')) {
-      $summary[] = $this->t('Popup content: @popup_content', ['@popup_content' => $this->getSetting('popup_content')]);
+    $summary[] = $this->t('Leaflet Map: @map', ['@map' => $settings['leaflet_map']]);
+    $summary[] = $this->t('Map height: @height @height_unit', [
+      '@height' => $settings['height'],
+      '@height_unit' => $settings['height_unit'],
+    ],
+    );
+    $summary[] = $this->t('Popup Infowindow: @popup', ['@popup' => $popup_control ? $this->t('Yes') : $this->t('No')]);
+    if ($popup_control && $popup_content) {
+      $summary[] = $this->t('Popup content: @popup_content', ['@popup_content' => $popup_content]);
     }
     return $summary;
   }
@@ -269,10 +282,10 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
 
-    /* @var \Drupal\Core\Entity\EntityInterface $entity */
+    /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $items->getEntity();
     // Take the entity translation, if existing.
-    /* @var \Drupal\Core\TypedData\TranslatableInterface $entity */
+    /** @var \Drupal\Core\TypedData\TranslatableInterface $entity */
     if ($entity->hasTranslation($langcode)) {
       $entity = $entity->getTranslation($langcode);
     }
@@ -280,7 +293,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
     $entity_id = $entity->id();
-    /* @var \Drupal\Core\Field\FieldDefinitionInterface $field */
+    /** @var \Drupal\Core\Field\FieldDefinitionInterface $field */
     $field = $items->getFieldDefinition();
 
     // Sets/consider possibly existing previous Zoom settings.
@@ -310,37 +323,31 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
 
     $results = [];
     $features = [];
-    foreach ($items as $delta => $item) {
+    foreach ($items as $item) {
 
       $points = $this->leafletService->leafletProcessGeofield($item->value);
       $feature = $points[0];
       $feature['entity_id'] = $entity_id;
 
-      // Eventually set the popup content.
-      if ($settings['popup']) {
-        // Construct the renderable array for popup title / text. As we later
-        // convert that to plain text, losing attachments and cacheability, save
-        // them to $results.
-        $build = [];
-        if ($this->getSetting('popup_content')) {
-          $bubbleable_metadata = new BubbleableMetadata();
-          $popup_content = $this->token->replace($this->getSetting('popup_content'), $tokens, ['clear' => TRUE], $bubbleable_metadata);
-          $build[] = [
-            '#markup' => $popup_content,
-          ];
-          $bubbleable_metadata->applyTo($results);
-        }
+      // Attach tooltip data (value & options).
+      if (isset($settings['leaflet_tooltip']) && !empty($settings['leaflet_tooltip']['value'])) {
+        $feature['tooltip'] = $settings['leaflet_tooltip'];
+        // Decode any entities because JS will encode them again,
+        // and we don't want double encoding.
+        $feature['tooltip']['value'] = $this->tokenResolvedContent($entity, $settings['leaflet_tooltip']['value'], $tokens, $results);
+      }
 
-        // We need a string for using it inside the popup. Save attachments and
-        // cacheability to $results.
-        $render_context = new RenderContext();
-        $rendered = $this->renderer->executeInRenderContext($render_context, function () use (&$build) {
-          return $this->renderer->render($build, TRUE);
-        });
-        $feature['popup'] = !empty($rendered) ? $rendered : $entity->label();
-        if (!$render_context->isEmpty()) {
-          $render_context->update($results);
-        }
+      // Define the Popup Control and Popup Content with backward
+      // compatibility with Leaflet release < 2.x.
+      $popup_control = !empty($settings['popup']) ? $settings['popup'] : ($settings['leaflet_popup']['control'] ?? NULL);
+      $popup_content = !empty($settings['popup_content']) ? $settings['popup_content'] : ($settings['leaflet_popup']['content'] ?? NULL);
+
+      // Eventually set the popup content.
+      if ($popup_control) {
+        $feature['popup'] = $settings['leaflet_popup'];
+        // Generate the Popup Content render array transforming the
+        // 'popup_content' text area through replacements tokens.
+        $feature['popup']['value'] = $this->tokenResolvedContent($entity, $popup_content, $tokens, $results);
       }
 
       // Add/merge eventual map icon definition from hook_leaflet_map_info.
@@ -356,7 +363,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
         $settings['icon'] = array_replace($map['icon'], $settings['icon']);
       }
 
-      $icon_type = isset($settings['icon']['iconType']) ? $settings['icon']['iconType'] : 'marker';
+      $icon_type = $settings['icon']['iconType'] ?? 'marker';
 
       // Eventually set the custom Marker icon (DivIcon, Icon Url or
       // Circle Marker).
@@ -372,6 +379,18 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
         if (!empty($settings["icon"]["iconSize"]["y"])) {
           $feature['icon']["iconSize"]["y"] = $this->token->replace($settings["icon"]["iconSize"]["y"], $tokens);
         }
+        if (!empty($settings["icon"]["iconAnchor"]["x"])) {
+          $feature['icon']["iconAnchor"]["x"] = $this->token->replace($settings["icon"]["iconAnchor"]["x"], $tokens);
+        }
+        if (!empty($settings["icon"]["iconAnchor"]["y"])) {
+          $feature['icon']["iconAnchor"]["y"] = $this->token->replace($settings["icon"]["iconAnchor"]["y"], $tokens);
+        }
+        if (!empty($settings["icon"]["popupAnchor"]["x"])) {
+          $feature['icon']["popupAnchor"]["x"] = $this->token->replace($settings["icon"]["popupAnchor"]["x"], $tokens);
+        }
+        if (!empty($settings["icon"]["popupAnchor"]["y"])) {
+          $feature['icon']["popupAnchor"]["y"] = $this->token->replace($settings["icon"]["popupAnchor"]["y"], $tokens);
+        }
         if (!empty($settings["icon"]["shadowSize"]["x"])) {
           $feature['icon']["shadowSize"]["x"] = $this->token->replace($settings["icon"]["shadowSize"]["x"], $tokens);
         }
@@ -382,7 +401,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
         switch ($icon_type) {
           case 'html':
             $feature['icon']['html'] = $this->token->replace($settings['icon']['html'], $tokens);
-            $feature['icon']['html_class'] = isset($settings['icon']['html_class']) ? $settings['icon']['html_class'] : '';
+            $feature['icon']['html_class'] = $settings['icon']['html_class'] ?? '';
             break;
 
           case 'circle_marker':
@@ -420,7 +439,16 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
       }
 
       // Associate dynamic className property (token based) to icon.
-      $feature['className'] = !empty($settings['className']) ? str_replace(["\n", "\r"], "", $this->token->replace($settings['className'], $tokens)) : '';
+      $feature['className'] = !empty($settings['className']) ?
+        str_replace(["\n", "\r"], "", $this->token->replace($settings['className'], $tokens)) : '';
+
+      // Add Feature additional Properties (if present).
+      if (!empty($settings['feature_properties']['values'])) {
+        $feature['properties'] = str_replace([
+          "\n",
+          "\r",
+        ], "", $this->token->replace($settings['feature_properties']['values'], $tokens));
+      }
 
       // Allow modules to adjust the marker.
       $this->moduleHandler->alter('leaflet_formatter_feature', $feature, $item, $entity);
@@ -463,6 +491,48 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
       $settings['map_position']['maxZoom'] = (int) $settings['maxZoom'];
       $this->setSettings($settings);
     }
+  }
+
+  /**
+   * Returns a Token Resolved Content.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The Entity.
+   * @param string $element_content
+   *   The Element Content.
+   * @param array $tokens
+   *   The Tokens list array.
+   * @param array $results
+   *   The results array.
+   *
+   * @return array
+   *   The result render array.
+   */
+  private function tokenResolvedContent(EntityInterface $entity, string $element_content, array $tokens, array $results) {
+    // Construct the renderable array for popup title / text. As we later
+    // convert that to plain text, losing attachments and cacheability, save
+    // them to $results.
+    $build = [];
+    if (!empty($element_content)) {
+      $bubbleable_metadata = new BubbleableMetadata();
+      $content = $this->token->replace($element_content, $tokens, ['clear' => TRUE], $bubbleable_metadata);
+      $build[] = [
+        '#markup' => $content,
+      ];
+      $bubbleable_metadata->applyTo($results);
+    }
+
+    // We need a string for using it inside the popup. Save attachments and
+    // cache-ability to $results.
+    $render_context = new RenderContext();
+    $rendered = $this->renderer->executeInRenderContext($render_context, function () use (&$build) {
+      return $this->renderer->render($build, TRUE);
+    });
+    $result = !empty($rendered) ? $rendered : $entity->label();
+    if (!$render_context->isEmpty()) {
+      $render_context->update($results);
+    }
+    return $result;
   }
 
 }

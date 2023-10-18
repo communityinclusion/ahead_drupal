@@ -18,10 +18,27 @@ views.style.leaflet_map:
       label: 'Submit label for entity source'
     name_field:
       type: string
-      label: 'Name field'
-    description_field:
-      type: string
-      label: 'Description field'
+      label: 'Simple Tooltip'
+    leaflet_tooltip:
+      type: mapping
+      label: 'Tooltip Source'
+      mapping:
+        value:
+          type: string
+          label: 'Value'
+        options:
+          type: text
+          label: 'Tooltip Options'
+    leaflet_popup:
+      type: mapping
+      label: 'Popup Source'
+      mapping:
+        value:
+          type: string
+          label: 'Value'
+        options:
+          type: text
+          label: 'Popup Options'
     view_mode:
       type: string
       label: 'View mode'
@@ -37,22 +54,48 @@ views.style.leaflet_map:
     hide_empty_map:
       type: boolean
       label: 'Hide empty map'
-    gesture_handling:
-      type: boolean
-      label: 'Gesture handling'
     disable_wheel:
       type: boolean
       label: 'Disable wheel'
+    gesture_handling:
+      type: boolean
+      label: 'Gesture handling'
+    fitbounds_options:
+      type: text
+      label: 'FitBounds Options'
     reset_map:
       type: mapping
-      label: 'Reset map'
+      label: 'Reset Map View'
       mapping:
         control:
           type: boolean
           label: 'Control'
-        position:
-          type: string
-          label: 'Position'
+        options:
+          type: text
+          label: 'Options'
+    map_scale:
+      type: mapping
+      label: 'Map Scale Control'
+      mapping:
+        control:
+          type: boolean
+          label: 'Control'
+        options:
+          type: text
+          label: 'Options'
+    locate:
+      type: mapping
+      label: 'Locate User Position'
+      mapping:
+        control:
+          type: boolean
+          label: 'Control'
+        options:
+          type: text
+          label: 'Options'
+        automatic:
+          type: boolean
+          label: 'Automatically locate user current position'
     map_position:
       type: mapping
       label: 'Map position'
@@ -70,6 +113,9 @@ views.style.leaflet_map:
             lon:
               type: float
               label: 'Longitude'
+        zoomControlPosition:
+          type: string
+          label: 'Position'
         zoom:
           type: integer
           label: 'Zoom'
@@ -167,12 +213,12 @@ views.style.leaflet_map:
         control:
           type: boolean
           label: 'Control'
-        options:
-          type: text
-          label: 'Options'
         include_path:
           type: boolean
           label: 'Include Path'
+        options:
+          type: text
+          label: 'Options'
     fullscreen:
       type: mapping
       label: 'Leaflet Fullscreen'
@@ -192,11 +238,21 @@ views.style.leaflet_map:
       mapping:
         control:
           type: boolean
-          label: 'Control'
+          label: 'Enable Geocoder map control'
         settings:
           type: mapping
-          label: 'Geocoder'
+          label: 'Geocoder settings'
           mapping:
+            autocomplete:
+              type: mapping
+              label: 'Autocomplete'
+              mapping:
+                placeholder:
+                  type: string
+                  label: 'Placeholder'
+                title:
+                  type: string
+                  label: 'Title'
             position:
               type: string
               label: 'Path'
@@ -230,3 +286,10 @@ views.style.leaflet_map:
             options:
               type: string
               label: 'Options'
+    map_lazy_load:
+      type: mapping
+      label: Map lazy load
+      mapping:
+        lazy_load:
+          type: boolean
+          label: Lazy load

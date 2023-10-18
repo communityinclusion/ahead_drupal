@@ -5,10 +5,8 @@
  * Hook documentation for leaflet_views module.
  */
 
+use Drupal\views\Plugin\views\ViewsPluginInterface;
 use Drupal\views\ResultRow;
-use Drupal\views\Plugin\views\row\RowPluginBase;
-use Drupal\leaflet_views\Plugin\views\style\MarkerDefault;
-use Drupal\leaflet_views\Plugin\views\style\LeafletMap;
 
 /**
  * Allow other modules to add/alter the $geofield_value.
@@ -20,7 +18,7 @@ use Drupal\leaflet_views\Plugin\views\style\LeafletMap;
  * @param array $leaflet_view_geofield_value_alter_context
  *   The leaflet_view_geofield_value_alter_context array.
  */
-function hook_leaflet_map_view_geofield_value_alter(array &$geofield_value, array &$map, array $leaflet_view_geofield_value_alter_context) {
+function hook_leaflet_map_view_geofield_value_alter(array &$geofield_value, array &$map, array $leaflet_view_geofield_value_alter_context): void {
   // Make custom alterations to $geofield_value.
 }
 
@@ -40,10 +38,27 @@ function hook_leaflet_map_view_geofield_value_alter(array &$geofield_value, arra
  *     for details.
  * @param \Drupal\views\ResultRow $row
  *   The views result row.
- * @param \Drupal\views\Plugin\views\row\RowPluginBase $rowPlugin
+ * @param \Drupal\views\Plugin\views\ViewsPluginInterface $rowPlugin
  *   (optional) The row plugin used for rendering the feature.
  */
-function hook_leaflet_views_feature_alter(array &$feature, ResultRow $row, RowPluginBase $rowPlugin = NULL) {
+function hook_leaflet_views_feature_alter(array &$feature, ResultRow $row, ViewsPluginInterface $rowPlugin = NULL): void {
+}
+
+/**
+ * Adjust the array representing a leaflet feature group.
+ *
+ * @param array $group
+ *   The leaflet feature group. Available keys are:
+ *   - group: Indicates whether the contained features should be rendered as a
+ *   - group_label: The group label, e.g. used for the layer control widget.
+ *   - disabled: The flag to set the Features Group Layer initially disabled.
+ *   - features: List of features contained in this group.
+ * @param \Drupal\views\Plugin\views\ViewsPluginInterface $view_style
+ *   The Leaflet Map View Style.
+ */
+function hook_leaflet_views_features_group_alter(array &$group, ViewsPluginInterface &$view_style): void {
+  // Make custom alterations to $group, eventually using the $view_style
+  // context.
 }
 
 /**
@@ -53,25 +68,10 @@ function hook_leaflet_views_feature_alter(array &$feature, ResultRow $row, RowPl
  *
  * @param array $map_settings
  *   The array of geofield map element settings.
- * @param \Drupal\leaflet_views\Plugin\views\style\LeafletMap $view_style
+ * @param \Drupal\views\Plugin\views\ViewsPluginInterface $view_style
  *   The Leaflet Map View Style.
  * */
-function hook_leaflet_map_view_style_alter(array &$map_settings, LeafletMap &$view_style) {
+function hook_leaflet_map_view_style_alter(array &$map_settings, ViewsPluginInterface &$view_style): void {
   // Make custom alterations to $map_settings, eventually using the $view_style
   // context.
-}
-
-/**
- * Adjust the array representing a leaflet feature group.
- *
- * @param array $group
- *   The leaflet feature group. Available keys are:
- *   - group: Indicates whether the contained features should be rendered as a
- *     layer group. Set to FALSE to render contained features ungrouped.
- *   - features: List of features contained in this group.
- *   - label: The group label, e.g. used for the layer control widget.
- * @param \Drupal\leaflet_views\Plugin\views\style\MarkerDefault $stylePlugin
- *   The style plugin used for rendering the feature group.
- */
-function hook_leaflet_views_feature_group_alter(array &$group, MarkerDefault $stylePlugin) {
 }

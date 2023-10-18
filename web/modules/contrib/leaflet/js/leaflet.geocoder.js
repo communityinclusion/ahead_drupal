@@ -30,35 +30,37 @@
     let geocoder_settings = drupalSettings.leaflet[mapid].map.settings.geocoder.settings;
     let control = new L.Control({position: geocoder_settings.position});
     control.onAdd = function() {
-      let controlUI = L.DomUtil.create('div','geocoder');
-      controlUI.id = mapid + '--leaflet--geocoder-control--container';
+      let controlUI = L.DomUtil.create('div','geocoder leaflet-control-geocoder-container');
+      controlUI.id = mapid + '--leaflet-control-geocoder-container';
       controlDiv.appendChild(controlUI);
+      const autocomplete_placeholder = geocoder_settings['autocomplete'] ? geocoder_settings['autocomplete']['placeholder'] : 'Search Address';
+      const autocomplete_title = geocoder_settings['autocomplete'] ? geocoder_settings['autocomplete']['title'] : 'Search an Address on the Map';
 
       // Set CSS for the control search interior.
       let controlSearch = document.createElement('input');
-      controlSearch.placeholder = Drupal.t('Search Address');
+      controlSearch.placeholder = Drupal.t(autocomplete_placeholder);
       controlSearch.id = mapid + '--leaflet--geocoder-control';
-      controlSearch.title = Drupal.t('Search an Address on the Map');
+      controlSearch.title = Drupal.t(autocomplete_title);
       controlSearch.style.color = 'rgb(25,25,25)';
       controlSearch.style.padding = '0.2em 1em';
       controlSearch.style.borderRadius = '3px';
-      controlSearch.size = geocoder_settings.input_size || 25;
+      controlSearch.size = geocoder_settings['input_size'] || 20;
       controlSearch.maxlength = 256;
       controlUI.appendChild(controlSearch);
       return controlUI;
     };
-
     return control;
   };
 
   Drupal.Leaflet.prototype.map_geocoder_control.autocomplete = function(mapid, geocoder_settings) {
-    let providers = geocoder_settings.providers.toString();
-    let options = geocoder_settings.options;
-    let map = Drupal.Leaflet[mapid].lMap;
-    let zoom = geocoder_settings.zoom || 14;
-    $('#' + mapid + '--leaflet--geocoder-control').autocomplete({
+    const providers = geocoder_settings['providers'].toString();
+    const options = geocoder_settings.options;
+    const map = Drupal.Leaflet[mapid].lMap;
+    const zoom = geocoder_settings.zoom || 14;
+    const selector = $('#' + mapid + '--leaflet--geocoder-control');
+    selector.autocomplete({
       autoFocus: true,
-      minLength: geocoder_settings.min_terms || 4,
+      minLength: geocoder_settings['min_terms'] || 4,
       delay: geocoder_settings.delay || 800,
       // This bit uses the geocoder to fetch address values.
       source: function (request, response) {
@@ -72,7 +74,7 @@
               thisElement.removeClass('ui-autocomplete-loading');
               return {
                 // the value property is needed to be passed to the select.
-                value: item.formatted_address,
+                value: item['formatted_address'],
                 lat: item.geometry.location.lat,
                 lng: item.geometry.location.lng
               };
@@ -100,7 +102,7 @@
             .openOn(map);
         }
       }
-    }).addClass('form-autocomplete');;
+    });
   }
 
 })(jQuery, Drupal, drupalSettings);

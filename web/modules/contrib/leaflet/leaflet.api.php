@@ -6,9 +6,9 @@
  */
 
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\geofield\Plugin\Field\FieldType\GeofieldItem;
-use Drupal\Core\Entity\ContentEntityBase;
-use Drupal\leaflet\Plugin\Field\FieldWidget\LeafletDefaultWidget;
+use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\geofield\Plugin\Field\FieldWidget\GeofieldBaseWidget;
 
 /**
  * Returns leaflet map info default settings.
@@ -20,6 +20,7 @@ function leaflet_map_info_default_settings() {
     'scrollWheelZoom' => TRUE,
     'doubleClickZoom' => TRUE,
     'zoomControl' => TRUE,
+    'zoomControlPosition' => 'topleft',
     'attributionControl' => TRUE,
     'trackResize' => TRUE,
     'fadeAnimation' => TRUE,
@@ -148,14 +149,13 @@ function hook_leaflet_map_info_alter(array &$map_info) {
  *
  * @param array $map_settings
  *   The array of geofield map element settings.
- * @param Drupal\leaflet\Plugin\Field\FieldWidget\LeafletDefaultWidget $leafletDefaultWidget
+ * @param \Drupal\geofield\Plugin\Field\FieldWidget\GeofieldBaseWidget $leafletDefaultWidget
  *   The Leaflet default Widget.
  * */
-function hook_leaflet_default_widget_alter(array &$map_settings, LeafletDefaultWidget $leafletDefaultWidget) {
+function hook_leaflet_default_widget_alter(array &$map_settings, GeofieldBaseWidget $leafletDefaultWidget) {
   // Make custom alterations to $map_settings, eventually using the $items
   // context.
 }
-
 
 /**
  * Adjust the array representing a leaflet formatter feature/marker.
@@ -168,12 +168,12 @@ function hook_leaflet_default_widget_alter(array &$map_settings, LeafletDefaultW
  *     feature.
  *   - Other possible keys include "lat", "lon", "points", "component",
  *     depending on feature type.
- * @param \Drupal\geofield\Plugin\Field\FieldType\GeofieldItem $item
+ * @param \Drupal\Core\Field\FieldItemInterface $item
  *   The Geofield Item.
- * @param \Drupal\Core\Entity\ContentEntityBase $entity
+ * @param \Drupal\Core\Entity\ContentEntityInterface $entity
  *   The Content Entity base of the formatter.
  */
-function hook_leaflet_formatter_feature_alter(array $feature, GeofieldItem $item, ContentEntityBase $entity) {
+function hook_leaflet_formatter_feature_alter(array $feature, FieldItemInterface $item, ContentEntityInterface $entity) {
   // Make custom alterations to $feature, eventually using the $items
   // context.
 }
@@ -192,4 +192,3 @@ function hook_leaflet_default_map_formatter_alter(array &$map_settings, FieldIte
   // Make custom alterations to $map_settings, eventually using the $items
   // context.
 }
-

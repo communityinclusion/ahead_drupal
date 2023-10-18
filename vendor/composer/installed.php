@@ -3,7 +3,7 @@
         'name' => 'drupal-composer/drupal-project',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'd886f9b031295ec8c13e4a1019d24f8149deb3dc',
+        'reference' => 'e579ab427faf28c7b5fc266e087c9497c22e12bf',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -370,7 +370,7 @@
         'drupal-composer/drupal-project' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'd886f9b031295ec8c13e4a1019d24f8149deb3dc',
+            'reference' => 'e579ab427faf28c7b5fc266e087c9497c22e12bf',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -828,9 +828,9 @@
             'dev_requirement' => false,
         ),
         'drupal/geofield_map' => array(
-            'pretty_version' => '2.90.0',
-            'version' => '2.90.0.0',
-            'reference' => '8.x-2.90',
+            'pretty_version' => '3.0.14',
+            'version' => '3.0.14.0',
+            'reference' => '3.0.14',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/geofield_map',
             'aliases' => array(),
@@ -909,9 +909,9 @@
             'dev_requirement' => false,
         ),
         'drupal/leaflet' => array(
-            'pretty_version' => '2.2.12',
-            'version' => '2.2.12.0',
-            'reference' => '2.2.12',
+            'pretty_version' => '10.2.1',
+            'version' => '10.2.1.0',
+            'reference' => '10.2.1',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../web/modules/contrib/leaflet',
             'aliases' => array(),
@@ -1819,9 +1819,9 @@
         'psr/container-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.1|2.0',
-                1 => '^1.1 || ^2.0',
-                2 => '^1.0',
+                0 => '^1.1 || ^2.0',
+                1 => '^1.0',
+                2 => '1.1|2.0',
             ),
         ),
         'psr/event-dispatcher' => array(
@@ -1851,8 +1851,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-factory' => array(
@@ -1867,8 +1867,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-message' => array(
@@ -1883,8 +1883,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/log' => array(
@@ -1899,8 +1899,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0|3.0',
-                1 => '1.0.0 || 2.0.0 || 3.0.0',
+                0 => '1.0.0 || 2.0.0 || 3.0.0',
+                1 => '1.0|2.0|3.0',
             ),
         ),
         'psy/psysh' => array(
