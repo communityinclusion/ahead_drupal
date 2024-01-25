@@ -51,6 +51,22 @@ search_api_saved_searches.type.*:
         max_results:
           type: integer
           label: 'Maximum number of new results to report'
+        notify_interval:
+          type: mapping
+          label: 'Notification interval settings'
+          mapping:
+            customizable:
+              type: boolean
+              label: 'Whether the user can select the notification interval themselves'
+            default_value:
+              type: integer
+              label: 'The default value to set as the notification interval (in seconds)'
+            options:
+              type: sequence
+              label: 'Options for the "Notification interval" user option (if customizable = TRUE)'
+              sequence:
+                type: string
+                label: 'The options''s label (key is the interval in seconds, or -1 for never)'
         query_limit:
           type: integer
           label: 'Limit to set on the search query for retrieving new results (if method for determining new results is "via result IDs")'

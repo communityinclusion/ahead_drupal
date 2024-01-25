@@ -222,8 +222,8 @@
 
       switch (layer.layer_type) {
         case 'overlay':
-          let overlay_layer = this.create_layer(layer, key);
-          let layer_hidden = (typeof layer.layer_hidden === "undefined") ? false : layer.layer_hidden;
+          const overlay_layer = this.create_layer(layer, key);
+          const layer_hidden = (typeof layer.layer_hidden === "undefined") ? false : layer.layer_hidden;
           this.add_overlay(key, overlay_layer, layer_hidden);
           break;
 
@@ -292,7 +292,7 @@
    *   The layers progressive counter.
    */
   Drupal.Leaflet.prototype.add_base_layer = function(key, definition, i) {
-    let base_layer = this.create_layer(definition, key);
+    const base_layer = this.create_layer(definition, key);
     this.base_layers[key] = base_layer;
 
     // Only the first base layer needs to be added to the map - all the others are accessed via the layer switcher.
@@ -316,11 +316,11 @@
    *   The Overlay Layer Label.
    * @param layer
    *   The Leaflet Overlay.
-   * @param {bool} disabled_layer
+   * @param {bool} hidden_layer
    *   The flag to disable the Layer from the Over Layers Control.
    */
-  Drupal.Leaflet.prototype.add_overlay = function(label, layer, disabled_layer) {
-    if (!disabled_layer) {
+  Drupal.Leaflet.prototype.add_overlay = function(label, layer, hidden_layer) {
+    if (!hidden_layer) {
       this.lMap.addLayer(layer);
     }
 
@@ -443,6 +443,12 @@
    */
   Drupal.Leaflet.prototype.set_feature_path_style = function(lFeature, feature) {
     const lFeature_path_style = feature.path ? (feature.path instanceof Object ? feature.path : JSON.parse(feature.path)) : {};
+    // Make sure that the weight property is cast into integer, for avoiding
+    // polygons eventually disappearing with pan and zooming.
+    // @see: https://stackoverflow.com/a/65892728/5451394
+    if (lFeature_path_style.hasOwnProperty('weight')) {
+      lFeature_path_style.weight = parseInt(lFeature_path_style.weight);
+    }
     lFeature.setStyle(lFeature_path_style);
   };
 
@@ -526,6 +532,13 @@
         lFeature = this.create_multipoly(feature, map_settings ? map_settings['leaflet_markercluster']['include_path'] : false);
         break;
 
+      // In case of singular cases where feature.type is json we use this.create_json method.
+      // @see https://www.drupal.org/project/leaflet/issues/3377403
+      // @see https://www.drupal.org/project/leaflet/issues/3186029
+      case 'json':
+        lFeature = this.create_json(feature.json, feature.events);
+        break;
+
       case 'multipoint':
       case 'geometrycollection':
         lFeature = this.create_collection(feature);
@@ -583,17 +596,28 @@
    */
   Drupal.Leaflet.prototype.create_layer = function(layer, key) {
     let self = this;
-    let map_layer = new L.TileLayer(layer.urlTemplate);
-    if (layer.type === 'wms') {
-      map_layer = new L.tileLayer.wms(layer.urlTemplate, layer.options);
-    }
-    map_layer._leaflet_id = key;
+    let map_layer;
+    const layer_type = layer.type ?? 'base';
+    const urlTemplate = layer.urlTemplate ?? '';
+    const layer_options =  layer.options ?? {};
 
-    if (layer.options) {
-      for (let option in layer.options) {
-        map_layer.options[option] = layer.options[option];
-      }
+    switch (layer_type) {
+      case 'wms':
+        map_layer = new L.tileLayer.wms(urlTemplate, layer_options);
+        break;
+
+      case 'vector':
+        map_layer = new L.maplibreGL({
+          'style': urlTemplate,
+          'attribution': layer_options.attribution ?? ''
+        });
+        break;
+
+      default:
+        map_layer = new L.tileLayer(urlTemplate, layer_options);
     }
+
+    map_layer._leaflet_id = key;
 
     // Layers served from TileStream need this correction in the y coordinates.
     // TODO: Need to explore this more and find a more elegant solution.
@@ -839,7 +863,54 @@
     }
   };
 
-  // Set Map initial map position and Zoom.  Different scenarios:
+  /**
+   * Leaflet Geo JSON Creator.
+   *
+   * In case of singular cases where feature.type is json we use this.create_json method.
+   * @see https://www.drupal.org/project/leaflet/issues/3377403
+   * @see https://www.drupal.org/project/leaflet/issues/3186029
+   *
+   * @param json
+   *   The json input.
+   * @param events
+   *
+   * @returns {*}
+   */
+  Drupal.Leaflet.prototype.create_json = function(json, events) {
+    let lJSON = new L.GeoJSON();
+    const self = this;
+
+    lJSON.options.onEachFeature = function(feature, layer) {
+      for (let layer_id in layer._layers) {
+        for (let i in layer._layers[layer_id]._latlngs) {
+        }
+      }
+      if (feature.properties.style) {
+        layer.setStyle(feature.properties.style);
+      }
+      if (feature.properties.leaflet_id) {
+        layer._leaflet_id = feature.properties.leaflet_id;
+      }
+
+      // Eventually add Tooltip to the lFeature.
+      self.feature_bind_tooltip(layer, feature.properties);
+
+      // Eventually add Popup to the Layer.
+      self.feature_bind_popup(layer, feature.properties);
+
+      for (e in events) {
+        let layerParam = {};
+        layerParam[e] = eval(events[e]);
+        layer.on(layerParam);
+      }
+    };
+
+    lJSON.addData(json);
+    return lJSON;
+  };
+
+
+  // Set Map initial map position and Zoom. Different scenarios:
   //  1)  Force the initial map center and zoom to values provided by input settings
   //  2)  Fit multiple features onto map using Leaflet's fitBounds method
   //  3)  Fit a single polygon onto map using Leaflet's fitBounds method

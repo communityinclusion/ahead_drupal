@@ -35,4 +35,12 @@ notification_settings:
         [search-api-saved-search-results:links]
 
         --  [site:name] team
-options: {}
+options:
+  notify_interval:
+    customizable: true
+    default_value: 86400
+    options:
+      3600: Hourly
+      86400: Daily
+      604800: Weekly
+      -1: Never

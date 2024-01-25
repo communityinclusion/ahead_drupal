@@ -3,10 +3,10 @@
 namespace Drupal\geofield\Plugin\migrate\process;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\geofield\WktGeneratorInterface;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
-use Drupal\geofield\WktGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -50,9 +50,9 @@ class GeofieldLatLon extends ProcessPluginBase implements ContainerFactoryPlugin
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
     $value = array_map('floatval', $value);
-    list($lat, $lon) = $value;
+    [$lat, $lon] = $value;
 
-    if (empty($lat) || empty($lon)) {
+    if (empty($lat) && empty($lon)) {
       return NULL;
     }
 

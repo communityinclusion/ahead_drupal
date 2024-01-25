@@ -188,6 +188,10 @@ class SavedSearchTypeForm extends EntityForm {
       '#default_value' => $type->status(),
     ];
 
+    $form['advanced'] = [
+      '#type' => 'vertical_tabs',
+    ];
+
     $display_options = [];
     $displays = $this->getDisplayPluginManager()->getInstances();
     foreach ($displays as $display_id => $display) {
@@ -197,7 +201,7 @@ class SavedSearchTypeForm extends EntityForm {
       '#type' => 'details',
       '#title' => $this->t('Search displays'),
       '#description' => $this->t('Select for which search displays saved searches of this type can be created.'),
-      '#open' => $type->isNew(),
+      '#group' => 'advanced',
     ];
     if (count($display_options) > 0) {
       $form['options']['displays']['default'] = [
@@ -230,7 +234,12 @@ class SavedSearchTypeForm extends EntityForm {
       ];
     }
 
-    $form['notification_plugins'] = [
+    $form['notifications'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Notifications'),
+      '#group' => 'advanced',
+    ];
+    $form['notifications']['notification_plugins'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('Notification method'),
       '#description' => $this->t('This determines how users will be notified of new results for their saved searches.'),
@@ -242,12 +251,13 @@ class SavedSearchTypeForm extends EntityForm {
         'method' => 'replace',
         'effect' => 'fade',
       ],
+      '#parents' => ['notification_plugins'],
     ];
     $notification_plugin_options = [];
     try {
       foreach ($this->getNotificationPluginManager()->createPlugins($type) as $plugin_id => $notification_plugin) {
         $notification_plugin_options[$plugin_id] = $notification_plugin->label();
-        $form['notification_plugins'][$plugin_id]['#description'] = $notification_plugin->getDescription();
+        $form['notifications']['notification_plugins'][$plugin_id]['#description'] = $notification_plugin->getDescription();
       }
     }
     catch (SavedSearchesException $e) {
@@ -255,17 +265,18 @@ class SavedSearchTypeForm extends EntityForm {
       $this->messenger()->addError($this->t('An error occurred loading the notification plugins: @message.', ['@message' => $e->getMessage()]));
     }
     asort($notification_plugin_options, SORT_NATURAL | SORT_FLAG_CASE);
-    $form['notification_plugins']['#options'] = $notification_plugin_options;
+    $form['notifications']['notification_plugins']['#options'] = $notification_plugin_options;
 
-    $form['notification_configs'] = [
+    $form['notifications']['notification_configs'] = [
       '#type' => 'container',
       '#attributes' => [
         'id' => 'search-api-notification-plugins-config-form',
       ],
       '#tree' => TRUE,
+      '#parents' => ['notification_configs'],
     ];
 
-    $form['notification_plugin_configure_button'] = [
+    $form['notifications']['notification_plugin_configure_button'] = [
       '#type' => 'submit',
       '#name' => 'notification_plugins_configure',
       '#value' => $this->t('Configure'),
@@ -276,14 +287,65 @@ class SavedSearchTypeForm extends EntityForm {
         'wrapper' => 'search-api-notification-plugins-config-form',
       ],
       '#attributes' => ['class' => ['js-hide']],
+      '#parents' => ['notification_plugin_configure_button'],
     ];
 
     $this->buildNotificationPluginConfigForm($form, $form_state);
 
+    $form['notifications']['notify_interval'] = [
+      '#type' => 'container',
+      '#title' => $this->t('Notification interval'),
+      '#parents' => ['options', 'notify_interval'],
+    ];
+    $form['notifications']['notify_interval']['default_value'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Default notification interval'),
+      '#description' => $this->t('The default notification interval, in seconds, to set for saved searches created for this type. Set to -1 to never send notifications.'),
+      '#default_value' => $type->getOption('notify_interval.default_value', 86400),
+    ];
+    $form['notifications']['notify_interval']['customizable'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Let the user change the notification interval'),
+      '#default_value' => $type->getOption('notify_interval.customizable', TRUE),
+    ];
+    $default_interval_options = [
+      3600 => t('Hourly'),
+      86400 => t('Daily'),
+      604800 => t('Weekly'),
+      -1 => t('Never'),
+    ];
+    $options_value = $type->getOption('notify_interval.options', $default_interval_options);
+    // Usually, the options value will already be a parsed options list.
+    // However, during AJAX form submits it can actually already be a string, as
+    // entered by the user. In that case, simply use it as-is.
+    if (is_array($options_value)) {
+      $interval_options = [];
+      foreach ($options_value as $k => $v) {
+        $interval_options[] = "$k | $v";
+      }
+      $interval_options = implode("\n", $interval_options);
+    }
+    else {
+      $interval_options = $options_value;
+    }
+    $form['notifications']['notify_interval']['options'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Interval options'),
+      '#description' => $this->t('The possible intervals the user can choose from, in seconds. Enter one value per line, in the format seconds|label. Use a negative value for disabling notifications.'),
+      '#default_value' => $interval_options,
+      '#states' => [
+        'visible' => [
+          ':input[name="notify_interval[customizable]"]' => [
+            'checked' => TRUE,
+          ],
+        ],
+      ],
+    ];
+
     $form['misc'] = [
       '#type' => 'details',
       '#title' => $this->t('Miscellaneous'),
-      '#open' => $type->isNew(),
+      '#group' => 'advanced',
     ];
     $date_field_title = $this->t('Method for determining new results');
     $form['misc']['date_field'] = [
@@ -407,16 +469,16 @@ class SavedSearchTypeForm extends EntityForm {
         // Get the "sub-form state" and appropriate form part to send to
         // buildConfigurationForm().
         $plugin_form = [];
-        if (!empty($form['notification_configs'][$plugin_id])) {
-          $plugin_form = $form['notification_configs'][$plugin_id];
+        if (!empty($form['notifications']['notification_configs'][$plugin_id])) {
+          $plugin_form = $form['notifications']['notification_configs'][$plugin_id];
         }
         $plugin_form_state = SubformState::createForSubform($plugin_form, $form, $form_state);
-        $form['notification_configs'][$plugin_id] = $plugin->buildConfigurationForm($plugin_form, $plugin_form_state);
+        $form['notifications']['notification_configs'][$plugin_id] = $plugin->buildConfigurationForm($plugin_form, $plugin_form_state);
 
         $show_message = TRUE;
-        $form['notification_configs'][$plugin_id]['#type'] = 'details';
-        $form['notification_configs'][$plugin_id]['#title'] = $this->t('Configure the %notification notification method', ['%notification' => $plugin->label()]);
-        $form['notification_configs'][$plugin_id]['#open'] = $type->isNew();
+        $form['notifications']['notification_configs'][$plugin_id]['#type'] = 'details';
+        $form['notifications']['notification_configs'][$plugin_id]['#title'] = $this->t('Configure the %notification notification method', ['%notification' => $plugin->label()]);
+        $form['notifications']['notification_configs'][$plugin_id]['#open'] = $type->isNew();
       }
     }
 
@@ -442,7 +504,7 @@ class SavedSearchTypeForm extends EntityForm {
    * @noinspection PhpUnusedParameterInspection
    */
   public function buildAjaxNotificationPluginConfigForm(array $form, FormStateInterface $form_state): array {
-    return $form['notification_configs'];
+    return $form['notifications']['notification_configs'];
   }
 
   /**
@@ -501,6 +563,37 @@ class SavedSearchTypeForm extends EntityForm {
       }
     }
 
+    // Parse and validate the "Notification interval" options.
+    $notify_interval = $form_state->getValue(['options', 'notify_interval']);
+    $notify_interval['customizable'] = (bool) $notify_interval['customizable'];
+    $notify_interval['default_value'] = (int) $notify_interval['default_value'];
+    $options_text = $notify_interval['options'] ?? '';
+    $options_text = trim($options_text);
+    $notify_interval['options'] = [];
+    if ($options_text) {
+      foreach (explode("\n", $options_text) as $line) {
+        if (!trim($line)) {
+          continue;
+        }
+        $parts = explode('|', $line, 2);
+        if (count($parts) == 1) {
+          $k = $v = trim($line);
+        }
+        else {
+          [$k, $v] = array_map('trim', $parts);
+        }
+        $notify_interval['options'][$k] = $v;
+      }
+    }
+    elseif (!empty($notify_interval['customizable'])) {
+      $vars = [
+        '@customizable' => $form['notifications']['notify_interval']['customizable']['#title'],
+        '@options' => $form['notifications']['notify_interval']['options']['#title'],
+      ];
+      $form_state->setError($form['notifications']['notify_interval']['options'], $this->t('"@options" must be specified if "@customizable" is enabled.', $vars));
+    }
+    $form_state->setValue(['options', 'notify_interval'], $notify_interval);
+
     // Call validateConfigurationForm() for each enabled notification plugin
     // with a form.
     try {
@@ -520,7 +613,7 @@ class SavedSearchTypeForm extends EntityForm {
           $form_state->setRebuild();
           continue;
         }
-        $plugin_form = &$form['notification_configs'][$plugin_id];
+        $plugin_form = &$form['notifications']['notification_configs'][$plugin_id];
         $plugin_form_state = SubformState::createForSubform($plugin_form, $form, $form_state);
         $plugin->validateConfigurationForm($plugin_form, $plugin_form_state);
       }
@@ -549,8 +642,8 @@ class SavedSearchTypeForm extends EntityForm {
       ->createPlugins($type, $plugin_ids);
     foreach ($plugins as $plugin_id => $plugin) {
       if ($plugin instanceof PluginFormInterface) {
-        $plugin_form_state = SubformState::createForSubform($form['notification_configs'][$plugin_id], $form, $form_state);
-        $plugin->submitConfigurationForm($form['notification_configs'][$plugin_id], $plugin_form_state);
+        $plugin_form_state = SubformState::createForSubform($form['notifications']['notification_configs'][$plugin_id], $form, $form_state);
+        $plugin->submitConfigurationForm($form['notifications']['notification_configs'][$plugin_id], $plugin_form_state);
       }
     }
     $type->setNotificationPlugins($plugins);

@@ -57,7 +57,7 @@
         "drupal/coder": "^8.3.2",
         "drupal/computed_field": "^3.0@alpha",
         "drupal/conditional_fields": "^4.0@alpha",
-        "drupal/core": "^10.1.5",
+        "drupal/core": "^10.2.2",
         "drupal/core-composer-scaffold": "^10.1",
         "drupal/core-dev": "^10.1",
         "drupal/csv_importer": "1.x-dev",

@@ -77,7 +77,7 @@ trait LeafletSettingsElementsTrait {
           'lon' => 0,
         ],
         'zoomControlPosition' => 'topleft',
-        'zoom' => 12,
+        'zoom' => 5,
         'minZoom' => 1,
         'maxZoom' => 18,
         'zoomFiner' => 0,
@@ -607,7 +607,7 @@ trait LeafletSettingsElementsTrait {
     $element['iconSize'] = [
       '#title' => $this->t('Icon Size'),
       '#type' => 'fieldset',
-      '#description' => $this->t("Size of the icon image in pixels (if empty the natural icon image size will be used).<br>Both support <b>Replacement Patterns</b> and should end up into an Integer (positive value)<br>Both the values shouldn't be null to be valid"),
+      '#description' => $this->t("Size of the icon image in pixels (if empty the natural icon image size will be used).<br>Both support <b>Replacement Patterns</b> and should end up into an Integer (positive value)<br>If one value is null it will be derived from the populated one, according to the natural icon image size rate."),
     ];
 
     $element['iconSize']['x'] = [
@@ -648,7 +648,7 @@ trait LeafletSettingsElementsTrait {
     $element['shadowSize'] = [
       '#title' => $this->t('Shadow Size'),
       '#type' => 'fieldset',
-      '#description' => $this->t("Size of the shadow image in pixels (if empty the natural shadow image size will be used). <br>Both support <b>Replacement Patterns</b> and should end up into an Integer (positive value)"),
+      '#description' => $this->t("Size of the shadow image in pixels (if empty the natural shadow image size will be used). <br>Both support <b>Replacement Patterns</b> and should end up into an Integer (positive value)<br>If one value is null it will be derived from the populated one, according to the natural icon image size rate."),
     ];
 
     $element['shadowSize']['x'] = [
@@ -852,13 +852,17 @@ trait LeafletSettingsElementsTrait {
       ];
     }
 
+    $tooltip_description = $this->t('Use this to insert a @leaflet_tooltip (Feature by Feature).', [
+      '@leaflet_tooltip' => $this->link->generate("Leaflet Tooltip", Url::fromUri("https://leafletjs.com/reference.html#tooltip", ['attributes' => ['target' => 'blank']])),
+    ]);
+
     if (isset($this->fieldDefinition)) {
       $element['leaflet_tooltip']['value'] = [
         '#type' => 'textarea',
         '#title' => $this->t('Tooltip Source'),
         '#rows' => 2,
         '#default_value' => $settings['leaflet_tooltip']['value'] ?? $default_settings['leaflet_tooltip']['value'],
-        '#description' => $this->t("Use this to insert a Leaflet JS Library Tooltip (Feature by Feature)."),
+        '#description' => $tooltip_description,
       ];
     }
     elseif (!empty($view_fields)) {
@@ -867,7 +871,7 @@ trait LeafletSettingsElementsTrait {
         '#title' => $this->t('Tooltip Source'),
         '#options' => array_merge(['' => ' - None - '], $view_fields),
         '#default_value' => $settings['leaflet_tooltip']['value'] ?? $default_settings['leaflet_tooltip']['value'],
-        '#description' => $this->t("Use this to insert a Leaflet JS Library Tooltip (Feature by Feature)."),
+        '#description' => $tooltip_description,
       ];
     }
 

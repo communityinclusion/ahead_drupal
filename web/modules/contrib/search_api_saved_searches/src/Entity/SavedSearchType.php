@@ -86,7 +86,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   protected $description;
 
   /**
-   * The settings of the notification plugins selected for this index.
+   * The settings of the notification plugins selected for this type.
    *
    * The array has the following structure:
    *

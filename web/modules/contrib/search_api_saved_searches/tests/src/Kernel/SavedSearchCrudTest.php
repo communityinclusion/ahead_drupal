@@ -35,6 +35,11 @@ class SavedSearchCrudTest extends KernelTestBase {
   ];
 
   /**
+   * The search index used in this test.
+   */
+  protected Index $index;
+
+  /**
    * A mock "new results check" service.
    *
    * @var \PHPUnit\Framework\MockObject\MockObject|\Drupal\search_api_saved_searches\Service\NewResultsCheck

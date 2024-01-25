@@ -3,6 +3,7 @@
 namespace Drupal\Tests\search_api_saved_searches\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\search_api_saved_searches\Entity\SavedSearchType;
 
 /**
  * Tests CRUD functionality for saved search types.
@@ -25,11 +26,16 @@ class SavedSearchTypeCrudTest extends KernelTestBase {
   /**
    * Tests creation of a new saved search type.
    *
+   * @param bool $customizable_notification_interval
+   *   TRUE if notification interval should be customizable, FALSE otherwise.
+   *
    * @covers ::postSave
    * @covers ::createFormDisplay
    * @covers ::adaptFieldStorageDefinitions
+   *
+   * @dataProvider typeCreationTestDataProvider
    */
-  public function testTypeCreation() {
+  public function testTypeCreation(bool $customizable_notification_interval) {
     // Ascertain the correct initial state.
     // Saved search entity type has no bundles.
     $bundles = $this->container->get('entity_type.bundle.info')
@@ -49,6 +55,13 @@ class SavedSearchTypeCrudTest extends KernelTestBase {
     $this->installEntitySchema('search_api_saved_search');
     $this->installConfig('search_api_saved_searches');
 
+    if (!$customizable_notification_interval) {
+      $type = SavedSearchType::load('default');
+      $options = $type->getOptions();
+      $options['notify_interval']['customizable'] = FALSE;
+      $type->set('options', $options)->save();
+    }
+
     // Bundle was created correctly.
     $bundles = $this->container->get('entity_type.bundle.info')
       ->getBundleInfo('search_api_saved_search');
@@ -61,15 +74,39 @@ class SavedSearchTypeCrudTest extends KernelTestBase {
       ->load('search_api_saved_search.default.create');
     $this->assertNotNull($form_display);
     $components = $form_display->getComponents();
-    $this->assertEquals(['label', 'mail', 'notify_interval'], array_keys($components));
+    if ($customizable_notification_interval) {
+      $expected_components = ['label', 'mail', 'notify_interval'];
+    }
+    else {
+      $expected_components = ['label', 'mail'];
+    }
+    $this->assertEquals($expected_components, array_keys($components));
     $this->assertEquals('string_textfield', $components['label']['type']);
     $this->assertEquals('email_default', $components['mail']['type']);
-    $this->assertEquals('options_select', $components['notify_interval']['type']);
+    if ($customizable_notification_interval) {
+      $this->assertEquals('options_select', $components['notify_interval']['type']);
+    }
 
     // The field storage for the bundle-specific "mail" field was created.
     $field_storage = \Drupal::keyValue('entity.storage_schema.sql')
       ->get('search_api_saved_search.field_schema_data.mail');
     $this->assertNotNull($field_storage);
+  }
+
+  /**
+   * Provides test data sets for testTypeCreation().
+   *
+   * @return array[]
+   *   An associative array of argument arrays for testTypeCreation(), keyed by
+   *   data set labels.
+   *
+   * @see testTypeCreation()
+   */
+  public function typeCreationTestDataProvider(): array {
+    return [
+      'customizable' => [TRUE],
+      'fixed' => [FALSE],
+    ];
   }
 
 }

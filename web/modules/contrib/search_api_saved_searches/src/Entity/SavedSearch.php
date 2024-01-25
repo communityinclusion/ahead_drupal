@@ -192,23 +192,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
     $fields['notify_interval'] = BaseFieldDefinition::create('list_integer')
       ->setLabel(t('Notification interval'))
       ->setDescription(t('The interval in which you want to receive notifications of new results for this saved search.'))
-      ->setRequired(TRUE)
-      ->setSetting('allowed_values', [
-        3600 => t('Hourly'),
-        86400 => t('Daily'),
-        604800 => t('Weekly'),
-        -1 => t('Never'),
-      ])
-      ->setDefaultValue(-1)
-      ->setDisplayOptions('view', [
-        'type' => 'list_default',
-        'weight' => 0,
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'options_select',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('form', TRUE);
+      ->setRequired(TRUE);
 
     $fields['index_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Index ID'))
@@ -266,9 +250,41 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
         ->getStorage('search_api_saved_search_type')
         ->load($bundle);
       // If we are called with an illegal $bundle, avoid a fatal error.
-      if ($type) {
-        $fields += $type->getNotificationPluginFieldDefinitions();
+      if (!$type) {
+        return $fields;
       }
+
+      $notify_interval_options = $type->getOption('notify_interval');
+      $default_value = $notify_interval_options['default_value'] ?? 86400;
+      $fields['notify_interval'] = BaseFieldDefinition::create('list_integer')
+        ->setLabel(t('Notification interval'))
+        ->setDescription(t('The interval in which you want to receive notifications of new results for this saved search.'))
+        ->setRequired(TRUE)
+        ->setDefaultValue($default_value);
+      if (!empty($notify_interval_options['customizable'])) {
+        $fields['notify_interval']->setSetting('allowed_values', $notify_interval_options['options'])
+          ->setDisplayOptions('view', [
+            'type' => 'list_default',
+            'weight' => 0,
+          ])
+          ->setDisplayOptions('form', [
+            'type' => 'options_select',
+            'weight' => 0,
+          ])
+          ->setDisplayConfigurable('form', TRUE);
+      }
+      else {
+        $fields['notify_interval']->setSetting('allowed_values', [$default_value => ''])
+          ->setDisplayOptions('view', [
+            'region' => 'hidden',
+          ])
+          ->setDisplayOptions('form', [
+            'region' => 'hidden',
+          ])
+          ->setDisplayConfigurable('form', FALSE);
+      }
+
+      $fields += $type->getNotificationPluginFieldDefinitions();
     }
     catch (PluginException $e) {
       watchdog_exception('search_api_saved_searches', $e);

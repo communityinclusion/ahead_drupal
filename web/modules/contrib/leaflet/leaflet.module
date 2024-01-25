@@ -54,7 +54,7 @@ function leaflet_map_get_info($map = NULL) {
     return $map_info;
   }
   else {
-    return isset($map_info[$map]) ? $map_info[$map] : [];
+    return $map_info[$map] ?? [];
   }
 
 }
@@ -66,7 +66,7 @@ function leaflet_leaflet_map_info() {
   return [
     'OSM Mapnik' =>
       [
-        'label' => 'OSM Mapnik',
+        'label' => '- Default Leaflet - OSM Mapnik - ',
         'description' => t('Leaflet default map.'),
         'settings' => [
           'dragging' => TRUE,
@@ -85,6 +85,7 @@ function leaflet_leaflet_map_info() {
           'earth' => [
             'urlTemplate' => '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             'options' => [
+              'maxZoom' => 19,
               'attribution' => '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap</a> contributors',
             ],
           ],

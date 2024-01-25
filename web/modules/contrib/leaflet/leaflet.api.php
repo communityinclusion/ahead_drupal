@@ -2,7 +2,7 @@
 
 /**
  * @file
- * API documentation for Administration menu.
+ * API documentation for Leaflet module.
  */
 
 use Drupal\Core\Field\FieldItemListInterface;
@@ -96,31 +96,68 @@ function hook_leaflet_map_info() {
       'description' => t('Multilayers'),
       'settings' => leaflet_map_info_default_settings(),
       'layers' => [
+        'Stadia Alidade Smooth' => [
+          'urlTemplate' => '//tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
+          'options' => [
+            "maxZoom" => 20,
+            'attribution' => '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+          ],
+        ],
         'Google Roads' => [
           'type' => 'google',
           'urlTemplate' => '//mt{s}.googleapis.com/vt?x={x}&y={y}&z={z}',
           'options' => [
-            'attribution' => 'Map data &copy; <a href="http://googlemaps.com">Google</a>',
+            'attribution' => 'Map data &copy; <a href="https://googlemaps.com">Google</a>',
             'detectRetina' => FALSE,
             'subdomains' => [0, 1, 2, 3],
           ],
         ],
-        'Hydda Base' => [
-          'urlTemplate' => '//{s}.tile.openstreetmap.se/hydda/base/{z}/{x}/{y}.png',
+        'OpenStreetMap' => [
+          'urlTemplate' => '//tile.openstreetmap.org/{z}/{x}/{y}.png',
           'options' => [
-            "minZoom" => 0,
-            "maxZoom" => 18,
-            "attribution" => "\"Tiles courtesy of <a href='http://openstreetmap.se/' target='_blank'>OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
+            "maxZoom" => 19,
+            "attribution" => "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
           ],
         ],
-        'Stamen_Terrain' => [
-          'urlTemplate' => '//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}',
+        'Stamen TonerLite' => [
+          'urlTemplate' => '//tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.{ext}',
+          'options' => [
+            "subdomains" => "abcd",
+            "minZoom" => 0,
+            "maxZoom" => 20,
+            "ext" => "png",
+            "attribution" => "&copy; <a href='https://www.stadiamaps.com/' target='_blank'>Stadia Maps</a> &copy; <a href='https://www.stamen.com/' target='_blank'>Stamen Design</a> &copy; <a href='https://openmaptiles.org/' target='_blank'>OpenMapTiles</a> &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+          ],
+        ],
+        'OpenTopoMap' => [
+          'urlTemplate' => '//{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
           'options' => [
             "minZoom" => 0,
             "maxZoom" => 18,
-            "ext" => "png",
-            "subdomains" => "abcd",
-            "attribution" => "Map tiles by <a href='http://stamen.com'>Stamen Design</a>, <a href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a> &mdash; Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
+            "attribution" => 'Kartendaten: © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, SRTM | Kartendarstellung: © <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+          ],
+        ],
+        // A Vector Tile definition usable by MapLibre GL Leaflet & Js.
+        // @see https://docs.stadiamaps.com/tutorials/vector-tiles-with-leaflet/
+        'Stadia Alidade Smooth Dark Vector' => [
+          // Set vector type for rendering with Vector.
+          'type' => 'vector',
+          'urlTemplate' => '//tiles.stadiamaps.com/styles/alidade_smooth_dark.json',
+          'options' => [
+            'attribution' => '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+          ],
+        ],
+        // An example Overlay definition, in addition to previous Base Layers.
+        // (@see @3050934: simultaneous multiple layers feature)
+        'OpenRailwayMap' => [
+          // Set layer type as 'overlay'.
+          'layer_type' => 'overlay',
+          // Possibly set it also initially hidden.
+          'layer_hidden' => TRUE,
+          'urlTemplate' => '//tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
+          'options' => [
+            'maxZoom' => 19,
+            'attribution' => 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="https://www.OpenRailwayMap.org">OpenRailwayMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
           ],
         ],
       ],

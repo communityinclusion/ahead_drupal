@@ -4,6 +4,7 @@ namespace Drupal\leaflet;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\File\Exception\InvalidStreamWrapperException;
+use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
@@ -67,7 +68,7 @@ class LeafletService {
   protected $requestStack;
 
   /**
-   * The cache backend default service..
+   * The cache backend default service.
    *
    * @var \Drupal\Core\Cache\CacheBackendInterface
    */
@@ -81,92 +82,11 @@ class LeafletService {
   protected $iconSizes = [];
 
   /**
-   * Creates an absolute web-accessible URL string.
+   * The file URL generator.
    *
-   * @todo switch to this same method of the @file_url_generator Drupal Core
-   *   (since 9.3+) service once we fork on a branch not supporting 8.x anymore.
-   *
-   * @param string $uri
-   *   The URI to a file for which we need an external URL, or the path to a
-   *   shipped file.
-   * @param bool $relative
-   *   Whether to return a relative or absolute URL.
-   *
-   * @return string
-   *   An absolute string containing a URL that may be used to access the
-   *   file.
-   *
-   * @throws \Drupal\Core\File\Exception\InvalidStreamWrapperException
-   *   If a stream wrapper could not be found to generate an external URL.
+   * @var \Drupal\Core\File\FileUrlGeneratorInterface
    */
-  protected function doGenerateString(string $uri, bool $relative): string {
-    // Allow the URI to be altered, e.g. to serve a file from a CDN or static
-    // file server.
-    $this->moduleHandler->alter('file_url', $uri);
-
-    $scheme = StreamWrapperManager::getScheme($uri);
-
-    if (!$scheme) {
-      $baseUrl = $relative ? base_path() : $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost() . base_path();
-      return $this->generatePath($baseUrl, $uri);
-    }
-    elseif ($scheme == 'http' || $scheme == 'https' || $scheme == 'data') {
-      // Check for HTTP and data URI-encoded URLs so that we don't have to
-      // implement getExternalUrl() for the HTTP and data schemes.
-      return $relative ? $this->transformRelative($uri) : $uri;
-    }
-    elseif ($wrapper = $this->streamWrapperManager->getViaUri($uri)) {
-      // Attempt to return an external URL using the appropriate wrapper.
-      $externalUrl = $wrapper->getExternalUrl();
-      return $relative ? $this->transformRelative($externalUrl) : $externalUrl;
-    }
-    throw new InvalidStreamWrapperException();
-  }
-
-  /**
-   * Generate a URL path.
-   *
-   * @todo switch to this same method of the @file_url_generator Drupal Core
-   *   (since 9.3+) service once we fork on a branch not supporting 8.x anymore.
-   *
-   * @param string $base_url
-   *   The base URL.
-   * @param string $uri
-   *   The URI.
-   *
-   * @return string
-   *   The URL path.
-   */
-  protected function generatePath(string $base_url, string $uri): string {
-    // Allow for:
-    // - root-relative URIs (e.g. /foo.jpg in http://example.com/foo.jpg)
-    // - protocol-relative URIs (e.g. //bar.jpg, which is expanded to
-    //   http://example.com/bar.jpg by the browser when viewing a page over
-    //   HTTP and to https://example.com/bar.jpg when viewing an HTTPS page)
-    // Both types of relative URIs are characterized by a leading slash, hence
-    // we can use a single check.
-    if (mb_substr($uri, 0, 1) == '/') {
-      return $uri;
-    }
-    else {
-      // If this is not a properly formatted stream, then it is a shipped
-      // file. Therefore, return the urlencoded URI with the base URL
-      // prepended.
-      $options = UrlHelper::parse($uri);
-      $path = $base_url . UrlHelper::encodePath($options['path']);
-      // Append the query.
-      if ($options['query']) {
-        $path .= '?' . UrlHelper::buildQuery($options['query']);
-      }
-
-      // Append fragment.
-      if ($options['fragment']) {
-        $path .= '#' . $options['fragment'];
-      }
-
-      return $path;
-    }
-  }
+  protected $fileUrlGenerator;
 
   /**
    * LeafletService constructor.
@@ -185,6 +105,8 @@ class LeafletService {
    *   The stream wrapper manager.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
    *   The cache backend default service.
+   * @param \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator
+   *    The file URL generator.
    */
   public function __construct(
     AccountInterface $current_user,
@@ -193,7 +115,8 @@ class LeafletService {
     LinkGeneratorInterface $link_generator,
     StreamWrapperManagerInterface $stream_wrapper_manager,
     RequestStack $request_stack,
-    CacheBackendInterface $cache
+    CacheBackendInterface $cache,
+    FileUrlGeneratorInterface $file_url_generator
   ) {
     $this->currentUser = $current_user;
     $this->geoPhpWrapper = $geophp_wrapper;
@@ -202,6 +125,7 @@ class LeafletService {
     $this->streamWrapperManager = $stream_wrapper_manager;
     $this->requestStack = $request_stack;
     $this->cache = $cache;
+    $this->fileUrlGenerator = $file_url_generator;
   }
 
   /**
@@ -221,6 +145,16 @@ class LeafletService {
     $map_id = $map['id'] ?? Html::getUniqueId('leaflet_map');
 
     $attached_libraries = ['leaflet/general', 'leaflet/leaflet-drupal'];
+
+    // Check for the definition of a vector type layer
+    // and eventually add MapLibre GL Leaflet library.
+    $map_layers = $map["layers"] ?? [];
+    foreach ($map_layers as $layer) {
+      if (isset($layer["type"]) &&  $layer["type"] === 'vector') {
+        $attached_libraries[] = 'leaflet/maplibre-gl-leaflet';
+        break;
+      }
+    }
 
     // Add the intersection_observer library, if lazy load is enabled.
     if (isset($map['settings']['map_lazy_load']) && $map['settings']['map_lazy_load']['lazy_load']) {
@@ -325,7 +259,7 @@ class LeafletService {
    *
    * @param mixed $items
    *   A single value or array of geo values, each as a string in any of the
-   *   supported formats or as an array of $item elements, each with a
+   *   supported formats or as an array of $item elements, each with an
    *   $item['wkt'] field.
    *
    * @return array
@@ -338,7 +272,7 @@ class LeafletService {
     }
     $data = [];
     foreach ($items as $item) {
-      // Auto-detect and parse the format (e.g. WKT, JSON etc).
+      // Auto-detect and parse the format (e.g. WKT, JSON etc.).
       /** @var \GeometryCollection $geom */
       if (!($geom = $this->geoPhpWrapper->load($item['wkt'] ?? $item))) {
         continue;
@@ -476,67 +410,106 @@ class LeafletService {
    */
   public function setFeatureIconSizesIfEmptyOrInvalid(array &$feature) {
     $icon_url = $feature["icon"]["iconUrl"] ?? NULL;
-    if (isset($icon_url) && isset($feature["icon"]["iconSize"])
-      && (empty(intval($feature["icon"]["iconSize"]["x"])) && empty(intval($feature["icon"]["iconSize"]["y"])))
-      && (!empty($feature["icon"]["iconUrl"]))) {
+    if (!empty($icon_url) && isset($feature["icon"]["iconSize"])
+      && (intval($feature["icon"]["iconSize"]["x"]) === 0 || intval($feature["icon"]["iconSize"]["y"]) === 0)) {
 
-      // Use the cached IconSize is present for this Icon Url.
-      if (isset($this->iconSizes[$feature["icon"]["iconUrl"]])) {
-        $feature["icon"]["iconSize"]["x"] = $this->iconSizes[$feature["icon"]["iconUrl"]]["x"];
-        $feature["icon"]["iconSize"]["y"] = $this->iconSizes[$feature["icon"]["iconUrl"]]["y"];
+      $icon_url = $this->generateAbsoluteString($icon_url);
+
+      // Use the cached IconSize if present for this Icon Url.
+      $leaflet_iconsize_cache = &drupal_static("leaflet_iconsize_cache:$icon_url");
+      if (is_array($leaflet_iconsize_cache) && array_key_exists('x', $leaflet_iconsize_cache) && array_key_exists('y', $leaflet_iconsize_cache)) {
+        $feature["icon"]["iconSize"]["x"] = $leaflet_iconsize_cache['x'];
+        $feature["icon"]["iconSize"]["y"] = $leaflet_iconsize_cache['y'];
       }
-      elseif ($this->fileExists($feature["icon"]["iconUrl"])) {
+      elseif ($this->fileExists($icon_url)) {
         $file_parts = pathinfo($icon_url);
         switch ($file_parts['extension']) {
           case "svg":
-            if ($xml = simplexml_load_file($icon_url)) {
-              $attr = $xml->attributes();
-              $feature["icon"]["iconSize"]["x"] = isset($attr->width) ? $attr->width->__toString() : 40;
-              $feature["icon"]["iconSize"]["y"] = isset($attr->height) ? $attr->height->__toString() : 40;
+            $xml = simplexml_load_file($icon_url);
+            $attr = $xml ? $xml->attributes() : NULL;
+            $icon_size_x = !is_null($attr) && !empty($attr->width) ? intval($attr->width->__toString()) : 40;
+            $icon_size_y = !is_null($attr) && !empty($attr->height) ? intval($attr->height->__toString()) : 40;
+            if (empty($feature["icon"]["iconSize"]["x"]) && !empty($feature["icon"]["iconSize"]["y"])) {
+              $feature["icon"]["iconSize"]["x"] = intval($feature["icon"]["iconSize"]["y"]) * $icon_size_x / $icon_size_y;
+            }
+            elseif (!empty($feature["icon"]["iconSize"]["x"]) && empty($feature["icon"]["iconSize"]["y"])) {
+              $feature["icon"]["iconSize"]["y"] = intval($feature["icon"]["iconSize"]["x"]) * $icon_size_y / $icon_size_x;
+            }
+            else {
+              $feature["icon"]["iconSize"]["x"] = $icon_size_x;
+              $feature["icon"]["iconSize"]["y"] = $icon_size_y;
             }
             break;
 
           default:
             if ($iconSize = getimagesize($icon_url)) {
-              $feature["icon"]["iconSize"]["x"] = $iconSize[0];
-              $feature["icon"]["iconSize"]["y"] = $iconSize[1];
+              if (empty($feature["icon"]["iconSize"]["x"])  && !empty($feature["icon"]["iconSize"]["y"])) {
+                $feature["icon"]["iconSize"]["x"] = intval($feature["icon"]["iconSize"]["y"]) * $iconSize[0] / $iconSize[1];
+              }
+              elseif (!empty($feature["icon"]["iconSize"]["x"])  && empty($feature["icon"]["iconSize"]["y"])) {
+                $feature["icon"]["iconSize"]["y"] = intval($feature["icon"]["iconSize"]["x"]) * $iconSize[1] / $iconSize[0];
+              }
+              else {
+                $feature["icon"]["iconSize"]["x"] = $iconSize[0];
+                $feature["icon"]["iconSize"]["y"] = $iconSize[1];
+              }
             }
         }
-        // Cache the IconSize, so we don't fetch the same icon multiple times.
-        $this->iconSizes[$feature["icon"]["iconUrl"]] = $feature["icon"]["iconSize"];
+        // Cache the Leaflet IconSize, so we don't fetch the same icon multiple
+        // times.
+        $leaflet_iconsize_cache = $feature["icon"]["iconSize"];
       }
     }
 
     $shadow_url = $feature["icon"]["shadowUrl"] ?? NULL;
-    if (isset($shadow_url) && isset($feature["icon"]["shadowSize"])
-      && (empty(intval($feature["icon"]["shadowSize"]["x"])) && empty(intval($feature["icon"]["shadowSize"]["y"])))
-      && (!empty($feature["icon"]["shadowUrl"]))) {
+    if (!empty($shadow_url) && isset($feature["icon"]["shadowSize"])
+      && (empty(intval($feature["icon"]["shadowSize"]["x"])) || empty(intval($feature["icon"]["shadowSize"]["y"])))) {
 
-      // Use the cached Shadow IconSize is present for this Icon Url.
-      if (isset($this->iconSizes[$feature["icon"]["shadowUrl"]])) {
-        $feature["icon"]["shadowSize"]["x"] = $this->iconSizes[$feature["icon"]["shadowUrl"]]["x"];
-        $feature["icon"]["shadowSize"]["y"] = $this->iconSizes[$feature["icon"]["shadowUrl"]]["y"];
+      $shadow_url = $this->generateAbsoluteString($shadow_url);
+
+      // Use the cached ShadowSize if present for this Shadow Url.
+      $leaflet_shadowsize_cache = &drupal_static("leaflet_shadowsize_cache:$icon_url", NULL);
+      if (is_array($leaflet_shadowsize_cache) && array_key_exists('x', $leaflet_shadowsize_cache) && array_key_exists('y', $leaflet_shadowsize_cache)) {
+        $feature["icon"]["iconSize"]["x"] = $leaflet_shadowsize_cache['x'];
+        $feature["icon"]["iconSize"]["y"] = $leaflet_shadowsize_cache['y'];
       }
-      elseif ($this->fileExists($feature["icon"]["shadowUrl"])) {
+      elseif ($this->fileExists($shadow_url)) {
         $file_parts = pathinfo($shadow_url);
         switch ($file_parts['extension']) {
           case "svg":
-            if ($xml = simplexml_load_file($shadow_url)) {
-              $attr = $xml->attributes();
-              $feature["icon"]["shadowSize"]["x"] = $attr->width->__toString();
-              $feature["icon"]["shadowSize"]["y"] = $attr->height->__toString();
+            $xml = simplexml_load_file($icon_url);
+            $attr = $xml ? $xml->attributes() : NULL;
+            $shadow_size_x = !is_null($attr) && !empty($attr->width) ? intval($attr->width->__toString()) : 40;
+            $shadow_size_y = !is_null($attr) && !empty($attr->height) ? intval($attr->height->__toString()) : 40;
+            if (empty($feature["icon"]["shadowSize"]["x"]) && !empty($feature["icon"]["shadowSize"]["y"])) {
+              $feature["icon"]["shadowSize"]["x"] = intval($feature["icon"]["shadowSize"]["y"]) * $shadow_size_x / $shadow_size_y;
+            }
+            elseif (!empty($feature["icon"]["shadowSize"]["x"]) && empty($feature["icon"]["shadowSize"]["y"])) {
+              $feature["icon"]["shadowSize"]["y"] = intval($feature["icon"]["shadowSize"]["x"]) * $shadow_size_y / $shadow_size_x;
+            }
+            else {
+              $feature["icon"]["shadowSize"]["x"] = $shadow_size_x;
+              $feature["icon"]["shadowSize"]["y"] = $shadow_size_y;
             }
             break;
 
           default:
             if ($shadowSize = getimagesize($shadow_url)) {
-              $feature["icon"]["shadowSize"]["x"] = $shadowSize[0];
-              $feature["icon"]["shadowSize"]["y"] = $shadowSize[1];
+              if (empty($feature["icon"]["shadowSize"]["x"]) && !empty($feature["icon"]["shadowSize"]["y"])) {
+                $feature["icon"]["shadowSize"]["x"] = intval($feature["icon"]["shadowSize"]["y"]) * $shadowSize[0] / $shadowSize[1];
+              }
+              elseif (!empty($feature["icon"]["shadowSize"]["x"]) && empty($feature["icon"]["shadowSize"]["y"])) {
+                $feature["icon"]["shadowSize"]["y"] = intval($feature["icon"]["shadowSize"]["x"]) * $shadowSize[1] / $shadowSize[0];
+              }
+              else {
+                $feature["icon"]["shadowSize"]["x"] = $shadowSize[0];
+                $feature["icon"]["shadowSize"]["y"] = $shadowSize[1];
+              }
             }
         }
         // Cache the Shadow IconSize, so we don't fetch the same icon multiple
         // times.
-        $this->iconSizes[$feature["icon"]["shadowUrl"]] = $feature["icon"]["shadowSize"];
+        $leaflet_shadowsize_cache = $feature["icon"]["shadowSize"];
       }
     }
   }
@@ -616,6 +589,9 @@ class LeafletService {
   /**
    * Creates an absolute web-accessible URL string.
    *
+   * This is a wrapper to the Drupal Core (9.3+) FileUrlGeneratorInterface
+   * generateAbsoluteString method.
+   *
    * @param string $uri
    *   The URI to a file for which we need an external URL, or the path to a
    *   shipped file.
@@ -628,59 +604,7 @@ class LeafletService {
    *   If a stream wrapper could not be found to generate an external URL.
    */
   public function generateAbsoluteString(string $uri): string {
-    return $this->doGenerateString($uri, FALSE);
-  }
-
-  /**
-   * Transforms an absolute URL of a local file to a relative URL.
-   *
-   * @todo switch to this same method of the @file_url_generator Drupal Core
-   *   (since 9.3+) service once we fork on a branch not supporting 8.x anymore.
-   *
-   * May be useful to prevent problems on multisite set-ups and prevent mixed
-   * content errors when using HTTPS + HTTP.
-   *
-   * @param string $file_url
-   *   A file URL of a local file as generated by
-   *   \Drupal\Core\File\FileUrlGenerator::generate().
-   * @param bool $root_relative
-   *   (optional) TRUE if the URL should be relative to the root path or FALSE
-   *   if relative to the Drupal base path.
-   *
-   * @return string
-   *   If the file URL indeed pointed to a local file and was indeed absolute,
-   *   then the transformed, relative URL to the local file. Otherwise: the
-   *   original value of $file_url.
-   */
-  public function transformRelative(string $file_url, bool $root_relative = TRUE): string {
-    // Unfortunately, we pretty much have to duplicate Symfony's
-    // Request::getHttpHost() method because Request::getPort() may return NULL
-    // instead of a port number.
-    $request = $this->requestStack->getCurrentRequest();
-    $host = $request->getHost();
-    $scheme = $request->getScheme();
-    $port = $request->getPort() ?: 80;
-
-    // Files may be accessible on a different port than the web request.
-    $file_url_port = parse_url($file_url, PHP_URL_PORT) ?? $port;
-    if ($file_url_port != $port) {
-      return $file_url;
-    }
-
-    if (('http' == $scheme && $port == 80) || ('https' == $scheme && $port == 443)) {
-      $http_host = $host;
-    }
-    else {
-      $http_host = $host . ':' . $port;
-    }
-
-    // If this should not be a root-relative path but relative to the drupal
-    // base path, add it to the host to be removed from the URL as well.
-    if (!$root_relative) {
-      $http_host .= $request->getBasePath();
-    }
-
-    return preg_replace('|^https?://' . preg_quote($http_host, '|') . '|', '', $file_url);
+    return $this->fileUrlGenerator->generateAbsoluteString($uri);
   }
 
 }

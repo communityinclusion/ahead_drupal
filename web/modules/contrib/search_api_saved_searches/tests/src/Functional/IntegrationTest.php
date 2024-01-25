@@ -3,6 +3,7 @@
 namespace Drupal\Tests\search_api_saved_searches\Functional;
 
 use Drupal\Component\Utility\Html;
+use Drupal\search_api_saved_searches\Entity\SavedSearch;
 use Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler;
 use Drupal\search_api_saved_searches\Entity\SavedSearchType;
 use Drupal\Tests\BrowserTestBase;
@@ -108,6 +109,7 @@ class IntegrationTest extends BrowserTestBase {
     $this->addNewType();
     $this->checkFunctionalityAnonymous();
     $this->checkFunctionalityRegistered();
+    $this->checkNotificationIntervalSettings();
     $this->checkAccessChecks();
     $this->deleteType();
   }
@@ -138,6 +140,8 @@ END;
       'options[displays][selected][views_page:search_api_test_view__page_1]' => TRUE,
       'notification_plugins[email]' => TRUE,
       'notification_configs[email][activate][body]' => $activation_mail,
+      'options[notify_interval][default_value]' => '-1',
+      'options[notify_interval][options]' => "-1 | Do not notify\n  86400|  Every day\n3600|Hourly\n7143    |Roughly every two hours",
       'options[max_results]' => 13,
       'options[description]' => 'Description for the default type.',
     ];
@@ -157,6 +161,16 @@ END;
         'database_search_index' => '',
       ],
       'description' => 'Description for the default type.',
+      'notify_interval' => [
+        'customizable' => TRUE,
+        'default_value' => -1,
+        'options' => [
+          -1 => 'Do not notify',
+          86400 => 'Every day',
+          3600 => 'Hourly',
+          7143 => 'Roughly every two hours',
+        ],
+      ],
     ];
     $this->assertEquals($expected, $type->getOptions());
 
@@ -204,11 +218,15 @@ END;
       'options[displays][selected][views_page:search_api_test_view__page_1]' => TRUE,
       'options[displays][selected][views_page:search_api_test_sorts__page_1]' => TRUE,
       'notification_plugins[email]' => TRUE,
+      'options[notify_interval][default_value]' => '7200',
+      'options[notify_interval][customizable]' => TRUE,
       'options[max_results]' => '',
       'options[description]' => 'Description for the foobar type.',
     ];
     $this->submitForm($edit, 'Save');
     $assert_session->pageTextContains('Please configure the used notification methods.');
+    $notify_interval_options = $assert_session->elementExists('css', '[name="options[notify_interval][options]"]')->getValue();
+    $this->assertEquals("3600 | Hourly\n86400 | Daily\n604800 | Weekly\n-1 | Never", $notify_interval_options);
     $this->assertNull(SavedSearchType::load('foobar'));
     $activation_mail = <<<'END'
 - Activate: [search-api-saved-search:activate-url]
@@ -485,6 +503,83 @@ END;
   }
 
   /**
+   * Verifies that the search type's "notify_interval" settings work correctly.
+   */
+  protected function checkNotificationIntervalSettings(): void {
+    $assert_session = $this->assertSession();
+    $this->drupalLogin($this->adminUser);
+    $this->drupalGet('admin/config/search/search-api-saved-searches/type/default/edit');
+    $edit = [
+      'options[notify_interval][default_value]' => '7200',
+      'options[notify_interval][customizable]' => FALSE,
+    ];
+    $this->submitForm($edit, 'Save');
+    $assert_session->pageTextContains('Your settings have been saved.');
+
+    $type = SavedSearchType::load('default');
+    $expected = [
+      'customizable' => FALSE,
+      'default_value' => 7200,
+      'options' => [
+        -1 => 'Do not notify',
+        86400 => 'Every day',
+        3600 => 'Hourly',
+        7143 => 'Roughly every two hours',
+      ],
+    ];
+    $this->assertEquals($expected, $type->getOption('notify_interval'));
+
+    $this->clickLink('Manage form display');
+    $assert_session->pageTextNotContains('Notification interval');
+
+    $this->drupalLogout();
+    $this->drupalGet('search-api-test', ['query' => ['search_api_fulltext' => 'foobar']]);
+    $assert_session->statusCodeEquals(200);
+    $assert_session->pageTextContains('Default saved searches block');
+    $assert_session->pageTextContains('Description for the default type.');
+    $assert_session->pageTextNotContains('Notification interval');
+    $assert_session->elementNotExists('css', '[name="notify_interval"]');
+    $edit = [
+      'label[0][value]' => 'Fifth saved search',
+      'mail[0][value]' => 'foobar@example.net',
+    ];
+    $this->submitForm($edit, 'Save search');
+    $assert_session->pageTextContains('Your saved search was successfully created.');
+    $assert_session->pageTextContains('You will soon receive an e-mail with a confirmation link to activate it.');
+    $searches = \Drupal::entityQuery('search_api_saved_search')
+      ->accessCheck(FALSE)
+      ->sort('id', 'DESC')
+      ->execute();
+    $search = SavedSearch::load(reset($searches));
+    $this->assertEquals('Fifth saved search', $search->get('label')->__get('value'));
+    $this->assertEquals('foobar@example.net', $search->get('mail')->__get('value'));
+    $this->assertEquals('7200', $search->get('notify_interval')->__get('value'));
+
+    $this->drupalLogin($this->registeredUser);
+
+    $this->drupalGet('search-api-test', ['query' => ['search_api_fulltext' => 'foobar']]);
+    $assert_session->statusCodeEquals(200);
+    $assert_session->pageTextContains('Default saved searches block');
+    $assert_session->pageTextContains('Description for the default type.');
+    $assert_session->pageTextNotContains('Notification interval');
+    $assert_session->elementNotExists('css', '[name="notify_interval"]');
+    $edit = [
+      'label[0][value]' => 'Sixth saved search',
+    ];
+    $this->submitForm($edit, 'Save search');
+    $assert_session->pageTextContains('Your saved search was successfully created.');
+    $assert_session->pageTextNotContains('You will soon receive an e-mail with a confirmation link to activate it.');
+    $searches = \Drupal::entityQuery('search_api_saved_search')
+      ->accessCheck(FALSE)
+      ->sort('id', 'DESC')
+      ->execute();
+    $search = SavedSearch::load(reset($searches));
+    $this->assertEquals('Sixth saved search', $search->get('label')->__get('value'));
+    $this->assertEquals($this->registeredUser->getEmail(), $search->get('mail')->__get('value'));
+    $this->assertEquals('7200', $search->get('notify_interval')->__get('value'));
+  }
+
+  /**
    * Makes sure access checks work correctly.
    */
   protected function checkAccessChecks() {
@@ -496,7 +591,7 @@ END;
       ->count()
       ->accessCheck(FALSE)
       ->execute();
-    $this->assertEquals(4, $total);
+    $this->assertEquals(6, $total);
 
     $user1_uid = $this->registeredUser->id();
     $tests = [

@@ -4,6 +4,7 @@ Advanced Drupal integration with the Leaflet JS mapping library.
 
 > A Modern, Lightweight Open-Source JavaScript Library for Interactive Web Mapping.
 
+### [Drupal Community documentation (WIP)](https://www.drupal.org/docs/extending-drupal/contributed-modules/contributed-module-documentation/leaflet/)
 
 ## General Information
 
@@ -11,10 +12,9 @@ Advanced Drupal integration with the Leaflet JS mapping library.
 [Leaflet JS library](https://leafletjs.com).
 It is dependent on the Drupal [Geofield](https://www.drupal.org/project/geofield) Module.
 
-
 ## Requirements
 
-The Leaflet module requires the 
+The Leaflet module requires the
 [Geofield](https://www.drupal.org/project/geofield) module.
 
 
@@ -105,7 +105,6 @@ The map height, expressed in css units.
       ],
     ];
     $this->leaflet->leafletRenderMap($map_info, $features, $height),
-
 
 ## Authors/Credits
 
