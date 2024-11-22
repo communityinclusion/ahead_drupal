@@ -84,7 +84,7 @@ class LeafletAttachment extends Attachment {
    * {@inheritdoc}
    */
   public function render() {
-    $rows = (!empty($this->view->result) || $this->view->style_plugin->evenEmpty()) ? $this->view->style_plugin->render($this->view->result) : [];
+    $rows = (!empty($this->view->result) || $this->view->style_plugin->evenEmpty()) ? $this->view->style_plugin->render() : [];
 
     // The element is rendered during preview only; when used as an attachment
     // in the Leaflet class, only the 'rows' property is used.

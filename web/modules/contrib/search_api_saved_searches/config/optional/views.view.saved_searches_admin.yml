@@ -5,13 +5,12 @@ dependencies:
     - search_api_saved_searches
     - user
 id: saved_searches_admin
-label: 'Saved searches'
+label: 'Saved searches (admin)'
 module: views
 description: ''
 tag: ''
 base_table: search_api_saved_search
 base_field: id
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -411,8 +410,8 @@ display:
           alter:
             alter_text: false
             text: ''
-            make_link: false
-            path: ''
+            make_link: true
+            path: '/admin/config/search/search-api/index/{{ index_id__value }}'
             absolute: false
             external: false
             replace_spaces: false
@@ -692,7 +691,6 @@ display:
           relationship: none
           group_type: group
           admin_label: User
-          required: false
           entity_type: search_api_saved_search
           entity_field: uid
           plugin_id: standard

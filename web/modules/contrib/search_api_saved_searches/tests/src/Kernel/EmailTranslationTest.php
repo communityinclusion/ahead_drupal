@@ -8,6 +8,7 @@ use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\language\Plugin\LanguageNegotiation\LanguageNegotiationSession;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
+use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Item\Item;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api_saved_searches\Entity\SavedSearch;
@@ -17,7 +18,9 @@ use Drupal\search_api_test\PluginTestTrait;
 use Drupal\Tests\search_api\Kernel\TestLogger;
 use Drupal\Tests\search_api\Kernel\TestTimeService;
 use Drupal\Tests\user\Traits\UserCreationTrait;
+use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * Tests whether mails are translated correctly.
@@ -48,24 +51,18 @@ class EmailTranslationTest extends KernelTestBase {
 
   /**
    * The test index used.
-   *
-   * @var \Drupal\search_api\IndexInterface
    */
-  protected $index;
+  protected IndexInterface $index;
 
   /**
    * The ID of the test index.
-   *
-   * @var string
    */
-  protected $indexId = 'test';
+  protected string $indexId = 'test';
 
   /**
    * The test time service.
-   *
-   * @var \Drupal\Tests\search_api\Kernel\TestTimeService
    */
-  protected $timeService;
+  protected TestTimeService $timeService;
 
   /**
    * {@inheritdoc}
@@ -85,6 +82,9 @@ class EmailTranslationTest extends KernelTestBase {
       'search_api_saved_searches',
       'user',
     ]);
+    $permission = 'use default search_api_saved_searches';
+    $this->grantPermissions(Role::load(Role::ANONYMOUS_ID), [$permission]);
+    $this->grantPermissions(Role::load(Role::AUTHENTICATED_ID), [$permission]);
 
     // Create a second language and sets up session parameter-based language
     // negotiation, so we can more easily switch.
@@ -147,6 +147,10 @@ class EmailTranslationTest extends KernelTestBase {
     $config_translation->set('notification_settings.email.notification.title', 'Notification mail subject (xx)');
     $config_translation->set('notification_settings.email.notification.body', 'Notification mail body (xx)');
     $config_translation->save();
+
+    // Start a HTTP session since the language negotiator service might
+    // otherwise throw an exception.
+    \Drupal::request()->setSession($this->createMock(SessionInterface::class));
   }
 
   /**
@@ -167,7 +171,7 @@ class EmailTranslationTest extends KernelTestBase {
   }
 
   /**
-   * Verifies that e-mails are translated correctly.
+   * Verifies that emails are translated correctly.
    *
    * @param string|null $user_langcode
    *   The preferred langcode to set for the saved search owner, or NULL to use
@@ -175,7 +179,7 @@ class EmailTranslationTest extends KernelTestBase {
    * @param string $site_langcode
    *   The current site language to use.
    * @param string $expected_mail_langcode
-   *   The expected language code for e-mails.
+   *   The expected language code for emails.
    *
    * @dataProvider emailTranslationsTestDataProvider
    */
@@ -190,8 +194,7 @@ class EmailTranslationTest extends KernelTestBase {
       $this->assertTrue($owner->isAnonymous());
     }
     else {
-      // @todo Use a named $values argument once we depend on PHP 8.0+.
-      $owner = $this->createUser([], NULL, FALSE, [
+      $owner = $this->createUser(values: [
         'uid' => 2,
         'preferred_langcode' => $user_langcode,
       ]);
@@ -225,7 +228,7 @@ class EmailTranslationTest extends KernelTestBase {
 
     // Retrieve the sent activation mail and check the language it used.
     $this->container->get('search_api_saved_searches.email_queue')->destruct();
-    $captured_emails = \Drupal::state()->get('system.test_mail_collector');
+    $captured_emails = \Drupal::state()->get('system.test_mail_collector', []);
     \Drupal::state()->delete('system.test_mail_collector');
     $this->assertCount(1, $captured_emails);
     $activation_mail = reset($captured_emails);
@@ -247,7 +250,7 @@ class EmailTranslationTest extends KernelTestBase {
 
     // Retrieve the sent notification mail and check the language it used.
     $this->container->get('search_api_saved_searches.email_queue')->destruct();
-    $captured_emails = \Drupal::state()->get('system.test_mail_collector');
+    $captured_emails = \Drupal::state()->get('system.test_mail_collector', []);
     \Drupal::state()->delete('system.test_mail_collector');
     $this->assertCount(1, $captured_emails);
     $notification_mail = reset($captured_emails);

@@ -46,29 +46,33 @@ class Auditor
     public const ABANDONED_REPORT = 'report';
     public const ABANDONED_FAIL = 'fail';
 
+    /** @internal */
+    public const ABANDONEDS = [
+        self::ABANDONED_IGNORE,
+        self::ABANDONED_REPORT,
+        self::ABANDONED_FAIL,
+    ];
+
     /**
      * @param PackageInterface[] $packages
      * @param self::FORMAT_* $format The format that will be used to output audit results.
      * @param bool $warningOnly If true, outputs a warning. If false, outputs an error.
      * @param string[] $ignoreList List of advisory IDs, remote IDs or CVE IDs that reported but not listed as vulnerabilities.
      * @param self::ABANDONED_* $abandoned
+     * @param array<string> $ignoredSeverities List of ignored severity levels
      *
      * @return int Amount of packages with vulnerabilities found
      * @throws InvalidArgumentException If no packages are passed in
      */
-    public function audit(IOInterface $io, RepositorySet $repoSet, array $packages, string $format, bool $warningOnly = true, array $ignoreList = [], string $abandoned = self::ABANDONED_REPORT): int
+    public function audit(IOInterface $io, RepositorySet $repoSet, array $packages, string $format, bool $warningOnly = true, array $ignoreList = [], string $abandoned = self::ABANDONED_FAIL, array $ignoredSeverities = []): int
     {
-        if ($abandoned === 'default' && $format !== self::FORMAT_SUMMARY) {
-            $io->writeError('<warning>The new audit.abandoned setting (currently defaulting to "report" will default to "fail" in Composer 2.7, make sure to set it to "report" or "ignore" explicitly by then if you do not want this.</warning>');
-        }
-
         $allAdvisories = $repoSet->getMatchingSecurityAdvisories($packages, $format === self::FORMAT_SUMMARY);
         // we need the CVE & remote IDs set to filter ignores correctly so if we have any matches using the optimized codepath above
         // and ignores are set then we need to query again the full data to make sure it can be filtered
         if (count($allAdvisories) > 0 && $ignoreList !== [] && $format === self::FORMAT_SUMMARY) {
             $allAdvisories = $repoSet->getMatchingSecurityAdvisories($packages, false);
         }
-        ['advisories' => $advisories, 'ignoredAdvisories' => $ignoredAdvisories] = $this->processAdvisories($allAdvisories, $ignoreList);
+        ['advisories' => $advisories, 'ignoredAdvisories' => $ignoredAdvisories] = $this->processAdvisories($allAdvisories, $ignoreList, $ignoredSeverities);
 
         $abandonedCount = 0;
         $affectedPackagesCount = 0;
@@ -86,8 +90,9 @@ class Auditor
             if ($ignoredAdvisories !== []) {
                 $json['ignored-advisories'] = $ignoredAdvisories;
             }
-            $json['abandoned'] = array_reduce($abandonedPackages, static function(array $carry, CompletePackageInterface $package): array {
+            $json['abandoned'] = array_reduce($abandonedPackages, static function (array $carry, CompletePackageInterface $package): array {
                 $carry[$package->getPrettyName()] = $package->getReplacementPackage();
+
                 return $carry;
             }, []);
 
@@ -142,11 +147,12 @@ class Auditor
     /**
      * @phpstan-param array<string, array<PartialSecurityAdvisory|SecurityAdvisory>> $allAdvisories
      * @param array<string>|array<string,string> $ignoreList List of advisory IDs, remote IDs or CVE IDs that reported but not listed as vulnerabilities.
+     * @param array<string> $ignoredSeverities List of ignored severity levels
      * @phpstan-return array{advisories: array<string, array<PartialSecurityAdvisory|SecurityAdvisory>>, ignoredAdvisories: array<string, array<PartialSecurityAdvisory|SecurityAdvisory>>}
      */
-    private function processAdvisories(array $allAdvisories, array $ignoreList): array
+    private function processAdvisories(array $allAdvisories, array $ignoreList, array $ignoredSeverities): array
     {
-        if ($ignoreList === []) {
+        if ($ignoreList === [] && $ignoredSeverities === []) {
             return ['advisories' => $allAdvisories, 'ignoredAdvisories' => []];
         }
 
@@ -170,6 +176,11 @@ class Auditor
                 }
 
                 if ($advisory instanceof SecurityAdvisory) {
+                    if (in_array($advisory->severity, $ignoredSeverities, true)) {
+                        $isActive = false;
+                        $ignoreReason = "Ignored via --ignore-severity={$advisory->severity}";
+                    }
+
                     if (in_array($advisory->cve, $ignoredIds, true)) {
                         $isActive = false;
                         $ignoreReason = $ignoreList[$advisory->cve] ?? null;
@@ -251,6 +262,7 @@ class Auditor
             foreach ($packageAdvisories as $advisory) {
                 $headers = [
                     'Package',
+                    'Severity',
                     'CVE',
                     'Title',
                     'URL',
@@ -259,12 +271,17 @@ class Auditor
                 ];
                 $row = [
                     $advisory->packageName,
+                    $this->getSeverity($advisory),
                     $this->getCVE($advisory),
                     $advisory->title,
                     $this->getURL($advisory),
                     $advisory->affectedVersions->getPrettyString(),
                     $advisory->reportedAt->format(DATE_ATOM),
                 ];
+                if ($advisory->cve === null) {
+                    $headers[] = 'Advisory ID';
+                    $row[] = $advisory->advisoryId;
+                }
                 if ($advisory instanceof IgnoredSecurityAdvisory) {
                     $headers[] = 'Ignore reason';
                     $row[] = $advisory->ignoreReason ?? 'None specified';
@@ -293,7 +310,11 @@ class Auditor
                     $error[] = '--------';
                 }
                 $error[] = "Package: ".$advisory->packageName;
+                $error[] = "Severity: ".$this->getSeverity($advisory);
                 $error[] = "CVE: ".$this->getCVE($advisory);
+                if ($advisory->cve === null) {
+                    $error[] = "Advisory ID: ".$advisory->advisoryId;
+                }
                 $error[] = "Title: ".OutputFormatter::escape($advisory->title);
                 $error[] = "URL: ".$this->getURL($advisory);
                 $error[] = "Affected versions: ".OutputFormatter::escape($advisory->affectedVersions->getPrettyString());
@@ -354,6 +375,15 @@ class Auditor
         return $packageUrl !== null ? '<href=' . OutputFormatter::escape($packageUrl) . '>' . $package->getPrettyName() . '</>' : $package->getPrettyName();
     }
 
+    private function getSeverity(SecurityAdvisory $advisory): string
+    {
+        if ($advisory->severity === null) {
+            return '';
+        }
+
+        return $advisory->severity;
+    }
+
     private function getCVE(SecurityAdvisory $advisory): string
     {
         if ($advisory->cve === null) {
@@ -371,5 +401,4 @@ class Auditor
 
         return '<href='.OutputFormatter::escape($advisory->link).'>'.OutputFormatter::escape($advisory->link).'</>';
     }
-
 }

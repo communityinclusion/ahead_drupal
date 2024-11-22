@@ -13,6 +13,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldConfigInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\FormatterInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
@@ -940,13 +941,14 @@ function ds_field_template_settings_form(array &$form, FormStateInterface &$form
   // Check if this is the layout builder field block form
   $is_layout_builder = ($form_state->getBuildInfo()['base_form_id'] == 'layout_builder_configure_block');
 
-  // Plugin settings.
-  if ($is_layout_builder) {
-    $field_settings = $context['formatter']->getThirdPartySetting('ds', 'ft');
-  }
-  else {
+  // Field (plugin) setting. If it's an array, this is a DS field, otherwise,
+  // it's a core base or field api field.
+  if (is_array($context['instance'])) {
     $plugin_settings = $form_state->get('plugin_settings');
     $field_settings = $plugin_settings[$key]['ft'] ?? [];
+  }
+  else {
+    $field_settings = $context['formatter']->getThirdPartySetting('ds', 'ft');
   }
 
   // In case with an ajax refresh we fetch the function from a different place.
@@ -1045,15 +1047,20 @@ function ds_field_ui_display_overview_multistep_submit($form, &$form_state) {
 function ds_field_formatter_third_party_settings_form(FormatterInterface $plugin, FieldDefinitionInterface $field_definition, $view_mode, $form, FormStateInterface $form_state) {
   $element = [];
 
+  // Don't process the form if on the DS field config form.
+  if (isset($form_state->getBuildInfo()['form_id']) && $form_state->getBuildInfo()['form_id'] == 'ds_custom_field_form') {
+    return $element;
+  }
+
   // Don't process the form if it's a layout builder FieldBlock and field
   // template support is disabled
-  if ($form_state->getBuildInfo()['base_form_id'] == 'layout_builder_configure_block' && !\Drupal::config('ds.settings')->get('ft_layout_builder')) {
+  if (isset($form_state->getBuildInfo()['base_form_id']) && $form_state->getBuildInfo()['base_form_id'] == 'layout_builder_configure_block' && !\Drupal::config('ds.settings')->get('ft_layout_builder')) {
     return $element;
   }
 
   // Don't process the form if there's no layout selected or if we are not on a
   // layout builder block.
-  if ($form_state->getBuildInfo()['base_form_id'] != 'layout_builder_configure_block') {
+  if (isset($form_state->getBuildInfo()['base_form_id']) && $form_state->getBuildInfo()['base_form_id'] != 'layout_builder_configure_block') {
     /* @var \Drupal\Core\Entity\EntityFormInterface $entity_form */
     $entity_form = $form_state->getFormObject();
     /* @var \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display */
@@ -1193,7 +1200,7 @@ function template_preprocess_field__ds_field_expert(&$variables) {
       $attributes = explode(' ', $variables['settings'][$key . '-at']);
       foreach ($attributes as $key => $attribute) {
         if (strpos($attribute, '=') !== FALSE) {
-          $attribute_parts = explode('=', $attribute);
+          $attribute_parts = explode('=', $attribute, 2);
           $var_attributes[$attribute_parts[0]] = trim($attribute_parts[1], '\"');
         }
       }
@@ -1204,8 +1211,8 @@ function template_preprocess_field__ds_field_expert(&$variables) {
 
   // In order to allow HTML we need to filter XSS the output of the
   // prefix/suffix.
-  $variables['settings']['prefix'] = Xss::filterAdmin($variables['settings']['prefix']);
-  $variables['settings']['suffix'] = Xss::filterAdmin($variables['settings']['suffix']);
+  $variables['settings']['prefix'] = Xss::filterAdmin($variables['settings']['prefix'] ?? '');
+  $variables['settings']['suffix'] = Xss::filterAdmin($variables['settings']['suffix'] ?? '');
 }
 
 /**

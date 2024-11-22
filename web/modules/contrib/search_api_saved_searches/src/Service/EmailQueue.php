@@ -6,23 +6,16 @@ use Drupal\Core\DestructableInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 
 /**
- * Provides functionality for sending e-mails at the end of the page request.
+ * Provides functionality for sending emails at the end of the page request.
  */
 class EmailQueue implements DestructableInterface {
-
-  /**
-   * The mail manager service.
-   *
-   * @var \Drupal\Core\Mail\MailManagerInterface
-   */
-  protected $mail;
 
   /**
    * The queued mails, as argument arrays.
    *
    * @var array[]
    */
-  protected $mails = [];
+  protected array $mails = [];
 
   /**
    * Constructs a new class instance.
@@ -30,26 +23,25 @@ class EmailQueue implements DestructableInterface {
    * @param \Drupal\Core\Mail\MailManagerInterface $mail
    *   The mail manager service.
    */
-  public function __construct(MailManagerInterface $mail) {
-    $this->mail = $mail;
+  public function __construct(protected MailManagerInterface $mail) {
   }
 
   /**
-   * Queues an e-mail to be sent.
+   * Queues an email to be sent.
    *
    * @param array $args
    *   The arguments that should be passed when sending the mail.
    *
    * @see \Drupal\Core\Mail\MailManagerInterface::mail()
    */
-  public function queueMail(array $args) {
+  public function queueMail(array $args): void {
     $this->mails[] = $args;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function destruct() {
+  public function destruct(): void {
     foreach ($this->mails as $i => $args) {
       call_user_func_array([$this->mail, 'mail'], $args);
       unset($this->mails[$i]);

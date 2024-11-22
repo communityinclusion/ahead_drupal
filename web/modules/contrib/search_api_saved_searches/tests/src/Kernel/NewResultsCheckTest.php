@@ -5,6 +5,7 @@ namespace Drupal\Tests\search_api_saved_searches\Kernel;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api\Entity\Index;
+use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api_saved_searches\Entity\SavedSearch;
 use Drupal\search_api_saved_searches\Entity\SavedSearchType;
@@ -41,10 +42,8 @@ class NewResultsCheckTest extends KernelTestBase {
 
   /**
    * The search index used for testing.
-   *
-   * @var \Drupal\search_api\IndexInterface
    */
-  protected $index;
+  protected IndexInterface $index;
 
   /**
    * {@inheritdoc}
@@ -108,7 +107,7 @@ class NewResultsCheckTest extends KernelTestBase {
    *
    * @covers ::getNewResults
    */
-  public function testGetNewResults(?string $date_field, array $expected_new_results = NULL, array $type_options = [], int $expected_result_count = NULL) {
+  public function testGetNewResults(?string $date_field, array $expected_new_results = NULL, array $type_options = [], int $expected_result_count = NULL): void {
     // Use a test time service to easily manipulate the "created" date.
     $time = new TestTimeService();
     $this->container->set('datetime.time', $time);

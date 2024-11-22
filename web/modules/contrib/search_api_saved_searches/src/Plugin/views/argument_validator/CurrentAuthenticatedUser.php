@@ -26,22 +26,18 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
 
   /**
    * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface|null
    */
-  protected $currentUser;
+  protected ?AccountInterface $currentUser = NULL;
 
   /**
    * The entity manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|null
    */
-  protected $entityTypeManager;
+  protected ?EntityTypeManagerInterface $entityTypeManager = NULL;
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
     /** @var static $plugin */
     $plugin = parent::create($container, $configuration, $plugin_id, $plugin_definition);
 
@@ -118,7 +114,7 @@ class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements Ca
       $user_storage = $this->getEntityTypeManager()->getStorage('user');
       $user = $user_storage->load($arg);
     }
-    catch (PluginException $e) {
+    catch (PluginException) {
     }
 
     if (empty($user)) {

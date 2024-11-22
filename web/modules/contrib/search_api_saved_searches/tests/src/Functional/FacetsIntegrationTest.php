@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\search_api_saved_searches\Functional;
 
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\search_api_saved_searches\Entity\SavedSearch;
 use Drupal\search_api_saved_searches\SavedSearchInterface;
@@ -31,17 +32,13 @@ class FacetsIntegrationTest extends BrowserTestBase {
 
   /**
    * The test index's ID.
-   *
-   * @var string
    */
-  protected $indexId = 'database_search_index';
+  protected string $indexId = 'database_search_index';
 
   /**
    * The test user account.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
    */
-  protected $account;
+  protected AccountInterface $account;
 
   /**
    * {@inheritdoc}
@@ -63,7 +60,7 @@ class FacetsIntegrationTest extends BrowserTestBase {
   /**
    * Tests whether saving searches works correctly with facets.
    */
-  public function testSavedSearchWithFacets() {
+  public function testSavedSearchWithFacets(): void {
     $assert_session = $this->assertSession();
 
     $this->drupalGet('search-api-test');

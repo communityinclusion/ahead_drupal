@@ -46,7 +46,7 @@ class NotificationPluginManager extends DefaultPluginManager implements Notifica
       /** @noinspection PhpIncompatibleReturnTypeInspection */
       return $this->createInstance($plugin_id, $configuration);
     }
-    catch (PluginException $e) {
+    catch (PluginException) {
       throw new SavedSearchesException("Unknown notification plugin with ID '$plugin_id'");
     }
   }

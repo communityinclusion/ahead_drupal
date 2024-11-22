@@ -10,11 +10,12 @@ use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryException;
-use Drupal\search_api\LoggerTrait;
+use Drupal\Core\Utility\Error;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\Utility\Utility;
+use Drupal\search_api_saved_searches\LoggerTrait;
 use Drupal\search_api_saved_searches\SavedSearchesException;
 use Drupal\search_api_saved_searches\SavedSearchInterface;
 use Psr\Log\LoggerInterface;
@@ -25,27 +26,6 @@ use Psr\Log\LoggerInterface;
 class NewResultsCheck {
 
   use LoggerTrait;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
-
-  /**
-   * The time service.
-   *
-   * @var \Drupal\Component\Datetime\TimeInterface
-   */
-  protected $time;
 
   /**
    * Constructs a new class instance.
@@ -59,10 +39,12 @@ class NewResultsCheck {
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger to use.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, ConfigFactoryInterface $configFactory, TimeInterface $time, LoggerInterface $logger) {
-    $this->entityTypeManager = $entityTypeManager;
-    $this->configFactory = $configFactory;
-    $this->time = $time;
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected ConfigFactoryInterface $configFactory,
+    protected TimeInterface $time,
+    LoggerInterface $logger,
+  ) {
     $this->logger = $logger;
   }
 
@@ -117,12 +99,24 @@ class NewResultsCheck {
       $searches = $this->getSearchStorage()->loadMultiple($search_ids);
     }
     catch (PluginException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger(), $e);
       return 0;
     }
 
     foreach ($searches as $search) {
       try {
+        // Make sure the search is enabled and the owner still has permission to
+        // use saved searches of this type.
+        if (!$search->get('status')->value
+            || $search->get('notify_interval')->value < 0) {
+          continue;
+        }
+        $permission = "use {$search->bundle()} search_api_saved_searches";
+        if (!$search->getOwner()?->hasPermission($permission)) {
+          $search->set('notify_interval', -1);
+          $search->save();
+          continue;
+        }
         $results = $this->getNewResults($search);
         $search->set('last_executed', $now);
         $search->save();
@@ -136,7 +130,7 @@ class NewResultsCheck {
       }
       catch (SavedSearchesException | EntityStorageException $e) {
         $args['@search_id'] = $search->id();
-        watchdog_exception('search_api_saved_searches', $e, '%type while trying to find new results for saved search #@search_id: @message in %function (line %line of %file).', $args);
+        Error::logException($this->getLogger(), $e, '%type while trying to find new results for saved search #@search_id: @message in %function (line %line of %file).', $args);
       }
     }
 
@@ -166,7 +160,7 @@ class NewResultsCheck {
     }
     /** @noinspection PhpRedundantCatchClauseInspection */
     catch (PluginException | QueryException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger(), $e);
       return [];
     }
     if ($type_id !== NULL) {
@@ -215,7 +209,7 @@ class NewResultsCheck {
       $types = $this->getSearchTypeStorage()->loadMultiple();
     }
     catch (PluginException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger(), $e);
       return [];
     }
     $all = TRUE;

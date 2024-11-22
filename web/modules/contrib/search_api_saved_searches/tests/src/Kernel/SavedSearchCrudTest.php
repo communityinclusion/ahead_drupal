@@ -11,6 +11,7 @@ use Drupal\search_api_saved_searches\Service\NewResultsCheck;
 use Drupal\search_api_saved_searches\SavedSearchInterface;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\user\Entity\User;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Tests CRUD functionality for saved searches.
@@ -41,17 +42,13 @@ class SavedSearchCrudTest extends KernelTestBase {
 
   /**
    * A mock "new results check" service.
-   *
-   * @var \PHPUnit\Framework\MockObject\MockObject|\Drupal\search_api_saved_searches\Service\NewResultsCheck
    */
-  protected $newResultsCheck;
+  protected NewResultsCheck|MockObject $newResultsCheck;
 
   /**
    * Log of method calls to the "new results check" service.
-   *
-   * @var object
    */
-  protected $newResultsCheckMethodCalls;
+  protected object $newResultsCheckMethodCalls;
 
   /**
    * {@inheritdoc}
@@ -100,7 +97,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @param string|null $set_label
    *   The label to set when creating the saved search.
-   * @param string|array|null $keys
+   * @param array|string|null $keys
    *   The fulltext keywords to set on the query.
    * @param string $expected_label
    *   The expected label set on the created saved search.
@@ -110,7 +107,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @dataProvider postCreateDataProvider
    */
-  public function testPostCreate(?string $set_label, $keys, string $expected_label): void {
+  public function testPostCreate(?string $set_label, array|string|null $keys, string $expected_label): void {
     $query = $this->index->query();
     $query->keys($keys);
 
@@ -332,7 +329,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @covers ::postDelete
    */
-  public function testPostDelete() {
+  public function testPostDelete(): void {
     $search = SavedSearch::create([
       'type' => 'default',
     ]);
@@ -371,7 +368,7 @@ class SavedSearchCrudTest extends KernelTestBase {
   /**
    * Tests the correct reaction to the deletion of a search index.
    */
-  public function testIndexDelete() {
+  public function testIndexDelete(): void {
     $search = SavedSearch::create([
       'type' => 'default',
       'index_id' => $this->index->id(),
@@ -392,7 +389,7 @@ class SavedSearchCrudTest extends KernelTestBase {
   /**
    * Tests whether the correct owner is set by default for a new saved search.
    */
-  public function testDefaultOwner() {
+  public function testDefaultOwner(): void {
     // Create the anonymous user. For that, we need the default roles.
     $anonymous = User::create([
       'uid' => 0,

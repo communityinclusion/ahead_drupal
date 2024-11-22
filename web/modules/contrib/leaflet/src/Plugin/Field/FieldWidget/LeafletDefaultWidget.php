@@ -3,20 +3,20 @@
 namespace Drupal\leaflet\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\geofield\Plugin\GeofieldBackendManager;
-use Drupal\leaflet\LeafletSettingsElementsTrait;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\geofield\GeoPHP\GeoPHPInterface;
-use Drupal\geofield\Plugin\Field\FieldWidget\GeofieldDefaultWidget;
-use Drupal\geofield\WktGeneratorInterface;
-use Drupal\leaflet\LeafletService;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Utility\LinkGeneratorInterface;
 use Drupal\Core\Utility\Token;
+use Drupal\geofield\GeoPHP\GeoPHPInterface;
+use Drupal\geofield\Plugin\Field\FieldWidget\GeofieldDefaultWidget;
+use Drupal\geofield\Plugin\GeofieldBackendManager;
+use Drupal\geofield\WktGeneratorInterface;
+use Drupal\leaflet\LeafletService;
+use Drupal\leaflet\LeafletSettingsElementsTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the "leaflet_widget" widget.

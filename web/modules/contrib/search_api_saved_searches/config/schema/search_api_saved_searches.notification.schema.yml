@@ -7,7 +7,7 @@ plugin.plugin_configuration.search_api_saved_searches_notification.email:
   mapping:
     registered_choose_mail:
       type: boolean
-      label: 'Let registered users choose e-mail address'
+      label: 'Let registered users choose email address'
     activate:
       type: mapping
       label: 'Activation mail settings'

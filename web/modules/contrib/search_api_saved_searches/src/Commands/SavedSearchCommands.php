@@ -11,22 +11,13 @@ use Drush\Commands\DrushCommands;
 class SavedSearchCommands extends DrushCommands {
 
   /**
-   * The service for checking saved searches for new results.
-   *
-   * @var \Drupal\search_api_saved_searches\Service\NewResultsCheck
-   */
-  protected $newResultsCheck;
-
-  /**
    * Constructs a new class instance.
    *
-   * @param \Drupal\search_api_saved_searches\Service\NewResultsCheck $new_results_check
+   * @param \Drupal\search_api_saved_searches\Service\NewResultsCheck $newResultsCheck
    *   The service for checking saved searches for new results.
    */
-  public function __construct(NewResultsCheck $new_results_check) {
+  public function __construct(protected NewResultsCheck $newResultsCheck) {
     parent::__construct();
-
-    $this->newResultsCheck = $new_results_check;
   }
 
   /**

@@ -12,7 +12,7 @@ notification_settings:
       body: |
         [user:display-name],
 
-        A saved search on [site:name] with this e-mail address was created.
+        A saved search on [site:name] with this email address was created.
         To activate this saved search, click the following link:
 
         [search-api-saved-search:activate-url]

@@ -1,0 +1,7 @@
+plugin.plugin_configuration.search_api_saved_searches_notification.search_api_saved_searches_test:
+  type: mapping
+  label: Test notification plugin
+  mapping:
+    dependencies:
+      type: config_dependencies
+      label: Dependencies

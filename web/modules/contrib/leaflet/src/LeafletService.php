@@ -2,20 +2,17 @@
 
 namespace Drupal\leaflet;
 
+use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\File\Exception\InvalidStreamWrapperException;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\geofield\GeoPHP\GeoPHPInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\LinkGeneratorInterface;
-use Drupal\Component\Serialization\Json;
+use Drupal\geofield\GeoPHP\GeoPHPInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -106,7 +103,7 @@ class LeafletService {
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
    *   The cache backend default service.
    * @param \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator
-   *    The file URL generator.
+   *   The file URL generator.
    */
   public function __construct(
     AccountInterface $current_user,
@@ -154,11 +151,6 @@ class LeafletService {
         $attached_libraries[] = 'leaflet/maplibre-gl-leaflet';
         break;
       }
-    }
-
-    // Add the intersection_observer library, if lazy load is enabled.
-    if (isset($map['settings']['map_lazy_load']) && $map['settings']['map_lazy_load']['lazy_load']) {
-      $attached_libraries[] = 'leaflet/intersection_observer';
     }
 
     // Add the Leaflet Reset View library, if requested.
@@ -318,16 +310,16 @@ class LeafletService {
 
       case 'polygon':
         /** @var \GeometryCollection $geom */
-        $tmp = $geom->getComponents();
-        /** @var \GeometryCollection $geom */
-        $geom = $tmp[0];
-        $components = $geom->getComponents();
-        /** @var \Geometry $component */
-        foreach ($components as $component) {
-          $datum['points'][] = [
-            'lat' => $component->getY(),
-            'lon' => $component->getX(),
-          ];
+        $polygon_components = $geom->getComponents();
+        foreach ($polygon_components as $k => $geom) {
+          $points = $geom->getComponents();
+          /** @var \Geometry $component */
+          foreach ($points as $point) {
+            $datum['points'][$k][] = [
+              'lat' => $point->getY(),
+              'lon' => $point->getX(),
+            ];
+          }
         }
         break;
 
@@ -354,24 +346,20 @@ class LeafletService {
         break;
 
       case 'multipolygon':
-        $components = [];
         /** @var \GeometryCollection $geom */
-        $tmp = $geom->getComponents();
+        $polygons = $geom->getComponents();
         /** @var \GeometryCollection $polygon */
-        foreach ($tmp as $polygon) {
-          $polygon_component = $polygon->getComponents();
-          foreach ($polygon_component as $linestring) {
-            $components[] = $linestring;
-          }
-        }
-        foreach ($components as $key => $component) {
-          $subcomponents = $component->getComponents();
-          /** @var \Geometry $subcomponent */
-          foreach ($subcomponents as $subcomponent) {
-            $datum['component'][$key]['points'][] = [
-              'lat' => $subcomponent->getY(),
-              'lon' => $subcomponent->getX(),
-            ];
+        foreach ($polygons as $j => $polygon) {
+          $polygon_components = $polygon->getComponents();
+          foreach ($polygon_components as $k => $geom) {
+            $points = $geom->getComponents();
+            /** @var \Geometry $component */
+            foreach ($points as $point) {
+              $datum['points'][$j][$k][] = [
+                'lat' => $point->getY(),
+                'lon' => $point->getX(),
+              ];
+            }
           }
         }
         break;

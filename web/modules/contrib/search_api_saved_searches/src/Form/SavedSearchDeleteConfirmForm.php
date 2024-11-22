@@ -7,11 +7,13 @@ use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
+use Drupal\Core\Utility\Error;
 
 /**
  * Provides a form for deleting a saved search.
  */
 class SavedSearchDeleteConfirmForm extends ContentEntityConfirmFormBase {
+
 
   /**
    * The entity being used by this form.
@@ -48,7 +50,7 @@ class SavedSearchDeleteConfirmForm extends ContentEntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     try {
       $this->entity->delete();
       $this->messenger()
@@ -56,7 +58,7 @@ class SavedSearchDeleteConfirmForm extends ContentEntityConfirmFormBase {
       $form_state->setRedirectUrl($this->getCancelUrl());
     }
     catch (EntityStorageException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger('search_api_saved_searches'), $e);
       $error = $this->t('The saved search could not be deleted due to an internal error.');
       $this->messenger()->addError($error);
     }

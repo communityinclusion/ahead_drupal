@@ -26,7 +26,7 @@ class SearchQueryData extends TypedData {
   /**
    * {@inheritdoc}
    */
-  public function setValue($value, $notify = TRUE) {
+  public function setValue($value, $notify = TRUE): void {
     if ($value && !$value instanceof QueryInterface) {
       throw new \InvalidArgumentException("Value assigned to \"{$this->getName()}\" is not a valid search query");
     }

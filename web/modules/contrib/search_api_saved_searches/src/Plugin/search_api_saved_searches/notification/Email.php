@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -13,6 +14,7 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\Core\Utility\Token;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\ResultSetInterface;
@@ -20,15 +22,16 @@ use Drupal\search_api_saved_searches\BundleFieldDefinition;
 use Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler;
 use Drupal\search_api_saved_searches\Notification\NotificationPluginBase;
 use Drupal\search_api_saved_searches\SavedSearchInterface;
+use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides e-mails as a notification mechanism.
+ * Provides emails as a notification mechanism.
  *
  * @SearchApiSavedSearchesNotification(
  *   id = "email",
- *   label = @Translation("E-mail"),
- *   description = @Translation("Sends new results via e-mail."),
+ *   label = @Translation("Email"),
+ *   description = @Translation("Sends new results via email."),
  * )
  */
 class Email extends NotificationPluginBase implements PluginFormInterface {
@@ -38,45 +41,37 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
   /**
    * Drupal mail key for the "Activate saved search" mail.
    */
-  const MAIL_ACTIVATE = 'activate';
+  public const MAIL_ACTIVATE = 'activate';
 
   /**
    * Drupal mail key for the "New results" mail.
    */
-  const MAIL_NEW_RESULTS = 'new_results';
+  public const MAIL_NEW_RESULTS = 'new_results';
 
   /**
    * The mail service.
-   *
-   * @var \Drupal\Core\Mail\MailManagerInterface|null
    */
-  protected $mailService;
+  protected ?MailManagerInterface $mailService = NULL;
 
   /**
    * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface|null
    */
-  protected $configFactory;
+  protected ?ConfigFactoryInterface $configFactory = NULL;
 
   /**
    * The language manager.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface|null
    */
-  protected $languageManager;
+  protected ?LanguageManagerInterface $languageManager = NULL;
 
   /**
    * The token service.
-   *
-   * @var \Drupal\Core\Utility\Token|null
    */
-  protected $tokenService;
+  protected ?Token $tokenService = NULL;
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
     /** @var static $plugin */
     $plugin = parent::create($container, $configuration, $plugin_id, $plugin_definition);
 
@@ -86,6 +81,35 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
     $plugin->setTokenService($container->get('token'));
 
     return $plugin;
+  }
+
+  /**
+   * Reacts to a user being updated.
+   *
+   * Changes the mail address of saved searches when the user mail address
+   * changes.
+   *
+   * @param \Drupal\user\UserInterface $account
+   * @param \Drupal\user\UserInterface $original
+   *
+   * @see search_api_saved_searches_user_update()
+   */
+  public static function onUserUpdate(UserInterface $account, UserInterface $original): void {
+    if ($account->getEmail() === $original->getEmail()) {
+      return;
+    }
+
+    $searches = _search_api_saved_searches_load_searches($account->id(), $original->getEmail());
+    foreach ($searches as $search) {
+      $search->set('mail', $account->getEmail());
+      try {
+        $search->save();
+      }
+      catch (EntityStorageException $e) {
+        $args['@search_id'] = $search->id();
+        Error::logException(\Drupal::logger('search_api_saved_searches'), $e, '%type while trying to save saved search #@search_id: @message in %function (line %line of %file).', $args);
+      }
+    }
   }
 
   /**
@@ -220,7 +244,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
     $form['activate']['send'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Use activation mail for anonymous users'),
-      '#description' => $this->t("Will require that saved searches created by anonymous users, or by normal users with an e-mail address that isn't their own, are activated by clicking a link in an e-mail."),
+      '#description' => $this->t("Will require that saved searches created by anonymous users, or by normal users with an email address that isn't their own, are activated by clicking a link in an e-mail."),
       '#default_value' => $this->configuration['activate']['send'],
     ];
     $states = [
@@ -237,7 +261,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
     $default_body = $this->configuration['activate']['body']
       ?: $this->t("@user_name,
 
-A saved search on @site_name with this e-mail address was created.
+A saved search on @site_name with this email address was created.
 To activate this saved search, click the following link:
 
 @activation_link
@@ -356,7 +380,7 @@ There are new results for your saved search "@search_label":
    */
   public function getFieldDefinitions(): array {
     $fields['mail'] = BundleFieldDefinition::create('email')
-      ->setLabel(t('E-mail'))
+      ->setLabel(t('Email'))
       ->setDescription(t('The email address to which notifications should be sent.'))
       ->setDefaultValueCallback(static::class . '::getDefaultMail')
       ->setRequired(TRUE)
@@ -406,7 +430,7 @@ There are new results for your saved search "@search_label":
    * {@inheritdoc}
    */
   public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL): AccessResultInterface {
-    // Make sure this is really our e-mail field.
+    // Make sure this is really our email field.
     if ($field_definition->getName() !== 'mail') {
       return parent::checkFieldAccess($operation, $field_definition, $account, $items);
     }
@@ -435,8 +459,10 @@ There are new results for your saved search "@search_label":
   }
 
   /**
-   * Prepares a message containing new saved search results.
+   * Prepares a message sent for this plugin.
    *
+   * @param string $key
+   *   An identifier of the mail.
    * @param array|\ArrayAccess $message
    *   An array to be filled in. Elements in this array include:
    *   - id: An ID to identify the mail sent. Look at module source code or
@@ -459,6 +485,48 @@ There are new results for your saved search "@search_label":
    *     Sender, MIME-Version, Content-Type, etc.
    *     MailManagerInterface->mail() pre-fills several headers in this array.
    * @param array|\ArrayAccess $params
+   *   An array of parameters supplied by the caller of
+   *   MailManagerInterface->mail().
+   *
+   * @see hook_mail()
+   */
+  public function prepareMail($key, &$message, $params): void {
+    switch ($key) {
+      case self::MAIL_ACTIVATE:
+        $this->getActivationMail($message, $params);
+        break;
+
+      case self::MAIL_NEW_RESULTS:
+        $this->getNewResultsMail($message, $params);
+        break;
+    }
+  }
+
+  /**
+   * Prepares a message containing new saved search results.
+   *
+   * @param \ArrayAccess|array $message
+   *   An array to be filled in. Elements in this array include:
+   *   - id: An ID to identify the mail sent. Look at module source code or
+   *     MailManagerInterface->mail() for possible id values.
+   *   - to: The address or addresses the message will be sent to. The
+   *     formatting of this string must comply with RFC 2822.
+   *   - subject: Subject of the email to be sent. This must not contain any
+   *     newline characters, or the mail may not be sent properly.
+   *     MailManagerInterface->mail() sets this to an empty string when the hook
+   *     is invoked.
+   *   - body: An array of lines containing the message to be sent. Drupal will
+   *     format the correct line endings for you. MailManagerInterface->mail()
+   *     sets this to an empty array when the hook is invoked. The array may
+   *     contain either strings or objects implementing
+   *     \Drupal\Component\Render\MarkupInterface.
+   *   - from: The address the message will be marked as being from, which is
+   *     set by MailManagerInterface->mail() to either a custom address or the
+   *     site-wide default email address when the hook is invoked.
+   *   - headers: Associative array containing mail headers, such as From,
+   *     Sender, MIME-Version, Content-Type, etc.
+   *     MailManagerInterface->mail() pre-fills several headers in this array.
+   * @param \ArrayAccess|array $params
    *   An associative array with the following keys:
    *   - search: The saved search entity for which results are being reported.
    *   - results: A Search API result set containing the new results.
@@ -466,14 +534,14 @@ There are new results for your saved search "@search_label":
    * @see hook_mail()
    * @see search_api_saved_searches_mail()
    */
-  public function getNewResultsMail(&$message, $params) {
+  public function getNewResultsMail(\ArrayAccess|array &$message, \ArrayAccess|array $params): void {
     $this->getMail('notification', $message, $params);
   }
 
   /**
    * Prepares a message for activating a new saved search.
    *
-   * @param array|\ArrayAccess $message
+   * @param \ArrayAccess|array $message
    *   An array to be filled in. Elements in this array include:
    *   - id: An ID to identify the mail sent. Look at module source code or
    *     MailManagerInterface->mail() for possible id values.
@@ -494,14 +562,14 @@ There are new results for your saved search "@search_label":
    *   - headers: Associative array containing mail headers, such as From,
    *     Sender, MIME-Version, Content-Type, etc.
    *     MailManagerInterface->mail() pre-fills several headers in this array.
-   * @param array|\ArrayAccess $params
+   * @param \ArrayAccess|array $params
    *   An associative array with the following keys:
    *   - search: The saved search entity which can be activated.
    *
    * @see hook_mail()
    * @see search_api_saved_searches_mail()
    */
-  public function getActivationMail(&$message, $params) {
+  public function getActivationMail(\ArrayAccess|array &$message, \ArrayAccess|array $params): void {
     $this->getMail('activate', $message, $params);
   }
 
@@ -511,7 +579,7 @@ There are new results for your saved search "@search_label":
    * @param string $mail_type
    *   The type of mail, which determines the configuration key where subject
    *   and body are retrieved.
-   * @param array|\ArrayAccess $message
+   * @param \ArrayAccess|array $message
    *   An array to be filled in. Elements in this array include:
    *   - id: An ID to identify the mail sent. Look at module source code or
    *     MailManagerInterface->mail() for possible id values.
@@ -532,13 +600,13 @@ There are new results for your saved search "@search_label":
    *   - headers: Associative array containing mail headers, such as From,
    *     Sender, MIME-Version, Content-Type, etc.
    *     MailManagerInterface->mail() pre-fills several headers in this array.
-   * @param array|\ArrayAccess $params
+   * @param \ArrayAccess|array $params
    *   An associative array with the following keys:
    *   - search: The saved search entity which can be activated.
    *   - results: (optional) In case of a "notification" mail, the search
    *     results.
    */
-  protected function getMail(string $mail_type, &$message, $params): void {
+  protected function getMail(string $mail_type, \ArrayAccess|array &$message, \ArrayAccess|array $params): void {
     /** @var \Drupal\search_api_saved_searches\SavedSearchInterface $search */
     $search = $params['search'];
     $account = $search->getOwner();

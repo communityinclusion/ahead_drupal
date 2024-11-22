@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
+use Drupal\Core\Utility\Error;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -23,10 +24,8 @@ class SavedSearchTypeDeleteConfirmForm extends EntityConfirmFormBase {
 
   /**
    * The config manager.
-   *
-   * @var \Drupal\Core\Config\ConfigManager|null
    */
-  protected $configManager;
+  protected ?ConfigManager $configManager = NULL;
 
   /**
    * {@inheritdoc}
@@ -76,7 +75,7 @@ class SavedSearchTypeDeleteConfirmForm extends EntityConfirmFormBase {
         ->execute();
     }
     catch (PluginException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger('search_api_saved_searches'), $e);
       // This should make sure whoever sees this realizes something went wrong –
       // while also preventing them from deleting the type, since we cannot tell
       // whether that would be safe.
@@ -151,12 +150,12 @@ class SavedSearchTypeDeleteConfirmForm extends EntityConfirmFormBase {
       $form_state->setRedirectUrl($this->getCancelUrl());
     }
     catch (EntityStorageException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger('search_api_saved_searches'), $e);
       $error = $this->t('The saved search type could not be deleted due to an error: @message.', ['@message' => $e->getMessage()]);
       $this->messenger()->addError($error);
     }
     catch (EntityMalformedException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger('search_api_saved_searches'), $e);
       $form_state->setRedirectUrl(new Url('<front>'));
     }
   }

@@ -5,17 +5,17 @@ namespace Drupal\leaflet\Plugin\Field\FieldFormatter;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\RenderContext;
+use Drupal\Core\Render\RendererInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Leaflet\LeafletService;
+use Drupal\leaflet\LeafletService;
 use Drupal\leaflet\LeafletSettingsElementsTrait;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Utility\Token;
-use Drupal\core\Render\Renderer;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Utility\LinkGeneratorInterface;
@@ -45,7 +45,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
   /**
    * Leaflet service.
    *
-   * @var \Drupal\Leaflet\LeafletService
+   * @var \Drupal\leaflet\LeafletService
    */
   protected $leafletService;
 
@@ -59,14 +59,14 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
   /**
    * The token service.
    *
-   * @var \Drupal\core\Utility\Token
+   * @var \Drupal\Core\Utility\Token
    */
   protected $token;
 
   /**
-   * The renderer service.
+   * The Renderer service property.
    *
-   * @var \Drupal\core\Render\Renderer
+   * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
 
@@ -100,15 +100,15 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
    * @param string $view_mode
    *   The view mode.
    * @param array $third_party_settings
-   *   Any third party settings settings.
-   * @param \Drupal\Leaflet\LeafletService $leaflet_service
+   *   Any third party settings.
+   * @param \Drupal\leaflet\LeafletService $leaflet_service
    *   The Leaflet service.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The Entity Field Manager.
-   * @param \Drupal\core\Utility\Token $token
+   * @param \Drupal\Core\Utility\Token $token
    *   The token service.
-   * @param \Drupal\core\Render\Renderer $renderer
-   *   The renderer service.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    * @param \Drupal\Core\Utility\LinkGeneratorInterface $link_generator
@@ -125,7 +125,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
     LeafletService $leaflet_service,
     EntityFieldManagerInterface $entity_field_manager,
     Token $token,
-    Renderer $renderer,
+    RendererInterface $renderer,
     ModuleHandlerInterface $module_handler,
     LinkGeneratorInterface $link_generator
   ) {
@@ -143,7 +143,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
+    return new self(
       $plugin_id,
       $plugin_definition,
       $configuration['field_definition'],
@@ -335,6 +335,11 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
         // Decode any entities because JS will encode them again,
         // and we don't want double encoding.
         $feature['tooltip']['value'] = $this->tokenResolvedContent($entity, $settings['leaflet_tooltip']['value'], $tokens, $results);
+
+        // Associate dynamic tooltip options (token based).
+        if (!empty($settings['leaflet_tooltip']['options'])) {
+          $feature['tooltip']['options'] = $this->tokenResolvedContent($entity, $settings['leaflet_tooltip']['options'], $tokens, $results);
+        }
       }
 
       // Define the Popup Control and Popup Content with backward
@@ -348,6 +353,11 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
         // Generate the Popup Content render array transforming the
         // 'popup_content' text area through replacements tokens.
         $feature['popup']['value'] = $this->tokenResolvedContent($entity, $popup_content, $tokens, $results);
+
+        // Associate dynamic popup options (token based).
+        if (!empty($settings['leaflet_popup']['options'])) {
+          $feature['popup']['options'] = $this->tokenResolvedContent($entity, $settings['leaflet_popup']['options'], $tokens, $results);
+        }
       }
 
       // Add/merge eventual map icon definition from hook_leaflet_map_info.
@@ -400,12 +410,12 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
 
         switch ($icon_type) {
           case 'html':
-            $feature['icon']['html'] = $this->token->replace($settings['icon']['html'], $tokens);
+            $feature['icon']['html'] = $this->token->replace($settings['icon']['html'], $tokens, ['clear' => TRUE]);
             $feature['icon']['html_class'] = $settings['icon']['html_class'] ?? '';
             break;
 
           case 'circle_marker':
-            $feature['icon']['options'] = $this->token->replace($settings['icon']['circle_marker_options'], $tokens);
+            $feature['icon']['circle_marker_options'] = $this->token->replace($settings['icon']['circle_marker_options'], $tokens);
             break;
 
           default:
@@ -484,7 +494,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
   /**
    * Sets possibly existing previous settings for the Zoom Form Element.
    */
-  private function setExistingZoomSettings() {
+  protected function setExistingZoomSettings() {
     $settings = $this->getSettings();
     if (isset($settings['zoom'])) {
       $settings['map_position']['zoom'] = (int) $settings['zoom'];
@@ -509,7 +519,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
    * @return array
    *   The result render array.
    */
-  private function tokenResolvedContent(EntityInterface $entity, string $element_content, array $tokens, array $results) {
+  protected function tokenResolvedContent(EntityInterface $entity, string $element_content, array $tokens, array $results) {
     // Construct the renderable array for popup title / text. As we later
     // convert that to plain text, losing attachments and cacheability, save
     // them to $results.

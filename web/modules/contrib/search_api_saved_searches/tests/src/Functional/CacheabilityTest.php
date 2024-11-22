@@ -4,6 +4,7 @@ namespace Drupal\Tests\search_api_saved_searches\Functional;
 
 use Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\user\Entity\User;
 
 /**
  * Tests that this module provides correct cache metadata.
@@ -28,10 +29,8 @@ class CacheabilityTest extends BrowserTestBase {
 
   /**
    * The admin user used in this test.
-   *
-   * @var \Drupal\user\Entity\User
    */
-  protected $adminUser;
+  protected User $adminUser;
 
   /**
    * {@inheritdoc}
@@ -49,7 +48,7 @@ class CacheabilityTest extends BrowserTestBase {
   /**
    * Tests caching of the "Save search" block.
    */
-  public function testBlockCaching() {
+  public function testBlockCaching(): void {
     $block_label = 'Save search test block label';
     $this->drupalPlaceBlock('search_api_saved_searches', [
       'label' => $block_label,

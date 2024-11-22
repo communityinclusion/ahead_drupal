@@ -46,7 +46,7 @@
             // If the Leaflet feature is extending the Path class (Polygon,
             // Polyline, Circle) don't add it to Markercluster if not requested,
             // and don't add it if specifically requested not to.
-            if ((lFeature.setStyle && !leaflet_markercluster_include_path) || groupFeature['markercluster_excluded']) {
+            if ((lFeature.setStyle && !lFeature.getRadius && !leaflet_markercluster_include_path) || groupFeature['markercluster_excluded']) {
               layers.unclustered[feature['group_label']].addLayer(lFeature);
             }
             else {
@@ -70,7 +70,7 @@
           // If the Leaflet feature is extending the Path class (Polygon,
           // Polyline, Circle) don't add it to Markercluster if not requested,
           // and don't add it if specifically requested not to.
-          if ((lFeature.setStyle && !leaflet_markercluster_include_path) || feature['markercluster_excluded']) {
+          if ((lFeature.setStyle && !lFeature.getRadius && !leaflet_markercluster_include_path) || feature['markercluster_excluded']) {
             layers.unclustered._base.addLayer(lFeature);
           }
           else {

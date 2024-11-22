@@ -247,8 +247,10 @@
       this.lMap.fitWorld();
     }
 
-    // Set the position of the Zoom Control.
-    this.lMap.zoomControl.setPosition(this.map_settings.zoomControlPosition);
+    // Set the position of the Zoom Control, if enabled.
+    if (this.lMap.zoomControl) {
+      this.lMap.zoomControl.setPosition(this.map_settings.zoomControlPosition);
+    }
 
     // Set to refresh when first in viewport to avoid missing visibility.
     new IntersectionObserver((entries, observer) => {
@@ -536,7 +538,7 @@
       // @see https://www.drupal.org/project/leaflet/issues/3377403
       // @see https://www.drupal.org/project/leaflet/issues/3186029
       case 'json':
-        lFeature = this.create_json(feature.json, feature.events);
+        lFeature = this.create_json(feature.json, feature.options, feature.events);
         break;
 
       case 'multipoint':
@@ -609,7 +611,9 @@
       case 'vector':
         map_layer = new L.maplibreGL({
           'style': urlTemplate,
-          'attribution': layer_options.attribution ?? ''
+          'attribution': layer_options.attribution ?? '',
+          'pitch': layer_options.pitch ?? '',
+          'bearing': layer_options.bearing ?? ''
         });
         break;
 
@@ -713,13 +717,22 @@
    * @returns {*}
    */
   Drupal.Leaflet.prototype.create_point = function(marker) {
-    let latLng = new L.LatLng(marker.lat, marker.lon);
+    const latLng = new L.LatLng(marker.lat, marker.lon);
     let lMarker;
-    let marker_title = marker.title ? marker.title.replace(/<[^>]*>/g, '').trim() : '';
+    // Assign the marker title value depending if a Marker simple title or a
+    // Leaflet tooltip was set.
+    let marker_title = '';
+    if (marker.title) {
+      marker_title = marker.title.replace(/<[^>]*>/g, '').trim()
+    }
+    else if (marker.tooltip && marker.tooltip.value) {
+      marker_title = marker.tooltip.value.replace(/<[^>]*>/g, '').trim();
+    }
     let options = {
       title: marker_title,
       className: marker.className || '',
       alt: marker_title,
+      group_label: marker.group_label ?? '',
     };
 
     lMarker = new L.Marker(latLng, options);
@@ -731,7 +744,7 @@
       }
       else if (marker.icon.iconType && marker.icon.iconType === 'circle_marker') {
         try {
-          options = marker.icon.options ? JSON.parse(marker.icon.options) : {};
+          options = marker.icon.circle_marker_options ? JSON.parse(marker.icon.circle_marker_options) : {};
           options.radius = options.radius ? parseInt(options['radius']) : 10;
         }
         catch (e) {
@@ -802,12 +815,8 @@
    * @returns {*}
    */
   Drupal.Leaflet.prototype.create_polygon = function(polygon, clusterable = false) {
-    let latlngs = [];
-    for (let i = 0; i < polygon.points.length; i++) {
-      let latlng = new L.LatLng(polygon.points[i].lat, polygon.points[i].lon);
-      latlngs.push(latlng);
-    }
-    return clusterable ? new L.PolygonClusterable(latlngs) : new L.Polygon(latlngs);
+    const coordinates = polygon.points ?? [];
+    return clusterable ? new L.PolygonClusterable(coordinates) : new L.Polygon(coordinates);
   };
 
   /**
@@ -821,17 +830,8 @@
    * @returns {*}
    */
   Drupal.Leaflet.prototype.create_multipolygon = function(multipolygon, clusterable = false) {
-    let polygons = [];
-    for (let x = 0; x < multipolygon.component.length; x++) {
-      let latlngs = [];
-      let polygon = multipolygon.component[x];
-      for (let i = 0; i < polygon.points.length; i++) {
-        let latlng = new L.LatLng(polygon.points[i].lat, polygon.points[i].lon);
-        latlngs.push(latlng);
-      }
-      polygons.push(latlngs);
-    }
-    return clusterable ? new L.PolygonClusterable(polygons) : new L.Polygon(polygons);
+    const coordinates = multipolygon.points ?? [];
+    return clusterable ? new L.PolygonClusterable(coordinates) : new L.Polygon(coordinates);
   };
 
   /**
@@ -872,11 +872,16 @@
    *
    * @param json
    *   The json input.
+   * @param options
+   *   The options array,
+   *   that would reflect the GeoJSON Leaflet Js library options
+   *   https://leafletjs.com/reference.html#geojson
    * @param events
+   *   The events array
    *
    * @returns {*}
    */
-  Drupal.Leaflet.prototype.create_json = function(json, events) {
+  Drupal.Leaflet.prototype.create_json = function(json, options = [], events = []) {
     let lJSON = new L.GeoJSON();
     const self = this;
 
@@ -898,12 +903,18 @@
       // Eventually add Popup to the Layer.
       self.feature_bind_popup(layer, feature.properties);
 
-      for (e in events) {
+      for (const e in events) {
         let layerParam = {};
         layerParam[e] = eval(events[e]);
         layer.on(layerParam);
       }
     };
+
+    for (const option in options) {
+      if (Object.prototype.hasOwnProperty.call(options, option)) {
+        lJSON.options[option] = eval(options[option]);
+      }
+    }
 
     lJSON.addData(json);
     return lJSON;

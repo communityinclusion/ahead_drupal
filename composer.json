@@ -50,14 +50,14 @@
         "drupal/address": "^1.4",
         "drupal/admin_toolbar": "^3.2",
         "drupal/auto_entitylabel": "^3.0",
-        "drupal/block_class": "^2.0",
+        "drupal/block_class": "^3.0",
         "drupal/bootstrap_barrio": "^5.5",
         "drupal/bootstrap_library": "^2.0",
         "drupal/captcha": "^1.0@beta",
         "drupal/coder": "^8.3.2",
         "drupal/computed_field": "^3.0@alpha",
         "drupal/conditional_fields": "^4.0@alpha",
-        "drupal/core": "^10.3.6",
+        "drupal/core": "^10.3.10",
         "drupal/core-composer-scaffold": "^10.1",
         "drupal/core-dev": "^10.1",
         "drupal/csv_importer": "1.x-dev",
@@ -148,7 +148,8 @@
             "drupal/core-composer-scaffold": true,
             "zaporylie/composer-drupal-optimizations": true,
             "drupal/console-extend-plugin": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "tbachert/spi": true
         }
     },
     "autoload": {

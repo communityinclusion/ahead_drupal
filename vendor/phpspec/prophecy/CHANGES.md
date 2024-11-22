@@ -1,6 +1,26 @@
 Unreleased
 ==========
 
+1.20.0
+======
+
+**Added:**
+
+* Add support for PHP 8.4 (@andypost)
+
+**Fixed:**
+
+* Fix support for doubling methods using an enum case as default value of a parameter (@jdreesen)
+* Fix deprecation when doubling a class with constructor parameters (@singinwhale, @W0rma)
+* Fix deprecation warning when using phpdocumentor/reflection-docblock 5.4+ (@jrfnl)
+
+1.19.0
+======
+
+**Added:**
+
+* Allow sebastian/comparator and sebastian/recursion-context 6
+
 1.18.0 / 2023-12-07
 ===================
 

@@ -42,7 +42,7 @@ class EmailActivationTest extends KernelTestBase {
    *
    * @var \Drupal\user\Entity\User[]
    */
-  protected $users = [];
+  protected array $users = [];
 
   /**
    * {@inheritdoc}
@@ -84,7 +84,7 @@ class EmailActivationTest extends KernelTestBase {
     $body = <<<END
 [user:display-name],
 
-A saved search on [site:name] with this e-mail address was created.
+A saved search on [site:name] with this email address was created.
 To activate this saved search, click the following link:
 
 [search-api-saved-search:activate-url]
@@ -177,7 +177,7 @@ END;
     $body = <<<END
 [user:display-name],
 
-A saved search on [site:name] with this e-mail address was created.
+A saved search on [site:name] with this email address was created.
 To activate this saved search, click the following link:
 
 [search-api-saved-search:activate-url]
@@ -259,9 +259,9 @@ END;
    * Tests that updating of saved searches is handled correctly.
    *
    * An email should only be triggered when the saved search is already active
-   * and its e-mail address changes.
+   * and its email address changes.
    */
-  public function testSavedSearchUpdate() {
+  public function testSavedSearchUpdate(): void {
     $search = SavedSearch::create([
       'type' => 'default',
       'label' => 'Test search 1',
@@ -273,7 +273,7 @@ END;
     // Assert that the search was deactivated.
     $this->assertFalse($search->get('status')->value);
 
-    // Assert an e-mail was sent but just save it here and empty the mail
+    // Assert an email was sent but just save it here and empty the mail
     // storage.
     $captured_emails = \Drupal::state()->get('system.test_mail_collector');
     $this->assertNotEmpty($captured_emails);
@@ -310,9 +310,9 @@ END;
   }
 
   /**
-   * Tests that activation will be skipped if the "E-mail" plugin is disabled.
+   * Tests that activation will be skipped if the "Email" plugin is disabled.
    */
-  public function testEmailPluginDisabled() {
+  public function testEmailPluginDisabled(): void {
     $type = SavedSearchType::load('default');
     $type->removeNotificationPlugin('email');
     $type->save();
@@ -334,7 +334,7 @@ END;
   /**
    * Tests that activation will be skipped if the "Send" option is disabled.
    */
-  public function testActivationEmailDisabled() {
+  public function testActivationEmailDisabled(): void {
     $type = SavedSearchType::load('default');
     $type->getNotificationPlugin('email')->setConfiguration([
       'activate' => [
@@ -363,7 +363,7 @@ END;
   /**
    * Sends all queued mails.
    */
-  protected function sendMails() {
+  protected function sendMails(): void {
     $this->container->get('search_api_saved_searches.email_queue')->destruct();
   }
 

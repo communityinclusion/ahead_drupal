@@ -96,12 +96,18 @@ The map height, expressed in css units.
 - ### Bind events on geojson (json) features
 
 @see: https://www.drupal.org/project/leaflet/issues/3186029
+@see: https://www.drupal.org/project/leaflet/issues/3485071
 
     $features[] = [
       'type' => 'json',
       'json' => $geojson,
       'events' => [
         'click' => 'Drupal.manageGeojsonClick', // or whatever callback
+      ],
+       'options' => [
+        'pointToLayer' => function(geoJsonPoint, latlng) {return L.marker(latlng);}, // or whatever callback
+        'onEachFeature' => function (geoJsonFeature) {return true}; // or whatever callback
+        'markersInheritOptions' => false,
       ],
     ];
     $this->leaflet->leafletRenderMap($map_info, $features, $height),

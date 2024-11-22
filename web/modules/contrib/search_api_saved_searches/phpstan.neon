@@ -1,0 +1,24 @@
+# Configuration file for PHPStan static code checking, see https://phpstan.org .
+# PHPStan is triggered on Drupal CI in commit-code-check.sh.
+includes:
+  - phar://phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+  level: 1
+
+  paths:
+    - .
+
+  ignoreErrors:
+    # new static() is a best practice in Drupal, so we cannot fix that.
+    - "#^Unsafe usage of new static#"
+
+    # Ignore common errors for now.
+    - "#Drupal calls should be avoided in classes, use dependency injection instead#"
+
+    # Specific errors we don't want to or cannot fix.
+
+    - # Since we don't depend on the VBO module, it isn't available for PhpStan.
+      message: "#^Access to an undefined property Drupal\\\\search_api_saved_searches\\\\Entity\\\\SavedSearchType::\\$original\\.#"
+      count: 1
+      path: src/Entity/SavedSearchType.php

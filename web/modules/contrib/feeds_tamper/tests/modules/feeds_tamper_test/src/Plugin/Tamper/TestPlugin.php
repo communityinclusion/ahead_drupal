@@ -3,8 +3,8 @@
 namespace Drupal\feeds_tamper_test\Plugin\Tamper;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\tamper\TamperableItemInterface;
 use Drupal\tamper\TamperBase;
+use Drupal\tamper\TamperableItemInterface;
 
 /**
  * Tamper test plugin for Feeds Tamper tests.
@@ -71,7 +71,7 @@ class TestPlugin extends TamperBase {
   /**
    * {@inheritdoc}
    */
-  public function tamper($data, TamperableItemInterface $item = NULL) {
+  public function tamper($data, ?TamperableItemInterface $item = NULL) {
     return $data . 'test';
   }
 

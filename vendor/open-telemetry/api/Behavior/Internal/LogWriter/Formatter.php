@@ -12,17 +12,23 @@ class Formatter
             ? $context['exception']
             : null;
         if ($exception) {
+            $previous = $exception->getPrevious() ? $exception->getPrevious()->getMessage() : '';
             $message = sprintf(
-                'OpenTelemetry: [%s] %s [exception] %s%s%s',
+                'OpenTelemetry: [%s] %s [exception] %s [previous] %s%s%s',
                 $level,
                 $message,
                 $exception->getMessage(),
+                $previous,
                 PHP_EOL,
                 $exception->getTraceAsString()
             );
         } else {
             //get calling location, skipping over trait, formatter etc
             $caller = debug_backtrace()[3];
+            /**
+             * @psalm-suppress PossiblyNullArgument
+             * @psalm-suppress PossiblyUndefinedArrayOffset
+             */
             $message = sprintf(
                 'OpenTelemetry: [%s] %s in %s(%s)',
                 $level,

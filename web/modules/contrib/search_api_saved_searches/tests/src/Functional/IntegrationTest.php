@@ -10,6 +10,7 @@ use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\search_api\Functional\ExampleContentTrait;
 use Drupal\Tests\search_api\Kernel\TestLogger;
 use Drupal\user\Entity\Role;
+use Drupal\user\Entity\User;
 use Drupal\user\RoleInterface;
 
 /**
@@ -41,24 +42,18 @@ class IntegrationTest extends BrowserTestBase {
 
   /**
    * A admin user used in this test.
-   *
-   * @var \Drupal\user\Entity\User
    */
-  protected $adminUser;
+  protected User $adminUser;
 
   /**
    * A non-admin user used in this test.
-   *
-   * @var \Drupal\user\Entity\User
    */
-  protected $registeredUser;
+  protected User $registeredUser;
 
   /**
    * A second non-admin user used in this test.
-   *
-   * @var \Drupal\user\Entity\User
    */
-  protected $registeredUser2;
+  protected User $registeredUser2;
 
   /**
    * {@inheritdoc}
@@ -102,7 +97,7 @@ class IntegrationTest extends BrowserTestBase {
    *
    * Uses sub-methods to improve readability.
    */
-  public function testModule() {
+  public function testModule(): void {
     $this->drupalLogin($this->adminUser);
 
     $this->configureDefaultType();
@@ -117,7 +112,7 @@ class IntegrationTest extends BrowserTestBase {
   /**
    * Checks and edits the default saved search type.
    */
-  protected function configureDefaultType() {
+  protected function configureDefaultType(): void {
     $assert_session = $this->assertSession();
     $this->drupalGet('admin/config/search/search-api-saved-searches');
 
@@ -135,10 +130,10 @@ class IntegrationTest extends BrowserTestBase {
 END;
     $edit = [
       'label' => 'My test default',
-      'status' => TRUE,
+      'status' => '1',
       'options[displays][default]' => '0',
-      'options[displays][selected][views_page:search_api_test_view__page_1]' => TRUE,
-      'notification_plugins[email]' => TRUE,
+      'options[displays][selected][views_page:search_api_test_view__page_1]' => '1',
+      'notification_plugins[email]' => '1',
       'notification_configs[email][activate][body]' => $activation_mail,
       'options[notify_interval][default_value]' => '-1',
       'options[notify_interval][options]' => "-1 | Do not notify\n  86400|  Every day\n3600|Hourly\n7143    |Roughly every two hours",
@@ -151,7 +146,7 @@ END;
     $type = SavedSearchType::load('default');
     $expected = [
       'displays' => [
-        'default' => FALSE,
+        'default' => '0',
         'selected' => [
           'views_page:search_api_test_view__page_1',
         ],
@@ -162,7 +157,7 @@ END;
       ],
       'description' => 'Description for the default type.',
       'notify_interval' => [
-        'customizable' => TRUE,
+        'customizable' => '1',
         'default_value' => -1,
         'options' => [
           -1 => 'Do not notify',
@@ -177,7 +172,7 @@ END;
     $this->clickLink('Manage form display');
     $assert_session->pageTextContains('Label');
     $assert_session->pageTextContains('Notification interval');
-    $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Email');
     $assert_session->pageTextContains('Fulltext keywords');
     $assert_session->checkboxChecked('display_modes_custom[create]');
 
@@ -191,7 +186,7 @@ END;
     $this->clickLink('Create');
     $assert_session->pageTextContains('Label');
     $assert_session->pageTextContains('Notification interval');
-    $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Email');
     $assert_session->pageTextContains('Fulltext keywords');
 
     $this->placeBlock('search_api_saved_searches', [
@@ -203,7 +198,7 @@ END;
   /**
    * Adds a new saved search type.
    */
-  protected function addNewType() {
+  protected function addNewType(): void {
     $assert_session = $this->assertSession();
     $this->drupalGet('admin/config/search/search-api-saved-searches');
 
@@ -213,18 +208,18 @@ END;
       'label' => 'Foo &amp; Bar',
       'id' => 'foobar',
       'description' => 'Some description text for type <em>Foo &amp;&amp; Bar</em>.',
-      'status' => TRUE,
-      'options[displays][default]' => TRUE,
-      'options[displays][selected][views_page:search_api_test_view__page_1]' => TRUE,
-      'options[displays][selected][views_page:search_api_test_sorts__page_1]' => TRUE,
-      'notification_plugins[email]' => TRUE,
+      'status' => '1',
+      'options[displays][default]' => '1',
+      'options[displays][selected][views_page:search_api_test_view__page_1]' => '1',
+      'options[displays][selected][views_page:search_api_test_sorts__page_1]' => '1',
+      'notification_plugins[email]' => '1',
       'options[notify_interval][default_value]' => '7200',
-      'options[notify_interval][customizable]' => TRUE,
+      'options[notify_interval][customizable]' => '1',
       'options[max_results]' => '',
       'options[description]' => 'Description for the foobar type.',
     ];
     $this->submitForm($edit, 'Save');
-    $assert_session->pageTextContains('Please configure the used notification methods.');
+    $assert_session->pageTextContains('Configure the used notification methods.');
     $notify_interval_options = $assert_session->elementExists('css', '[name="options[notify_interval][options]"]')->getValue();
     $this->assertEquals("3600 | Hourly\n86400 | Daily\n604800 | Weekly\n-1 | Never", $notify_interval_options);
     $this->assertNull(SavedSearchType::load('foobar'));
@@ -235,7 +230,7 @@ END;
 - Delete: [search-api-saved-search:delete-url]
 END;
     $edit = [
-      'notification_configs[email][registered_choose_mail]' => TRUE,
+      'notification_configs[email][registered_choose_mail]' => '1',
       'notification_configs[email][activate][body]' => $activation_mail,
     ];
     $this->submitForm($edit, 'Save');
@@ -245,14 +240,14 @@ END;
     $this->clickLink('Manage form display');
     $assert_session->pageTextContains('Label');
     $assert_session->pageTextContains('Notification interval');
-    $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Email');
     $assert_session->pageTextContains('Fulltext keywords');
     $assert_session->checkboxChecked('display_modes_custom[create]');
 
     $this->clickLink('Create');
     $assert_session->pageTextContains('Label');
     $assert_session->pageTextContains('Notification interval');
-    $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Email');
     $assert_session->pageTextContains('Fulltext keywords');
 
     $this->placeBlock('search_api_saved_searches', [
@@ -268,7 +263,7 @@ END;
   /**
    * Checks functionality for anonymous users.
    */
-  protected function checkFunctionalityAnonymous() {
+  protected function checkFunctionalityAnonymous(): void {
     $assert_session = $this->assertSession();
 
     if ($this->loggedInUser) {
@@ -308,7 +303,7 @@ END;
     ];
     $this->submitForm($edit, 'Save search');
     $assert_session->pageTextContains('Your saved search was successfully created.');
-    $assert_session->pageTextContains('You will soon receive an e-mail with a confirmation link to activate it.');
+    $assert_session->pageTextContains('You will soon receive an email with a confirmation link to activate it.');
 
     $this->drupalGet('search-api-test-search-view-caching-none', ['query' => ['search_api_fulltext' => 'bar']]);
     $assert_session->statusCodeEquals(200);
@@ -324,7 +319,7 @@ END;
     ];
     $this->submitForm($edit, 'Save search');
     $assert_session->pageTextContains('Your saved search was successfully created.');
-    $assert_session->pageTextContains('You will soon receive an e-mail with a confirmation link to activate it.');
+    $assert_session->pageTextContains('You will soon receive an email with a confirmation link to activate it.');
 
     $this->drupalGet('search-api-test-sorts');
     $assert_session->statusCodeEquals(200);
@@ -368,7 +363,7 @@ END;
     $assert_session->pageTextContains('Edit saved search First saved search');
     $assert_session->pageTextContains('Fulltext keywords');
     $assert_session->pageTextContains('Notification interval');
-    $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Email');
 
     $this->drupalGet($first_mail_urls['Delete']);
     $assert_session->statusCodeEquals(200);
@@ -391,7 +386,7 @@ END;
     $assert_session->pageTextContains('Edit saved search Second saved search');
     $assert_session->pageTextNotContains('Fulltext keywords');
     $assert_session->pageTextContains('Notification interval');
-    $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Email');
 
     $this->drupalGet($second_mail_urls['Delete']);
     $assert_session->statusCodeEquals(200);
@@ -401,7 +396,7 @@ END;
   /**
    * Checks functionality for registered users.
    */
-  protected function checkFunctionalityRegistered() {
+  protected function checkFunctionalityRegistered(): void {
     $assert_session = $this->assertSession();
     $this->drupalLogin($this->registeredUser);
 
@@ -430,7 +425,7 @@ END;
     $assert_session->pageTextContains('Description for the default type.');
     $assert_session->pageTextNotContains('Foo &amp; Bar saved searches block');
     $assert_session->pageTextNotContains('Description for the foobar type.');
-    $assert_session->pageTextNotContains('E-mail');
+    $assert_session->pageTextNotContains('Email');
 
     $edit = [
       'label[0][value]' => 'First saved search',
@@ -438,7 +433,7 @@ END;
     ];
     $this->submitForm($edit, 'Save search');
     $assert_session->pageTextContains('Your saved search was successfully created.');
-    $assert_session->pageTextNotContains('You will soon receive an e-mail with a confirmation link to activate it.');
+    $assert_session->pageTextNotContains('You will soon receive an email with a confirmation link to activate it.');
 
     $this->drupalGet('search-api-test-search-view-caching-none', ['query' => ['search_api_fulltext' => 'bar']]);
     $assert_session->statusCodeEquals(200);
@@ -454,7 +449,7 @@ END;
     ];
     $this->submitForm($edit, 'Save search');
     $assert_session->pageTextContains('Your saved search was successfully created.');
-    $assert_session->pageTextContains('You will soon receive an e-mail with a confirmation link to activate it.');
+    $assert_session->pageTextContains('You will soon receive an email with a confirmation link to activate it.');
 
     $this->drupalGet('search-api-test-sorts');
     $assert_session->statusCodeEquals(200);
@@ -495,7 +490,7 @@ END;
     $assert_session->pageTextContains('Edit saved search Second saved search');
     $assert_session->pageTextNotContains('Fulltext keywords');
     $assert_session->pageTextContains('Notification interval');
-    $assert_session->pageTextContains('E-mail');
+    $assert_session->pageTextContains('Email');
 
     $this->drupalGet($mail_urls['Delete']);
     $assert_session->statusCodeEquals(200);
@@ -511,14 +506,14 @@ END;
     $this->drupalGet('admin/config/search/search-api-saved-searches/type/default/edit');
     $edit = [
       'options[notify_interval][default_value]' => '7200',
-      'options[notify_interval][customizable]' => FALSE,
+      'options[notify_interval][customizable]' => '0',
     ];
     $this->submitForm($edit, 'Save');
     $assert_session->pageTextContains('Your settings have been saved.');
 
     $type = SavedSearchType::load('default');
     $expected = [
-      'customizable' => FALSE,
+      'customizable' => '0',
       'default_value' => 7200,
       'options' => [
         -1 => 'Do not notify',
@@ -545,7 +540,7 @@ END;
     ];
     $this->submitForm($edit, 'Save search');
     $assert_session->pageTextContains('Your saved search was successfully created.');
-    $assert_session->pageTextContains('You will soon receive an e-mail with a confirmation link to activate it.');
+    $assert_session->pageTextContains('You will soon receive an email with a confirmation link to activate it.');
     $searches = \Drupal::entityQuery('search_api_saved_search')
       ->accessCheck(FALSE)
       ->sort('id', 'DESC')
@@ -568,7 +563,7 @@ END;
     ];
     $this->submitForm($edit, 'Save search');
     $assert_session->pageTextContains('Your saved search was successfully created.');
-    $assert_session->pageTextNotContains('You will soon receive an e-mail with a confirmation link to activate it.');
+    $assert_session->pageTextNotContains('You will soon receive an email with a confirmation link to activate it.');
     $searches = \Drupal::entityQuery('search_api_saved_search')
       ->accessCheck(FALSE)
       ->sort('id', 'DESC')
@@ -582,7 +577,7 @@ END;
   /**
    * Makes sure access checks work correctly.
    */
-  protected function checkAccessChecks() {
+  protected function checkAccessChecks(): void {
     $assert_session = $this->assertSession();
 
     // Make sure we really have all the expected saved searches present, to
@@ -612,7 +607,7 @@ END;
         'access' => [],
       ],
     ];
-    foreach ($tests as $key => $info) {
+    foreach ($tests as $info) {
       if ($this->loggedInUser) {
         $this->drupalLogout();
       }
@@ -635,7 +630,7 @@ END;
   /**
    * Deletes the "Foobar" saved search type.
    */
-  protected function deleteType() {
+  protected function deleteType(): void {
     $assert_session = $this->assertSession();
     $this->drupalLogin($this->adminUser);
 
@@ -695,7 +690,7 @@ END;
    * @param string $string
    *   The string for which to test proper escaping.
    */
-  protected function assertOnlyEscaped(string $string) {
+  protected function assertOnlyEscaped(string $string): void {
     $assert_session = $this->assertSession();
 
     $escaped = Html::escape($string);

@@ -41,10 +41,8 @@ abstract class NotificationPluginBase extends ConfigurablePluginBase implements 
 
   /**
    * The saved search type to which this plugin is attached.
-   *
-   * @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface
    */
-  protected $savedSearchType;
+  protected ?SavedSearchTypeInterface $savedSearchType = NULL;
 
   /**
    * {@inheritdoc}

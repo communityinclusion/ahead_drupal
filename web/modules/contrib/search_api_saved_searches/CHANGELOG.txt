@@ -1,3 +1,30 @@
+Search API Saved Searches 1.0 (2024-04-21)
+------------------------------------------
+Search API Saved Searches 1.0, RC 2 (2024-03-29):
+-------------------------------------------------
+- #3425521 by drunken monkey: Fixed module update hiding the "Notification
+  interval" form field.
+- #3436133 by klausi, stella, drunken monkey: Fixed timing attack vulnerability
+  in token comparison.
+- #3425196 by drunken monkey: Fixed GitLab CI pipelines (phpstan and cspell).
+- #3425237 by drunken monkey, sarwan_verma: Fixed incompatibility with Drupal
+  11.
+
+Search API Saved Searches 1.0, RC 1 (2024-02-25):
+-------------------------------------------------
+- #3422330 by drunken monkey: Fixed a few details of the admin view.
+- #2972305 by drunken monkey: Fixed missing access checks in
+  NewResultsCheck::checkAll().
+- #3419306 by drunken monkey: Increased Drupal core version requirement to 10.1.
+- #3422224 by drunken monkey: Enabled GitLab CI.
+- #3330345 by drunken monkey, khiminrm: Fixed errors when "E-Mail" notification
+  plugin is disabled.
+- #2955519 by drunken monkey: Fixed indistinct separation of module ("API") code
+  from "E-mail" plugin code.
+- #3419291 by drunken monkey: Converted README.txt to Markdown.
+- #3262824 by drunken monkey: Fixed handling of removed notification plugin
+  dependencies.
+
 Search API Saved Searches 1.0, Beta 1 (2023-12-27):
 ---------------------------------------------------
 First Beta release of the project’s Drupal 8+ version. The API can be considered

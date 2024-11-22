@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Exception\UnsupportedEntityTypeDefinitionException;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\Utility\Error;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api_saved_searches\Plugin\Field\KeywordsItemList;
 use Drupal\search_api_saved_searches\SavedSearchesException;
@@ -73,10 +74,8 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
 
   /**
    * Static cache for property getters that take some computation.
-   *
-   * @var array
    */
-  protected $cachedProperties = [];
+  protected array $cachedProperties = [];
 
   /**
    * {@inheritdoc}
@@ -88,7 +87,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
       $fields += static::ownerBaseFieldDefinitions($entity_type);
     }
     catch (UnsupportedEntityTypeDefinitionException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException(\Drupal::logger('search_api_saved_searches'), $e);
     }
 
     // Make the form display of the language configurable, and provide a more
@@ -254,15 +253,20 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
         return $fields;
       }
 
-      $notify_interval_options = $type->getOption('notify_interval');
-      $default_value = $notify_interval_options['default_value'] ?? 86400;
+      $default_value = $type->getOption('notify_interval.default_value', 86400);
       $fields['notify_interval'] = BaseFieldDefinition::create('list_integer')
         ->setLabel(t('Notification interval'))
         ->setDescription(t('The interval in which you want to receive notifications of new results for this saved search.'))
         ->setRequired(TRUE)
         ->setDefaultValue($default_value);
-      if (!empty($notify_interval_options['customizable'])) {
-        $fields['notify_interval']->setSetting('allowed_values', $notify_interval_options['options'])
+      if ($type->getOption('notify_interval.customizable', TRUE)) {
+        $interval_options = $type->getOption('notify_interval.options', [
+          3600 => t('Hourly'),
+          86400 => t('Daily'),
+          604800 => t('Weekly'),
+          -1 => t('Never'),
+        ]);
+        $fields['notify_interval']->setSetting('allowed_values', $interval_options)
           ->setDisplayOptions('view', [
             'type' => 'list_default',
             'weight' => 0,
@@ -287,7 +291,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
       $fields += $type->getNotificationPluginFieldDefinitions();
     }
     catch (PluginException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException(\Drupal::logger('search_api_saved_searches'), $e);
     }
 
     return $fields;
@@ -296,7 +300,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  public static function preCreate(EntityStorageInterface $storage, array &$values) {
+  public static function preCreate(EntityStorageInterface $storage, array &$values): void {
     parent::preCreate($storage, $values);
 
     // Clean up and clone the search query before it gets serialized.
@@ -362,7 +366,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  public function postCreate(EntityStorageInterface $storage) {
+  public function postCreate(EntityStorageInterface $storage): void {
     parent::postCreate($storage);
 
     // The "cachedProperties" values set in preCreate() above will end up in
@@ -391,7 +395,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  public function preSave(EntityStorageInterface $storage) {
+  public function preSave(EntityStorageInterface $storage): void {
     parent::preSave($storage);
 
     // Update the "next_execution" field, if notifications are enabled.
@@ -416,7 +420,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+  public function postSave(EntityStorageInterface $storage, $update = TRUE): void {
     parent::postSave($storage, $update);
 
     // For newly inserted saved searches with "Determine by result ID" detection
@@ -425,7 +429,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
       try {
         $type = $this->getType();
       }
-      catch (SavedSearchesException $e) {
+      catch (SavedSearchesException) {
         return;
       }
       $query = $this->getQuery();
@@ -455,7 +459,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
           $new_results_check->getNewResults($this);
         }
         catch (SavedSearchesException $e) {
-          watchdog_exception('search_api_saved_searches', $e);
+          Error::logException(\Drupal::logger('search_api_saved_searches'), $e);
         }
       }
     }
@@ -464,7 +468,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
   /**
    * {@inheritdoc}
    */
-  public static function postDelete(EntityStorageInterface $storage, array $entities) {
+  public static function postDelete(EntityStorageInterface $storage, array $entities): void {
     parent::postDelete($storage, $entities);
 
     // Remove any "known results" we have for the deleted searches.
@@ -537,7 +541,7 @@ class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
           ->load($this->bundle());
       }
       catch (PluginException $e) {
-        watchdog_exception('search_api_saved_searches', $e);
+        Error::logException(\Drupal::logger('search_api_saved_searches'), $e);
       }
       $this->cachedProperties['type'] = $type ?? FALSE;
     }

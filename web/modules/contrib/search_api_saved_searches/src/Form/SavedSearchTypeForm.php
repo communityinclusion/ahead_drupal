@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\search_api\Display\DisplayPluginManager;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
 use Drupal\search_api_saved_searches\Notification\NotificationPluginManagerInterface;
@@ -28,24 +29,18 @@ class SavedSearchTypeForm extends EntityForm {
 
   /**
    * The notification plugin manager.
-   *
-   * @var \Drupal\search_api_saved_searches\Notification\NotificationPluginManagerInterface|null
    */
-  protected $notificationPluginManager;
+  protected ?NotificationPluginManagerInterface $notificationPluginManager = NULL;
 
   /**
    * The display plugin manager.
-   *
-   * @var \Drupal\search_api\Display\DisplayPluginManager|null
    */
-  protected $displayPluginManager;
+  protected ?DisplayPluginManager $displayPluginManager = NULL;
 
   /**
    * The data type helper.
-   *
-   * @var \Drupal\search_api\Utility\DataTypeHelperInterface|null
    */
-  protected $dataTypeHelper;
+  protected ?DataTypeHelperInterface $dataTypeHelper = NULL;
 
   /**
    * {@inheritdoc}
@@ -58,6 +53,7 @@ class SavedSearchTypeForm extends EntityForm {
     $form->setNotificationPluginManager($container->get('plugin.manager.search_api_saved_searches.notification'));
     $form->setDisplayPluginManager($container->get('plugin.manager.search_api.display'));
     $form->setDataTypeHelper($container->get('search_api.data_type_helper'));
+    $form->setLoggerFactory($container->get('logger.factory'));
 
     return $form;
   }
@@ -261,7 +257,7 @@ class SavedSearchTypeForm extends EntityForm {
       }
     }
     catch (SavedSearchesException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger('search_api_saved_searches'), $e);
       $this->messenger()->addError($this->t('An error occurred loading the notification plugins: @message.', ['@message' => $e->getMessage()]));
     }
     asort($notification_plugin_options, SORT_NATURAL | SORT_FLAG_CASE);
@@ -397,7 +393,7 @@ class SavedSearchTypeForm extends EntityForm {
         ->loadMultiple();
     }
     catch (PluginException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger('search_api_saved_searches'), $e);
       $indexes = [];
     }
     $data_type_helper = $this->getDataTypeHelper();
@@ -456,7 +452,7 @@ class SavedSearchTypeForm extends EntityForm {
           ->createPlugins($type, $selected_plugins);
       }
       catch (SavedSearchesException $e) {
-        watchdog_exception('search_api_saved_searches', $e);
+        Error::logException($this->getLogger('search_api_saved_searches'), $e);
         $this->messenger()->addError($this->t('An error occurred loading the notification plugins: @message.', ['@message' => $e->getMessage()]));
         return;
       }
@@ -485,7 +481,7 @@ class SavedSearchTypeForm extends EntityForm {
     // If the user changed the notification plugins and there is at least one
     // plugin config form, show a message telling the user to configure it.
     if ($selected_plugins && $show_message) {
-      $message = $this->t('Please configure the used notification methods.');
+      $message = $this->t('Configure the used notification methods.');
       $this->messenger()->addWarning($message);
     }
   }
@@ -527,7 +523,7 @@ class SavedSearchTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state): void {
     parent::validateForm($form, $form_state);
 
     /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */
@@ -601,7 +597,7 @@ class SavedSearchTypeForm extends EntityForm {
         ->createPlugins($type, $plugin_ids);
     }
     catch (SavedSearchesException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger('search_api_saved_searches'), $e);
       $error = $this->t('An error occurred loading the notification plugins: @message.', ['@message' => $e->getMessage()]);
       $form_state->setError($form['notification_plugins'], $error);
       return;
@@ -631,7 +627,7 @@ class SavedSearchTypeForm extends EntityForm {
    * @throws \Drupal\search_api_saved_searches\SavedSearchesException
    *   Thrown if the plugins could not be loaded.
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     parent::submitForm($form, $form_state);
 
     /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */

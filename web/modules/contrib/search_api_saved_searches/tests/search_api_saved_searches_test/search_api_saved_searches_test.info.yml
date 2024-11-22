@@ -1,0 +1,12 @@
+name: 'Search API Saved Searches – Test'
+type: module
+description: 'Support module for Search API Saved Searches tests'
+package: Testing
+dependencies:
+  - search_api_saved_searches:search_api_saved_searches
+  - search_api:search_api_test
+
+# Information added by Drupal.org packaging script on 2024-04-21
+version: '8.x-1.0'
+project: 'search_api_saved_searches'
+datestamp: 1713699953

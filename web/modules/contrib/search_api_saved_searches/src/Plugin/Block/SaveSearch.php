@@ -5,6 +5,7 @@ namespace Drupal\search_api_saved_searches\Plugin\Block;
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -12,7 +13,9 @@ use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\search_api\Utility\QueryHelperInterface;
+use Drupal\search_api_saved_searches\LoggerTrait;
 use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -28,38 +31,32 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
 
+  use LoggerTrait;
+
   /**
    * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|null
    */
-  protected $entityTypeManager;
+  protected ?EntityTypeManagerInterface $entityTypeManager = NULL;
 
   /**
    * The form builder.
-   *
-   * @var \Drupal\Core\Form\FormBuilderInterface|null
    */
-  protected $formBuilder;
+  protected ?FormBuilderInterface $formBuilder = NULL;
 
   /**
    * The query helper.
-   *
-   * @var \Drupal\search_api\Utility\QueryHelperInterface|null
    */
-  protected $queryHelper;
+  protected ?QueryHelperInterface $queryHelper = NULL;
 
   /**
    * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack|null
    */
-  protected $requestStack;
+  protected ?RequestStack $requestStack = NULL;
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
     $block = new static($configuration, $plugin_id, $plugin_definition);
 
     $block->setStringTranslation($container->get('string_translation'));
@@ -67,6 +64,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
     $block->setFormBuilder($container->get('form_builder'));
     $block->setQueryHelper($container->get('search_api.query_helper'));
     $block->setRequestStack($container->get('request_stack'));
+    $block->setLogger($container->get('logger.channel.search_api_saved_searches'));
 
     return $block;
   }
@@ -212,14 +210,14 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function blockSubmit($form, FormStateInterface $form_state) {
+  public function blockSubmit($form, FormStateInterface $form_state): void {
     $this->configuration['type'] = $form_state->getValue('type');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function access(AccountInterface $account, $return_as_object = FALSE) {
+  public function access(AccountInterface $account, $return_as_object = FALSE): AccessResultInterface|bool {
     $access = parent::access($account, TRUE);
 
     $create_access = $this->getEntityTypeManager()
@@ -248,7 +246,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
         $cacheability->addCacheTags($tags);
       }
       catch (PluginNotFoundException $e) {
-        watchdog_exception('search_api_saved_searches', $e);
+        Error::logException($this->getLogger(), $e);
         $cacheability->setCacheMaxAge(0);
       }
       $cacheability->applyTo($build);
@@ -292,7 +290,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
       $build['form'] = $this->getFormBuilder()->getForm($form_object);
     }
     catch (PluginException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger(), $e);
       $this->messenger()->addError($this->t('Saving this search is not possible due to an internal error.'));
     }
 
@@ -331,7 +329,7 @@ class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
       return $type;
     }
     catch (PluginException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger(), $e);
       return NULL;
     }
   }

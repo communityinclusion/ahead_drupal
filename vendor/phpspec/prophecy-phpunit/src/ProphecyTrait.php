@@ -3,6 +3,8 @@
 namespace Prophecy\PhpUnit;
 
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\PostCondition;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Exception\Doubler\DoubleException;
 use Prophecy\Exception\Doubler\InterfaceNotFoundException;
@@ -34,7 +36,10 @@ trait ProphecyTrait
      * @throws DoubleException
      * @throws InterfaceNotFoundException
      *
-     * @psalm-param class-string|null $classOrInterface
+     * @template T of object
+     * @phpstan-param class-string<T>|null $classOrInterface
+     * @phpstan-return ($classOrInterface is null ? ObjectProphecy<object> : ObjectProphecy<T>)
+     *
      * @not-deprecated
      */
     protected function prophesize(?string $classOrInterface = null): ObjectProphecy
@@ -57,6 +62,7 @@ trait ProphecyTrait
     /**
      * @postCondition
      */
+    #[PostCondition]
     protected function verifyProphecyDoubles(): void
     {
         if ($this->prophet === null) {
@@ -75,6 +81,7 @@ trait ProphecyTrait
     /**
      * @after
      */
+    #[After]
     protected function tearDownProphecy(): void
     {
         if (null !== $this->prophet && !$this->prophecyAssertionsCounted) {
@@ -91,6 +98,7 @@ trait ProphecyTrait
     private function countProphecyAssertions(): void
     {
         \assert($this instanceof TestCase);
+        \assert($this->prophet !== null);
         $this->prophecyAssertionsCounted = true;
 
         foreach ($this->prophet->getProphecies() as $objectProphecy) {

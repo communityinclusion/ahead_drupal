@@ -1,6 +1,6 @@
 leaflet-markercluster:
   remote: https://github.com/Leaflet/Leaflet.markercluster
-  version: 1.4.0
+  version: 1.5.3
   license:
     name: MIT-License
     url: https://github.com/Leaflet/Leaflet.markercluster/blob/master/MIT-LICENCE.txt
@@ -15,7 +15,6 @@ leaflet-markercluster:
     - leaflet/leaflet
 
 leaflet-markercluster-drupal:
-  version: VERSION
   js:
     leaflet_markercluster.drupal.js: {}
   dependencies:

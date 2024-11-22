@@ -2,11 +2,15 @@
 
 namespace Drupal\Tests\search_api_saved_searches\Kernel;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api_saved_searches\Entity\SavedSearch;
 use Drupal\search_api_saved_searches\Entity\SavedSearchType;
+use Drupal\Tests\search_api\Kernel\TestLogger;
+use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
 
 /**
  * Verifies that the module reacts correctly to user CRUD operations.
@@ -28,17 +32,15 @@ class UserCrudReactionTest extends KernelTestBase {
 
   /**
    * The test user used in these tests.
-   *
-   * @var \Drupal\user\UserInterface
    */
-  protected $testUser;
+  protected UserInterface $testUser;
 
   /**
    * Saved searches created for testing.
    *
    * @var \Drupal\search_api_saved_searches\SavedSearchInterface[]
    */
-  protected $savedSearches = [];
+  protected array $savedSearches = [];
 
   /**
    * {@inheritdoc}
@@ -54,12 +56,33 @@ class UserCrudReactionTest extends KernelTestBase {
     $this->installSchema('user', ['users_data']);
     $this->installSchema('search_api_saved_searches', 'search_api_saved_searches_old_results');
 
+    User::create([
+      'uid' => 0,
+      'name' => '',
+      'status' => FALSE,
+    ])->save();
+
+    // Create the anonymous role and a test role and grant the permission to
+    // create saved searches to both of them.
+    $permission = 'use default search_api_saved_searches';
+    Role::create([
+      'id' => Role::ANONYMOUS_ID,
+      'label' => 'Anonymous user',
+      'permissions' => [$permission],
+    ])->save();
+    Role::create([
+      'id' => 'test_role',
+      'label' => 'Test role',
+      'permissions' => [$permission],
+    ])->save();
+
     // Add a test user that will become the owner of our saved searches.
     $this->testUser = User::create([
       'uid' => 5,
       'name' => 'test',
       'status' => TRUE,
       'mail' => 'test@example.com',
+      'roles' => ['test_role'],
     ]);
     $this->testUser->save();
 
@@ -100,11 +123,35 @@ class UserCrudReactionTest extends KernelTestBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function register(ContainerBuilder $container): void {
+    parent::register($container);
+
+    // Set a logger that will throw exceptions when warnings/errors are logged.
+    $logger = new TestLogger('');
+    $container->set('logger.factory', $logger);
+    $container->set('logger.channel.search_api', $logger);
+    $container->set('logger.channel.search_api_saved_searches', $logger);
+  }
+
+  /**
    * Verifies correct reaction to the creation of a new user.
    *
+   * @param bool $disable_email_plugin
+   *   Whether or not to disable the "Email" notification plugin.
+   *
    * @see search_api_saved_searches_user_insert()
+   *
+   * @dataProvider dataSetProvider
    */
-  public function testUserInsert() {
+  public function testUserInsert(bool $disable_email_plugin): void {
+    if ($disable_email_plugin) {
+      SavedSearchType::load('default')
+        ->set('notification_settings', [])
+        ->save();
+    }
+
     $account = User::create([
       'name' => 'foo',
       'status' => TRUE,
@@ -113,10 +160,11 @@ class UserCrudReactionTest extends KernelTestBase {
     $account->save();
 
     // Creating a new user claimed all anonymously created alerts with the same
-    // e-mail address.
+    // email address.
     $this->reloadSavedSearches();
-    $this->assertEquals($account->id(), $this->savedSearches[1]->getOwnerId());
-    $this->assertEquals($account->id(), $this->savedSearches[2]->getOwnerId());
+    $expected_owner = $disable_email_plugin ? 0 : $account->id();
+    $this->assertEquals($expected_owner, $this->savedSearches[1]->getOwnerId());
+    $this->assertEquals($expected_owner, $this->savedSearches[2]->getOwnerId());
     $this->assertEquals(0, $this->savedSearches[3]->getOwnerId());
 
     User::create([
@@ -127,18 +175,29 @@ class UserCrudReactionTest extends KernelTestBase {
 
     // Creating an inactive user didn't affect any alerts.
     $this->reloadSavedSearches();
-    $this->assertEquals($account->id(), $this->savedSearches[1]->getOwnerId());
-    $this->assertEquals($account->id(), $this->savedSearches[2]->getOwnerId());
+    $this->assertEquals($expected_owner, $this->savedSearches[1]->getOwnerId());
+    $this->assertEquals($expected_owner, $this->savedSearches[2]->getOwnerId());
     $this->assertEquals(0, $this->savedSearches[3]->getOwnerId());
   }
 
   /**
    * Verifies correct reaction to the activation of a user account.
    *
+   * @param bool $disable_email_plugin
+   *   Whether or not to disable the "Email" notification plugin.
+   *
    * @see search_api_saved_searches_user_update()
    * @see _search_api_saved_searches_claim_anonymous_searches()
+   *
+   * @dataProvider dataSetProvider
    */
-  public function testUserActivate() {
+  public function testUserActivate(bool $disable_email_plugin): void {
+    if ($disable_email_plugin) {
+      SavedSearchType::load('default')
+        ->set('notification_settings', [])
+        ->save();
+    }
+
     $account = User::create([
       'name' => 'foo',
       'status' => FALSE,
@@ -154,21 +213,33 @@ class UserCrudReactionTest extends KernelTestBase {
 
     $account->activate()->save();
 
-    // Once activated, all anonymously created alerts with the same e-mail
+    // Once activated, all anonymously created alerts with the same email
     // address are moved to that user.
     $this->reloadSavedSearches();
-    $this->assertEquals($account->id(), $this->savedSearches[1]->getOwnerId());
-    $this->assertEquals($account->id(), $this->savedSearches[2]->getOwnerId());
+    $expected_owner = $disable_email_plugin ? 0 : $account->id();
+    $this->assertEquals($expected_owner, $this->savedSearches[1]->getOwnerId());
+    $this->assertEquals($expected_owner, $this->savedSearches[2]->getOwnerId());
     $this->assertEquals(0, $this->savedSearches[3]->getOwnerId());
   }
 
   /**
    * Verifies correct reaction to the deactivation of a user account.
    *
+   * @param bool $disable_email_plugin
+   *   Whether or not to disable the "Email" notification plugin.
+   *
    * @see search_api_saved_searches_user_update()
    * @see _search_api_saved_searches_deactivate_searches()
+   *
+   * @dataProvider dataSetProvider
    */
-  public function testUserDeactivate() {
+  public function testUserDeactivate(bool $disable_email_plugin): void {
+    if ($disable_email_plugin) {
+      SavedSearchType::load('default')
+        ->set('notification_settings', [])
+        ->save();
+    }
+
     $this->testUser->block()->save();
     $this->reloadSavedSearches();
     $search = array_shift($this->savedSearches);
@@ -181,11 +252,79 @@ class UserCrudReactionTest extends KernelTestBase {
   }
 
   /**
+   * Verifies correct reaction to a user account losing a role.
+   *
+   * @see search_api_saved_searches_user_update()
+   * @see _search_api_saved_searches_deactivate_searches()
+   */
+  public function testUserLoseRole() {
+    // Remove the test role from our test user.
+    $this->testUser->removeRole('test_role');
+    $this->testUser->save();
+    // Make sure this disabled the saved search.
+    $this->reloadSavedSearches();
+    $search = array_shift($this->savedSearches);
+    $this->assertEquals(-1, $search->get('notify_interval')->value);
+
+    // Verify that the other alerts were unaffected.
+    foreach ($this->savedSearches as $search) {
+      $this->assertEquals(3600 * 24, $search->get('notify_interval')->value);
+    }
+  }
+
+  /**
+   * Verifies correct reaction to a role losing a permission.
+   *
+   * This cannot be (easily) handled by a hook so we instead check for this when
+   * checking alerts for new results.
+   *
+   * @see \Drupal\search_api_saved_searches\Service\NewResultsCheck::checkAll()
+   */
+  public function testRoleLosePermission() {
+    // Remove the permission to saved searches from our test role.
+    $role = Role::load('test_role');
+    $role->revokePermission('use default search_api_saved_searches');
+    $role->save();
+
+    // Make sure the test search will be picked up by the new results check. The
+    // "next_execution" field is automatically re-computed when saving a search,
+    // so we need to do this by changing the "last_executed" field to something
+    // more than a day ago.
+    $search = reset($this->savedSearches);
+    $time = \Drupal::time()->getRequestTime();
+    $search->set('last_executed', $time - 86400 - 10);
+    $search->save();
+    $this->reloadSavedSearches();
+    $search = reset($this->savedSearches);
+    $this->assertLessThan($time, $search->get('next_execution')->value);
+
+    // Do a "new results" check.
+    \Drupal::getContainer()->get('search_api_saved_searches.new_results_check')
+      ->checkAll();
+
+    // Make sure the saved search was disabled.
+    $this->reloadSavedSearches();
+    $search = reset($this->savedSearches);
+    $this->assertEquals(-1, $search->get('notify_interval')->value);
+  }
+
+  /**
    * Verifies correct reaction to the deletion of a user account.
    *
+   * @param bool $disable_email_plugin
+   *   Whether or not to disable the "Email" notification plugin.
+   *
    * @see search_api_saved_searches_user_delete()
+   *
+   * @dataProvider dataSetProvider
    */
-  public function testUserDelete() {
+  public function testUserDelete(bool $disable_email_plugin): void {
+    if ($disable_email_plugin) {
+      SavedSearchType::load('default')
+        ->set('notification_settings', [])
+        ->save();
+    }
+
     $this->testUser->delete();
     $this->reloadSavedSearches();
     $search = array_shift($this->savedSearches);
@@ -205,9 +344,23 @@ class UserCrudReactionTest extends KernelTestBase {
    * there are no other reactions to index CRUD events), this is tested as part
    * of this test case.
    *
+   * @param bool $disable_email_plugin
+   *   Whether or not to disable the "Email" notification plugin.
+   *
    * @see search_api_saved_searches_search_api_index_delete()
+   *
+   * @dataProvider dataSetProvider
    */
-  public function testIndexDelete() {
+  public function testIndexDelete(bool $disable_email_plugin): void {
+    if ($disable_email_plugin) {
+      SavedSearchType::load('default')
+        ->set('notification_settings', [])
+        ->save();
+      // Also need to reload the saved searches since re-saving search #0 below
+      // will otherwise lead to an exception.
+      $this->reloadSavedSearches();
+    }
+
     $this->installConfig(['search_api']);
     $index = Index::create([
       'id' => 'test',
@@ -225,14 +378,24 @@ class UserCrudReactionTest extends KernelTestBase {
   /**
    * Verifies correct reaction to a user changing their mail address.
    *
-   * Tested on behalf of the "E-Mail" notification plugin.
+   * Tested on behalf of the "Email" notification plugin.
+   *
+   * @param bool $disable_email_plugin
+   *   Whether or not to disable the "Email" notification plugin.
    *
    * @see search_api_saved_searches_user_update()
-   * @see _search_api_saved_searches_adapt_mail()
-   * @see \Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\notification\Email
+   * @see \Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\notification\Email::onUserUpdate()
+   *
+   * @dataProvider dataSetProvider
    */
-  public function testUserMailChange() {
-    // Add a second saved search type that doesn't use the "E-Mail" notification
+  public function testUserMailChange(bool $disable_email_plugin): void {
+    if ($disable_email_plugin) {
+      SavedSearchType::load('default')
+        ->set('notification_settings', [])
+        ->save();
+    }
+
+    // Add a second saved search type that doesn't use the "Email" notification
     // plugin.
     SavedSearchType::create([
       'id' => 'non_default',
@@ -258,18 +421,33 @@ class UserCrudReactionTest extends KernelTestBase {
     ]);
     end($this->savedSearches)->save();
 
-    // Now change the user's e-mail address and see what happens.
+    // Now change the user's email address and see what happens.
     $this->testUser->setEmail('test@example.net')->save();
 
-    $this->reloadSavedSearches();
-    $this->assertEquals('test@example.net', $this->savedSearches[0]->get('mail')->value);
-    $this->assertEquals('foobar@example.com', $this->savedSearches[4]->get('mail')->value);
+    if (!$disable_email_plugin) {
+      $this->reloadSavedSearches();
+      $this->assertEquals('test@example.net', $this->savedSearches[0]->get('mail')->value);
+      $this->assertEquals('foobar@example.com', $this->savedSearches[4]->get('mail')->value);
+    }
+  }
+
+  /**
+   * Provides test data sets for test methods in this class.
+   *
+   * @return array
+   *   An associative array of test data sets, keyed by data set label.
+   */
+  public function dataSetProvider(): array {
+    return [
+      'default' => [FALSE],
+      'email plugin disabled' => [TRUE],
+    ];
   }
 
   /**
    * Reloads the saved searches in $this->savedSearches.
    */
-  protected function reloadSavedSearches() {
+  protected function reloadSavedSearches(): void {
     foreach ($this->savedSearches as $i => $search) {
       $this->savedSearches[$i] = SavedSearch::load($search->id());
     }

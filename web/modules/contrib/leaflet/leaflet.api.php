@@ -5,9 +5,9 @@
  * API documentation for Leaflet module.
  */
 
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\geofield\Plugin\Field\FieldWidget\GeofieldBaseWidget;
 
 /**
@@ -126,7 +126,7 @@ function hook_leaflet_map_info() {
             "minZoom" => 0,
             "maxZoom" => 20,
             "ext" => "png",
-            "attribution" => "&copy; <a href='https://www.stadiamaps.com/' target='_blank'>Stadia Maps</a> &copy; <a href='https://www.stamen.com/' target='_blank'>Stamen Design</a> &copy; <a href='https://openmaptiles.org/' target='_blank'>OpenMapTiles</a> &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+            "attribution" => "&copy; <a href='https://www.stadiamaps.com/'>Stadia Maps</a> &copy; <a href='https://www.stamen.com/'>Stamen Design</a> &copy; <a href='https://openmaptiles.org/'>OpenMapTiles</a> &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
           ],
         ],
         'OpenTopoMap' => [
@@ -144,7 +144,11 @@ function hook_leaflet_map_info() {
           'type' => 'vector',
           'urlTemplate' => '//tiles.stadiamaps.com/styles/alidade_smooth_dark.json',
           'options' => [
-            'attribution' => '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+            'attribution' => '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+            // Supports Pitch in degrees (optional).
+            'pitch' => '0',
+            // Supports Bearing in degrees (optional).
+            'bearing' => '0',
           ],
         ],
         // An example Overlay definition, in addition to previous Base Layers.

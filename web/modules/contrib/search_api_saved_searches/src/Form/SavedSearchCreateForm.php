@@ -81,8 +81,8 @@ class SavedSearchCreateForm extends ContentEntityForm {
         }
       }
       else {
-        // @todo Move the second part of this message to the "E-mail" plugin.
-        $this->messenger()->addStatus($this->t('Your saved search was successfully created. You will soon receive an e-mail with a confirmation link to activate it.'));
+        // @todo Move the second part of this message to the "Email" plugin.
+        $this->messenger()->addStatus($this->t('Your saved search was successfully created. You will soon receive an email with a confirmation link to activate it.'));
       }
     }
 

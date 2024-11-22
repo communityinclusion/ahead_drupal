@@ -3,6 +3,7 @@
 namespace Drupal\search_api_saved_searches\Annotation;
 
 use Drupal\Component\Annotation\Plugin;
+use Drupal\Core\Annotation\Translation;
 
 /**
  * Defines a notification plugin annotation object.
@@ -18,27 +19,21 @@ class SearchApiSavedSearchesNotification extends Plugin {
 
   /**
    * The notification plugin ID.
-   *
-   * @var string
    */
-  public $id;
+  public string $id;
 
   /**
    * The human-readable name of the notification plugin.
    *
    * @ingroup plugin_translatable
-   *
-   * @var \Drupal\Core\Annotation\Translation
    */
-  public $label;
+  public Translation|string $label;
 
   /**
    * The notification description.
    *
    * @ingroup plugin_translatable
-   *
-   * @var \Drupal\Core\Annotation\Translation
    */
-  public $description;
+  public Translation|string $description;
 
 }

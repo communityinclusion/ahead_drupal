@@ -28,15 +28,21 @@ class DefaultPolicy implements PolicyInterface
     private $preferStable;
     /** @var bool */
     private $preferLowest;
-    /** @var array<int, array<string, array<int, int>>> */
+    /** @var array<string, string>|null */
+    private $preferredVersions;
+    /** @var array<int, array<string, non-empty-list<int>>> */
     private $preferredPackageResultCachePerPool;
     /** @var array<int, array<string, int>> */
     private $sortingCachePerPool;
 
-    public function __construct(bool $preferStable = false, bool $preferLowest = false)
+    /**
+     * @param array<string, string>|null $preferredVersions Must be an array of package name => normalized version
+     */
+    public function __construct(bool $preferStable = false, bool $preferLowest = false, ?array $preferredVersions = null)
     {
         $this->preferStable = $preferStable;
         $this->preferLowest = $preferLowest;
+        $this->preferredVersions = $preferredVersions;
     }
 
     /**
@@ -47,11 +53,11 @@ class DefaultPolicy implements PolicyInterface
     public function versionCompare(PackageInterface $a, PackageInterface $b, string $operator): bool
     {
         if ($this->preferStable && ($stabA = $a->getStability()) !== ($stabB = $b->getStability())) {
-            return BasePackage::$stabilities[$stabA] < BasePackage::$stabilities[$stabB];
+            return BasePackage::STABILITIES[$stabA] < BasePackage::STABILITIES[$stabB];
         }
 
         // dev versions need to be compared as branches via matchSpecific's special treatment, the rest can be optimized with compiling matcher
-        if (strpos($a->getVersion(), 'dev-') === 0 || strpos($b->getVersion(), 'dev-') === 0) {
+        if (($a->isDev() && str_starts_with($a->getVersion(), 'dev-')) || ($b->isDev() && str_starts_with($b->getVersion(), 'dev-'))) {
             $constraint = new Constraint($operator, $b->getVersion());
             $version = new Constraint('==', $a->getVersion());
 
@@ -62,9 +68,8 @@ class DefaultPolicy implements PolicyInterface
     }
 
     /**
-     * @param  int[]  $literals
-     * @param  string $requiredPackage
-     * @return int[]
+     * @param  non-empty-list<int>  $literals
+     * @return non-empty-list<int>
      */
     public function selectPreferredPackages(Pool $pool, array $literals, ?string $requiredPackage = null): array
     {
@@ -112,8 +117,8 @@ class DefaultPolicy implements PolicyInterface
     }
 
     /**
-     * @param  int[] $literals
-     * @return array<string, int[]>
+     * @param  non-empty-list<int> $literals
+     * @return non-empty-array<string, non-empty-list<int>>
      */
     protected function groupLiteralsByName(Pool $pool, array $literals): array
     {
@@ -158,7 +163,7 @@ class DefaultPolicy implements PolicyInterface
 
             // for replacers not replacing each other, put a higher prio on replacing
             // packages with the same vendor as the required package
-            if ($requiredPackage && false !== ($pos = strpos($requiredPackage, '/'))) {
+            if ($requiredPackage !== null && false !== ($pos = strpos($requiredPackage, '/'))) {
                 $requiredVendor = substr($requiredPackage, 0, $pos);
 
                 $aIsSameVendor = strpos($a->getName(), $requiredVendor) === 0;
@@ -199,11 +204,27 @@ class DefaultPolicy implements PolicyInterface
     }
 
     /**
-     * @param  int[] $literals
-     * @return int[]
+     * @param  list<int> $literals
+     * @return list<int>
      */
     protected function pruneToBestVersion(Pool $pool, array $literals): array
     {
+        if ($this->preferredVersions !== null) {
+            $name = $pool->literalToPackage($literals[0])->getName();
+            if (isset($this->preferredVersions[$name])) {
+                $preferredVersion = $this->preferredVersions[$name];
+                $bestLiterals = [];
+                foreach ($literals as $literal) {
+                    if ($pool->literalToPackage($literal)->getVersion() === $preferredVersion) {
+                        $bestLiterals[] = $literal;
+                    }
+                }
+                if (\count($bestLiterals) > 0) {
+                    return $bestLiterals;
+                }
+            }
+        }
+
         $operator = $this->preferLowest ? '<' : '>';
         $bestLiterals = [$literals[0]];
         $bestPackage = $pool->literalToPackage($literals[0]);
@@ -230,8 +251,8 @@ class DefaultPolicy implements PolicyInterface
      *
      * If no package is a local alias, nothing happens
      *
-     * @param  int[] $literals
-     * @return int[]
+     * @param  list<int> $literals
+     * @return list<int>
      */
     protected function pruneRemoteAliases(Pool $pool, array $literals): array
     {

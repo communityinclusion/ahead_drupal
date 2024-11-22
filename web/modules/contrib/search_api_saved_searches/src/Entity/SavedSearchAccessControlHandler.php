@@ -13,7 +13,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\search_api_saved_searches\BundleFieldDefinition;
+use Drupal\search_api_saved_searches\LoggerTrait;
 use Drupal\search_api_saved_searches\SavedSearchesException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -25,33 +27,32 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class SavedSearchAccessControlHandler extends EntityAccessControlHandler implements EntityHandlerInterface {
 
+  use LoggerTrait;
+
   /**
    * Permission for administering saved searches.
    */
-  const ADMIN_PERMISSION = 'administer search_api_saved_searches';
+  public const ADMIN_PERMISSION = 'administer search_api_saved_searches';
 
   /**
    * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|null
    */
-  protected $entityTypeManager;
+  protected ?EntityTypeManagerInterface $entityTypeManager = NULL;
 
   /**
    * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack|null
    */
-  protected $requestStack;
+  protected ?RequestStack $requestStack = NULL;
 
   /**
    * {@inheritdoc}
    */
-  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type): static {
     $handler = new static($entity_type);
 
     $handler->setEntityTypeManager($container->get('entity_type.manager'));
     $handler->setRequestStack($container->get('request_stack'));
+    $handler->setLogger($container->get('logger.channel.search_api_saved_searches'));
 
     return $handler;
   }
@@ -117,8 +118,8 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
       }
       else {
         $token = $this->getRequestStack()->getCurrentRequest()->query
-          ->get('token');
-        $token_match = $token === $entity->getAccessToken($operation);
+          ->get('token', '');
+        $token_match = hash_equals($entity->getAccessToken($operation), $token);
         $owner_access = AccessResult::allowedIf($token_match)
           ->addCacheContexts(['url.query_args:token']);
       }
@@ -145,7 +146,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
   /**
    * {@inheritdoc}
    */
-  protected function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  protected function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL): AccessResultInterface {
     $field_name = $field_definition->getName();
 
     // Only admins can edit administrative fields.
@@ -190,7 +191,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
           }
         }
         catch (PluginException | SavedSearchesException $e) {
-          watchdog_exception('search_api_saved_searches', $e);
+          Error::logException($this->getLogger(), $e);
         }
       }
       // In doubt (that is, when some part of the previous code didn't work

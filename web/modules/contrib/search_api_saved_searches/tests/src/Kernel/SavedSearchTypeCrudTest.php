@@ -35,7 +35,7 @@ class SavedSearchTypeCrudTest extends KernelTestBase {
    *
    * @dataProvider typeCreationTestDataProvider
    */
-  public function testTypeCreation(bool $customizable_notification_interval) {
+  public function testTypeCreation(bool $customizable_notification_interval): void {
     // Ascertain the correct initial state.
     // Saved search entity type has no bundles.
     $bundles = $this->container->get('entity_type.bundle.info')

@@ -2,22 +2,23 @@
 
 namespace Drupal\leaflet_views\Plugin\views\row;
 
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\FieldTypePluginManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\leaflet\LeafletService;
+use Drupal\views\Entity\Render\EntityTranslationRenderTrait;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\row\RowPluginBase;
 use Drupal\views\ResultRow;
 use Drupal\views\ViewExecutable;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
-use Drupal\Core\Render\RendererInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\views\Entity\Render\EntityTranslationRenderTrait;
 use Drupal\views\ViewsData;
-use Drupal\Leaflet\LeafletService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin which formats a row as a leaflet marker.
@@ -97,6 +98,13 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
   protected $renderer;
 
   /**
+   * The module handler to invoke the alter hook.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * The View Data service property.
    *
    * @var \Drupal\views\ViewsData
@@ -106,7 +114,7 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
   /**
    * Leaflet service.
    *
-   * @var \Drupal\Leaflet\LeafletService
+   * @var \Drupal\leaflet\LeafletService
    */
   protected $leafletService;
 
@@ -136,9 +144,11 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
    *   The entity display manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
-   * @param \Drupal\Views\ViewsData $view_data
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\views\ViewsData $view_data
    *   The view data.
-   * @param \Drupal\Leaflet\LeafletService $leaflet_service
+   * @param \Drupal\leaflet\LeafletService $leaflet_service
    *   The Leaflet service.
    * @param \Drupal\Core\Field\FieldTypePluginManagerInterface $field_type_manager
    *   The field type plugin manager service.
@@ -152,6 +162,7 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
     EntityFieldManagerInterface $entity_field_manager,
     EntityDisplayRepositoryInterface $entity_display,
     RendererInterface $renderer,
+    ModuleHandlerInterface $module_handler,
     ViewsData $view_data,
     LeafletService $leaflet_service,
     FieldTypePluginManagerInterface $field_type_manager
@@ -163,6 +174,7 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
     $this->entityFieldManager = $entity_field_manager;
     $this->entityDisplay = $entity_display;
     $this->renderer = $renderer;
+    $this->moduleHandler = $module_handler;
     $this->viewsData = $view_data;
     $this->leafletService = $leaflet_service;
     $this->fieldTypeManager = $field_type_manager;
@@ -172,7 +184,7 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
+    return new self(
       $configuration,
       $plugin_id,
       $plugin_definition,
@@ -181,6 +193,7 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
       $container->get('entity_field.manager'),
       $container->get('entity_display.repository'),
       $container->get('renderer'),
+      $container->get('module_handler'),
       $container->get('views.views_data'),
       $container->get('leaflet.service'),
       $container->get('plugin.manager.field.field_type')
@@ -272,7 +285,7 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
 
     if ($this->entityTypeId) {
 
-      // Get the human readable labels for the entity view modes.
+      // Get the human-readable labels for the entity view modes.
       $view_mode_options = [];
       foreach ($this->entityDisplay->getViewModes($this->entityTypeId) as $key => $view_mode) {
         $view_mode_options[$key] = $view_mode['label'];
@@ -320,7 +333,7 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
    *
    * @param array $points
    *   A list of geofield points from
-   *   {@link \Drupal::service('leaflet.service')->leafletProcessGeofield()}.
+   *   {@link "\Drupal::service('leaflet.service')->leafletProcessGeofield()"}.
    * @param \Drupal\views\ResultRow $row
    *   The views result row.
    *
@@ -348,18 +361,17 @@ class LeafletMarker extends RowPluginBase implements ContainerFactoryPluginInter
       $point['popup'] = $popup_body;
       $point['label'] = $label;
 
-      // Allow sub-classes to adjust the marker.
+      // Allow subclasses to adjust the marker.
       $this->alterLeafletMarker($point, $row);
 
       // Allow modules to adjust the marker.
-      \Drupal::moduleHandler()
-        ->alter('leaflet_views_feature', $point, $row, $this);
+      $this->moduleHandler->alter('leaflet_views_feature', $point, $row, $this);
     }
     return $points;
   }
 
   /**
-   * Chance for sub-classes to adjust the leaflet marker array.
+   * Chance for subclasses to adjust the leaflet marker array.
    *
    * For example, this can be used to add in icon configuration.
    *

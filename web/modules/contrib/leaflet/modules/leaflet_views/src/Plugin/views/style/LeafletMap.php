@@ -2,39 +2,39 @@
 
 namespace Drupal\leaflet_views\Plugin\views\style;
 
-use Drupal\Core\Logger\LoggerChannelTrait;
-use Drupal\search_api\Plugin\views\ResultRow as SearchApiResultRow;
-use Drupal\views\ResultRow;
+use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\FieldTypePluginManagerInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelTrait;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\RenderContext;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Utility\LinkGeneratorInterface;
+use Drupal\leaflet\LeafletService;
+use Drupal\leaflet\LeafletSettingsElementsTrait;
 use Drupal\leaflet_views\Controller\LeafletAjaxPopupController;
 use Drupal\search_api\Datasource\DatasourceInterface;
 use Drupal\search_api\Entity\Index;
-use Drupal\Core\Url;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\style\StylePluginBase;
 use Drupal\views\ViewExecutable;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Render\RendererInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Leaflet\LeafletService;
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Utility\LinkGeneratorInterface;
-use Drupal\leaflet\LeafletSettingsElementsTrait;
 use Drupal\views\Plugin\views\PluginBase;
 use Drupal\views\Views;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextValue;
+use Drupal\search_api\Plugin\views\ResultRow as SearchApiResultRow;
+use Drupal\views\ResultRow;
 
 /**
  * Style plugin to render a View output as a Leaflet map.
@@ -113,7 +113,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
    *
    * @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface
    */
-  protected $entityDisplay;
+  protected $entityDisplayRepository;
 
   /**
    * Current user service.
@@ -129,11 +129,10 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
    */
   protected $messenger;
 
-
   /**
    * The Renderer service property.
    *
-   * @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface
+   * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
 
@@ -147,7 +146,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
   /**
    * Leaflet service.
    *
-   * @var \Drupal\Leaflet\LeafletService
+   * @var \Drupal\leaflet\LeafletService
    */
   protected $leafletService;
 
@@ -185,8 +184,8 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
    *   The entity manager.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The entity field manager.
-   * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display
-   *   The entity display manager.
+   * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display_repository
+   *   The entity display repository.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   Current user service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
@@ -195,7 +194,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
    *   The renderer.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
-   * @param \Drupal\Leaflet\LeafletService $leaflet_service
+   * @param \Drupal\leaflet\LeafletService $leaflet_service
    *   The Leaflet service.
    * @param \Drupal\Core\Utility\LinkGeneratorInterface $link_generator
    *   The Link Generator service.
@@ -208,7 +207,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
           $plugin_definition,
     EntityTypeManagerInterface $entity_manager,
     EntityFieldManagerInterface $entity_field_manager,
-    EntityDisplayRepositoryInterface $entity_display,
+    EntityDisplayRepositoryInterface $entity_display_repository,
     AccountInterface $current_user,
     MessengerInterface $messenger,
     RendererInterface $renderer,
@@ -222,7 +221,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
     $this->defaultSettings = self::getDefaultSettings();
     $this->entityManager = $entity_manager;
     $this->entityFieldManager = $entity_field_manager;
-    $this->entityDisplay = $entity_display;
+    $this->entityDisplayRepository = $entity_display_repository;
     $this->currentUser = $current_user;
     $this->messenger = $messenger;
     $this->renderer = $renderer;
@@ -236,7 +235,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
+    return new self(
       $configuration,
       $plugin_id,
       $plugin_definition,
@@ -313,36 +312,32 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
    * {@inheritdoc}
    */
   public function getFieldValue($index, $field) {
+    $values = NULL;
     $result = $this->view->result[$index];
 
-    if ($result instanceof SearchApiResultRow) {
+    // Check and return values coming from normal Search API View.
+    if (isset($this->view->field[$field]) && $result instanceof SearchApiResultRow) {
       $real_geofield_name = $this->view->field[$field]->field;
-      $search_api_field = $result->_item->getField($real_geofield_name);
+      // @NOTE: The FALSE parameter is used to fix Out of memory issue reported
+      // in comment #32 of issue #3372686.
+      // https://www.drupal.org/project/leaflet/issues/3372686#comment-15682943
+      $search_api_field = $result->_item->getField($real_geofield_name, FALSE);
       if ($search_api_field !== NULL) {
         $values = $search_api_field->getValues();
-      }
-
-      if (!empty($values)) {
         foreach ($values as $key => $value) {
           if ($value instanceof TextValue) {
-            $value = $value->getText();
+            $values[$key] = $value->getText();
           }
-          $values[$key] = $value;
         }
-        return $values;
       }
-    }
 
-    // Check and return values coming from normal View or Search Api View,
-    // or return NULL Otherwise.
-    if (isset($this->view->field[$field]) &&
-      ($this->view->result[$index] instanceof ResultRow || $this->view->result[$index] instanceof SearchApiResultRow)
-    ) {
-      return $this->view->field[$field]->getValue($this->view->result[$index]);
     }
-    else {
-      return NULL;
+    // As default scenario (and fallback), check and return values coming from
+    // normal View.
+    if (is_null($values) && isset($this->view->field[$field]) && $result instanceof ResultRow) {
+      $values = (array) $this->view->field[$field]->getValue($result);
     }
+    return $values;
   }
 
   /**
@@ -717,11 +712,8 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
       ],
     ];
 
-    // Get the human-readable labels for the entity view modes.
-    $view_mode_options = [];
-    foreach ($this->entityDisplay->getViewModes($this->entityType) as $key => $view_mode) {
-      $view_mode_options[$key] = $view_mode['label'];
-    }
+    // Get the entity view modes options.
+    $view_mode_options = $this->entityDisplayRepository->getViewModeOptions($this->entityType);
 
     // Set Leaflet Popup Element.
     $this->setPopupElement($form, $this->options, $this->viewFields, $this->entityType, $view_mode_options);
@@ -797,7 +789,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
   public static function optionsFormEntitySourceSubmit(array $form, FormStateInterface $form_state) {
     $parents = $form_state->getTriggeringElement()['#parents'];
     array_pop($parents);
-    array_push($parents, 'entity_source');
+    $parents[] = 'entity_source';
 
     // Set the data source selected in the form state and rebuild the form.
     $form_state->set('entity_source', $form_state->getValue($parents));
@@ -1077,12 +1069,29 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                       // Decode any entities because JS will encode them again,
                       // and we don't want double encoding.
                       $feature['tooltip']['value'] = !empty($this->options['leaflet_tooltip']['value']) ? Html::decodeEntities(($this->rendered_fields[$result->index][$this->options['leaflet_tooltip']['value']])) : '';
+
+                      // Associate dynamic tooltip options (token based).
+                      if (!empty($this->options['leaflet_tooltip']['options'])) {
+                        $feature['tooltip']['options'] = str_replace([
+                          "\n",
+                          "\r",
+                        ], "", $this->viewsTokenReplace($this->options['leaflet_tooltip']['options'], $tokens));
+                      }
                     }
                     // Otherwise eventually attach simple title tooltip.
                     elseif ($this->options['name_field']) {
                       // Decode any entities because JS will encode them again,
                       // and we don't want double encoding.
                       $feature['title'] = !empty($this->options['name_field']) ? Html::decodeEntities(($this->rendered_fields[$result->index][$this->options['name_field']])) : '';
+                    }
+
+                    // Associate dynamic popup options (token based).
+                    if (!empty($this->options['leaflet_popup']['options'])) {
+                      // Associate dynamic tooltip options (token based).
+                      $feature['popup']['options'] = str_replace([
+                        "\n",
+                        "\r",
+                      ], "", $this->viewsTokenReplace($this->options['leaflet_popup']['options'], $tokens));
                     }
 
                     // Eventually set the custom Marker icon (DivIcon, Icon Url
@@ -1128,7 +1137,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                           break;
 
                         case 'circle_marker':
-                          $feature['icon']['options'] = str_replace([
+                          $feature['icon']['circle_marker_options'] = str_replace([
                             "\n",
                             "\r",
                           ], "", $this->viewsTokenReplace($this->options['icon']['circle_marker_options'], $tokens));
@@ -1208,12 +1217,15 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                   }
                 }
 
-                // Generate a single Features Group as incremental Features.
-                $features_group = array_merge($features_group, $features);
+                // Increment Features Group with new Features element.
+                $features_group[] = $features;
               }
             }
           }
         }
+
+        // Generate a single Features Group as incremental merged Features.
+        $features_group = array_merge(...$features_group);
 
         // Order the data features based on the 'weight' element.
         uasort($features_group, [
@@ -1291,6 +1303,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
     $options['data_source'] = ['default' => ''];
     $options['entity_source'] = ['default' => '__base_table'];
     $options['name_field'] = ['default' => ''];
+    $options['weight'] = ['default' => NULL];
 
     $leaflet_map_default_settings = [];
     foreach (self::getDefaultSettings() as $k => $setting) {

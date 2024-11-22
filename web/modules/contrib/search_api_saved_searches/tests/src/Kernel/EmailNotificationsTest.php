@@ -11,7 +11,7 @@ use Drupal\Tests\search_api\Functional\ExampleContentTrait;
 use Drupal\user\Entity\User;
 
 /**
- * Tests the functionality of the "E-mail" notifications plugin.
+ * Tests the functionality of the "Email" notifications plugin.
  *
  * @group search_api_saved_searches
  * @coversDefaultClass \Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\notification\Email
@@ -34,10 +34,8 @@ class EmailNotificationsTest extends KernelTestBase {
 
   /**
    * The notifications plugin to test.
-   *
-   * @var \Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\notification\Email
    */
-  protected $plugin;
+  protected Email $plugin;
 
   /**
    * {@inheritdoc}
@@ -64,11 +62,11 @@ class EmailNotificationsTest extends KernelTestBase {
    *
    * @covers ::getFieldDefinitions
    */
-  public function testFieldDefinitions() {
+  public function testFieldDefinitions(): void {
     // Make sure the correct definition is returned from the plugin.
     $fields = $this->plugin->getFieldDefinitions();
     $this->assertEquals(['mail'], array_keys($fields));
-    $this->assertEquals('E-mail', $fields['mail']->getLabel());
+    $this->assertEquals('Email', $fields['mail']->getLabel());
     $this->assertFalse($fields['mail']->isBaseField());
 
     // Make sure the mail can be stored in a saved search correctly.
@@ -89,7 +87,7 @@ class EmailNotificationsTest extends KernelTestBase {
       ->get('entity_field.manager')
       ->getFieldDefinitions('search_api_saved_search', 'default');
     $this->assertArrayHasKey('mail', $fields);
-    $this->assertEquals('E-mail', $fields['mail']->getLabel());
+    $this->assertEquals('Email', $fields['mail']->getLabel());
     $this->assertFalse($fields['mail']->isBaseField());
   }
 
@@ -99,7 +97,7 @@ class EmailNotificationsTest extends KernelTestBase {
    * @covers ::notify
    * @covers ::getNewResultsMail
    */
-  public function testNotifications() {
+  public function testNotifications(): void {
     $title = '[site:name]: [search-api-saved-search-results:count] new result(s) for saved search "[search-api-saved-search:label]"';
     $body = 'Hi [user:display-name],
 
@@ -110,6 +108,7 @@ Your saved search "[search-api-saved-search:label]" has [search-api-saved-search
 
 -- The [site:name] team';
     $type = SavedSearchType::load('default');
+    /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
     $this->plugin = $type->getNotificationPlugin('email');
     $this->plugin->setConfiguration([
       'notification' => [

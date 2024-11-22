@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Utility\Error;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -13,14 +14,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class Permissions implements ContainerInjectionInterface {
 
+  use LoggerTrait;
   use StringTranslationTrait;
 
   /**
    * The saved search type storage.
-   *
-   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $storage;
+  protected ?EntityStorageInterface $storage = NULL;
 
   /**
    * {@inheritdoc}
@@ -32,6 +32,7 @@ class Permissions implements ContainerInjectionInterface {
       ->getStorage('search_api_saved_search_type');
     $object->setStorage($storage);
     $object->setStringTranslation($container->get('string_translation'));
+    $object->setLogger($container->get('logger.channel.search_api_saved_searches'));
 
     return $object;
   }
@@ -81,7 +82,7 @@ class Permissions implements ContainerInjectionInterface {
       }
     }
     catch (PluginException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException($this->getLogger(), $e);
     }
 
     return $perms;

@@ -9,6 +9,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Utility\QueryHelperInterface;
 use Drupal\search_api\Utility\Utility;
@@ -54,7 +55,6 @@ use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
  *     "options",
  *   },
  *   links = {
- *     "canonical" = "/admin/config/search/search-api-saved-searches/type/{search_api_saved_search_type}/edit",
  *     "add-form" = "/admin/config/search/search-api-saved-searches/add-type",
  *     "edit-form" = "/admin/config/search/search-api-saved-searches/type/{search_api_saved_search_type}/edit",
  *     "delete-form" = "/admin/config/search/search-api-saved-searches/type/{search_api_saved_search_type}/delete",
@@ -66,24 +66,18 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
 
   /**
    * The type ID.
-   *
-   * @var string
    */
-  protected $id;
+  protected ?string $id = NULL;
 
   /**
    * The type label.
-   *
-   * @var string
    */
-  protected $label;
+  protected ?string $label = NULL;
 
   /**
    * The type's (admin) description.
-   *
-   * @var string|null
    */
-  protected $description;
+  protected ?string $description = NULL;
 
   /**
    * The settings of the notification plugins selected for this type.
@@ -98,17 +92,13 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
    *   …
    * ]
    * @endcode
-   *
-   * @var array
    */
-  protected $notification_settings = [];
+  protected array $notification_settings = [];
 
   /**
    * The settings for this type.
-   *
-   * @var array
    */
-  protected $options = [];
+  protected array $options = [];
 
   /**
    * The instantiated notification plugins.
@@ -122,12 +112,12 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
    *
    * @see getNotificationPlugins()
    */
-  protected $notificationPluginInstances;
+  protected ?array $notificationPluginInstances;
 
   /**
    * {@inheritdoc}
    */
-  public function preSave(EntityStorageInterface $storage) {
+  public function preSave(EntityStorageInterface $storage): void {
     parent::preSave($storage);
 
     // If we are in the process of syncing, we shouldn't change any entity
@@ -154,7 +144,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   protected function writeChangesToSettings(): self {
     // We only need to re-write the $notification_settings property if the
     // plugins were loaded.
-    if ($this->notificationPluginInstances !== NULL) {
+    if (isset($this->notificationPluginInstances)) {
       $this->notification_settings = [];
       foreach ($this->notificationPluginInstances as $plugin_id => $plugin) {
         $this->notification_settings[$plugin_id] = $plugin->getConfiguration();
@@ -167,7 +157,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+  public function postSave(EntityStorageInterface $storage, $update = TRUE): void {
     parent::postSave($storage, $update);
 
     if (!$update && !$this->isSyncing()) {
@@ -187,7 +177,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * Creates a "create" form display for a new saved search bundle.
    */
-  protected function createFormDisplay() {
+  protected function createFormDisplay(): void {
     try {
       $values = [
         'status' => TRUE,
@@ -230,7 +220,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
     }
     catch (EntityStorageException $e) {
       $vars = ['%label' => $this->label()];
-      watchdog_exception('search_api_saved_searches', $e, '%type while trying to configure the "Create" form display for the new saved search type %label: @message in %function (line %line of %file).', $vars);
+      Error::logException(\Drupal::logger('search_api_saved_searches'), $e, '%type while trying to configure the "Create" form display for the new saved search type %label: @message in %function (line %line of %file).', $vars);
     }
   }
 
@@ -242,7 +232,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
    * @param \Drupal\search_api_saved_searches\SavedSearchTypeInterface $new
    *   The new version of the search type.
    */
-  protected static function adaptFieldStorageDefinitions(SavedSearchTypeInterface $old, SavedSearchTypeInterface $new) {
+  protected static function adaptFieldStorageDefinitions(SavedSearchTypeInterface $old, SavedSearchTypeInterface $new): void {
     if ($new->get('notification_settings') == $old->get('notification_settings')) {
       return;
     }
@@ -285,7 +275,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public static function postDelete(EntityStorageInterface $storage, array $entities) {
+  public static function postDelete(EntityStorageInterface $storage, array $entities): void {
     parent::postDelete($storage, $entities);
 
     // Remove any searches for the deleted types. Normally, deleting a type with
@@ -306,7 +296,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
       }
     }
     catch (PluginException | EntityStorageException $e) {
-      watchdog_exception('search_api_saved_searches', $e);
+      Error::logException(\Drupal::logger('search_api_saved_searches'), $e);
     }
 
     /** @var \Drupal\search_api_saved_searches\SavedSearchTypeInterface $type */
@@ -327,7 +317,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
    * {@inheritdoc}
    */
   public function getNotificationPlugins(): array {
-    if ($this->notificationPluginInstances === NULL) {
+    if (!isset($this->notificationPluginInstances)) {
       $this->notificationPluginInstances = [];
       $notification_plugin_manager = \Drupal::getContainer()
         ->get('plugin.manager.search_api_saved_searches.notification');
@@ -336,7 +326,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
           $this->notificationPluginInstances[$plugin_id] = $notification_plugin_manager->createPlugin($this, $plugin_id, $configuration);
         }
         catch (SavedSearchesException $e) {
-          watchdog_exception('search_api_saved_searches', $e);
+          Error::logException(\Drupal::logger('search_api_saved_searches'), $e);
         }
       }
     }
@@ -379,7 +369,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   public function addNotificationPlugin(NotificationPluginInterface $notification_plugin): SavedSearchTypeInterface {
     // Make sure the notificationPluginInstances are loaded before trying to add
     // a plugin to them.
-    if ($this->notificationPluginInstances === NULL) {
+    if (!isset($this->notificationPluginInstances)) {
       $this->getNotificationPlugins();
     }
     $this->notificationPluginInstances[$notification_plugin->getPluginId()] = $notification_plugin;
@@ -393,7 +383,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   public function removeNotificationPlugin($notification_plugin_id): SavedSearchTypeInterface {
     // Make sure the notificationPluginInstances are loaded before trying to
     // remove a plugin from them.
-    if ($this->notificationPluginInstances === NULL) {
+    if (!isset($this->notificationPluginInstances)) {
       $this->getNotificationPlugins();
     }
     unset($this->notificationPluginInstances[$notification_plugin_id]);
@@ -510,9 +500,9 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
     $call_on_removal = [];
 
     foreach ($dependencies as $dependency_type => $dependency_objects) {
-      // Annoyingly, modules and theme dependencies come not keyed by dependency
-      // name here, while entities do. Flip the array for modules and themes to
-      // make the code simpler.
+      // Annoyingly, modules and theme dependencies do not come keyed by
+      // dependency  name here, while entities do. Flip the array for modules
+      // and themes to make the code simpler.
       if (in_array($dependency_type, ['module', 'theme'])) {
         $dependency_objects = array_flip($dependency_objects);
       }
@@ -541,7 +531,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
           // However this plays out, it will lead to a change.
           $changed = TRUE;
 
-          foreach ($dependency_sources['optional'] as $plugin_type => $plugins) {
+          foreach ($dependency_sources['optional'] as $plugins) {
             // Type entities currently have no soft dependencies, so this has to
             // be a plugin dependency. We want to call onDependencyRemoval() on
             // that plugin.
@@ -550,7 +540,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
             $plugins = array_intersect_key($plugins, $all_plugins);
 
             foreach ($plugins as $plugin_id => $plugin) {
-              $call_on_removal[$plugin_type][$plugin_id][$dependency_type][$name] = $dependency_objects[$name];
+              $call_on_removal[$plugin_id][$dependency_type][$name] = $dependency_objects[$name];
             }
           }
         }
@@ -560,19 +550,13 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
     // Now for all plugins with optional dependencies (stored in
     // $call_on_removal, mapped to their removed dependencies) call their
     // onDependencyRemoval() methods.
-    $updated_config = [];
-    foreach ($call_on_removal as $plugin_type => $plugins) {
-      foreach ($plugins as $plugin_id => $plugin_dependencies) {
-        $removal_successful = $all_plugins[$plugin_id]->onDependencyRemoval($plugin_dependencies);
-        // If the plugin was successfully changed to remove the dependency,
-        // remember the new configuration to later set it. Otherwise, remove the
-        // plugin from the index so the dependency still gets removed.
-        if ($removal_successful) {
-          $updated_config[$plugin_type][$plugin_id] = $all_plugins[$plugin_id]->getConfiguration();
-        }
-        else {
-          unset($all_plugins[$plugin_id]);
-        }
+    foreach ($call_on_removal as $plugin_id => $plugin_dependencies) {
+      $plugin = $all_plugins[$plugin_id];
+      $removal_successful = $plugin->onDependencyRemoval($plugin_dependencies);
+      // If the plugin could not be changed to remove the dependency, remove it
+      // from the type so the dependency still gets removed.
+      if (!$removal_successful) {
+        unset($all_plugins[$plugin_id]);
       }
     }
 
