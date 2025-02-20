@@ -414,7 +414,8 @@
    *   The Feature coming from Drupal settings.
    */
   Drupal.Leaflet.prototype.feature_bind_popup = function(lFeature, feature) {
-    if (feature.popup) {
+    // Attach the Popup only if supported and a value is set for it.
+    if (typeof lFeature.bindPopup !== "undefined" && feature.popup && feature.popup.value) {
       const popup_options = feature.popup.options ? JSON.parse(feature.popup.options) : {};
       lFeature.bindPopup(feature.popup.value, popup_options);
     }
@@ -692,20 +693,7 @@
    */
   Drupal.Leaflet.prototype.create_divicon = function (options) {
     let html_class = options['html_class'] || '';
-    let icon = new L.DivIcon({html: options.html, className: html_class});
-
-    // override applicable marker defaults
-    if (options.iconSize) {
-      icon.options.iconSize = new L.Point(parseInt(options.iconSize.x, 10), parseInt(options.iconSize.y, 10));
-    }
-    if (options.iconAnchor && options.iconAnchor.x && options.iconAnchor.y) {
-      icon.options.iconAnchor = new L.Point(parseInt(options.iconAnchor.x), parseInt(options.iconAnchor.y));
-    }
-    if (options.popupAnchor && !isNaN(options.popupAnchor.x) && !isNaN(options.popupAnchor.y)) {
-      icon.options.popupAnchor = new L.Point(parseInt(options.popupAnchor.x), parseInt(options.popupAnchor.y));
-    }
-
-    return icon;
+    return new L.DivIcon({html: options.html, className: html_class});
   };
 
   /**
@@ -729,7 +717,8 @@
       marker_title = marker.tooltip.value.replace(/<[^>]*>/g, '').trim();
     }
     let options = {
-      title: marker_title,
+      // Define the title (as mouse hover tooltip) only in case the Leaflet Tooltip is not defined.
+      title: marker.title ? marker_title : "",
       className: marker.className || '',
       alt: marker_title,
       group_label: marker.group_label ?? '',

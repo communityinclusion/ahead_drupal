@@ -43,6 +43,7 @@ entity.google_tag_container.enable:
     entity_type: 'google_tag_container'
   requirements:
     _permission: 'administer google tag manager'
+    _csrf_token: 'TRUE'
 
 entity.google_tag_container.disable:
   path: '/admin/config/system/google-tag/manage/{google_tag_container}/disable'
@@ -51,6 +52,7 @@ entity.google_tag_container.disable:
     entity_type: 'google_tag_container'
   requirements:
     _permission: 'administer google tag manager'
+    _csrf_token: 'TRUE'
 
 #according to documentation this should work but does not
 #https://www.drupal.org/docs/8/api/routing-system/parameter-upcasting-in-routes

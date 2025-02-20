@@ -80,10 +80,11 @@ function leaflet_leaflet_map_info() {
           'fadeAnimation' => TRUE,
           'zoomAnimation' => TRUE,
           'closePopupOnClick' => TRUE,
+          'worldCopyJump' => TRUE,
         ],
         'layers' => [
-          'earth' => [
-            'urlTemplate' => '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          'OpenStreetMap' => [
+            'urlTemplate' => 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             'options' => [
               'maxZoom' => 19,
               'attribution' => '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors',

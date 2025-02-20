@@ -70,17 +70,6 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
   protected $languageManager;
 
   /**
-   * Get maps available for use with Leaflet.
-   */
-  protected static function getLeafletMaps() {
-    $options = [];
-    foreach (leaflet_map_get_info() as $key => $map) {
-      $options[$key] = $map['label'];
-    }
-    return $options;
-  }
-
-  /**
    * LeafletWidget constructor.
    *
    * @param string $plugin_id
@@ -171,7 +160,7 @@ class LeafletDefaultWidget extends GeofieldDefaultWidget {
 
     return array_merge(parent::defaultSettings(), [
       'map' => [
-        'leaflet_map' => array_shift($base_layers),
+        'leaflet_map' => $base_layers['OSM Mapnik'] ? 'OSM Mapnik' : array_shift($base_layers),
         'height' => 400,
         'auto_center' => TRUE,
         'map_position' => self::getDefaultSettings()['map_position'],

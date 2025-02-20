@@ -73,6 +73,7 @@ class HttpFetcherTest extends FeedsUnitTestCase {
     $this->feed = $this->prophesize(FeedInterface::class);
     $this->feed->id()->willReturn(1);
     $this->feed->getSource()->willReturn('http://example.com');
+    $this->feed->getConfigurationFor(Argument::any())->willReturn([]);
   }
 
   /**

@@ -62,10 +62,10 @@ function hook_leaflet_map_info() {
       'description' => t('Leaflet default map.'),
       'settings' => leaflet_map_info_default_settings(),
       'layers' => [
-        'earth' => [
-          'urlTemplate' => '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'OpenStreetMap' => [
+          'urlTemplate' => 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           'options' => [
-            'attribution' => 'OSM Mapnik',
+            'attribution' => '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors',
           ],
         ],
       ],
@@ -97,7 +97,7 @@ function hook_leaflet_map_info() {
       'settings' => leaflet_map_info_default_settings(),
       'layers' => [
         'Stadia Alidade Smooth' => [
-          'urlTemplate' => '//tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
+          'urlTemplate' => 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
           'options' => [
             "maxZoom" => 20,
             'attribution' => '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
@@ -105,7 +105,7 @@ function hook_leaflet_map_info() {
         ],
         'Google Roads' => [
           'type' => 'google',
-          'urlTemplate' => '//mt{s}.googleapis.com/vt?x={x}&y={y}&z={z}',
+          'urlTemplate' => 'https://mt{s}.googleapis.com/vt?x={x}&y={y}&z={z}',
           'options' => [
             'attribution' => 'Map data &copy; <a href="https://googlemaps.com">Google</a>',
             'detectRetina' => FALSE,
@@ -113,14 +113,14 @@ function hook_leaflet_map_info() {
           ],
         ],
         'OpenStreetMap' => [
-          'urlTemplate' => '//tile.openstreetmap.org/{z}/{x}/{y}.png',
+          'urlTemplate' => 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           'options' => [
             "maxZoom" => 19,
             "attribution" => "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
           ],
         ],
         'Stamen TonerLite' => [
-          'urlTemplate' => '//tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.{ext}',
+          'urlTemplate' => 'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.{ext}',
           'options' => [
             "subdomains" => "abcd",
             "minZoom" => 0,
@@ -130,7 +130,7 @@ function hook_leaflet_map_info() {
           ],
         ],
         'OpenTopoMap' => [
-          'urlTemplate' => '//{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+          'urlTemplate' => 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
           'options' => [
             "minZoom" => 0,
             "maxZoom" => 18,
@@ -142,7 +142,7 @@ function hook_leaflet_map_info() {
         'Stadia Alidade Smooth Dark Vector' => [
           // Set vector type for rendering with Vector.
           'type' => 'vector',
-          'urlTemplate' => '//tiles.stadiamaps.com/styles/alidade_smooth_dark.json',
+          'urlTemplate' => 'https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json',
           'options' => [
             'attribution' => '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
             // Supports Pitch in degrees (optional).
@@ -158,7 +158,7 @@ function hook_leaflet_map_info() {
           'layer_type' => 'overlay',
           // Possibly set it also initially hidden.
           'layer_hidden' => TRUE,
-          'urlTemplate' => '//tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
+          'urlTemplate' => 'https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
           'options' => [
             'maxZoom' => 19,
             'attribution' => 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="https://www.OpenRailwayMap.org">OpenRailwayMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
@@ -214,7 +214,7 @@ function hook_leaflet_default_widget_alter(array &$map_settings, GeofieldBaseWid
  * @param \Drupal\Core\Entity\ContentEntityInterface $entity
  *   The Content Entity base of the formatter.
  */
-function hook_leaflet_formatter_feature_alter(array $feature, FieldItemInterface $item, ContentEntityInterface $entity) {
+function hook_leaflet_formatter_feature_alter(array &$feature, FieldItemInterface $item, ContentEntityInterface $entity) {
   // Make custom alterations to $feature, eventually using the $items
   // context.
 }

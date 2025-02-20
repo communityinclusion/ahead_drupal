@@ -8,10 +8,13 @@
         $('#' + map_id, context).each(function () {
           let map_container = $(this);
           // If the attached context contains any leaflet maps with widgets, make sure we have a
-          // Drupal.leaflet_widget object.
+          // Drupal.Leaflet_Widget object.
           if (map_container.data('leaflet_widget') === undefined) {
             let lMap = drupalSettings.leaflet[map_id].lMap;
-            map_container.data('leaflet_widget', new Drupal.leaflet_widget(map_container, lMap, settings));
+            map_container.data('leaflet_widget', new Drupal.Leaflet_Widget(map_container, lMap, settings));
+            // Define the global Drupal.Leaflet[mapid] object to be accessible
+            // from outside.
+            Drupal.Leaflet_Widget[map_id] = map_container.data('leaflet_widget');
           }
           else {
             // If we already had a widget, update map to make sure that WKT and map are synchronized.
@@ -23,13 +26,13 @@
     }
   };
 
-  Drupal.leaflet_widget = function (map_container, lMap, settings) {
+  Drupal.Leaflet_Widget = function (map_container, lMap, settings) {
 
     // A FeatureGroup is required to store editable layers
     this.map_settings = settings.map.settings;
-    this.drawnItems = new L.LayerGroup();
     this.widgetsettings = settings.leaflet_widget;
     this.mapid = this.widgetsettings.map_id;
+    this.drawnItems = new L.LayerGroup();
     this.map_container = map_container;
     this.container = $(map_container).parent();
     this.widgetsettings.path_style = this.map_settings.path ? JSON.parse(this.map_settings.path) : {};
@@ -60,7 +63,7 @@
   /**
    * Initialise the Leaflet Widget Map with its features from Value element.
    */
-  Drupal.leaflet_widget.prototype.set_leaflet_widget_map = function (map) {
+  Drupal.Leaflet_Widget.prototype.set_leaflet_widget_map = function (map) {
     if (map !== undefined) {
       this.map = map;
       map.addLayer(this.drawnItems);
@@ -101,7 +104,7 @@
   /**
    * Update the WKT text input field.disableGlobalEditMode()
    */
-  Drupal.leaflet_widget.prototype.update_text = function () {
+  Drupal.Leaflet_Widget.prototype.update_text = function () {
     if (this.drawnItems.getLayers().length === 0) {
       $(this.json_selector, this.container).val('');
     }
@@ -115,7 +118,7 @@
   /**
    * Set visibility and readonly attribute of the input element.
    */
-  Drupal.leaflet_widget.prototype.update_input_state = function () {
+  Drupal.Leaflet_Widget.prototype.update_input_state = function () {
     $('.form-item.form-type-textarea, .form-item.form-type--textarea', this.container).toggle(!this.widgetsettings.inputHidden);
     $(this.json_selector, this.container).prop('readonly', this.widgetsettings.inputReadonly);
   };
@@ -123,7 +126,7 @@
   /**
    * Add/Set Listeners to the Drawn Map Layers.
    */
-  Drupal.leaflet_widget.prototype.add_layer_listeners = function (layer) {
+  Drupal.Leaflet_Widget.prototype.add_layer_listeners = function (layer) {
 
     // Listen to changes on the layer.
     layer.on('pm:edit', function(event) {
@@ -158,7 +161,7 @@
   /**
    * Update the Leaflet Widget Map from value element.
    */
-  Drupal.leaflet_widget.prototype.update_leaflet_widget_map = function () {
+  Drupal.Leaflet_Widget.prototype.update_leaflet_widget_map = function () {
     let self = this;
     let value = $(this.json_selector, this.container).val();
 
@@ -215,16 +218,19 @@
           // For objects that have defined bounds or a way to get them
           let bounds = obj.getBounds();
           this.map.fitBounds(bounds);
-          // Update the map start zoom and center, for correct working of Map Reset control.
-          start_zoom = this.map.getBoundsZoom(bounds);
           start_center = bounds.getCenter();
 
-          // In case of Map Zoom Forced, use the custom Map Zoom set.
-          if (this.widgetsettings.map_position.force && this.widgetsettings.map_position.zoom) {
+          // In case of Map Bounds collapsed into a Point or Map Zoom Forced,
+          // use the custom Map Start Zoom (if set).
+          if (this.widgetsettings.map_position.zoom &&
+            (bounds.getSouthWest().distanceTo(bounds.getNorthEast()) === 0 || this.widgetsettings.map_position.force)) {
             start_zoom = this.widgetsettings.map_position.zoom;
             this.map.setZoom(start_zoom );
           }
-
+          else {
+            // Update the map start zoom and center, for correct working of Map Reset control.
+            start_zoom = this.map.getBoundsZoom(bounds);
+          }
         } else if (obj.getLatLng !== undefined && typeof obj.getLatLng === 'function') {
           this.map.panTo(obj.getLatLng());
           // Update the map start center, for correct working of Map Reset control.
@@ -251,7 +257,7 @@
   /**
    * Update the Leaflet Widget Map from value element.
    */
-  Drupal.leaflet_widget.prototype.reset_start_zoom_and_center = function (mapid, start_zoom, start_center) {
+  Drupal.Leaflet_Widget.prototype.reset_start_zoom_and_center = function (mapid, start_zoom, start_center) {
     Drupal.Leaflet[mapid].start_zoom = start_zoom;
     Drupal.Leaflet[mapid].start_center = start_center;
     if (Drupal.Leaflet[mapid].reset_view_control) {

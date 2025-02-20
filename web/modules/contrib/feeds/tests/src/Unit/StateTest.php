@@ -3,19 +3,54 @@
 namespace Drupal\Tests\feeds\Unit;
 
 use Drupal\Component\DependencyInjection\ReverseContainer;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\State;
 use Drupal\feeds\StateInterface;
+use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @coversDefaultClass \Drupal\feeds\State
  * @group feeds
  */
 class StateTest extends FeedsUnitTestCase {
+
+  /**
+   * The event dispatcher.
+   *
+   * @var \Prophecy\Prophecy\ProphecyInterface|\Symfony\Component\EventDispatcher\EventDispatcherInterface
+   */
+  protected $eventDispatcher;
+
+  /**
+   * The messenger service.
+   *
+   * @var \Prophecy\Prophecy\ProphecyInterface|\Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * The logger for the feeds channel.
+   *
+   * @var \Prophecy\Prophecy\ProphecyInterface|\Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp(): void {
+    parent::setUp();
+
+    $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
+    $this->messenger = $this->prophesize(MessengerInterface::class);
+    $this->logger = $this->prophesize(LoggerInterface::class);
+  }
 
   /**
    * Tests public progress property.
@@ -125,6 +160,47 @@ class StateTest extends FeedsUnitTestCase {
     $state = unserialize($serialized);
     $state->displayMessages();
     $state->logMessages($this->createMock(FeedInterface::class));
+  }
+
+  /**
+   * Tests displaying messages on a state object from an older Feeds version.
+   */
+  public function testDisplayMessagesOnOldSerializedStateObject() {
+    $this->messenger->addMessage(Argument::type(FormattableMarkup::class), Argument::type('string'), Argument::type('bool'))
+      ->shouldBeCalled();
+    $this->buildContainer();
+
+    $serialized = file_get_contents(__DIR__ . '/../../fixtures/feeds-8.x-3.0-beta5-state-serialized.txt');
+    $state = unserialize($serialized);
+    $state->displayMessages();
+  }
+
+  /**
+   * Tests logging messages on a state object from an older Feeds version.
+   */
+  public function testLogMessagesOnOldSerializedStateObject() {
+    $feed = $this->createMock(FeedInterface::class);
+    $this->logger->log(Argument::type('string'), Argument::type(FormattableMarkup::class), ['feed' => $feed])
+      ->shouldBeCalled();
+    $this->buildContainer();
+
+    $serialized = file_get_contents(__DIR__ . '/../../fixtures/feeds-8.x-3.0-beta5-state-serialized.txt');
+    $state = unserialize($serialized);
+    $state->logMessages($feed);
+  }
+
+  /**
+   * Builds the Drupal service container.
+   */
+  protected function buildContainer() {
+    $logger_factory = $this->prophesize(LoggerChannelFactoryInterface::class);
+    $logger_factory->get('feeds')->willReturn($this->logger->reveal());
+
+    $container = new ContainerBuilder();
+    $container->set('messenger', $this->messenger->reveal());
+    $container->set('logger.factory', $logger_factory->reveal());
+    $container->set('event_dispatcher', $this->eventDispatcher->reveal());
+    \Drupal::setContainer($container);
   }
 
 }

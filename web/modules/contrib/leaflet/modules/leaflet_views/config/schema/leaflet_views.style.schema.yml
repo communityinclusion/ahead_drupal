@@ -243,6 +243,9 @@ views.style.leaflet_map:
           type: mapping
           label: 'Geocoder settings'
           mapping:
+            popup:
+              type: boolean
+              label: 'Popup'
             autocomplete:
               type: mapping
               label: 'Autocomplete'
@@ -280,9 +283,6 @@ views.style.leaflet_map:
             zoom:
               type: integer
               label: 'Zoom'
-            popup:
-              type: boolean
-              label: 'Popup'
             options:
               type: string
               label: 'Options'

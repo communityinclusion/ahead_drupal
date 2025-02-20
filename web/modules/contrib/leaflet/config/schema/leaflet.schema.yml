@@ -165,6 +165,12 @@ field.widget.settings.leaflet_widget_default:
           type: mapping
           label: 'Geocoder settings'
           mapping:
+            set_marker:
+              type: boolean
+              label: 'Marker'
+            popup:
+              type: boolean
+              label: 'Popup'
             autocomplete:
               type: mapping
               label: 'Autocomplete'
@@ -203,9 +209,6 @@ field.widget.settings.leaflet_widget_default:
             zoom:
               type: integer
               label: 'Zoom'
-            popup:
-              type: boolean
-              label: 'Popup'
             options:
               type: string
               label: 'Options'
@@ -334,6 +337,9 @@ field.formatter.settings.leaflet_formatter_default:
         zoomFiner:
           type: integer
           label: 'Zoom finer'
+    weight:
+      type: string
+      label: 'Weight'
     icon:
       type: mapping
       label: 'Map icon'
@@ -456,6 +462,9 @@ field.formatter.settings.leaflet_formatter_default:
           type: mapping
           label: 'Geocoder settings'
           mapping:
+            popup:
+              type: boolean
+              label: 'Popup'
             autocomplete:
               type: mapping
               label: 'Autocomplete'
@@ -494,9 +503,6 @@ field.formatter.settings.leaflet_formatter_default:
             zoom:
               type: integer
               label: 'Zoom'
-            popup:
-              type: boolean
-              label: 'Popup'
             options:
               type: string
               label: 'Options'

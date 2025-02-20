@@ -12,6 +12,12 @@ Nothing yet
 
 <br>
 
+## 1.2.0 - 2024-11-24
+### Added
+- Recursive iteration via new facade `RecursiveItems`. See **Recursive iteration** in README.
+
+<br>
+
 ## 1.1.5 - 2024-11-22
 ### Added
 - Support for PHP 8.4

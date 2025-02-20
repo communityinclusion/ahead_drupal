@@ -160,6 +160,13 @@ class State implements StateInterface, ContainerStateInterface {
     // Restore the logger.
     $container = \Drupal::getContainer();
     $this->logger = $container->get('logger.factory')->get('feeds');
+
+    // If the messenger service did not get restored because the State object
+    // was serialized in a Feeds version before 8.x-3.0-rc1, make sure that the
+    // messenger service does get restored.
+    if (!$this->messenger instanceof MessengerInterface) {
+      $this->messenger = $container->get('messenger');
+    }
   }
 
   /**

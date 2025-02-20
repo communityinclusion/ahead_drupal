@@ -49,7 +49,7 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests the tracking of nodes in some simple CRUD operations.
    */
-  public function testCrudTracking() {
+  public function testCrudTracking(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();
@@ -128,6 +128,36 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
     $assert_session->linkExists('recorded usages');
     $assert_session->linkByHrefExists($usage_url);
 
+    // Ensure that delete forms are uncacheable once the message is activated.
+    $this->drupalGet("/node/{$node2->id()}/delete");
+    $assert_session->pageTextNotContains('There are recorded usages of this entity');
+
+    // If the entity type is configured to have the usage tab available, the
+    // warning link should point to the tab route, instead of the generic one.
+    $this->drupalGet('/admin/config/entity-usage/settings');
+    // Also allow views to have the usage tab visible.
+    $node_tab_checkbox = $assert_session->fieldExists('local_task_enabled_entity_types[entity_types][node]');
+    $node_tab_checkbox->click();
+    $page->pressButton('Save configuration');
+    $session->wait(500);
+    $this->saveHtmlOutput();
+    $assert_session->pageTextContains('The configuration options have been saved.');
+    $this->drupalGet("/node/{$node1->id()}/edit");
+    $assert_session->pageTextContains('Modifications on this form will affect all existing usages of this entity');
+    $assert_session->linkExists('existing usages');
+    $usage_url = Url::fromRoute("entity.node.entity_usage", [
+      'node' => $node1->id(),
+    ])->toString();
+    $assert_session->linkByHrefExists($usage_url);
+    // Re-set tabs to where they were.
+    $this->drupalGet('/admin/config/entity-usage/settings');
+    $node_tab_checkbox = $assert_session->fieldExists('local_task_enabled_entity_types[entity_types][node]');
+    $node_tab_checkbox->click();
+    $page->pressButton('Save configuration');
+    $session->wait(500);
+    $this->saveHtmlOutput();
+    $assert_session->pageTextContains('The configuration options have been saved.');
+
     // Create a new entity reference field.
     $storage = FieldStorageConfig::create([
       'field_name' => 'field_eu_test_related_nodes2',
@@ -194,6 +224,11 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
       ],
     ];
     $this->assertEquals($expected, $usage);
+
+    // Ensure that node 2 now has the warning.
+    $this->drupalGet("/node/{$node2->id()}/delete");
+    $assert_session->pageTextContains('There are recorded usages of this entity');
+
     // If we delete the field storage the usage should update accordingly.
     $storage->delete();
     $usage = $usage_service->listTargets($node3);
@@ -324,7 +359,7 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
   /**
    * Tests the tracking of nodes in link fields.
    */
-  public function testLinkTracking() {
+  public function testLinkTracking(): void {
     $session = $this->getSession();
     $page = $session->getPage();
     $assert_session = $this->assertSession();
@@ -441,7 +476,8 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
     $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
     $config->set('site_domains', [$current_request->getHttpHost() . $current_request->getBasePath()]);
     $config->save();
-    drupal_flush_all_caches();
+    // Changing site domains requires services to be reconstructed.
+    $this->rebuildAll();
     $this->drupalGet('/node/add/eu_test_ct');
     $page->fillField('title[0][value]', 'Node 3');
     $page->fillField('field_link1[0][uri]', $node1->toUrl()->setAbsolute()->toString());
@@ -469,4 +505,5 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
     ];
     $this->assertEquals($expected, $usage);
   }
+
 }

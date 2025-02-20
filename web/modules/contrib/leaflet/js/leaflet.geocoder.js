@@ -90,13 +90,29 @@
       // This bit is executed upon selection of an address.
       select: function (event, ui) {
         let position = L.latLng(ui.item.lat, ui.item.lng);
+        let position_popup = L.latLng(ui.item.lat + 0.2, ui.item.lng);
         map.setView(position, zoom);
         // If leaflet-geoman functionalities and controls existing on the map,
         // then disableGlobalEditMode;
         // if(map.pm) {
         //   map.pm.disableGlobalEditMode();
         // }
-        if (geocoder_settings.popup) {
+        let marker = L.marker(position);
+        const popup = L.popup().setContent(ui.item.value);
+        marker.bindPopup(popup)
+
+        // In case of Place Marker on Geocode.
+        if (geocoder_settings.set_marker && Drupal.Leaflet_Widget[mapid]) {
+          Drupal.Leaflet_Widget[mapid].drawnItems.addLayer(marker);
+          Drupal.Leaflet_Widget[mapid].update_text();
+          Drupal.Leaflet_Widget[mapid].update_leaflet_widget_map();
+          const tooltip = L.tooltip(position, {
+            content: ui.item.value,
+            direction: "bottom"
+          }).addTo(map);
+        }
+        // Else, in case of Place Popup on Geocode.
+        else if (geocoder_settings.popup) {
           L.popup().setLatLng(position)
             .setContent('<div class="leaflet-geocoder-popup">' + ui.item.value + '</div>')
             .openOn(map);

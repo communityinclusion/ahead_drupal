@@ -76,6 +76,7 @@ use Drupal\user\UserInterface;
  *     "schedule-import-form" = "/feed/{feeds_feed}/schedule-import",
  *     "clear-form" = "/feed/{feeds_feed}/delete-items",
  *     "unlock" = "/feed/{feeds_feed}/unlock",
+ *     "template" = "/feed/{feeds_feed}/template",
  *   }
  * )
  */

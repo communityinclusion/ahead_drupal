@@ -255,7 +255,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     parent::init($view, $display, $options);
 
     // We want to allow view editors to select which entity out of a
@@ -462,6 +462,110 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
   }
 
   /**
+   * Set Overlay Grouping Form Element.
+   *
+   * @param array $form
+   *   The form.
+   * @param array $user_input
+   *   The form user input.
+   */
+  protected function setOverlaysGroupingElement(array &$form, array $user_input): void {
+
+    // Preserve the $form["grouping"][0] before unset.
+    $form_grouping_0 = $form["grouping"][0];
+
+    // Unset the all previous $form["grouping"] and regenerate it from scratch,
+    // to:
+    // - place it in the proper order;
+    // - unset/remove the Grouping Field n.2., as we don't support it in
+    // Leaflet View style map, at the moment.
+    unset($form["grouping"]);
+    $form["grouping"] = [
+      '#type' => 'details',
+      '#title' => $this->t("Overlays - Leaflet Grouping"),
+      0 => $form_grouping_0,
+    ];
+
+    $form["grouping"][0]["field"]["#title"] = $this->t('Grouping field');
+    $form["grouping"][0]["field"]["#description"] = $this->t("You may specify a field by which to group the Leaflet Map Features into Overlays, whose visibility could be managed throughout the Leaflet Map Layers Control.");
+    unset($form["grouping"][0]["rendered_strip"]);
+
+    $form["grouping"][0]["field"]['#ajax'] = [
+      'callback' => __CLASS__ . '::updateGrouping0OverlaysOptionsAjax',
+      'wrapper' => 'grouping-0-overlays_options-fieldset',
+      'event' => 'change',
+    ];
+
+    $form["grouping"][0]["rendered"]['#ajax'] = [
+      'callback' => __CLASS__ . '::updateGrouping0OverlaysOptionsAjax',
+      'wrapper' => 'grouping-0-overlays_options-fieldset',
+      'event' => 'change',
+    ];
+
+    // Unset/remove the Grouping Field n.2.
+    // as we don't support it in Leaflet View style map, at the moment.
+    unset($form["grouping"][1]);
+
+    // Overlay Options settings section.
+    $form["grouping"][0]['overlays_options'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Layers options'),
+      '#attributes' => ['id' => 'grouping-0-overlays_options-fieldset'],
+    ];
+
+    // Extract the Layers options depending on the form state.
+    $grouping_0_field = $user_input['style_options']['grouping'][0]['field'] ?? $form["grouping"][0]["field"]["#default_value"];
+    $grouping_0_rendered_option = isset($user_input['style_options']['grouping'][0]) ? ($user_input['style_options']['grouping'][0]['rendered'] ?? FALSE) : $form["grouping"][0]["rendered"]["#default_value"];
+    $overlays_options = self::getOverlaysOptions($this, $grouping_0_field, $grouping_0_rendered_option);
+
+    // Disabled Layers.
+    $form["grouping"][0]['overlays_options']['disabled_overlays'] = count($overlays_options) > 1 ? [
+      '#type' => 'select',
+      '#title' => $this->t('Disabled Layers'),
+      '#description' => $this->t('Choose the Layers that should start as disabled / switched off'),
+      '#options' => $overlays_options,
+      '#default_value' => $this->options["grouping"][0]['overlays_options']['disabled_overlays'],
+      // The #validated setting to TRUE skips the "An illegal choice has been
+      // detected" error message after Ajax refresh.
+      '#validated' => TRUE,
+      '#required' => FALSE,
+      '#multiple' => TRUE,
+      '#size' => count($overlays_options) < 10 ? count($overlays_options) + 1 : 10,
+      '#states' => [
+        'invisible' => [
+          ':input[name="style_options[grouping][0][field]"]' => ['value' => ''],
+        ],
+      ],
+    ] : [
+      '#type' => 'hidden',
+      '#value' => [],
+    ];
+
+    // Disabled Layers.
+    $form["grouping"][0]['overlays_options']['hidden_overlays_controls'] = count($overlays_options) > 1 ? [
+      '#type' => 'select',
+      '#title' => $this->t('Hidden Layers Controls'),
+      '#description' => $this->t('Choose the Layers that will not appear in the Layers Control'),
+      '#options' => $overlays_options,
+      '#default_value' => $this->options["grouping"][0]['overlays_options']['hidden_overlays_controls'],
+      // The #validated setting to TRUE skips the "An illegal choice has been
+      // detected" error message after Ajax refresh.
+      '#validated' => TRUE,
+      '#required' => FALSE,
+      '#multiple' => TRUE,
+      '#size' => count($overlays_options) < 10 ? count($overlays_options) + 1 : 10,
+      '#states' => [
+        'invisible' => [
+          ':input[name="style_options[grouping][0][field]"]' => ['value' => ''],
+        ],
+      ],
+    ] : [
+      '#type' => 'hidden',
+      '#value' => [],
+    ];
+  }
+
+  /**
    * Get the Layers options List from the Grouping Field Settings.
    *
    * @param \Drupal\leaflet_views\Plugin\views\style\LeafletMap $view_style
@@ -524,115 +628,30 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
       $this->entitySource = $this->options['entity_source'];
     }
 
-    // Build the Parent Form.
-    parent::buildOptionsForm($form, $form_state);
-
     $form['#attached'] = [
       'library' => [
         'leaflet/general',
       ],
     ];
 
-    // Customise for this Leaflet View Style the "grouping" section.
-    $form["grouping"] = [
-      '#type' => 'details',
-      '#title' => $this->t("Leaflet Grouping"),
-      0 => $form["grouping"][0],
-    ];
-
-    $form["grouping"][0]["field"]["#title"] = $this->t('Grouping field');
-    $form["grouping"][0]["field"]["#description"] = $this->t("You may optionally specify a field by which to group the Leaflet Map Features by Overlayers, whose visibility could be managed throughout the Leaflet Map Layers Control.<br>Leave blank to not group");
-    unset($form["grouping"][0]["rendered_strip"]);
-
-    $form["grouping"][0]["field"]['#ajax'] = [
-      'callback' => __CLASS__ . '::updateGrouping0OverlaysOptionsAjax',
-      'wrapper' => 'grouping-0-overlays_options-fieldset',
-      'event' => 'change',
-    ];
-
-    $form["grouping"][0]["rendered"]['#ajax'] = [
-      'callback' => __CLASS__ . '::updateGrouping0OverlaysOptionsAjax',
-      'wrapper' => 'grouping-0-overlays_options-fieldset',
-      'event' => 'change',
-    ];
-
-    // Unset/remove the Grouping Field n.2.
-    // as we don't support it in Leaflet View style map, at the moment.
-    unset($form["grouping"][1]);
-
     // Get a sublist of geo data fields in the view.
     $fields_geo_data = $this->getAvailableDataSources();
-
-    // Overlay Options settings section.
-    $form["grouping"][0]['overlays_options'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Layers options'),
-      '#attributes' => ['id' => 'grouping-0-overlays_options-fieldset'],
-    ];
-
-    // Extract the Layers options depending on the form state.
-    $grouping_0_field = $form_state->getUserInput()['style_options']['grouping'][0]['field'] ?? $form["grouping"][0]["field"]["#default_value"];
-    $grouping_0_rendered_option = isset($form_state->getUserInput()['style_options']['grouping'][0]) ? ($form_state->getUserInput()['style_options']['grouping'][0]['rendered'] ?? FALSE) : $form["grouping"][0]["rendered"]["#default_value"];
-    $overlays_options = self::getOverlaysOptions($this, $grouping_0_field, $grouping_0_rendered_option);
-
-    // Disabled Layers.
-    $form["grouping"][0]['overlays_options']['disabled_overlays'] = count($overlays_options) > 1 ? [
-      '#type' => 'select',
-      '#title' => $this->t('Disabled Layers'),
-      '#description' => $this->t('Choose the Layers that should start as disabled / switched off'),
-      '#options' => $overlays_options,
-      '#default_value' => $this->options["grouping"][0]['overlays_options']['disabled_overlays'],
-      // The #validated setting to TRUE skips the "An illegal choice has been
-      // detected" error message after Ajax refresh.
-      '#validated' => TRUE,
-      '#required' => FALSE,
-      '#multiple' => TRUE,
-      '#size' => count($overlays_options) < 10 ? count($overlays_options) + 1 : 10,
-      '#states' => [
-        'invisible' => [
-          ':input[name="style_options[grouping][0][field]"]' => ['value' => ''],
-        ],
-      ],
-    ] : [
-      '#type' => 'hidden',
-      '#value' => [],
-    ];
-
-    // Disabled Layers.
-    $form["grouping"][0]['overlays_options']['hidden_overlays_controls'] = count($overlays_options) > 1 ? [
-      '#type' => 'select',
-      '#title' => $this->t('Hidden Layers Controls'),
-      '#description' => $this->t('Choose the Layers that will not appear in the Layers Control'),
-      '#options' => $overlays_options,
-      '#default_value' => $this->options["grouping"][0]['overlays_options']['hidden_overlays_controls'],
-      // The #validated setting to TRUE skips the "An illegal choice has been
-      // detected" error message after Ajax refresh.
-      '#validated' => TRUE,
-      '#required' => FALSE,
-      '#multiple' => TRUE,
-      '#size' => count($overlays_options) < 10 ? count($overlays_options) + 1 : 10,
-      '#states' => [
-        'invisible' => [
-          ':input[name="style_options[grouping][0][field]"]' => ['value' => ''],
-        ],
-      ],
-    ] : [
-      '#type' => 'hidden',
-      '#value' => [],
-    ];
 
     // Check whether we have a geo data field we can work with.
     if (!count($fields_geo_data)) {
       $form['error'] = [
         '#type' => 'html_tag',
         '#tag' => 'div',
-        '#value' => $this->t('Please add at least one Geofield to the View and come back here to set it as Data Source.'),
+        '#value' => $this->t('Please add at least one Geofield (field type) to the View and come back here to set it as Data Source.'),
         '#attributes' => [
           'class' => ['leaflet-warning'],
         ],
       ];
       return;
     }
+
+    // Build the Parent Form, first.
+    parent::buildOptionsForm($form, $form_state);
 
     $wrapper_id = 'leaflet-map-views-style-options-form-wrapper';
     $form['#prefix'] = '<div id="' . $wrapper_id . '">';
@@ -642,12 +661,12 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
     $form['data_source'] = [
       '#type' => 'select',
       '#title' => $this->t('Data Source'),
-      '#description' => $this->t('Which Geofield(s) contains geodata you want to map?'),
+      '#description' => $this->t('Which Geofield(s) contains geodata you want to map?<br><b>Note: </b>Only Geofield type fields can be selected.'),
       '#options' => $fields_geo_data,
       '#default_value' => $this->options['data_source'],
       '#required' => TRUE,
       '#multiple' => TRUE,
-      '#size' => count($fields_geo_data),
+      '#size' => count($fields_geo_data) + 1,
     ];
 
     // Get the possible entity sources.
@@ -694,6 +713,11 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
         ],
       ];
     }
+
+    $user_input = $form_state->getUserInput();
+
+    // Set Overlay Grouping Form Element.
+    $this->setOverlaysGroupingElement($form, $user_input);
 
     // Set Leaflet Tooltip Element.
     $this->setTooltipElement($form, $this->options, $this->viewFields);
@@ -855,7 +879,6 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
     }
 
     if (!empty($geofield_names) && (!empty($this->view->result) || !$this->options['hide_empty_map'])) {
-      $this->renderFields($this->view->result);
 
       // Group the rows according to the grouping instructions, if specified.
       $view_results_groups = $this->renderGrouping(
@@ -1000,7 +1023,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                       $url = Url::fromRoute('leaflet_views.ajax_popup', $parameters);
                       $popup_content = sprintf('<div class="leaflet-ajax-popup" data-leaflet-ajax-popup="%s" %s></div>',
                         $url->toString(), LeafletAjaxPopupController::getPopupIdentifierAttribute($entity_type, $entity_id, $this->options['leaflet_popup']['view_mode'], $langcode));
-                      $map['settings']['ajaxPoup'] = TRUE;
+                      $map['settings']['ajaxPopup'] = TRUE;
                       break;
 
                     case '#rendered_view_fields':
@@ -1009,7 +1032,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                       $render_row = [
                         "markup" => $this->view->rowPlugin->render($result),
                       ];
-                      $popup_content = $this->renderer->renderPlain($render_row);
+                      $popup_content = $this->renderer->renderInIsolation($render_row);
                       break;
 
                     default:
@@ -1068,7 +1091,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                       $feature['tooltip'] = $this->options['leaflet_tooltip'];
                       // Decode any entities because JS will encode them again,
                       // and we don't want double encoding.
-                      $feature['tooltip']['value'] = !empty($this->options['leaflet_tooltip']['value']) ? Html::decodeEntities(($this->rendered_fields[$result->index][$this->options['leaflet_tooltip']['value']])) : '';
+                      $feature['tooltip']['value'] = array_key_exists($this->options['leaflet_tooltip']['value'], $this->rendered_fields[$result->index]) ? Html::decodeEntities($this->rendered_fields[$result->index][$this->options['leaflet_tooltip']['value']]) : '';
 
                       // Associate dynamic tooltip options (token based).
                       if (!empty($this->options['leaflet_tooltip']['options'])) {
@@ -1103,10 +1126,10 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                       // Transforms Icon Options that support Replacement
                       // Patterns/Tokens.
                       if (!empty($this->options["icon"]["iconSize"]["x"])) {
-                        $feature['icon']["iconSize"]["x"] = $this->viewsTokenReplace($this->options["icon"]["iconSize"]["x"], $tokens);
+                        $feature['icon']["iconSize"]["x"] = intval($this->viewsTokenReplace($this->options["icon"]["iconSize"]["x"], $tokens));
                       }
                       if (!empty($this->options["icon"]["iconSize"]["y"])) {
-                        $feature['icon']["iconSize"]["y"] = $this->viewsTokenReplace($this->options["icon"]["iconSize"]["y"], $tokens);
+                        $feature['icon']["iconSize"]["y"] = intval($this->viewsTokenReplace($this->options["icon"]["iconSize"]["y"], $tokens));
                       }
                       if (!empty($this->options["icon"]["iconAnchor"]["x"])) {
                         $feature['icon']["iconAnchor"]["x"] = $this->viewsTokenReplace($this->options["icon"]["iconAnchor"]["x"], $tokens);
@@ -1121,10 +1144,10 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
                         $feature['icon']["popupAnchor"]["y"] = $this->viewsTokenReplace($this->options["icon"]["popupAnchor"]["y"], $tokens);
                       }
                       if (!empty($this->options["icon"]["shadowSize"]["x"])) {
-                        $feature['icon']["shadowSize"]["x"] = $this->viewsTokenReplace($this->options["icon"]["shadowSize"]["x"], $tokens);
+                        $feature['icon']["shadowSize"]["x"] = intval($this->viewsTokenReplace($this->options["icon"]["shadowSize"]["x"], $tokens));
                       }
                       if (!empty($this->options["icon"]["shadowSize"]["y"])) {
-                        $feature['icon']["shadowSize"]["y"] = $this->viewsTokenReplace($this->options["icon"]["shadowSize"]["y"], $tokens);
+                        $feature['icon']["shadowSize"]["y"] = intval($this->viewsTokenReplace($this->options["icon"]["shadowSize"]["y"], $tokens));
                       }
 
                       switch ($icon_type) {
@@ -1285,7 +1308,7 @@ class LeafletMap extends StylePluginBase implements ContainerFactoryPluginInterf
       $element = $this->leafletService->leafletRenderMap($js_settings['map'], $js_settings['features'], $map_height);
 
       // Add the Core Drupal Ajax library for Ajax Popups.
-      if (isset($map['settings']['ajaxPoup']) && $map['settings']['ajaxPoup']) {
+      if (isset($map['settings']['ajaxPopup']) && $map['settings']['ajaxPopup']) {
         $build_for_bubbleable_metadata['#attached']['library'][] = 'core/drupal.ajax';
       }
       BubbleableMetadata::createFromRenderArray($element)

@@ -101,7 +101,7 @@ class LeafletService {
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The stream wrapper manager.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   *   The cache backend default service.
+   *   The cache backend leaflet service.
    * @param \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator
    *   The file URL generator.
    */
@@ -397,130 +397,114 @@ class LeafletService {
    *   The feature.
    */
   public function setFeatureIconSizesIfEmptyOrInvalid(array &$feature) {
-    $icon_url = $feature["icon"]["iconUrl"] ?? NULL;
-    if (!empty($icon_url) && isset($feature["icon"]["iconSize"])
-      && (intval($feature["icon"]["iconSize"]["x"]) === 0 || intval($feature["icon"]["iconSize"]["y"]) === 0)) {
+    $this->setSizeIfEmptyOrInvalid($feature, 'icon', 'iconUrl', 'iconSize', 'leaflet_iconsize_cache');
+    $this->setSizeIfEmptyOrInvalid($feature, 'shadow', 'shadowUrl', 'shadowSize', 'leaflet_shadowsize_cache');
+  }
 
-      $icon_url = $this->generateAbsoluteString($icon_url);
+  /**
+   * Set Size If Empty or Invalid.
+   *
+   * @param array $feature
+   *   The feature.
+   * @param string $type
+   *   The type.
+   * @param string $urlKey
+   *   The url key.
+   * @param string $sizeKey
+   *   The size key.
+   * @param string $cachePrefix
+   *   The cache prefix.
+   */
+  private function setSizeIfEmptyOrInvalid(array &$feature, string $type, string $urlKey, string $sizeKey, string $cachePrefix) {
+    $url = $feature["icon"][$urlKey] ?? NULL;
+    if (!empty($url) && isset($feature["icon"][$sizeKey])
+      && (intval($feature["icon"][$sizeKey]["x"]) === 0 || intval($feature["icon"][$sizeKey]["y"]) === 0)) {
 
-      // Use the cached IconSize if present for this Icon Url.
-      $leaflet_iconsize_cache = &drupal_static("leaflet_iconsize_cache:$icon_url");
-      if (is_array($leaflet_iconsize_cache) && array_key_exists('x', $leaflet_iconsize_cache) && array_key_exists('y', $leaflet_iconsize_cache)) {
-        $feature["icon"]["iconSize"]["x"] = $leaflet_iconsize_cache['x'];
-        $feature["icon"]["iconSize"]["y"] = $leaflet_iconsize_cache['y'];
+      $url = $this->generateAbsoluteString($url);
+
+      // Use the cached size if present for this URL.
+      $page_cache = &drupal_static("$cachePrefix:$url");
+      if (is_array($page_cache) && array_key_exists('x', $page_cache) && array_key_exists('y', $page_cache)) {
+        $feature["icon"][$sizeKey]["x"] = $page_cache['x'];
+        $feature["icon"][$sizeKey]["y"] = $page_cache['y'];
       }
-      elseif ($this->fileExists($icon_url)) {
-        $file_parts = pathinfo($icon_url);
-        switch ($file_parts['extension']) {
+      elseif ($cached = $this->cache->get('leaflet_map_icon_size:' . $url)) {
+        $feature["icon"][$sizeKey]["x"] = $cached->data['x'];
+        $feature["icon"][$sizeKey]["y"] = $cached->data['y'];
+      }
+      elseif ($this->fileExists($url)) {
+        $fileParts = pathinfo($url);
+        switch ($fileParts['extension']) {
           case "svg":
-            $xml = simplexml_load_file($icon_url);
+            $xml = simplexml_load_file($url);
             $attr = $xml ? $xml->attributes() : NULL;
-            $icon_size_x = !is_null($attr) && !empty($attr->width) ? intval($attr->width->__toString()) : 40;
-            $icon_size_y = !is_null($attr) && !empty($attr->height) ? intval($attr->height->__toString()) : 40;
-            if (empty($feature["icon"]["iconSize"]["x"]) && !empty($feature["icon"]["iconSize"]["y"])) {
-              $feature["icon"]["iconSize"]["x"] = intval($feature["icon"]["iconSize"]["y"]) * $icon_size_x / $icon_size_y;
+            $size_x = !is_null($attr) && !empty($attr->width) ? intval($attr->width->__toString()) : 40;
+            $size_y = !is_null($attr) && !empty($attr->height) ? intval($attr->height->__toString()) : 40;
+            if (empty($feature["icon"][$sizeKey]["x"]) && !empty($feature["icon"][$sizeKey]["y"])) {
+              $feature["icon"][$sizeKey]["x"] = intval($feature["icon"][$sizeKey]["y"] * $size_x / $size_y);
             }
-            elseif (!empty($feature["icon"]["iconSize"]["x"]) && empty($feature["icon"]["iconSize"]["y"])) {
-              $feature["icon"]["iconSize"]["y"] = intval($feature["icon"]["iconSize"]["x"]) * $icon_size_y / $icon_size_x;
+            elseif (!empty($feature["icon"][$sizeKey]["x"]) && empty($feature["icon"][$sizeKey]["y"])) {
+              $feature["icon"][$sizeKey]["y"] = intval($feature["icon"][$sizeKey]["x"] * $size_y / $size_x);
             }
             else {
-              $feature["icon"]["iconSize"]["x"] = $icon_size_x;
-              $feature["icon"]["iconSize"]["y"] = $icon_size_y;
+              $feature["icon"][$sizeKey]["x"] = $size_x;
+              $feature["icon"][$sizeKey]["y"] = $size_y;
             }
             break;
 
           default:
-            if ($iconSize = getimagesize($icon_url)) {
-              if (empty($feature["icon"]["iconSize"]["x"])  && !empty($feature["icon"]["iconSize"]["y"])) {
-                $feature["icon"]["iconSize"]["x"] = intval($feature["icon"]["iconSize"]["y"]) * $iconSize[0] / $iconSize[1];
+            if ($size = getimagesize($url)) {
+              if (empty($feature["icon"][$sizeKey]["x"]) && !empty($feature["icon"][$sizeKey]["y"])) {
+                $feature["icon"][$sizeKey]["x"] = intval($feature["icon"][$sizeKey]["y"] * $size[0] / $size[1]);
               }
-              elseif (!empty($feature["icon"]["iconSize"]["x"])  && empty($feature["icon"]["iconSize"]["y"])) {
-                $feature["icon"]["iconSize"]["y"] = intval($feature["icon"]["iconSize"]["x"]) * $iconSize[1] / $iconSize[0];
+              elseif (!empty($feature["icon"][$sizeKey]["x"]) && empty($feature["icon"][$sizeKey]["y"])) {
+                $feature["icon"][$sizeKey]["y"] = intval($feature["icon"][$sizeKey]["x"] * $size[1] / $size[0]);
               }
               else {
-                $feature["icon"]["iconSize"]["x"] = $iconSize[0];
-                $feature["icon"]["iconSize"]["y"] = $iconSize[1];
+                $feature["icon"][$sizeKey]["x"] = $size[0];
+                $feature["icon"][$sizeKey]["y"] = $size[1];
               }
             }
         }
-        // Cache the Leaflet IconSize, so we don't fetch the same icon multiple
-        // times.
-        $leaflet_iconsize_cache = $feature["icon"]["iconSize"];
-      }
-    }
+        // Set the size in the page cache.
+        $page_cache = $feature["icon"][$sizeKey];
 
-    $shadow_url = $feature["icon"]["shadowUrl"] ?? NULL;
-    if (!empty($shadow_url) && isset($feature["icon"]["shadowSize"])
-      && (empty(intval($feature["icon"]["shadowSize"]["x"])) || empty(intval($feature["icon"]["shadowSize"]["y"])))) {
-
-      $shadow_url = $this->generateAbsoluteString($shadow_url);
-
-      // Use the cached ShadowSize if present for this Shadow Url.
-      $leaflet_shadowsize_cache = &drupal_static("leaflet_shadowsize_cache:$icon_url", NULL);
-      if (is_array($leaflet_shadowsize_cache) && array_key_exists('x', $leaflet_shadowsize_cache) && array_key_exists('y', $leaflet_shadowsize_cache)) {
-        $feature["icon"]["iconSize"]["x"] = $leaflet_shadowsize_cache['x'];
-        $feature["icon"]["iconSize"]["y"] = $leaflet_shadowsize_cache['y'];
-      }
-      elseif ($this->fileExists($shadow_url)) {
-        $file_parts = pathinfo($shadow_url);
-        switch ($file_parts['extension']) {
-          case "svg":
-            $xml = simplexml_load_file($icon_url);
-            $attr = $xml ? $xml->attributes() : NULL;
-            $shadow_size_x = !is_null($attr) && !empty($attr->width) ? intval($attr->width->__toString()) : 40;
-            $shadow_size_y = !is_null($attr) && !empty($attr->height) ? intval($attr->height->__toString()) : 40;
-            if (empty($feature["icon"]["shadowSize"]["x"]) && !empty($feature["icon"]["shadowSize"]["y"])) {
-              $feature["icon"]["shadowSize"]["x"] = intval($feature["icon"]["shadowSize"]["y"]) * $shadow_size_x / $shadow_size_y;
-            }
-            elseif (!empty($feature["icon"]["shadowSize"]["x"]) && empty($feature["icon"]["shadowSize"]["y"])) {
-              $feature["icon"]["shadowSize"]["y"] = intval($feature["icon"]["shadowSize"]["x"]) * $shadow_size_y / $shadow_size_x;
-            }
-            else {
-              $feature["icon"]["shadowSize"]["x"] = $shadow_size_x;
-              $feature["icon"]["shadowSize"]["y"] = $shadow_size_y;
-            }
-            break;
-
-          default:
-            if ($shadowSize = getimagesize($shadow_url)) {
-              if (empty($feature["icon"]["shadowSize"]["x"]) && !empty($feature["icon"]["shadowSize"]["y"])) {
-                $feature["icon"]["shadowSize"]["x"] = intval($feature["icon"]["shadowSize"]["y"]) * $shadowSize[0] / $shadowSize[1];
-              }
-              elseif (!empty($feature["icon"]["shadowSize"]["x"]) && empty($feature["icon"]["shadowSize"]["y"])) {
-                $feature["icon"]["shadowSize"]["y"] = intval($feature["icon"]["shadowSize"]["x"]) * $shadowSize[1] / $shadowSize[0];
-              }
-              else {
-                $feature["icon"]["shadowSize"]["x"] = $shadowSize[0];
-                $feature["icon"]["shadowSize"]["y"] = $shadowSize[1];
-              }
-            }
-        }
-        // Cache the Shadow IconSize, so we don't fetch the same icon multiple
-        // times.
-        $leaflet_shadowsize_cache = $feature["icon"]["shadowSize"];
+        // Set the feature icon size in the backend cache.
+        $this->cache->set('leaflet_map_icon_size:' . $url, $feature["icon"][$sizeKey]);
       }
     }
   }
 
   /**
-   * Check if a file exists.
+   * Check if a file exists at the given URL.
    *
    * @param string $fileUrl
-   *   The file url.
-   *
-   * @see https://stackoverflow.com/questions/10444059/file-exists-returns-false-even-if-file-exist-remote-url
+   *   The URL of the file to check.
    *
    * @return bool
-   *   The bool result.
+   *   TRUE if the file exists and is accessible, FALSE otherwise.
    */
-  public function fileExists($fileUrl) {
-    $file_headers = @get_headers($fileUrl);
-    if (isset($file_headers) && !empty($file_headers[0])
-      && (stripos($file_headers[0], "404 Not Found") == 0)
-      && (stripos($file_headers[0], "403 Forbidden") == 0)
-      && (stripos($file_headers[0], "302 Found") == 0 && !empty($file_headers[7]) && stripos($file_headers[7], "404 Not Found") == 0)) {
+  public function fileExists(string $fileUrl): bool {
+    $fileHeaders = @get_headers($fileUrl);
+
+    // If headers are not retrieved, the file does not exist.
+    if (empty($fileHeaders)) {
+      return FALSE;
+    }
+
+    // Check the first header for common error codes.
+    $firstHeader = $fileHeaders[0];
+    if (stripos($firstHeader, '200 OK') !== FALSE) {
       return TRUE;
     }
+
+    // Handle redirects (e.g., 302 Found) and check the final response.
+    if (stripos($firstHeader, '302 Found') !== FALSE && !empty($fileHeaders[7])) {
+      $finalHeader = $fileHeaders[7];
+      return stripos($finalHeader, '200 OK') !== FALSE;
+    }
+
+    // If none of the above conditions are met, the file does not exist.
     return FALSE;
   }
 

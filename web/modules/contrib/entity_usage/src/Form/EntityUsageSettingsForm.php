@@ -68,7 +68,7 @@ class EntityUsageSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('config.factory'),
       $container->get('config.typed'),
@@ -89,7 +89,7 @@ class EntityUsageSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames() {
+  protected function getEditableConfigNames(): array {
     return ['entity_usage.settings'];
   }
 
@@ -102,7 +102,6 @@ class EntityUsageSettingsForm extends ConfigFormBase {
     $content_entity_types = [];
 
     // Filter the entity types.
-    /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_type_options */
     $entity_type_options = [];
     $tabs_options = [];
     foreach ($all_entity_types as $entity_type) {
@@ -233,12 +232,12 @@ class EntityUsageSettingsForm extends ConfigFormBase {
       $form['edit_warning_message_entity_types']['entity_types'][$entity_type_id]['#states'] = [
         'enabled' => [
           ':input[name="track_enabled_target_entity_types[entity_types][' . $entity_type_id . ']"]' => ['checked' => TRUE],
-        ]
+        ],
       ];
       $form['delete_warning_message_entity_types']['entity_types'][$entity_type_id]['#states'] = [
         'enabled' => [
           ':input[name="track_enabled_target_entity_types[entity_types][' . $entity_type_id . ']"]' => ['checked' => TRUE],
-        ]
+        ],
       ];
     }
 
