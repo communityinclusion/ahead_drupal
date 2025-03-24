@@ -50,6 +50,7 @@ class LazyObjectRegistry
     public static function getClassResetters($class)
     {
         $classProperties = [];
+        $hookedProperties = [];
 
         if ((self::$classReflectors[$class] ??= new \ReflectionClass($class))->isInternal()) {
             $propertyScopes = [];
@@ -60,29 +61,27 @@ class LazyObjectRegistry
         foreach ($propertyScopes as $key => [$scope, $name, $readonlyScope]) {
             $propertyScopes[$k = "\0$scope\0$name"] ?? $propertyScopes[$k = "\0*\0$name"] ?? $k = $name;
 
-            if ($k === $key && "\0$class\0lazyObjectState" !== $k) {
+            if ($k !== $key || "\0$class\0lazyObjectState" === $k) {
+                continue;
+            }
+
+            if ($k === $name && ($propertyScopes[$k][4] ?? false)) {
+                $hookedProperties[$k] = true;
+            } else {
                 $classProperties[$readonlyScope ?? $scope][$name] = $key;
             }
         }
 
         $resetters = [];
         foreach ($classProperties as $scope => $properties) {
-            $resetters[] = \Closure::bind(static function ($instance, $skippedProperties, $onlyProperties = null) use ($properties) {
+            $resetters[] = \Closure::bind(static function ($instance, $skippedProperties) use ($properties) {
                 foreach ($properties as $name => $key) {
-                    if (!\array_key_exists($key, $skippedProperties) && (null === $onlyProperties || \array_key_exists($key, $onlyProperties))) {
+                    if (!\array_key_exists($key, $skippedProperties)) {
                         unset($instance->$name);
                     }
                 }
             }, null, $scope);
         }
-
-        $resetters[] = static function ($instance, $skippedProperties, $onlyProperties = null) {
-            foreach ((array) $instance as $name => $value) {
-                if ("\0" !== ($name[0] ?? '') && !\array_key_exists($name, $skippedProperties) && (null === $onlyProperties || \array_key_exists($name, $onlyProperties))) {
-                    unset($instance->$name);
-                }
-            }
-        };
 
         return $resetters;
     }

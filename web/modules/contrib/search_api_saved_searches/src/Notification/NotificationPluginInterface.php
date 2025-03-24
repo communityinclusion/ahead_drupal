@@ -87,7 +87,7 @@ interface NotificationPluginInterface extends ConfigurablePluginInterface {
    *
    * @see \Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler::checkFieldAccess()
    */
-  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL): AccessResultInterface;
+  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface;
 
   /**
    * Notifies the search's owner of new results.

@@ -654,30 +654,45 @@
       iconUrl: options.iconUrl,
     };
 
-    // Override applicable marker defaults.
+    // Apply Icon properties
+    // @see https://leafletjs.com/reference.html#icon
+    
+    // Icon Size.
     if (options.iconSize) {
       icon_options.iconSize = new L.Point(parseInt(options.iconSize.x), parseInt(options.iconSize.y));
     }
+    // Icon Anchor.
     if (options.iconAnchor && options.iconAnchor.x && options.iconAnchor.y) {
       icon_options.iconAnchor = new L.Point(parseInt(options.iconAnchor.x), parseInt(options.iconAnchor.y));
     }
+    // Popup Anchor.
     if (options.popupAnchor && options.popupAnchor.x && options.popupAnchor.y) {
       icon_options.popupAnchor = new L.Point(parseInt(options.popupAnchor.x), parseInt(options.popupAnchor.y));
     }
+
+    // Popup ShadowUrl.
     if (options.shadowUrl) {
       icon_options.shadowUrl = options.shadowUrl;
     }
-    if (options.iconRetinaUrl) {
-      icon_options.iconRetinaUrl = options.iconRetinaUrl;
-    }
+
+    // Popup ShadowSize.
     if (options.shadowSize && options.shadowSize.x && options.shadowSize.y) {
       icon_options.shadowSize = new L.Point(parseInt(options.shadowSize.x), parseInt(options.shadowSize.y));
     }
+
+    // Popup ShadowAnchor.
     if (options.shadowAnchor && options.shadowAnchor.x && options.shadowAnchor.y) {
       icon_options.shadowAnchor = new L.Point(parseInt(options.shadowAnchor.x), parseInt(options.shadowAnchor.y));
     }
+
     if (options.className) {
       icon_options.className = options.className;
+    }
+
+    // Popup IconRetinaUrl.
+    // @see https://www.drupal.org/project/leaflet/issues/3268023
+    if (options.iconRetinaUrl) {
+      icon_options.iconRetinaUrl = options.iconRetinaUrl;
     }
 
     return new L.Icon(icon_options);
@@ -693,7 +708,25 @@
    */
   Drupal.Leaflet.prototype.create_divicon = function (options) {
     let html_class = options['html_class'] || '';
-    return new L.DivIcon({html: options.html, className: html_class});
+    let icon = new L.DivIcon({html: options.html, className: html_class});
+
+    // Apply Icon properties
+    // @see https://leafletjs.com/reference.html#icon
+
+    // Icon Size.
+    if (options.iconSize) {
+      icon.options.iconSize = new L.Point(parseInt(options.iconSize.x, 10), parseInt(options.iconSize.y, 10));
+    }
+    // Icon Anchor.
+    if (options.iconAnchor && options.iconAnchor.x && options.iconAnchor.y) {
+      icon.options.iconAnchor = new L.Point(parseInt(options.iconAnchor.x), parseInt(options.iconAnchor.y));
+    }
+    // Popup Anchor.
+    if (options.popupAnchor && options.popupAnchor.x && options.popupAnchor.y) {
+      icon.options.popupAnchor = new L.Point(parseInt(options.popupAnchor.x), parseInt(options.popupAnchor.y));
+    }
+
+    return icon;
   };
 
   /**

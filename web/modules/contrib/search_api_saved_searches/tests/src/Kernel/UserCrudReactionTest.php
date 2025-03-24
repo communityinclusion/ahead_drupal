@@ -48,13 +48,12 @@ class UserCrudReactionTest extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->installConfig('search_api_saved_searches');
     $this->installEntitySchema('user');
     $this->installEntitySchema('search_api_saved_search');
     $this->installEntitySchema('search_api_task');
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installSchema('search_api_saved_searches', 'search_api_saved_searches_old_results');
+    $this->installConfig('search_api_saved_searches');
 
     User::create([
       'uid' => 0,
@@ -437,7 +436,7 @@ class UserCrudReactionTest extends KernelTestBase {
    * @return array
    *   An associative array of test data sets, keyed by data set label.
    */
-  public function dataSetProvider(): array {
+  public static function dataSetProvider(): array {
     return [
       'default' => [FALSE],
       'email plugin disabled' => [TRUE],

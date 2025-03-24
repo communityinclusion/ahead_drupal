@@ -415,4 +415,11 @@ class File extends EntityReference {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function hasAutocreateSupport() {
+    return FALSE;
+  }
+
 }

@@ -13,7 +13,7 @@ test_dependencies:
   - facets:facets
   - search_api_page:search_api_page
 
-# Information added by Drupal.org packaging script on 2024-04-21
-version: '8.x-1.0'
+# Information added by Drupal.org packaging script on 2025-02-23
+version: '8.x-1.1'
 project: 'search_api_saved_searches'
-datestamp: 1713699953
+datestamp: 1740299099

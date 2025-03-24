@@ -5,21 +5,25 @@
   Drupal.behaviors.leaflet_widget = {
     attach: function (context, settings) {
       $.each(settings.leaflet, function (map_id, settings) {
-        $('#' + map_id, context).each(function () {
-          let map_container = $(this);
-          // If the attached context contains any leaflet maps with widgets, make sure we have a
-          // Drupal.Leaflet_Widget object.
-          if (map_container.data('leaflet_widget') === undefined) {
-            let lMap = drupalSettings.leaflet[map_id].lMap;
-            map_container.data('leaflet_widget', new Drupal.Leaflet_Widget(map_container, lMap, settings));
-            // Define the global Drupal.Leaflet[mapid] object to be accessible
-            // from outside.
-            Drupal.Leaflet_Widget[map_id] = map_container.data('leaflet_widget');
-          }
-          else {
-            // If we already had a widget, update map to make sure that WKT and map are synchronized.
-            map_container.data('leaflet_widget').update_leaflet_widget_map();
-            map_container.data('leaflet_widget').update_input_state();
+
+        const leaflet_elements = $(once('behaviour-leaflet-widget', '#' + map_id));
+        leaflet_elements.each(function () {
+          if (map_id.includes("leaflet-map-widget")) {
+            let map_container = $(this);
+            // If the attached context contains any leaflet maps with widgets, make sure we have a
+            // Drupal.Leaflet_Widget object.
+            if (map_container.data('leaflet_widget') === undefined) {
+              let lMap = drupalSettings.leaflet[map_id].lMap;
+              map_container.data('leaflet_widget', new Drupal.Leaflet_Widget(map_container, lMap, settings));
+              // Define the global Drupal.Leaflet[mapid] object to be accessible
+              // from outside.
+              Drupal.Leaflet_Widget[map_id] = map_container.data('leaflet_widget');
+            }
+            else {
+              // If we already had a widget, update map to make sure that WKT and map are synchronized.
+              map_container.data('leaflet_widget').update_leaflet_widget_map();
+              map_container.data('leaflet_widget').update_input_state();
+            }
           }
         });
       });

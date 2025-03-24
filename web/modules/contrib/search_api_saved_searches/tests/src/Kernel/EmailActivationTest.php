@@ -210,7 +210,7 @@ END;
    *
    * @see \Drupal\Tests\search_api_saved_searches\Kernel\EmailActivationTest::testActivationMail()
    */
-  public function activationMailDataProvider(): array {
+  public static function activationMailDataProvider(): array {
     return [
       'already disabled' => [
         0,

@@ -125,7 +125,7 @@ class DependencyRemovalTest extends KernelTestBase {
    *
    * @see testOptionalDependencyRemoval()
    */
-  public function optionalDependencyRemovalTestDataProvider(): array {
+  public static function optionalDependencyRemovalTestDataProvider(): array {
     return [
       ['module', FALSE],
       ['module', TRUE],

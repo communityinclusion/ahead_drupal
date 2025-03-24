@@ -65,6 +65,13 @@ class EmailTranslationTest extends KernelTestBase {
   protected TestTimeService $timeService;
 
   /**
+   * The site language code to use in searchOverride().
+   *
+   * @see static::searchOverride()
+   */
+  protected string $siteLangcode;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -238,13 +245,8 @@ class EmailTranslationTest extends KernelTestBase {
     // Activate the search and trigger a notification mail.
     $search->set('status', TRUE)->save();
     $this->timeService->advanceTime(3600);
-    $search_method = function (TestBackend $backend, QueryInterface $query) use ($site_langcode) {
-      $this->assertEquals([$site_langcode], $query->getLanguages());
-      $query->getResults()
-        ->setResultCount(1)
-        ->setResultItems([new Item($this->index, 'foo')]);
-    };
-    $this->setMethodOverride('backend', 'search', $search_method);
+    $this->siteLangcode = $site_langcode;
+    $this->setMethodOverride('backend', 'search', [$this, 'searchOverride']);
     $this->container->get('search_api_saved_searches.new_results_check')
       ->checkAll();
 
@@ -267,7 +269,7 @@ class EmailTranslationTest extends KernelTestBase {
    *
    * @see testEmailTranslations()
    */
-  public function emailTranslationsTestDataProvider(): array {
+  public static function emailTranslationsTestDataProvider(): array {
     return [
       'anonymous, site en' => [NULL, 'en', 'en'],
       'anonymous, site xx' => [NULL, 'xx', 'xx'],
@@ -278,6 +280,25 @@ class EmailTranslationTest extends KernelTestBase {
       'user no preference, site en' => ['', 'en', 'en'],
       'user no preference, site xx' => ['', 'xx', 'xx'],
     ];
+  }
+
+  /**
+   * Provides a custom override for BackendInterface::search().
+   *
+   * Executes a search on this server.
+   *
+   * @param \Drupal\search_api_test\Plugin\search_api\backend\TestBackend $backend
+   *   The backend plugin on which the method was invoked.
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The query to execute.
+   *
+   * @see \Drupal\search_api\Backend\BackendInterface::search()
+   */
+  public function searchOverride(TestBackend $backend, QueryInterface $query): void {
+    $this->assertEquals([$this->siteLangcode], $query->getLanguages());
+    $query->getResults()
+      ->setResultCount(1)
+      ->setResultItems([new Item($this->index, 'foo')]);
   }
 
 }

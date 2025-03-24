@@ -102,7 +102,7 @@ class SavedSearchTypeCrudTest extends KernelTestBase {
    *
    * @see testTypeCreation()
    */
-  public function typeCreationTestDataProvider(): array {
+  public static function typeCreationTestDataProvider(): array {
     return [
       'customizable' => [TRUE],
       'fixed' => [FALSE],

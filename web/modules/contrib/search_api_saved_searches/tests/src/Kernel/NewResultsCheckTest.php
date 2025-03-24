@@ -107,7 +107,7 @@ class NewResultsCheckTest extends KernelTestBase {
    *
    * @covers ::getNewResults
    */
-  public function testGetNewResults(?string $date_field, array $expected_new_results = NULL, array $type_options = [], int $expected_result_count = NULL): void {
+  public function testGetNewResults(?string $date_field, ?array $expected_new_results = NULL, array $type_options = [], ?int $expected_result_count = NULL): void {
     // Use a test time service to easily manipulate the "created" date.
     $time = new TestTimeService();
     $this->container->set('datetime.time', $time);
@@ -198,7 +198,7 @@ class NewResultsCheckTest extends KernelTestBase {
    * @return array
    *   Array of argument arrays for testGetNewResults().
    */
-  public function getNewResultsDataProvider(): array {
+  public static function getNewResultsDataProvider(): array {
     return [
       'id method' => [
         NULL,

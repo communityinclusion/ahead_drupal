@@ -47,6 +47,6 @@ interface NotificationPluginManagerInterface extends PluginManagerInterface {
    * @throws \Drupal\search_api_saved_searches\SavedSearchesException
    *   Thrown if an unknown plugin ID is given.
    */
-  public function createPlugins(SavedSearchTypeInterface $type, array $plugin_ids = NULL, array $configurations = []): array;
+  public function createPlugins(SavedSearchTypeInterface $type, ?array $plugin_ids = NULL, array $configurations = []): array;
 
 }

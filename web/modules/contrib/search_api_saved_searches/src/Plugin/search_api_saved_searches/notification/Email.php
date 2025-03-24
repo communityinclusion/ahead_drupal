@@ -244,7 +244,7 @@ class Email extends NotificationPluginBase implements PluginFormInterface {
     $form['activate']['send'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Use activation mail for anonymous users'),
-      '#description' => $this->t("Will require that saved searches created by anonymous users, or by normal users with an email address that isn't their own, are activated by clicking a link in an e-mail."),
+      '#description' => $this->t("Will require that saved searches created by anonymous users, or by normal users with an email address that isn't their own, are activated by clicking a link in an email."),
       '#default_value' => $this->configuration['activate']['send'],
     ];
     $states = [
@@ -429,7 +429,7 @@ There are new results for your saved search "@search_label":
   /**
    * {@inheritdoc}
    */
-  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL): AccessResultInterface {
+  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
     // Make sure this is really our email field.
     if ($field_definition->getName() !== 'mail') {
       return parent::checkFieldAccess($operation, $field_definition, $account, $items);

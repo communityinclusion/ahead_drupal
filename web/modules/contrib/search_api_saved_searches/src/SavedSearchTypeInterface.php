@@ -143,6 +143,6 @@ interface SavedSearchTypeInterface extends ConfigEntityInterface {
    *   saved with this saved search type. Or NULL if no such query could be
    *   found.
    */
-  public function getActiveQuery(QueryHelperInterface $query_helper = NULL): ?QueryInterface;
+  public function getActiveQuery(?QueryHelperInterface $query_helper = NULL): ?QueryInterface;
 
 }

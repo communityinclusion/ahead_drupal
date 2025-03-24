@@ -394,7 +394,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function setNotificationPlugins(array $notification_plugins = NULL): SavedSearchTypeInterface {
+  public function setNotificationPlugins(?array $notification_plugins = NULL): SavedSearchTypeInterface {
     $this->notificationPluginInstances = $notification_plugins;
     return $this;
   }
@@ -452,7 +452,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
   /**
    * {@inheritdoc}
    */
-  public function getActiveQuery(QueryHelperInterface $query_helper = NULL): ?QueryInterface {
+  public function getActiveQuery(?QueryHelperInterface $query_helper = NULL): ?QueryInterface {
     if (!$query_helper) {
       $query_helper = \Drupal::service('search_api.query_helper');
     }
@@ -663,7 +663,7 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
    *
    * Prevents the instantiated plugins from being serialized.
    */
-  public function __sleep() {
+  public function __sleep(): array {
     // First, write any plugin changes to the persistent properties so they
     // won't be discarded.
     $this->writeChangesToSettings();

@@ -1,3 +1,10 @@
+Search API Saved Searches 1.1 (2025-02-23):
+-------------------------------------------
+- #3500673 by drunken monkey: Fixed failing pipelines.
+- #3495857 by prem suthar, drunken monkey: Fixed implicit deprecation warnings
+  about nullable types in PHP 8.4.
+- #3427542 by drunken monkey: Fixed typos reported by cspell.
+
 Search API Saved Searches 1.0 (2024-04-21)
 ------------------------------------------
 Search API Saved Searches 1.0, RC 2 (2024-03-29):

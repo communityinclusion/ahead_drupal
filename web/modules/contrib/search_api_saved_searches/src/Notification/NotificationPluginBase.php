@@ -87,7 +87,7 @@ abstract class NotificationPluginBase extends ConfigurablePluginBase implements 
   /**
    * {@inheritdoc}
    */
-  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL): AccessResultInterface {
+  public function checkFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
     return AccessResult::allowed();
   }
 

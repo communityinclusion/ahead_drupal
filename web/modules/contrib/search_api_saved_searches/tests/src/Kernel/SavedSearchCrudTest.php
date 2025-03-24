@@ -131,7 +131,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api_saved_searches\Kernel\SavedSearchCrudTest::testPostCreate()
    */
-  public function postCreateDataProvider(): array {
+  public static function postCreateDataProvider(): array {
     return [
       'existing label' => [
         'Foobar',
@@ -222,7 +222,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api_saved_searches\Kernel\SavedSearchCrudTest::testPreSave()
    */
-  public function preSaveDataProvider(): array {
+  public static function preSaveDataProvider(): array {
     return [
       'with notifications, index_id set' => [
         10,
@@ -304,7 +304,7 @@ class SavedSearchCrudTest extends KernelTestBase {
    *
    * @see \Drupal\Tests\search_api_saved_searches\Kernel\SavedSearchCrudTest::testPostSave()
    */
-  public function postSaveDataProvider(): array {
+  public static function postSaveDataProvider(): array {
     return [
       'with date field' => [
         TRUE,

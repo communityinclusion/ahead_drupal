@@ -14,7 +14,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "search_api_saved_searches_query",
  *   label = @Translation("Test serialized field item"),
  *   description = @Translation("A field containing a serialized string value."),
- *   category = @Translation("Field"),
+ *   category = "general",
  * )
  */
 class SearchQueryItem extends FieldItemBase {
