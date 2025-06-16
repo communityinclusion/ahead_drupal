@@ -32,7 +32,7 @@ class TestMapper extends FpmTestBase
   /**
    * @inheritdoc
    */
-  protected function setUp()
+  protected function setUp(): void
   {
     $this->class = Text::class;
     $this->type  = "text";

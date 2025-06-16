@@ -29,7 +29,7 @@ class TestRevisionHandler extends FpmTestBase
    */
   protected $type;
 
-  protected function setUp()
+  protected function setUp(): void
   {
     $this->class = Text::class;
     $this->type  = "text";
@@ -42,9 +42,7 @@ class TestRevisionHandler extends FpmTestBase
    */
   public function testConstruct(){
 // Get mock, without the constructor being called
-    $mock = $this->getMockBuilder(RevisionHandler::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $mock = $this->createMock(RevisionHandler::class);
     $reflectedClass = new \ReflectionClass(RevisionHandler::class);
     $constructor = $reflectedClass->getConstructor();
     // Force the constructor to throw error:
@@ -76,9 +74,7 @@ class TestRevisionHandler extends FpmTestBase
     $fpm_targets[$field->getName()] = $field;
     $node = $this->node->reveal();
     $node->fpm_targets = $fpm_targets;
-    $revHandler = $this->getMockBuilder(RevisionHandler::class)
-      ->disableOriginalConstructor()
-      ->setMethods(['checkUpdates','cleanUp'])->getMock();
+    $revHandler = $this->createMock(RevisionHandler::class);
     $revHandler->expects($this->atLeastOnce())->method('checkUpdates');
     $revHandler->expects($this->atLeastOnce())->method('cleanUp');
     $revHandler->handle($node);
@@ -88,9 +84,7 @@ class TestRevisionHandler extends FpmTestBase
    * @covers ::checkUpdates
    */
   public function testCheckUpdates(){
-    $revHandler = $this->getMockBuilder(RevisionHandler::class)
-      ->disableOriginalConstructor()
-      ->setMethods(['createRevision'])->getMock();
+    $revHandler = $this->createMock(RevisionHandler::class);
     $revHandler->expects($this->atLeastOnce())->method('createRevision');
     $method = $this->getMethod($revHandler,'checkUpdates');
     $paragraph = end($this->entityHelper->paragraphs);
@@ -102,9 +96,7 @@ class TestRevisionHandler extends FpmTestBase
    * @covers ::createRevision
    */
   public function testCreateRevision(){
-    $revHandler = $this->getMockBuilder(RevisionHandler::class)
-      ->disableOriginalConstructor()
-      ->setMethods(array('updateParentRevision'))->getMock();
+    $revHandler = $this->createMock(RevisionHandler::class);
     $revHandler->expects($this->atLeastOnce())
       ->method('updateParentRevision')
       ->with($this->isInstanceOf(Paragraph::class));
@@ -123,8 +115,7 @@ class TestRevisionHandler extends FpmTestBase
    * @covers ::updateParentRevision
    */
   public function testUpdateParentRevision(){
-    $revHandler = $this->getMockBuilder(RevisionHandler::class)
-      ->disableOriginalConstructor()->getMock();
+    $revHandler = $this->createMock(RevisionHandler::class);
     $method = $this->getMethod($revHandler,'updateParentRevision');
     $rev_id = 1;
     $frst = $this->entityHelper->paragraphs[1];
@@ -153,17 +144,13 @@ class TestRevisionHandler extends FpmTestBase
     $paragraphs = $this->entityHelper->paragraphs;
     $paragraph = $paragraphs[2];
     // Mock RevisionHandler:
-    $revHandler = $this->getMockBuilder(RevisionHandler::class)
-      ->disableOriginalConstructor()
-      ->setMethods(array('removeUnused'))->getMock();
+    $revHandler = $this->createMock(RevisionHandler::class);
     $arr = $this->isType('array');
     $revHandler->expects($this->atLeastOnce())
       ->method('removeUnused')
       ->with($arr, $arr, $this->isInstanceOf(FieldConfigInterface::class));
     // Mock Importer:
-    $importer = $this->getMockBuilder(Importer::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $importer = $this->createMock(Importer::class);
     $importer->expects($this->atLeastOnce())
       ->method('loadTarget')
       ->with($this->isInstanceOf(EntityInterface::class), $this->isInstanceOf(FieldConfigInterface::class))
@@ -184,9 +171,7 @@ class TestRevisionHandler extends FpmTestBase
    */
   public function testRemoveUnused(){
     // Mock RevisionHandler:
-    $revHandler = $this->getMockBuilder(RevisionHandler::class)
-      ->disableOriginalConstructor()
-      ->setMethods(array('createRevision'))->getMock();
+    $revHandler = $this->createMock(RevisionHandler::class);
     $revHandler->expects($this->never())
       ->method('createRevision')
       ->with($this->isInstanceOf(Paragraph::class));
@@ -215,9 +200,7 @@ class TestRevisionHandler extends FpmTestBase
     $field->set('target_info', $info);
 
     // Mock RevisionHandler to expect a call to createRevision method:
-    $revHandler = $this->getMockBuilder(RevisionHandler::class)
-      ->disableOriginalConstructor()
-      ->setMethods(array('createRevision'))->getMock();
+    $revHandler = $this->createMock(RevisionHandler::class);
     $revHandler->expects($this->atLeastOnce())
       ->method('createRevision')
       ->with($this->isInstanceOf(Paragraph::class));

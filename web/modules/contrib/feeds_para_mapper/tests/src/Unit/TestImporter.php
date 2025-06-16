@@ -40,7 +40,7 @@ class TestImporter extends FpmTestBase
   /**
    * @inheritdoc
    */
-  protected function setUp()
+  protected function setUp(): void
   {
     $this->class = Text::class;
     $this->type  = "text";
@@ -80,9 +80,7 @@ class TestImporter extends FpmTestBase
     $field_manager = $this->fieldHelper->getEntityFieldManagerMock();
     $mapper = $this->getMapperObject();
     // Get mock, without the constructor being called
-    $mock = $this->getMockBuilder(Importer::class)
-      ->disableOriginalConstructor()
-      ->getMock();
+    $mock = $this->createMock(Importer::class);
     $reflectedClass = new \ReflectionClass(Importer::class);
     $constructor = $reflectedClass->getConstructor();
     // Force the constructor to throw error:

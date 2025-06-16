@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0affea37fc52cb01122967c769b2e3b8",
+    "content-hash": "e9d664a52a3f1d819a9286d33ad9ab13",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4636,6 +4636,56 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/feeds",
                 "issues": "https://www.drupal.org/project/issues/feeds"
+            }
+        },
+        {
+            "name": "drupal/feeds_para_mapper",
+            "version": "1.2.0-rc1",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/feeds_para_mapper.git",
+                "reference": "8.x-1.2-rc1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/feeds_para_mapper-8.x-1.2-rc1.zip",
+                "reference": "8.x-1.2-rc1",
+                "shasum": "2916b41bb61c21279b64d41614757480e2be6118"
+            },
+            "require": {
+                "drupal/core": "^10.1 || ^11",
+                "drupal/feeds": "^3.0",
+                "drupal/paragraphs": "^1.5"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.2-rc1",
+                    "datestamp": "1729536330",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "RC releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "hussein-elhussein",
+                    "homepage": "https://www.drupal.org/user/3522231"
+                },
+                {
+                    "name": "joseph.olstad",
+                    "homepage": "https://www.drupal.org/user/1321830"
+                }
+            ],
+            "description": "Allows mapping to Paragraphs fields.",
+            "homepage": "https://www.drupal.org/project/feeds_para_mapper",
+            "support": {
+                "source": "https://git.drupalcode.org/project/feeds_para_mapper"
             }
         },
         {
@@ -18688,6 +18738,7 @@
         "drupal/csv_importer": 20,
         "drupal/email_registration": 5,
         "drupal/feeds": 20,
+        "drupal/feeds_para_mapper": 5,
         "drupal/feeds_tamper": 20,
         "drupal/field_group": 20,
         "drupal/fontyourface": 20,

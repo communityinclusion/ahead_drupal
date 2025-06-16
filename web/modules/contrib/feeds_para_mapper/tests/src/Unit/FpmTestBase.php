@@ -18,7 +18,6 @@ use Drupal\Tests\feeds_para_mapper\Unit\Helpers\FieldHelper;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use function Prophecy\PhpUnit\ProphecyTrait\prophesize;
 use ReflectionClass;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 abstract class FpmTestBase extends UnitTestCase
@@ -95,7 +94,7 @@ abstract class FpmTestBase extends UnitTestCase
   /**
    * @inheritdoc
    */
-  protected function setUp()
+  protected function setUp(): void
   {
     $this->fieldHelper = new FieldHelper($this->getTargetInfo());
     $this->fields = $this->fieldHelper->fields;
@@ -224,10 +223,7 @@ abstract class FpmTestBase extends UnitTestCase
    * @return EntityProcessorBase|\PHPUnit\Framework\MockObject\MockObject
    */
   private function getProcessorMock(){
-    $processor = $this->getMockBuilder(EntityProcessorBase::class)
-      ->disableOriginalConstructor()
-      ->setMethods(array('entityType','bundle'))
-      ->getMock();
+    $processor = $this->createMock(EntityProcessorBase::class);
     $processor->expects($this->any())
       ->method('entityType')
       ->will($this->returnValue("node"));

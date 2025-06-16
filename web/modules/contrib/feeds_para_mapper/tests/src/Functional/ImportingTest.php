@@ -9,8 +9,12 @@ namespace Drupal\Tests\feeds_para_mapper\Functional;
  * @group Feeds Paragraphs
  */
 class ImportingTest extends FeedsParaMapperTestBase {
+  /**
+   * {@inheritdoc}
+   */
   protected $defaultTheme = 'stark';
-  protected function setUp()
+
+  protected function setUp(): void
   {
     parent::setUp();
   }

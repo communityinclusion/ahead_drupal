@@ -2,7 +2,8 @@
 
 namespace Drupal\feeds_para_mapper\Feeds\Target;
 
-
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -33,7 +34,7 @@ use Drupal\field\FieldConfigInterface;
  *   }
  * )
  */
-class WrapperTarget extends FieldTargetBase implements ConfigurableTargetInterface
+class WrapperTarget extends FieldTargetBase implements ConfigurableTargetInterface, ContainerFactoryPluginInterface
 {
   /**
    * @var MessengerInterface
@@ -76,6 +77,19 @@ class WrapperTarget extends FieldTargetBase implements ConfigurableTargetInterfa
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('messenger'),
+      $container->get('plugin.manager.feeds.target'),
+      $container->get('feeds_para_mapper.mapper')
+    );
+  }
 
   /**
    * {@inheritdoc}

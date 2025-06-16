@@ -21,7 +21,7 @@ class TestWrapperTarget extends FpmTestBase {
    */
   protected $type;
 
-  protected function setUp()
+  protected function setUp(): void
   {
     $this->class        = Text::class;
     $this->type         = "text";

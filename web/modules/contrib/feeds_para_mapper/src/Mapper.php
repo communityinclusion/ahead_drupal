@@ -61,8 +61,7 @@ class Mapper
     $supported = array();
     foreach ($fields as $field) {
       foreach ($definitions as $name => $plugin ) {
-        // Hack PF.  got this from https://www.drupal.org/files/issues/2021-08-24/3224211-undefined-index-field-types.patch
-         if(array_key_exists('field_types', $plugin) && in_array($field->getType(), $plugin['field_types'])) {
+        if (!empty($plugin['field_types']) && in_array($field->getType(), $plugin['field_types'])) {
           $this->updateInfo($field, "plugin", $plugin);
           $this->updateInfo($field, "type", $field->getType());
           $supported[] = $field;
@@ -81,7 +80,7 @@ class Mapper
   public function findParagraphsFields($entity_type, $bundle){
     $fields = array();
     $entityFields = $this->entityFieldManager->getFieldDefinitions($entity_type,$bundle);
-    if(!isset($entityFields)){
+    if (!isset($entityFields)) {
       return $fields;
     }
     $entityFields = array_filter($entityFields, function ($item){
@@ -124,7 +123,7 @@ class Mapper
         if ($sub_field->getType() === 'entity_reference_revisions' && !$wrapped) {
           $result = $this->getSubFields($sub_field, $result, $first_host);
         }
-        else if($sub_field->getType() !== "feeds_item" && !$wrapped){
+        else if ($sub_field->getType() !== "feeds_item" && !$wrapped){
           $sub_field = clone $sub_field;
           $host_allowed = $target->getFieldStorageDefinition()->getCardinality();
           $fieldAllowed = $sub_field->getFieldStorageDefinition()->getCardinality();
@@ -153,7 +152,7 @@ class Mapper
 
   protected function isWrapped(&$sub_field, $first_host){
     $wrapped = isset($sub_field->target_info);
-    if(!$wrapped){
+    if (!$wrapped){
       return false;
     }
     $path = $this->buildPath($sub_field, $first_host);
@@ -165,7 +164,7 @@ class Mapper
       }
     }
     $wrapped = $duplicates == count($sub_field->target_info->path);
-    if(!$wrapped){
+    if (!$wrapped){
       unset($sub_field->target_info);
     }
     return $wrapped;
@@ -219,7 +218,7 @@ class Mapper
    */
   public function updateInfo(FieldDefinitionInterface $field, $property, $value){
     $info = $field->get('target_info');
-    if(!isset($info)){
+    if (!isset($info)) {
       $info = new TargetInfo();
     }
     $res = false;
@@ -238,7 +237,7 @@ class Mapper
    */
   public function getInfo(FieldDefinitionInterface $field, $property){
     $info = $field->get('target_info');
-    if(!isset($info)){
+    if (!isset($info)) {
       $info = new TargetInfo();
     }
     $res = null;
@@ -387,7 +386,7 @@ class Mapper
    */
   public function getMaxValues(FieldDefinitionInterface $target, array $configuration = null) {
     $crd = (int) $target->getFieldStorageDefinition()->getCardinality();
-    if(!isset($configuration['max_values'])){
+    if (!isset($configuration['max_values'])) {
       return $crd;
     }
     $unlimited = $crd === -1;

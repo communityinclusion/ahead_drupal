@@ -117,8 +117,8 @@ class Importer {
    * @param FieldTargetDefinition[] $targets
    *  The targets that are being mapped.
    */
-  function resetTypes($targets) {
-    foreach ($targets as $target)
+  private function resetTypes($targets) {
+    foreach ($targets as $target) {
       if ($target instanceof FieldTargetDefinition) {
         $field = $target->getFieldDefinition();
         if ($field instanceof FieldConfigInterface && $info = $field->get('target_info')) {
@@ -132,7 +132,7 @@ class Importer {
    * @param Paragraph $paragraph
    * @param $value
    */
-  function setValue($paragraph, $value){
+  private function setValue($paragraph, $value){
     $target = $this->target->getName();
     // Reset the values of the target:
     $paragraph->{$target} = NULL;
@@ -153,7 +153,7 @@ class Importer {
    *
    * @see Importer::createRevision()
    */
-  function appendToUpdate($paragraph){
+  private function appendToUpdate($paragraph){
     // Add to the entity some information about the current target:
     $paragraphs = array();
     if(count($this->targetInfo->paragraphs)){
@@ -171,7 +171,7 @@ class Importer {
     $this->entity->fpm_targets = $fpm_targets;
   }
 
-  function explode(){
+  private function explode(){
     $values = array();
     $final = [$this->values];
     if(strpos($this->values[0]['value'],'|') !== FALSE){
@@ -196,7 +196,7 @@ class Importer {
    * @return array
    *   The newly created paragraphs items.
    */
-  function initHostParagraphs() {
+  private function initHostParagraphs() {
     $attached = NULL;
     $should_create = FALSE;
     $slices = $this->sliceValues();
@@ -244,7 +244,7 @@ class Importer {
    * @return Paragraph[]
    *   The found paragraphs.
    */
-  function getTarget($entity, $targetConfig, array $result = array()) {
+  private function getTarget($entity, $targetConfig, array $result = array()) {
     $path = $this->mapper->getInfo($targetConfig,'path');
     $last_key = count($path) -1;
     $last_host_field = $path[$last_key]['host_field'];
@@ -257,7 +257,7 @@ class Importer {
           $result[] = $value['entity'];
         }
       }
-      elseif($exist = $entity->hasField($target)){
+      elseif ($exist = $entity->hasField($target)){
         $result[] = $entity;
       }
       else {
@@ -298,7 +298,7 @@ class Importer {
    * @return Paragraph[]
    *   The loaded Paragraphs entities.
    */
-  function loadTarget($entity, $targetInstance,  array $result = array()){
+  public function loadTarget($entity, $targetInstance,  array $result = array()){
     $targetInfo = $targetInstance->get('target_info');
     $path = $targetInfo->path;
     $target = $targetInstance->getName();
@@ -346,7 +346,7 @@ class Importer {
    * @return array
    *   The created Paragraphs entities based on the $slices
    */
-  function createParagraphs($entity, array $slices) {
+  private function createParagraphs($entity, array $slices) {
     $items = array();
     for ($i = 0; $i < count($slices); $i++) {
       $should_create = $this->shouldCreateNew($entity, $slices, $slices[$i]);
@@ -386,7 +386,7 @@ class Importer {
    * @return array
    *   The updated entities.
    */
-  function updateParagraphs($entities, array $slices) {
+  private function updateParagraphs($entities, array $slices) {
     $items = array();
     $slices = $this->checkValuesChanges($slices, $entities);
     for ($i = 0; $i < count($slices); $i++) {
@@ -421,7 +421,7 @@ class Importer {
    * @return array
    *   The newly created and updated entities.
    */
-  function appendParagraphs(array $entities, array $slices) {
+  private function appendParagraphs(array $entities, array $slices) {
     $items = array();
     $slices = $this->checkValuesChanges($slices, $entities);
     for ($i = 0; $i < count($slices); $i++) {
@@ -454,7 +454,7 @@ class Importer {
    * @return EntityInterface
    *   The created paragraph entity.
    */
-  function createParents($parent) {
+  private function createParents($parent) {
     $parents = $this->targetInfo->path;
     $or_count = count($parents);
     $p = $this->removeExistingParents($parents);
@@ -488,7 +488,7 @@ class Importer {
    * @return Paragraph
    *   The duplicated entity, or null on failure.
    */
-  function duplicateExisting($existing) {
+  private function duplicateExisting($existing) {
     if($existing->isNew()){
       $host_info = $existing->host_info;
     }
@@ -511,7 +511,7 @@ class Importer {
    * @return array
    *   The non-existing parents array.
    */
-  function removeExistingParents(array $parents) {
+  private function removeExistingParents(array $parents) {
     $field_manager = $this->field_manager;
     $findByField = function ($entity, $field) use (&$findByField, $field_manager) {
       $p_c = Paragraph::class;
@@ -521,7 +521,7 @@ class Importer {
           $found = $entity;
         }
       }
-      else if($exist = $entity->hasField($field) && count($entity->get($field)->getValue())){
+      else if ($exist = $entity->hasField($field) && count($entity->get($field)->getValue())){
         $found = $entity;
       }
       else {
@@ -576,8 +576,13 @@ class Importer {
    * @return Paragraph
    *   The created Paragraphs entity
    */
-  function createParagraph($field, $bundle, $host_entity) {
-    $created = $this->paragraph_storage->create(array("type" => $bundle));
+  private function createParagraph($field, $bundle, $host_entity) {
+    $created = $this->paragraph_storage->create([
+      'type' => $bundle,
+      'parent_type' => $host_entity->getEntityTypeId(),
+      'parent_id' => $host_entity->id(),
+      'parent_field_name' => $field,
+    ]);
     $host_entity->get($field)->appendItem($created);
     $host_info = array(
       'type' => $host_entity->getEntityTypeId(),
@@ -605,7 +610,7 @@ class Importer {
    * @return bool
    *   TRUE if we should create new Paragraphs entity.
    */
-  function shouldCreateNew($entity, array $slices, array $futureValue = array()) {
+  private function shouldCreateNew($entity, array $slices, array $futureValue = array()) {
     $path = $this->targetInfo->path;
     if (count($path) > 1 && $entity instanceof Paragraph) {
       $host_field = $path[count($path) -1]['host_field'];
@@ -661,7 +666,7 @@ class Importer {
    * @return array
    *   Information about each value state.
    */
-  function checkValuesChanges(array $slices, array $entities) {
+  private function checkValuesChanges(array $slices, array $entities) {
     $target = $this->target->getName();
     $lang = $this->language;
     $getParagraph = function ($index) use ($entities) {
@@ -730,7 +735,7 @@ class Importer {
         $has_common = TRUE;
         $empty_commons = array();
         foreach ($in_common as $fieldInfo) {
-          if (!isset($entities[$i]->{$field['name']})) {
+          if (!$entities[$i]->hasField($fieldInfo['name'])) {
             $empty_commons[] = $fieldInfo;
           }
         }
@@ -753,7 +758,7 @@ class Importer {
    *
    * @return array
    */
-  function sliceValues(){
+  private function sliceValues(){
     $max = $this->mapper->getMaxValues($this->target, $this->configuration);
     if ($max > -1) {
       // if has sub values:
@@ -771,7 +776,7 @@ class Importer {
     return $slices;
   }
 
-  function flattenArray($arr, $property = null){
+  private function flattenArray($arr, $property = null){
     $properties = $this->targetInfo->properties;
     if (!is_array($arr)){
       $stop = null;
@@ -792,15 +797,18 @@ class Importer {
             $items = array_merge($items, $this->flattenArray($item, $property));
           }
         }
-      }else{
+      }
+      else {
         if(isset($property)){
           $items[] = [
             $property => $item,
           ];
-        }else{
+        }
+        else {
           $items[] = $item;
         }
       }
     }
     return $items;
   }
+}

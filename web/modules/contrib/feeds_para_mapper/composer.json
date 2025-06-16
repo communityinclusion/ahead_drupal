@@ -4,7 +4,7 @@
     "type": "drupal-module",
     "license": "GPL-2.0",
     "require": {
-        "drupal/feeds": "~3.0",
-        "drupal/paragraphs": "~1.5"
+        "drupal/feeds": "^3.0",
+        "drupal/paragraphs": "^1.5"
     }
 }

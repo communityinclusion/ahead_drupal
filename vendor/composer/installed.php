@@ -3,7 +3,7 @@
         'name' => 'drupal-composer/drupal-project',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '7f9a18586a3158b841e04da8d0d949539bdef078',
+        'reference' => '53c1ec995703585709398d16d35ed941427fd186',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -379,7 +379,7 @@
         'drupal-composer/drupal-project' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '7f9a18586a3158b841e04da8d0d949539bdef078',
+            'reference' => '53c1ec995703585709398d16d35ed941427fd186',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -756,6 +756,15 @@
             'aliases' => array(
                 0 => '3.x-dev',
             ),
+            'dev_requirement' => false,
+        ),
+        'drupal/feeds_para_mapper' => array(
+            'pretty_version' => '1.2.0-rc1',
+            'version' => '1.2.0.0-RC1',
+            'reference' => '8.x-1.2-rc1',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/feeds_para_mapper',
+            'aliases' => array(),
             'dev_requirement' => false,
         ),
         'drupal/feeds_tamper' => array(

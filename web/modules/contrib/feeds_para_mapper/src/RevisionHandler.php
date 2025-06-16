@@ -190,8 +190,11 @@ class RevisionHandler
         }
       }
     }
-    if($removed > 0){
-     $this->createRevision($parent);
+    if ($removed > 0 && $parent instanceof Paragraph) {
+      $this->createRevision($parent);
+    }
+    else {
+      $parent->save();
     }
   }
 }
