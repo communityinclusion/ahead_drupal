@@ -8,6 +8,7 @@
  */
 
 use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -24,6 +25,9 @@ use Drupal\search_api_saved_searches\Entity\SavedSearchType;
 use Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\notification\Email;
 use Drupal\search_api_saved_searches\SavedSearchesException;
 use Drupal\user\UserInterface;
+
+// Load Token hook implementations.
+require_once __DIR__ . '/search_api_saved_searches.tokens_hooks.inc';
 
 /**
  * Implements hook_cron().
@@ -131,7 +135,12 @@ function search_api_saved_searches_user_insert(UserInterface $account): void {
  * @see \Drupal\search_api_saved_searches\Plugin\search_api_saved_searches\notification\Email::onUserUpdate()
  */
 function search_api_saved_searches_user_update(UserInterface $account): void {
-  $original = $account->original;
+  $original = DeprecationHelper::backwardsCompatibleCall(
+    \Drupal::VERSION,
+    '11.2',
+    fn () => $account->getOriginal(),
+    fn () => $account->original,
+  );
   if (!($original instanceof UserInterface)) {
     return;
   }
@@ -358,8 +367,16 @@ function search_api_saved_searches_search_api_saved_search_presave(EntityInterfa
 
     // Don't check searches that aren't new, unless the mail address changed.
     $mail = $search->get('mail')->value;
-    if (!$search->isNew() && $mail == $search->original->get('mail')->value) {
-      return;
+    if (!$search->isNew()) {
+      $original = DeprecationHelper::backwardsCompatibleCall(
+        \Drupal::VERSION,
+        '11.2',
+        fn () => $search->getOriginal(),
+        fn () => $search->original,
+      );
+      if ($mail == $original->get('mail')->value) {
+        return;
+      }
     }
 
     $owner = $search->getOwner();

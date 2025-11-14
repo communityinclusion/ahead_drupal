@@ -24,7 +24,9 @@ class DependencyRemovalTest extends KernelTestBase {
     'help',
     'options',
     'search_api_saved_searches',
+    'search_api',
     'search_api_saved_searches_test',
+    'search_api_test',
     'user',
   ];
 

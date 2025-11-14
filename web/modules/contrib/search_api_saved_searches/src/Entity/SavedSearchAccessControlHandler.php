@@ -113,8 +113,7 @@ class SavedSearchAccessControlHandler extends EntityAccessControlHandler impleme
     if (!$access->isAllowed()) {
       if (!$entity->getOwner()->isAnonymous()) {
         $is_owner = $account->id() == $entity->getOwnerId();
-        $owner_access = AccessResult::allowedIf($is_owner)
-          ->addCacheableDependency($account);
+        $owner_access = AccessResult::allowedIf($is_owner)->addCacheContexts(['user']);
       }
       else {
         $token = $this->getRequestStack()->getCurrentRequest()->query

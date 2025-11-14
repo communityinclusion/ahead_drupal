@@ -42,7 +42,7 @@ class ForcePasswordChangeConfigPostUpdateSubscriber implements EventSubscriberIn
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events[ConfigEvents::SAVE][] = ['configSave'];
     return $events;
   }

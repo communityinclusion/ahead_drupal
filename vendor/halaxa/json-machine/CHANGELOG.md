@@ -12,6 +12,36 @@ Nothing yet
 
 <br>
 
+## 1.2.5 - 2025-07-07
+- Slight performance optimization of the tokenizing process (about +7 % speed gain) 
+
+<br>
+
+## 1.2.4 - 2025-06-16
+### Fixed
+- The key of a scalar value after a compound value is lost ([#125](https://github.com/halaxa/json-machine/issues/125)). Thanks [@smiletoeverybody](https://github.com/smiletoeverybody)
+
+<br>
+
+## 1.2.3 - 2025-05-30
+- Tokenizer completely rewritten to use regular expressions for partial tokenization.
+Got rid of per-byte processing in PHP code.
+Standard parsing speed boost (non-recursive, non-debug) about + 50 %. Further improvements on the way.
+
+<br>
+
+## 1.2.2 - 2025-04-30
+### Changed
+- Leaner release package ([#124](https://github.com/halaxa/json-machine/issues/124)). Thanks [@robotomarvin](https://github.com/robotomarvin)
+
+<br>
+
+## 1.2.1 - 2025-04-25
+### Fixed
+- File autoloading without composer ([#122](https://github.com/halaxa/json-machine/issues/122)). Thanks [@bahco](https://github.com/bahco)
+- Crash on `null` value in `RecursiveItems` ([#119](https://github.com/halaxa/json-machine/issues/119)). Thanks [@bark92](https://github.com/bark92)
+<br>
+
 ## 1.2.0 - 2024-11-24
 ### Added
 - Recursive iteration via new facade `RecursiveItems`. See **Recursive iteration** in README.
@@ -23,7 +53,7 @@ Nothing yet
 - Support for PHP 8.4
 - Exception on misspelled option name suggests a correct one. 
 ### Fixed
-- Wrong key when combining list and scalar value pointers (#110). Thanks [@daniel-sc](https://github.com/daniel-sc)
+- Wrong key when combining list and scalar value pointers ([#110](https://github.com/halaxa/json-machine/issues/110)). Thanks [@daniel-sc](https://github.com/daniel-sc)
 ### Removed
 - Removed support for PHP 7.0, 7.1
 <br>
@@ -34,13 +64,13 @@ Nothing yet
 - Support for PHP 8.3
 - Added PHPStan to build pipeline
 ### Fixed
-- Fixed the case when non-intersecting pointers were considered intersecting (#106). Thanks [@XedinUnknown](https://github.com/XedinUnknown)
+- Fixed the case when non-intersecting pointers were considered intersecting ([#106](https://github.com/halaxa/json-machine/issues/106)). Thanks [@XedinUnknown](https://github.com/XedinUnknown)
 
 <br>
 
 ## 1.1.3 - 2022-10-12
 ### Fixed
-- Fix the parsing of nested sub-trees that use wildcards (#83). Thanks [@cerbero90](https://github.com/cerbero90)
+- Fix the parsing of nested sub-trees that use wildcards ([#83](https://github.com/halaxa/json-machine/issues/83)). Thanks [@cerbero90](https://github.com/cerbero90)
 
 <br>
 
@@ -49,8 +79,8 @@ Nothing yet
 - PHP 8.2 support
 
 ### Fixed
-- Meaningful error on invalid token. (#86)
-- Added missing return type annotation. (#84)
+- Meaningful error on invalid token. ([#86](https://github.com/halaxa/json-machine/issues/86))
+- Added missing return type annotation. ([#84](https://github.com/halaxa/json-machine/issues/84))
 
 <br>
 
@@ -149,7 +179,7 @@ https://stackoverflow.com/questions/63706550
 
 ## 0.6.1
 ### Fixed bugs
-- Empty dict at the end of an item was causing Syntax error in the next item. Reason: closing `}` did not set object key expectation to `false`. (#41 via PR #42).
+- Empty dict at the end of an item was causing Syntax error in the next item. Reason: closing `}` did not set object key expectation to `false`. ([#41](https://github.com/halaxa/json-machine/issues/41) via PR [#42](https://github.com/halaxa/json-machine/issues/42)).
 
 <br>
 

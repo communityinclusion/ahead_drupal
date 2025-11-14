@@ -19,6 +19,7 @@ class SavedSearchTypeCrudTest extends KernelTestBase {
    */
   protected static $modules = [
     'options',
+    'search_api',
     'search_api_saved_searches',
     'user',
   ];

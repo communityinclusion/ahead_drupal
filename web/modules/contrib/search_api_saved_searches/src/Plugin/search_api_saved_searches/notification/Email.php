@@ -14,10 +14,12 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Utility\Error;
 use Drupal\Core\Utility\Token;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\ResultSetInterface;
+use Drupal\search_api_saved_searches\Attribute\SearchApiSavedSearchesNotification;
 use Drupal\search_api_saved_searches\BundleFieldDefinition;
 use Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler;
 use Drupal\search_api_saved_searches\Notification\NotificationPluginBase;
@@ -27,13 +29,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides emails as a notification mechanism.
- *
- * @SearchApiSavedSearchesNotification(
- *   id = "email",
- *   label = @Translation("Email"),
- *   description = @Translation("Sends new results via email."),
- * )
  */
+#[SearchApiSavedSearchesNotification(
+  id: 'email',
+  label: new TranslatableMarkup('Email'),
+  description: new TranslatableMarkup('Sends new results via email.'),
+)]
 class Email extends NotificationPluginBase implements PluginFormInterface {
 
   use PluginFormTrait;
@@ -438,7 +439,7 @@ There are new results for your saved search "@search_label":
     if (!$this->configuration['registered_choose_mail']) {
       $permission = SavedSearchAccessControlHandler::ADMIN_PERMISSION;
       return AccessResult::allowedIf($account->isAnonymous())
-        ->addCacheableDependency($account)
+        ->addCacheContexts(['user.roles:anonymous'])
         ->orIf(AccessResult::allowedIfHasPermission($account, $permission));
     }
 

@@ -14,7 +14,7 @@ use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
 /**
  * Provides an interface for notification plugins.
  *
- * @see \Drupal\search_api_saved_searches\Annotation\SearchApiSavedSearchesNotification
+ * @see \Drupal\search_api_saved_searches\Attribute\SearchApiSavedSearchesNotification
  * @see \Drupal\search_api_saved_searches\Notification\NotificationPluginManager
  * @see \Drupal\search_api_saved_searches\Notification\NotificationPluginBase
  * @see plugin_api

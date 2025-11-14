@@ -113,7 +113,7 @@ class LeafletService {
     StreamWrapperManagerInterface $stream_wrapper_manager,
     RequestStack $request_stack,
     CacheBackendInterface $cache,
-    FileUrlGeneratorInterface $file_url_generator
+    FileUrlGeneratorInterface $file_url_generator,
   ) {
     $this->currentUser = $current_user;
     $this->geoPhpWrapper = $geophp_wrapper;
@@ -154,7 +154,7 @@ class LeafletService {
     }
 
     // Add the Leaflet Reset View library, if requested.
-    if (isset($map['settings']['reset_map']) && $map['settings']['reset_map']['control']) {
+    if (isset($map['settings']['reset_map']) && is_array($map['settings']['reset_map']) && array_key_exists('control', $map['settings']['reset_map']) && $map['settings']['reset_map']['control']) {
       $attached_libraries[] = 'leaflet/leaflet.reset_map_view';
     }
 
@@ -170,7 +170,7 @@ class LeafletService {
     }
 
     // Add the Leaflet Fullscreen library, if requested.
-    if (isset($map['settings']['fullscreen']) && $map['settings']['fullscreen']['control']) {
+    if (isset($map['settings']['fullscreen']) && !empty($map['settings']['fullscreen']['control'])) {
       $attached_libraries[] = 'leaflet/leaflet.fullscreen';
     }
 
@@ -279,7 +279,7 @@ class LeafletService {
    * Process the Geometry Collection.
    *
    * @param \Geometry $geom
-   *   The Geometry Collection.
+   *   The Geometry.
    *
    * @return array
    *   The return array.
@@ -311,9 +311,9 @@ class LeafletService {
       case 'polygon':
         /** @var \GeometryCollection $geom */
         $polygon_components = $geom->getComponents();
+        /** @var \GeometryCollection $geom */
         foreach ($polygon_components as $k => $geom) {
           $points = $geom->getComponents();
-          /** @var \Geometry $component */
           foreach ($points as $point) {
             $datum['points'][$k][] = [
               'lat' => $point->getY(),
@@ -353,7 +353,6 @@ class LeafletService {
           $polygon_components = $polygon->getComponents();
           foreach ($polygon_components as $k => $geom) {
             $points = $geom->getComponents();
-            /** @var \Geometry $component */
             foreach ($points as $point) {
               $datum['points'][$j][$k][] = [
                 'lat' => $point->getY(),
@@ -415,22 +414,25 @@ class LeafletService {
    * @param string $cachePrefix
    *   The cache prefix.
    */
-  private function setSizeIfEmptyOrInvalid(array &$feature, string $type, string $urlKey, string $sizeKey, string $cachePrefix) {
+  protected function setSizeIfEmptyOrInvalid(array &$feature, string $type, string $urlKey, string $sizeKey, string $cachePrefix) {
     $url = $feature["icon"][$urlKey] ?? NULL;
     if (!empty($url) && isset($feature["icon"][$sizeKey])
       && (intval($feature["icon"][$sizeKey]["x"]) === 0 || intval($feature["icon"][$sizeKey]["y"]) === 0)) {
 
       $url = $this->generateAbsoluteString($url);
+      $cache_index = $url . '-' . $feature["icon"][$sizeKey]["x"] . '-' . $feature["icon"][$sizeKey]["y"];
 
       // Use the cached size if present for this URL.
-      $page_cache = &drupal_static("$cachePrefix:$url");
+      $page_cache = &drupal_static($cachePrefix . ":" . $cache_index);
       if (is_array($page_cache) && array_key_exists('x', $page_cache) && array_key_exists('y', $page_cache)) {
         $feature["icon"][$sizeKey]["x"] = $page_cache['x'];
         $feature["icon"][$sizeKey]["y"] = $page_cache['y'];
       }
-      elseif ($cached = $this->cache->get('leaflet_map_icon_size:' . $url)) {
+      elseif ($cached = $this->cache->get('leaflet_map_icon_size:' . $cache_index)) {
         $feature["icon"][$sizeKey]["x"] = $cached->data['x'];
         $feature["icon"][$sizeKey]["y"] = $cached->data['y'];
+        // Set the size in the page cache.
+        $page_cache = $feature["icon"][$sizeKey];
       }
       elseif ($this->fileExists($url)) {
         $fileParts = pathinfo($url);
@@ -470,7 +472,7 @@ class LeafletService {
         $page_cache = $feature["icon"][$sizeKey];
 
         // Set the feature icon size in the backend cache.
-        $this->cache->set('leaflet_map_icon_size:' . $url, $feature["icon"][$sizeKey]);
+        $this->cache->set('leaflet_map_icon_size:' . $cache_index, $feature["icon"][$sizeKey]);
       }
     }
   }

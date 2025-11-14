@@ -18,6 +18,14 @@ parameters:
 
     # Specific errors we don't want to or cannot fix.
 
+    - # The entity type attributes were not introduced until Drupal 11.1.
+      # @todo Remove once we depend on Drupal 11.1+.
+      message: "#^Attribute class Drupal\\\\Core\\\\Entity\\\\Attribute\\\\(Config|Content)EntityType does not exist\\.$#"
+      paths:
+        - src/Entity/SavedSearch.php
+        - src/Entity/SavedSearchType.php
+      reportUnmatched: false
+
     - # Since we don't depend on the VBO module, it isn't available for PhpStan.
       message: "#^Access to an undefined property Drupal\\\\search_api_saved_searches\\\\Entity\\\\SavedSearchType::\\$original\\.#"
       count: 1

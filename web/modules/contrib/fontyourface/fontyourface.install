@@ -232,6 +232,7 @@ function fontyourface_update_8004() {
   while (TRUE) {
     $storage_handler = \Drupal::entityTypeManager()->getStorage('font_display');
     $fdids = \Drupal::entityQuery('font_display')
+      ->accessCheck(FALSE)
       ->range($pager, 50)
       ->execute();
     if (!empty($fdids)) {

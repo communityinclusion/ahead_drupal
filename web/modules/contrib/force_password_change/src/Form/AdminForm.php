@@ -66,14 +66,14 @@ class AdminForm extends FormBase {
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function getFormId() {
     return 'force_password_change_admin_form';
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attached']['library'] = [
@@ -304,7 +304,7 @@ class AdminForm extends FormBase {
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // First set some variable defaults.

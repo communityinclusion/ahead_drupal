@@ -7,7 +7,7 @@ dependencies:
   - feeds:feeds
   - paragraphs:paragraphs
 
-# Information added by Drupal.org packaging script on 2024-10-21
-version: '8.x-1.2-rc1'
+# Information added by Drupal.org packaging script on 2025-09-25
+version: '8.x-1.4'
 project: 'feeds_para_mapper'
-datestamp: 1729536333
+datestamp: 1758805964

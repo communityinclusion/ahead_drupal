@@ -13,7 +13,7 @@ use Drupal\tamper\TamperableItemInterface;
  *   id = "feeds_tamper_test",
  *   label = @Translation("Test"),
  *   description = @Translation("This plugin adds 'test' to the value."),
- *   category = "Text"
+ *   category = @Translation("Text")
  * )
  */
 class TestPlugin extends TamperBase {

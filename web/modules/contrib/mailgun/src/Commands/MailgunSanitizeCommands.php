@@ -73,7 +73,7 @@ class MailgunSanitizeCommands extends DrushCommands implements SanitizePluginInt
    * Verifies that 'sanitize-mailgun-queue' option is not set to "no".
    *
    * @return bool
-   *   TRUE if santize realname is enabled.
+   *   TRUE if sanitize real name is enabled.
    */
   protected function applies($value) {
     return ($value !== 'no');

@@ -6,13 +6,15 @@ use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\search_api_saved_searches\Annotation\SearchApiSavedSearchesNotification as NotificationPluginAnnotation;
+use Drupal\search_api_saved_searches\Attribute\SearchApiSavedSearchesNotification as NotificationPluginAttribute;
 use Drupal\search_api_saved_searches\SavedSearchesException;
 use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
 
 /**
  * Manages notification plugins.
  *
- * @see \Drupal\search_api_saved_searches\Annotation\SearchApiSavedSearchesNotification
+ * @see \Drupal\search_api_saved_searches\Attribute\SearchApiSavedSearchesNotification
  * @see \Drupal\search_api_saved_searches\Notification\NotificationPluginInterface
  * @see \Drupal\search_api_saved_searches\Notification\NotificationPluginBase
  * @see plugin_api
@@ -31,7 +33,14 @@ class NotificationPluginManager extends DefaultPluginManager implements Notifica
    *   The module handler.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/search_api_saved_searches/notification', $namespaces, $module_handler, 'Drupal\search_api_saved_searches\Notification\NotificationPluginInterface', 'Drupal\search_api_saved_searches\Annotation\SearchApiSavedSearchesNotification');
+    parent::__construct(
+      'Plugin/search_api_saved_searches/notification',
+      $namespaces,
+      $module_handler,
+      NotificationPluginInterface::class,
+      NotificationPluginAttribute::class,
+      NotificationPluginAnnotation::class,
+    );
 
     $this->setCacheBackend($cache_backend, 'search_api_saved_searches_notification');
     $this->alterInfo('search_api_saved_searches_notification_info');

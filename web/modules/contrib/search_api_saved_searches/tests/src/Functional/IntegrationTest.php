@@ -28,10 +28,8 @@ class IntegrationTest extends BrowserTestBase {
   protected static $modules = [
     'block',
     'field_ui',
-    // The "language" module is only needed for the moment because of a bug in
-    // Core. See https://www.drupal.org/node/3273888.
-    'language',
     'search_api_saved_searches',
+    'search_api_saved_searches_test',
     'search_api_test_views',
   ];
 
@@ -121,6 +119,10 @@ class IntegrationTest extends BrowserTestBase {
     $assert_session->pageTextContains('A default type created automatically at module installation.');
 
     $this->clickLink('Edit');
+
+    $assert_session->elementExists('css', 'input[name="notification_plugins[email]"]');
+    $assert_session->elementExists('css', 'input[name="notification_plugins[search_api_saved_searches_test]"]');
+    $assert_session->elementExists('css', 'input[name="notification_plugins[search_api_saved_searches_test_hidden]"]');
 
     $activation_mail = <<<'END'
 - Activate: [search-api-saved-search:activate-url]

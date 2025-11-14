@@ -99,9 +99,6 @@ class ForcePasswordChangeController extends ControllerBase implements ForcePassw
     $this->forcePasswordChangeService = $forcePasswordChangeService;
   }
 
-  /**
-   *
-   */
   public function adminPage() {
     $page =
     [
@@ -113,9 +110,6 @@ class ForcePasswordChangeController extends ControllerBase implements ForcePassw
     return $page;
   }
 
-  /**
-   *
-   */
   public function roleListPage($rid) {
     $page =
     [

@@ -4,11 +4,14 @@ namespace Drupal\search_api_saved_searches\Entity;
 
 use Drupal\Component\Plugin\Definition\PluginDefinitionInterface;
 use Drupal\Component\Plugin\Exception\PluginException;
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
+use Drupal\Core\Entity\Attribute\ConfigEntityType;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Utility\Error;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Utility\QueryHelperInterface;
@@ -62,6 +65,47 @@ use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
  *   },
  * )
  */
+#[ConfigEntityType(
+  id: 'search_api_saved_search_type',
+  label: new TranslatableMarkup('Saved search type'),
+  label_collection: new TranslatableMarkup('Saved search type'),
+  label_singular: new TranslatableMarkup('saved search type'),
+  label_plural: new TranslatableMarkup('saved search types'),
+  config_prefix: 'type',
+  entity_keys: [
+    'id' => 'id',
+    'label' => 'label',
+    'uuid' => 'uuid',
+  ],
+  handlers: [
+    'storage' => 'Drupal\search_api_saved_searches\Entity\SavedSearchTypeStorage',
+    'list_builder' => 'Drupal\search_api_saved_searches\SavedSearchTypeListBuilder',
+    'form' => [
+      'default' => 'Drupal\search_api_saved_searches\Form\SavedSearchTypeForm',
+      'edit' => 'Drupal\search_api_saved_searches\Form\SavedSearchTypeForm',
+      'delete' => 'Drupal\search_api_saved_searches\Form\SavedSearchTypeDeleteConfirmForm',
+    ],
+  ],
+  links: [
+    'add-form' => '/admin/config/search/search-api-saved-searches/add-type',
+    'edit-form' => '/admin/config/search/search-api-saved-searches/type/{search_api_saved_search_type]/edit',
+    'delete-form' => '/admin/config/search/search-api-saved-searches/type/{search_api_saved_search_type}/delete',
+    'collection' => '/admin/config/search/search-api-saved-searches',
+  ],
+  admin_permission: 'administer search_api_saved_searches',
+  bundle_of: 'search_api_saved_search',
+  label_count: [
+    'singular' => '@count saved search type',
+    'plural' => '@count saved search types',
+  ],
+  config_export: [
+    'id',
+    'label',
+    'description',
+    'notification_settings',
+    'options',
+  ],
+)]
 class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeInterface {
 
   /**
@@ -166,7 +210,17 @@ class SavedSearchType extends ConfigEntityBundleBase implements SavedSearchTypeI
 
     // If notification plugins changed, we might have new field definitions (or
     // removed old ones).
-    $original = $update ? $this->original : static::create(['id' => $this->id()]);
+    if ($update) {
+      $original = DeprecationHelper::backwardsCompatibleCall(
+        \Drupal::VERSION,
+        '11.2',
+        fn () => $this->getOriginal(),
+        fn () => $this->original,
+      );
+    }
+    else {
+      $original = static::create(['id' => $this->id()]);
+    }
     $this->adaptFieldStorageDefinitions($original, $this);
 
     // @todo When changing the "date_field" for one or more indexes from/to the

@@ -6,6 +6,7 @@ use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -13,6 +14,7 @@ use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Utility\Error;
 use Drupal\search_api\Utility\QueryHelperInterface;
 use Drupal\search_api_saved_searches\LoggerTrait;
@@ -22,13 +24,12 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Displays the "Save search" form in a block.
- *
- * @Block(
- *   id = "search_api_saved_searches",
- *   admin_label = @Translation("Save search"),
- *   category = @Translation("Forms"),
- * )
  */
+#[Block(
+  id: 'search_api_saved_searches',
+  admin_label: new TranslatableMarkup('Save search'),
+  category: new TranslatableMarkup('Forms'),
+)]
 class SaveSearch extends BlockBase implements ContainerFactoryPluginInterface {
 
   use LoggerTrait;

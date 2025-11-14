@@ -240,27 +240,28 @@ class ForcePasswordChangeService implements ForcePasswordChangeServiceInterface 
    * {@inheritdoc}
    */
   public function getTextDate($seconds) {
+    $time_period = '';
     $year = 60 * 60 * 24 * 365;
-    if ($timestamp % $year === 0) {
-      $time_period = $timestamp / $year;
+    if ($seconds % $year === 0) {
+      $time_period = $seconds / $year;
       $time_period = ($time_period > 1) ? $time_period . ' ' . t('years') : t('year');
     }
     else {
       $week = 60 * 60 * 24 * 7;
-      if ($timestamp % $week === 0) {
-        $time_period = $timestamp / $week;
+      if ($seconds % $week === 0) {
+        $time_period = $seconds / $week;
         $time_period = ($time_period > 1) ? $time_period . ' ' . t('weeks') : t('week');
       }
       else {
         $day = 60 * 60 * 24;
-        if ($timestamp % $day === 0) {
-          $time_period = $timestamp / $day;
+        if ($seconds % $day === 0) {
+          $time_period = $seconds / $day;
           $time_period = ($time_period > 1) ? $time_period . ' ' . t('days') : t('day');
         }
         else {
           $hour = 60 * 60;
-          if ($timestamp % $hour === 0) {
-            $time_period = $timestamp / $hour;
+          if ($seconds % $hour === 0) {
+            $time_period = $seconds / $hour;
             $time_period = ($time_period > 1) ? $time_period . ' ' . t('hours') : t('hour');
           }
         }

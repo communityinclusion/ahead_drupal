@@ -72,9 +72,9 @@ foreach ($users as $id => $user) {
 Random access like `$users[42]` is not yet possible.
 Use above-mentioned `foreach` and find the item or use [JSON Pointer](#parsing-a-subtree).
 
-Count the items via [`iterator_count($users)`](https://www.php.net/manual/en/function.iterator-count.php).
+Counting the items is possible via [`iterator_count($users)`](https://www.php.net/manual/en/function.iterator-count.php).
 Remember it will still have to internally iterate the whole thing to get the count and thus will take about the same time
-as iterating it and counting by hand.
+as iterating it and counting in a loop.
 
 Requires `ext-json` if used out of the box but doesn't if a custom decoder is used. See [Decoders](#decoders).
 
@@ -88,7 +88,7 @@ based on generators developed for unpredictably long JSON streams or documents. 
 - Constant memory footprint for unpredictably large JSON documents.
 - Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
 - Efficient iteration on any subtree of the document, specified by [JSON Pointer](#json-pointer)
-- Speed. Performance critical code contains no unnecessary function calls, no regular expressions
+- Speed. Performance critical code is optimized for speed with JIT in mind,
 and uses native `json_decode` to decode JSON document items by default. See [Decoders](#decoders).
 - Parses not only streams but any iterable that produces JSON chunks.
 - Thoroughly tested. More than 200 tests and 1000 assertions.

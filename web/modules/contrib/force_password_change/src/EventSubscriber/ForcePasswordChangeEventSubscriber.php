@@ -68,7 +68,7 @@ class ForcePasswordChangeEventSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     // On page load, we need to check for whether the user should be redirected
     // to the change password page.
     $events[KernelEvents::REQUEST][] = ['checkForPasswordForce'];

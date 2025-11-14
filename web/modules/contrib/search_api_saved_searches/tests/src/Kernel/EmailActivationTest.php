@@ -53,7 +53,6 @@ class EmailActivationTest extends KernelTestBase {
     $this->installEntitySchema('user');
     $this->installEntitySchema('search_api_saved_search');
     $this->installConfig(['search_api_saved_searches', 'user']);
-    $this->installSchema('system', 'sequences');
 
     // Create user accounts.
     $this->users[0] = User::create([

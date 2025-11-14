@@ -448,7 +448,8 @@ display:
           not: false
           entity_type: search_api_saved_search
           entity_field: uid
-          plugin_id: numeric
+          plugin_id: entity_target_id
+          target_entity_type_id: user
       display_extenders: {  }
     cache_metadata:
       max-age: 0

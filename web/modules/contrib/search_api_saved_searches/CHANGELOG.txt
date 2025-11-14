@@ -1,3 +1,17 @@
+Search API Saved Searches 1.2 (2025-11-01):
+-------------------------------------------
+- [#3542805] ci: Enabled deprecation testing.
+- [#3541726] feat: Made sure our UI respects the "no_ui" plugin key.
+- [#3545333] ci: Fixed failing tests against Drupal 11.3.
+- [#3538364] fix: Fixed our Views default config to use the correct
+  "entity_target_id" plugin for the "uid" field.
+- [#3541733] chore: Added plugin attributes to our entity types and plugins.
+- [#3539577] feat: Added attribute discovery support for the notification
+  plugin type.
+- [#3527038] fix: Fixed problems when running new results checks via CLI with
+  too many saved searches to check.
+- [#3518958] fix: Fixed deprecation warnings in PHP 8.4.
+
 Search API Saved Searches 1.1 (2025-02-23):
 -------------------------------------------
 - #3500673 by drunken monkey: Fixed failing pipelines.

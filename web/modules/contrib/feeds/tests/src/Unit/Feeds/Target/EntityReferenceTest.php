@@ -105,6 +105,8 @@ class EntityReferenceTest extends EntityReferenceTestBase {
    * @covers ::prepareValue
    *
    * Tests preparing value without passing values.
+   *
+   * @phpstan-ignore phpunit.coversMethod
    */
   public function testPrepareValueEmptyFeed() {
     $method = $this->getProtectedClosure($this->instantiatePlugin(), 'prepareValue');
@@ -118,6 +120,8 @@ class EntityReferenceTest extends EntityReferenceTestBase {
    * @covers ::findEntities
    *
    * Tests preparing value without match.
+   *
+   * @phpstan-ignore phpunit.coversMethod
    */
   public function testPrepareValueReferenceNotFound() {
     $this->entityFinder->findEntities('referenceable_entity_type', 'referenceable_entity_type label', 1, [])

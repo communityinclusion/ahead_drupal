@@ -171,12 +171,12 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase implements Conta
 
     $options = $this->getUpdateNonExistentActions();
     $selected = $this->plugin->getConfiguration('update_non_existent');
-    if (!isset($options[$selected])) {
+    if (is_string($selected) && strlen($selected) > 0 && !isset($options[$selected])) {
       $options[$selected] = $this->t('@label (action no longer available)', [
         '@label' => $selected,
       ]);
     }
-    if (!empty($options)) {
+    if ($options !== []) {
       $form['update_non_existent'] = [
         '#type' => 'select',
         '#title' => $this->t('Previously imported items'),

@@ -77,7 +77,6 @@ class EmailTranslationTest extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('search_api_saved_searches', ['search_api_saved_searches_old_results']);
     $this->installEntitySchema('entity_test_mulrev_changed');
     $this->installEntitySchema('search_api_task');

@@ -297,6 +297,7 @@ class WrapperTarget extends FieldTargetBase implements ConfigurableTargetInterfa
     $sum = null;
     if ($this->targetInstance instanceof ConfigurableTargetInterface) {
       $sum = $this->targetInstance->getSummary();
+      $sum = is_array($sum) ? implode(PHP_EOL, $sum) : $sum;
     }
     $has_settings = $mapper->getInfo($this->field, 'has_settings');
     $final_str = $sum;

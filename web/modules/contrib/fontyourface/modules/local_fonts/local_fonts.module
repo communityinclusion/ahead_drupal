@@ -78,6 +78,7 @@ function local_fonts_entity_delete(EntityInterface $entity) {
   if ($entity instanceof LocalFontConfigEntity) {
     $font_id = 'local_fonts://' . $entity->id();
     $fids = \Drupal::entityQuery('font')
+      ->accessCheck(FALSE)
       ->condition('url', $font_id)
       ->range(0, 50)
       ->execute();

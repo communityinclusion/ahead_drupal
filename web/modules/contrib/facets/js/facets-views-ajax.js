@@ -65,6 +65,10 @@
 
   // Helper function to update views output & Ajax facets.
   var updateFacetsView = function (href, current_dom_id, view_path) {
+    // Update url.
+    window.historyInitiated = true;
+    window.history.pushState(null, document.title, href);
+    
     // Refresh view.
     var views_parameters = Drupal.Views.parseQueryString(href);
     var views_arguments = Drupal.Views.parseViewArgs(href, 'search');
@@ -81,10 +85,6 @@
     views_ajax_settings.url = view_path + '?q=' + href;
 
     Drupal.ajax(views_ajax_settings).execute();
-
-    // Update url.
-    window.historyInitiated = true;
-    window.history.pushState(null, document.title, href);
 
     // ToDo: Update views+facets with ajax on history back.
     // For now we will reload the full page.

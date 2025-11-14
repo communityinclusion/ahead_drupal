@@ -61,7 +61,6 @@ class SavedSearchCrudTest extends KernelTestBase {
     $this->installEntitySchema('search_api_task');
     $this->installConfig('search_api');
     $this->installConfig('search_api_saved_searches');
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('search_api_saved_searches', 'search_api_saved_searches_old_results');
 
     $server = Server::create([

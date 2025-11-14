@@ -7,7 +7,9 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\search_api_saved_searches\Entity\SavedSearchAccessControlHandler;
+use Drupal\views\Attribute\ViewsArgumentValidator;
 use Drupal\views\Plugin\views\argument_validator\ArgumentValidatorPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -15,13 +17,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Validates whether the argument matches the current authenticated user.
  *
  * This code is based on the Commerce module.
- *
- * @ViewsArgumentValidator(
- *   id = "search_api_saved_searches_current_authenticated_user",
- *   title = @Translation("Current authenticated user"),
- *   entity_type = "user",
- * )
  */
+#[ViewsArgumentValidator(
+  id: 'search_api_saved_searches_current_authenticated_user',
+  title: new TranslatableMarkup('Current authenticated user'),
+  entity_type: 'user',
+)]
 class CurrentAuthenticatedUser extends ArgumentValidatorPluginBase implements CacheableDependencyInterface {
 
   /**

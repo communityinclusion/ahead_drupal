@@ -252,6 +252,13 @@ class SavedSearchTypeForm extends EntityForm {
     $notification_plugin_options = [];
     try {
       foreach ($this->getNotificationPluginManager()->createPlugins($type) as $plugin_id => $notification_plugin) {
+        // Do not show hidden suggester plugins, unless they are currently
+        // selected.
+        if (
+          $notification_plugin->isHidden()
+          && !$type->isValidNotificationPlugin($plugin_id)) {
+          continue;
+        }
         $notification_plugin_options[$plugin_id] = $notification_plugin->label();
         $form['notifications']['notification_plugins'][$plugin_id]['#description'] = $notification_plugin->getDescription();
       }

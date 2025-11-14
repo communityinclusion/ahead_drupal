@@ -14,7 +14,6 @@ use Drupal\Core\Utility\Error;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\SearchApiException;
-use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_saved_searches\LoggerTrait;
 use Drupal\search_api_saved_searches\SavedSearchesException;
 use Drupal\search_api_saved_searches\SavedSearchInterface;
@@ -176,17 +175,17 @@ class NewResultsCheck {
       }
     }
 
-    // Limit the number of searches to check in a single request, unless we're
-    // running in the CLI (where we don't have to worry about the maximum
-    // execution time).
-    if (!Utility::isRunningInCli()) {
-      $limit = $this->configFactory
-        ->get('search_api_saved_searches.settings')
-        ->get('cron_batch_size');
-      if ($limit > 0) {
-        $query->sort('next_execution');
-        $query->range(0, $limit);
-      }
+    // It is important to always apply a batch size limit to the query, except
+    // if the configuration is set to 0. There can be tens of thousands of saved
+    // searches in the system that need to be checked at the same time. Even
+    // when run through the PHP CLI the execution time and resource usage should
+    // be predictable and not be unlimited.
+    $limit = $this->configFactory
+      ->get('search_api_saved_searches.settings')
+      ->get('cron_batch_size');
+    if ($limit > 0) {
+      $query->sort('next_execution');
+      $query->range(0, $limit);
     }
 
     // Add a tag to make it easy for other modules to alter this query.

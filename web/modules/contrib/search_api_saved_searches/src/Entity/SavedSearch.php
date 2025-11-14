@@ -4,18 +4,25 @@ namespace Drupal\search_api_saved_searches\Entity;
 
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Component\Utility\Crypt;
+use Drupal\Core\Entity\Attribute\ContentEntityType;
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Exception\UnsupportedEntityTypeDefinitionException;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Utility\Error;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\search_api_saved_searches\Form\SavedSearchCreateForm;
+use Drupal\search_api_saved_searches\Form\SavedSearchDeleteConfirmForm;
+use Drupal\search_api_saved_searches\Form\SavedSearchForm;
 use Drupal\search_api_saved_searches\Plugin\Field\KeywordsItemList;
 use Drupal\search_api_saved_searches\SavedSearchesException;
 use Drupal\search_api_saved_searches\SavedSearchInterface;
 use Drupal\search_api_saved_searches\SavedSearchTypeInterface;
+use Drupal\search_api_saved_searches\SavedSearchViewsData;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -68,6 +75,51 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
+#[ContentEntityType(
+  id: 'search_api_saved_search',
+  label: new TranslatableMarkup('Saved search'),
+  label_collection: new TranslatableMarkup('Saved searches'),
+  label_singular: new TranslatableMarkup('saved search'),
+  label_plural: new TranslatableMarkup('saved searches'),
+  entity_keys: [
+    'id' => 'id',
+    'bundle' => 'type',
+    'label' => 'label',
+    'langcode' => 'langcode',
+    'uuid' => 'uuid',
+    'uid' => 'uid',
+    'owner' => 'uid',
+  ],
+  handlers: [
+    'list_builder' => EntityListBuilder::class,
+    'access' => SavedSearchAccessControlHandler::class,
+    'views_data' => SavedSearchViewsData::class,
+    'form' => [
+      'default' => SavedSearchForm::class,
+      'create' => SavedSearchCreateForm::class,
+      'edit' => SavedSearchForm::class,
+      'delete' => SavedSearchDeleteConfirmForm::class,
+    ],
+  ],
+  links: [
+    'canonical' => '/saved-search/{search_api_saved_search}',
+    'activate' => '/saved-search/{search_api_saved_search}/activate',
+    'edit-form' => '/saved-search/{search_api_saved_search}/edit',
+    'delete-form' => '/saved-search/{search_api_saved_search}/delete',
+  ],
+  admin_permission: 'administer search_api_saved_searches',
+  permission_granularity: 'bundle',
+  bundle_entity_type: 'search_api_saved_search_type',
+  bundle_label: new TranslatableMarkup('Search type'),
+  base_table: 'search_api_saved_search',
+  data_table: 'search_api_saved_search',
+  translatable: FALSE,
+  label_count: [
+    'singular' => '@count saved search',
+    'plural' => '@count saved searches',
+  ],
+  field_ui_base_route: 'entity.search_api_saved_search_type.edit_form',
+)]
 class SavedSearch extends ContentEntityBase implements SavedSearchInterface {
 
   use EntityOwnerTrait;
