@@ -10,10 +10,13 @@ use Drupal\search_api\Entity\Server;
 use Drupal\Tests\search_api\Functional\ExampleContentTrait;
 
 /**
- * Class FunctionalTestBase.
+ * Functional test base class.
  */
 abstract class FunctionalTestBase extends BrowserTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   protected $strictConfigSchema = FALSE;
 
   use StringTranslationTrait;
@@ -29,6 +32,7 @@ abstract class FunctionalTestBase extends BrowserTestBase {
    */
   protected static $modules = [
     'search_api_page',
+    'search_api_page_test',
     'node',
     'search_api',
     'search_api_db',
@@ -183,6 +187,7 @@ abstract class FunctionalTestBase extends BrowserTestBase {
       'path' => $path,
       'index' => $index->id(),
       'searched_fields' => $index->getFulltextFields(),
+      'parse_mode' => 'terms',
     ])->save();
   }
 

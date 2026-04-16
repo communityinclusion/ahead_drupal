@@ -81,4 +81,25 @@ interface TargetInterface extends DependentWithRemovalPluginInterface {
    */
   public function isEmpty(FeedInterface $feed, EntityInterface $entity, $target);
 
+  /**
+   * Looks for an existing entity and returns an entity ID if found.
+   *
+   * This method is used by the entity processor to find existing entities
+   * based on unique target values. If a target plugin does not support
+   * unique value lookup, it should return NULL.
+   *
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed that is being processed.
+   * @param string $target
+   *   The ID of the target plugin.
+   * @param string $key
+   *   The property of the target to search on.
+   * @param mixed $value
+   *   The value to look for.
+   *
+   * @return string|int|null
+   *   An entity ID, if found. Null otherwise.
+   */
+  public function getUniqueValue(FeedInterface $feed, $target, $key, $value);
+
 }

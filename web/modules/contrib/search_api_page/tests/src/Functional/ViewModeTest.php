@@ -33,6 +33,8 @@ class ViewModeTest extends FunctionalTestBase {
   }
 
   /**
+   * Tests default view mode and overrides.
+   *
    * Tests whether the default view mode and the overrides can be
    * used for a Search API Page.
    */

@@ -1,0 +1,6 @@
+services:
+  search_api_page_test.query_exception_subscriber:
+    class: Drupal\search_api_page_test\EventSubscriber\QueryExceptionSubscriber
+    arguments: ['@state']
+    tags:
+      - { name: event_subscriber }

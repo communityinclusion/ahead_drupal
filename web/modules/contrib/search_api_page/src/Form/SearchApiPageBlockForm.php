@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_page\Form;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\BaseFormIdInterface;
 use Drupal\Core\Form\FormBase;
@@ -46,14 +47,14 @@ class SearchApiPageBlockForm extends FormBase implements BaseFormIdInterface {
   protected $pageStorage;
 
   /**
-   * Constructs a new SearchBlockForm.
+   * Constructs a new block form.
    *
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   The language manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
    * @param \Drupal\Core\Entity\EntityStorageInterface $pageStorage
-   *   The search API page storage
+   *   The search API page storage.
    */
   public function __construct(LanguageManagerInterface $language_manager, RendererInterface $renderer, EntityStorageInterface $pageStorage) {
     $this->languageManager = $language_manager;
@@ -104,12 +105,16 @@ class SearchApiPageBlockForm extends FormBase implements BaseFormIdInterface {
   public function buildForm(array $form, FormStateInterface $form_state, $args = []) {
     /** @var \Drupal\search_api_page\SearchApiPageInterface $search_api_page */
     $search_api_page = $this->pageStorage->load($this->pageId);
+    if (!$search_api_page) {
+      return $form;
+    }
 
     $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
 
     $form['search_api_page'] = [
       '#type' => 'value',
       '#value' => $search_api_page->id(),
+      '#context' => $args['context'] ?? NULL,
     ];
 
     $default_value = '';
@@ -119,8 +124,8 @@ class SearchApiPageBlockForm extends FormBase implements BaseFormIdInterface {
 
     if ($default_value === '') {
       $request = $this->getRequest();
-      if (trim($search_api_page->getPath(), '/') === trim($request->getPathInfo(), '/')) {
-        $default_value = $this->getRequest()->get('keys');
+      if ($request->attributes->get('search_api_page_name') === $search_api_page->id()) {
+        $default_value = $request->query->get('keys') ?? '';
       }
     }
 
@@ -152,8 +157,10 @@ class SearchApiPageBlockForm extends FormBase implements BaseFormIdInterface {
     }
 
     // Dependency on search api config entity.
-    $this->renderer->addCacheableDependency($form, $search_api_page->getConfigDependencyName());
-    $this->renderer->addCacheableDependency($form, $langcode);
+    $metadata = CacheableMetadata::createFromRenderArray($form);
+    $metadata->addCacheableDependency($search_api_page);
+    $metadata->addCacheContexts(['languages:language_content', 'url']);
+    $metadata->applyTo($form);
 
     // Match the search form styling of Drupal core.
     $form['#attributes']['class'][] = 'search-form';
@@ -171,7 +178,7 @@ class SearchApiPageBlockForm extends FormBase implements BaseFormIdInterface {
     // This form submits to the search page, so processing happens there.
     $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
     $route = 'search_api_page.' . $langcode . '.' . $form_state->getValue('search_api_page');
-    $routeArguments = ['keys' => $form_state->getValue('keys')];
+    $routeArguments = ['keys' => trim($form_state->getValue('keys'))];
     $form_state->setRedirectUrl(Url::fromRoute($route, $routeArguments));
   }
 

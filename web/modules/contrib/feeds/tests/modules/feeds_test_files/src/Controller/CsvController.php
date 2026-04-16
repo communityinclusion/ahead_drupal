@@ -175,6 +175,32 @@ final class CsvController extends ControllerBase {
   }
 
   /**
+   * Outputs a CSV file with a file URL that results in a 404.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   A HTTP response.
+   */
+  public function files404() {
+    $file_url_404 = Url::fromUserInput('/file-that-does-not-exist.jpg')
+      ->setAbsolute()
+      ->toString();
+
+    $csv_lines = [
+      ['title', 'file'],
+      ['Test Item', $file_url_404],
+    ];
+
+    $csv = '';
+    foreach ($csv_lines as $line) {
+      $csv .= implode(',', $line) . "\n";
+    }
+
+    $response = new Response();
+    $response->setContent($csv);
+    return $response;
+  }
+
+  /**
    * Gets the path for the specified module.
    *
    * @param string $module_name

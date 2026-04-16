@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\feeds\Kernel;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 use Drupal\Tests\feeds\Traits\FeedCreationTrait;
@@ -139,6 +140,21 @@ abstract class FeedsKernelTestBase extends EntityKernelTestBase {
     ]);
 
     return $vocabulary;
+  }
+
+  /**
+   * Installs a private file system.
+   */
+  protected function setUpPrivateFileSystem(): void {
+    $this->installConfig(['system']);
+
+    $this->setSetting('file_private_path', $this->container->getParameter('site.path') . '/private');
+
+    $directory = 'private://';
+    $this->container->get('file_system')->prepareDirectory(
+      $directory,
+      FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS
+    );
   }
 
   /**

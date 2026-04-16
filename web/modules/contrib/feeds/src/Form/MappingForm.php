@@ -835,6 +835,7 @@ class MappingForm extends FormBase {
           $mappings[$delta]['map'][$column] = $selected_source;
         }
       }
+      // Unchecked checkboxes can submit 0; keep only truthy "unique" values.
       if (isset($mapping['unique'])) {
         $mappings[$delta]['unique'] = array_filter($mapping['unique']);
       }

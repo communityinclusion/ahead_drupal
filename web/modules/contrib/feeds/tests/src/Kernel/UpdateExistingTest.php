@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\feeds\Kernel;
 
+use Drupal\node\Entity\Node;
 use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
 
 /**
@@ -235,6 +236,61 @@ class UpdateExistingTest extends FeedsKernelTestBase {
     $entity_storage = $this->entityTypeManager->getStorage('feeds_test_entity_test_no_links');
     $entity = $entity_storage->load(1);
     $this->assertEquals('1', $entity->boolean_field->value);
+  }
+
+  /**
+   * Tests that mapping with 'unique' => ['value' => '0'] does not match.
+   *
+   * When a mapping target has unique set to the string '0' (falsy), it must
+   * not be used to find existing entities. The import creates new nodes
+   * instead of updating. With one pre-existing node and two CSV rows, the
+   * total must be three nodes.
+   */
+  public function testUpdateExistingWithUniqueValueZero() {
+    $this->installConfig(['field', 'filter', 'node']);
+
+    $this->createFieldWithStorage('field_alpha');
+
+    $node = Node::create([
+      'type' => 'article',
+      'title' => 'Pre-existing node',
+      'field_alpha' => 'Lorem',
+    ]);
+    $node->save();
+
+    $feed_type = $this->createFeedTypeForCsv([
+      'title' => 'title',
+      'alpha' => 'alpha',
+    ], [
+      'processor' => 'entity:node',
+      'processor_configuration' => [
+        'authorize' => FALSE,
+        'update_existing' => ProcessorInterface::UPDATE_EXISTING,
+        'values' => [
+          'type' => 'article',
+        ],
+      ],
+      'mappings' => [
+        [
+          'target' => 'title',
+          'map' => ['value' => 'title'],
+          'unique' => ['value' => TRUE],
+        ],
+        [
+          'target' => 'field_alpha',
+          'map' => ['value' => 'alpha'],
+          'unique' => ['value' => '0'],
+          'settings' => ['format' => 'plain_text'],
+        ],
+      ],
+    ]);
+
+    $feed = $this->createFeed($feed_type->id(), [
+      'source' => $this->resourcesPath() . '/csv/content.csv',
+    ]);
+    $feed->import();
+
+    $this->assertNodeCount(3, 'Two nodes created by import plus one pre-existing.');
   }
 
 }

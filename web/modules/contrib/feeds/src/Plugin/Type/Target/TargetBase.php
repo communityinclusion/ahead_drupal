@@ -128,4 +128,14 @@ abstract class TargetBase extends PluginBase implements TargetInterface, PluginF
     $this->getMessenger()->addMessage($message, $type, $repeat);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getUniqueValue(FeedInterface $feed, $target, $key, $value) {
+    // Default implementation returns NULL for backwards compatibility.
+    // Plugins that extend TargetBase directly and need unique value lookup
+    // should override this method.
+    return NULL;
+  }
+
 }

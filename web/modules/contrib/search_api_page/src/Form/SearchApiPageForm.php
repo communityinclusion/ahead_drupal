@@ -2,16 +2,68 @@
 
 namespace Drupal\search_api_page\Form;
 
+use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteBuilderInterface;
 use Drupal\search_api\Entity\Index;
+use Drupal\search_api\ParseMode\ParseModePluginManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class SearchApiPageForm.
+ * Builds the search form for the search api page.
  *
  * @package Drupal\search_api_page\Form
  */
 class SearchApiPageForm extends EntityForm {
+
+  /**
+   * The parse mode plugin manager.
+   *
+   * @var \Drupal\search_api\ParseMode\ParseModePluginManager
+   */
+  protected $parseModePluginManager;
+
+  /**
+   * The route builder.
+   *
+   * @var \Drupal\Core\Routing\RouteBuilderInterface
+   */
+  protected $routeBuilder;
+
+  /**
+   * The cache tags invalidator.
+   *
+   * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
+   */
+  protected $cacheTagsInvalidator;
+
+  /**
+   * Constructs a SearchApiPageForm object.
+   *
+   * @param \Drupal\search_api\ParseMode\ParseModePluginManager $parseModePluginManager
+   *   The parse mode plugin manager.
+   * @param \Drupal\Core\Routing\RouteBuilderInterface $routeBuilder
+   *   The route builder.
+   * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cacheTagsInvalidator
+   *   The cache tags invalidator.
+   */
+  public function __construct(ParseModePluginManager $parseModePluginManager, RouteBuilderInterface $routeBuilder, CacheTagsInvalidatorInterface $cacheTagsInvalidator) {
+    $this->parseModePluginManager = $parseModePluginManager;
+    $this->routeBuilder = $routeBuilder;
+    $this->cacheTagsInvalidator = $cacheTagsInvalidator;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('plugin.manager.search_api.parse_mode'),
+      $container->get('router.builder'),
+      $container->get('cache_tags.invalidator'),
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -114,7 +166,7 @@ class SearchApiPageForm extends EntityForm {
 
     $form['page_fieldset']['clean_url'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t("Use clean URL's"),
+      '#title' => $this->t("Use clean URLs"),
       '#default_value' => $search_api_page->getCleanUrl(),
       '#access' => !empty($default_index),
       '#states' => $default_index_states,
@@ -153,10 +205,10 @@ class SearchApiPageForm extends EntityForm {
 
     $form['page_fieldset']['style'] = [
       '#type' => 'radios',
-      '#title' => $this->t('Style'),
+      '#title' => $this->t('Output style'),
       '#options' => [
-        'view_modes' => $this->t('View modes'),
-        'search_results' => $this->t('Search results'),
+        'view_modes' => $this->t('Standard entity view mode'),
+        'search_results' => $this->t('Use search-api-page-result.html.twig'),
       ],
       '#default_value' => $search_api_page->getStyle(),
       '#required' => TRUE,
@@ -164,8 +216,7 @@ class SearchApiPageForm extends EntityForm {
       '#states' => $default_index_states,
     ];
 
-    $plugin_manager = \Drupal::service('plugin.manager.search_api.parse_mode');
-    $instances = $plugin_manager->getInstances();
+    $instances = $this->parseModePluginManager->getInstances();
     $options = [];
     foreach ($instances as $name => $instance) {
       if ($instance->isHidden()) {
@@ -304,22 +355,6 @@ class SearchApiPageForm extends EntityForm {
       $search_api_page->set('view_mode_configuration', []);
     }
 
-    // Check searched fields. In case nothing has been selected, select all
-    // the available fields.
-    $has_selection = FALSE;
-    $searched_fields = $form_state->getValue('searched_fields');
-    foreach ($searched_fields as $key => $value) {
-      if ($key === $value) {
-        $has_selection = TRUE;
-        break;
-      }
-    }
-    if (!$has_selection) {
-      $key_values = array_keys($form['index_fieldset']['searched_fields']['#options']);
-      $searched_fields = array_combine($key_values, $key_values);
-      $search_api_page->set('searched_fields', $searched_fields);
-    }
-
     $status = $search_api_page->save();
 
     switch ($status) {
@@ -350,12 +385,12 @@ class SearchApiPageForm extends EntityForm {
     $pathHasChanged = $form_state->getValue('path') != $form_state->getValue('previous_path');
     $cleanUrlHasChanged = $form_state->getValue('clean_url') != $form_state->getValue('previous_clean_url');
     if ($pathHasChanged || $cleanUrlHasChanged) {
-      \Drupal::service('router.builder')->rebuild();
+      $this->routeBuilder->rebuild();
     }
 
-    /** @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface $invalidator */
-    $invalidator = \Drupal::service('cache_tags.invalidator');
-    $invalidator->invalidateTags(['search_api_page.style']);
+    $this->cacheTagsInvalidator->invalidateTags(['search_api_page.style']);
+
+    return $status;
   }
 
 }

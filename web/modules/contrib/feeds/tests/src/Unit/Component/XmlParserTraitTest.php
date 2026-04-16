@@ -122,7 +122,43 @@ class XmlParserTraitTest extends FeedsUnitTestCase {
         '<name xmlns="http://www.w3.org/2005/Atom"></name><name xmlns="http://www.w3.org/2005/Atom"></name>',
         '<name></name><name></name>',
       ],
+
+      // Test with no namespaces.
+      [
+        '<root><item id="1">Content</item></root>',
+        '<root><item id="1">Content</item></root>',
+      ],
     ];
+  }
+
+  /**
+   * Tests PCRE backtracking in removeDefaultNamespaces().
+   *
+   * When many attributes with quotes appear before xmlns, the regex
+   * `.*?` must try many positions to find the matching quote, causing
+   * exponential backtracking. This test sets a low PCRE backtrack
+   * limit to trigger the issue.
+   */
+  public function testRemoveDefaultNamespacesCatastrophicBacktracking(): void {
+    // Store original limit and set a low value to force the issue.
+    $original_limit = ini_set('pcre.backtrack_limit', 50);
+
+    try {
+      // This should trigger the PCRE backtrack limit.
+      $trait = $this->createMock(XmlParserTraitMock::class);
+      $xml = file_get_contents(__DIR__ . '/../../../fixtures/feeds-test-backtrace-limit.xml');
+      $this->expectException(\RuntimeException::class);
+      $this->expectExceptionMessage('PCRE error while processing XML namespaces: Backtrack limit exhausted (' . PREG_BACKTRACK_LIMIT_ERROR . ')');
+      $this->expectExceptionCode(PREG_BACKTRACK_LIMIT_ERROR);
+      $result = $this->callProtectedMethod($trait, 'removeDefaultNamespaces', [$xml]);
+
+      // Verify that we have a result that can be loaded.
+      $this->callProtectedMethod($trait, 'getDomDocument', [$result]);
+    }
+    finally {
+      // Restore original backtrack limit.
+      ini_set('pcre.backtrack_limit', $original_limit);
+    }
   }
 
 }

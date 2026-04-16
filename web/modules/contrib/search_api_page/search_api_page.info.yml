@@ -9,7 +9,7 @@ package: Search
 type: module
 configure: entity.search_api_page.collection
 
-# Information added by Drupal.org packaging script on 2024-09-05
-version: '8.x-1.1'
+# Information added by Drupal.org packaging script on 2026-03-15
+version: '8.x-1.2'
 project: 'search_api_page'
-datestamp: 1725546549
+datestamp: 1773598841

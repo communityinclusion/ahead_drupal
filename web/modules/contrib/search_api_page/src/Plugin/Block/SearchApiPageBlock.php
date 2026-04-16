@@ -43,7 +43,7 @@ class SearchApiPageBlock extends BlockBase implements ContainerFactoryPluginInte
   protected $formBuilder;
 
   /**
-   * {@inheritDoc)
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -113,6 +113,10 @@ class SearchApiPageBlock extends BlockBase implements ContainerFactoryPluginInte
    * {@inheritdoc}
    */
   public function calculateDependencies() {
+    // Check if the "search_api_page" key exists in the configuration.
+    if (empty($this->configuration['search_api_page'])) {
+      return [];
+    }
     $search_api_page = $this->searchApiPageStorage->load($this->configuration['search_api_page']);
     if ($search_api_page === NULL) {
       return [];
@@ -124,8 +128,18 @@ class SearchApiPageBlock extends BlockBase implements ContainerFactoryPluginInte
    * {@inheritdoc}
    */
   public function build() {
+    if (empty($this->configuration['search_api_page'])) {
+      return [];
+    }
+    $search_api_page = $this->searchApiPageStorage->load($this->configuration['search_api_page']);
+    if (!$search_api_page) {
+      return [];
+    }
     $this->searchApiPageBlockForm->setPageId($this->configuration['search_api_page']);
-    return \Drupal::formBuilder()->getForm($this->searchApiPageBlockForm);
+    $args = [
+      'context' => 'block',
+    ];
+    return $this->formBuilder->getForm($this->searchApiPageBlockForm, $args);
   }
 
 }

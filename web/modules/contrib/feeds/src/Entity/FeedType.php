@@ -631,6 +631,13 @@ class FeedType extends ConfigEntityBundleBase implements FeedTypeInterface, Feed
       }
     }
 
+    // Make sure that disabled "unique" flags are filtered out.
+    foreach ($this->mappings as $delta => $mapping) {
+      if (isset($mapping['unique']) && is_array($mapping['unique'])) {
+        $this->mappings[$delta]['unique'] = array_filter($mapping['unique']);
+      }
+    }
+
     $this->mappings = array_values($this->mappings);
     parent::preSave($storage_controller);
   }

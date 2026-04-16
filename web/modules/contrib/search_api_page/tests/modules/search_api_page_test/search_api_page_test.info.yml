@@ -1,0 +1,12 @@
+name: 'Search API Page Test'
+type: module
+description: 'Provides test helpers for Search API Page.'
+package: Testing
+core_version_requirement: ^9.2 || ^10 || ^11
+dependencies:
+  - search_api:search_api
+
+# Information added by Drupal.org packaging script on 2026-03-15
+version: '8.x-1.2'
+project: 'search_api_page'
+datestamp: 1773598841

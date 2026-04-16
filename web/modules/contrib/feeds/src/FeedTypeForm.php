@@ -296,7 +296,7 @@ class FeedTypeForm extends EntityForm {
   /**
    * Returns the plugin forms for this feed type.
    *
-   * @return \Drupal\feeds\Plugin\Type\ExternalPluginFormInterface[]
+   * @return \Drupal\Core\Plugin\PluginFormInterface[]
    *   A list of form objects, keyed by plugin id.
    */
   protected function getPluginForms() {

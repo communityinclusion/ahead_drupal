@@ -40,9 +40,6 @@ class SearchApiPageDeleteForm extends EntityDeleteForm {
 
     $this->messenger()->addMessage($this->t('@search_page_page_label has been deleted.', ['@search_page_page_label' => $this->entity->label()]));
 
-    // Trigger router rebuild.
-    \Drupal::service('router.builder')->rebuild();
-
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
 

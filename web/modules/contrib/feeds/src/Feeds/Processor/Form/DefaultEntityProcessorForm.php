@@ -371,6 +371,11 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase implements Conta
 
     $action_definitions = $this->actionManager->getDefinitionsByType($this->plugin->entityType());
     foreach ($action_definitions as $id => $definition) {
+      // Filter out definitions that do not have a class specified.
+      if (!isset($definition['class'])) {
+        continue;
+      }
+
       // Filter out configurable actions.
       $interfaces = class_implements($definition['class']);
       if (isset($interfaces[ConfigurableInterface::class])) {

@@ -196,19 +196,7 @@ abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetI
   }
 
   /**
-   * Looks for an existing entity and returns an entity ID if found.
-   *
-   * @param \Drupal\feeds\FeedInterface $feed
-   *   The feed that is being processed.
-   * @param string $target
-   *   The ID of the field target plugin.
-   * @param string $key
-   *   The property of the field to search on.
-   * @param string $value
-   *   The value to look for.
-   *
-   * @return string|int|null
-   *   An entity ID, if found. Null otherwise.
+   * {@inheritdoc}
    */
   public function getUniqueValue(FeedInterface $feed, $target, $key, $value) {
     // Make sure the passed value is a string.

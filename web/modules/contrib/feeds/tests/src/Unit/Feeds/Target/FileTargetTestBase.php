@@ -9,6 +9,7 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\feeds\EntityFinderInterface;
 use Drupal\feeds\Plugin\Type\Target\TargetInterface;
+use Drupal\feeds\Utility\FileResolverInterface;
 use Drupal\file\FileRepositoryInterface;
 use GuzzleHttp\ClientInterface;
 
@@ -74,6 +75,13 @@ abstract class FileTargetTestBase extends FieldTargetTestBase {
   protected $fileConfig;
 
   /**
+   * The file resolver service.
+   *
+   * @var \Drupal\feeds\Utility\FileResolverInterface
+   */
+  protected $fileResolver;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp(): void {
@@ -88,6 +96,7 @@ abstract class FileTargetTestBase extends FieldTargetTestBase {
     $this->fileSystem = $this->prophesize(FileSystemInterface::class);
     $this->fileRepository = $this->prophesize(FileRepositoryInterface::class);
     $this->fileConfig = $this->prophesize(ImmutableConfig::class);
+    $this->fileResolver = $this->prophesize(FileResolverInterface::class);
   }
 
   /**
@@ -114,7 +123,7 @@ abstract class FileTargetTestBase extends FieldTargetTestBase {
       'feed_type' => $this->createMock('Drupal\feeds\FeedTypeInterface'),
       'target_definition' => $method($field_definition_mock),
     ];
-    return new $target_class($configuration, static::$pluginId, [], $this->entityTypeManager->reveal(), $this->client->reveal(), $this->token->reveal(), $this->entityFieldManager->reveal(), $this->entityFinder->reveal(), $this->fileSystem->reveal(), $this->fileRepository->reveal(), $this->fileConfig->reveal());
+    return new $target_class($configuration, static::$pluginId, [], $this->entityTypeManager->reveal(), $this->client->reveal(), $this->token->reveal(), $this->entityFieldManager->reveal(), $this->entityFinder->reveal(), $this->fileSystem->reveal(), $this->fileRepository->reveal(), $this->fileConfig->reveal(), $this->fileResolver->reveal());
   }
 
 }

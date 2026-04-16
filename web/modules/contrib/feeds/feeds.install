@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
 use Drupal\feeds\Entity\Feed;
 
 /**
@@ -255,4 +256,65 @@ function feeds_update_8009() {
     'feeds',
     $field_definition
   );
+}
+
+/**
+ * Add a DB index to the 'guid' column for 'feeds_item' fields.
+ */
+function feeds_update_8010() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $field_map = $entity_field_manager->getFieldMapByFieldType('feeds_item');
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  foreach ($field_map as $entity_type_id => $fields) {
+    foreach ($fields as $field_name => $field_data) {
+      // Unfortunately updateFieldStorageDefinition() does not update indexes,
+      // so we need to dig down here and add the index ourselves.
+      $field_storage_definitions = $entity_field_manager->getFieldStorageDefinitions($entity_type_id);
+      if (!isset($field_storage_definitions[$field_name])) {
+        continue;
+      }
+      $field_storage_definition = $field_storage_definitions[$field_name];
+
+      $storage = $entity_type_manager->getStorage($entity_type_id);
+      if ($storage instanceof SqlEntityStorageInterface) {
+        // Get the table mapping to find the correct table and column names.
+        $table_mapping = $storage->getTableMapping();
+        // Since feeds_item implies multiple properties, it usually uses a
+        // dedicated table. We only support dedicated tables for now as shared
+        // tables require different handling for indexes (entity schema
+        // updates).
+        if ($table_mapping->requiresDedicatedTableStorage($field_storage_definition)) {
+          $column_name = $table_mapping->getFieldColumnName($field_storage_definition, 'guid');
+          $index_name = $field_name . '_guid';
+          $spec = [
+            'fields' => [
+              $column_name => [
+                'type' => 'text',
+                'description' => 'Unique identifier for the feed item.',
+              ],
+            ],
+          ];
+
+          $table_name = $table_mapping->getDedicatedDataTableName($field_storage_definition);
+          if ($schema->tableExists($table_name) && !$schema->indexExists($table_name, $index_name)) {
+            $schema->addIndex($table_name, $index_name, [[$column_name, 128]], $spec);
+          }
+
+          if ($field_storage_definition->isRevisionable()) {
+            $revision_table_name = $table_mapping->getDedicatedRevisionTableName($field_storage_definition);
+            if ($schema->tableExists($revision_table_name) && !$schema->indexExists($revision_table_name, $index_name)) {
+              $schema->addIndex($revision_table_name, $index_name, [[$column_name, 128]], $spec);
+            }
+          }
+        }
+      }
+
+      // Ensure the definition is updated in the system.
+      $definition_update_manager->updateFieldStorageDefinition($field_storage_definition);
+    }
+  }
 }

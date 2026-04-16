@@ -2,6 +2,9 @@
 
 namespace Drupal\search_api_page\Config;
 
+/**
+ * Value object for view mode configuration.
+ */
 interface ViewModeConfigInterface {
 
   /**

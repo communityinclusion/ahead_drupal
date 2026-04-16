@@ -18,3 +18,10 @@ feeds_test_files.http304:
     _controller: 'Drupal\feeds_test_files\Controller\CsvController::return304'
   requirements:
     _permission: 'access content'
+
+feeds_test_files.non_existent_csv:
+  path: '/testing/feeds/files-404.csv'
+  defaults:
+    _controller: 'Drupal\feeds_test_files\Controller\CsvController::files404'
+  requirements:
+    _permission: 'access content'

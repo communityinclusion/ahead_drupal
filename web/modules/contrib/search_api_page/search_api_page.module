@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\file\Entity\File;
 use Drupal\user\EntityOwnerInterface;
 
@@ -138,4 +139,20 @@ function template_preprocess_search_api_page_result(&$variables) {
   $variables['info_split'] = $info;
   $variables['info'] = implode(' - ', $info);
 
+}
+
+/**
+ * Implements hook_help().
+ */
+function search_api_page_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the search_api_page module.
+    case 'help.page.search_api_page':
+      $output = '<p>' . t('The Search API Page module provides a way to create search pages using the Search API module. With this module, you can create custom search pages with filters, facets, and more.') . '</p>';
+      $output .= '<h3>' . t('Creating a search page') . '</h3>';
+      $output .= '<p>' . t('To create a search page, first create a search index using the Search API module. Then, navigate to the "Search API Page" tab in the Drupal administration menu and click "Add search page". From there, you can select your search index and configure your search page.') . '</p>';
+      $output .= '<h3>' . t('Displaying search results') . '</h3>';
+      $output .= '<p>' . t('Search results are displayed either as a list of entities using a view mode or with a result template. You can customize the display by creating a custom search results template. See the "Theming search results" section of the Search API documentation for more information.') . '</p>';
+      return $output;
+  }
 }

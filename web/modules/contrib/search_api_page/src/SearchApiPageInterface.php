@@ -110,6 +110,7 @@ interface SearchApiPageInterface extends ConfigEntityInterface {
    * Get the view mode configuration object.
    *
    * @return \Drupal\search_api_page\Config\ViewMode
+   *   The view mode configuration.
    */
   public function getViewModeConfig();
 

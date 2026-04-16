@@ -6,6 +6,14 @@ entity.search_api_page.collection:
   requirements:
     _permission: 'administer search_api_page'
 
+entity.search_api_page.canonical:
+  path: '/admin/config/search/search-api-pages/{search_api_page}'
+  defaults:
+    _entity_form: 'search_api_page.edit'
+    _title: 'Edit search page'
+  requirements:
+    _permission: 'administer search_api_page'
+
 entity.search_api_page.add_form:
   path: '/admin/config/search/search-api-pages/add'
   defaults:

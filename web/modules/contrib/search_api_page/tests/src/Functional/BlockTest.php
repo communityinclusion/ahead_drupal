@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\search_api_page\Functional;
 
+use Drupal\search_api_page\Entity\SearchApiPage;
+
 /**
  * Provides web tests for Search API Pages.
  *
@@ -119,6 +121,40 @@ class BlockTest extends FunctionalTestBase {
 
     $this->assertSession()->fieldValueEquals("edit-keys", 'Owls');
     $this->assertSession()->fieldValueEquals('edit-keys--2', '');
+  }
+
+  /**
+   * Tests that the block handles a deleted search page gracefully.
+   */
+  public function testDeletedSearchPage() {
+    // Verify the block renders normally.
+    $this->drupalGet('<front>');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->elementExists('css', '.search-form');
+
+    // Delete the search pages the blocks reference.
+    SearchApiPage::load('search')->delete();
+    SearchApiPage::load('other_search')->delete();
+
+    // The page should still render without errors.
+    $this->drupalGet('<front>');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->elementNotExists('css', '.search-form');
+  }
+
+  /**
+   * Tests that the block handles missing configuration gracefully.
+   *
+   * This covers the scenario where a block instance is created without
+   * selecting a search page (e.g. Experience Builder introspecting plugins).
+   */
+  public function testUnconfiguredBlock() {
+    // Place a block without the search_api_page setting.
+    $this->drupalPlaceBlock('search_api_page_form_block', []);
+
+    // The page should render without errors.
+    $this->drupalGet('<front>');
+    $this->assertSession()->statusCodeEquals(200);
   }
 
 }

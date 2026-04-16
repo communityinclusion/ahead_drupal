@@ -50,7 +50,7 @@ class TamperListFormTest extends FeedsTamperBrowserTestBase {
    */
   protected function createFeedTypeWithBodyMapping(): FeedTypeInterface {
     // Add body field.
-    node_add_body_field($this->nodeType);
+    $this->addBodyField();
 
     return $this->createFeedType([
       'id' => 'my_feed_type',

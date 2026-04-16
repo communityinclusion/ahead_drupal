@@ -33,6 +33,7 @@ Façade
 FDCF
 febbraro
 FFFD
+fileresolver
 foodir
 georss
 georssentry
@@ -62,6 +63,7 @@ MQNAY
 msnbc
 MUNDO
 mydescription
+mymodule
 natew
 NEWSMAKER
 newsmaker

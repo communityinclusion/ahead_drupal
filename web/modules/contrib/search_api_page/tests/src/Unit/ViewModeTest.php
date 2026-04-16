@@ -6,7 +6,7 @@ use Drupal\search_api_page\Config\ViewMode;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class ViewModeTest.
+ * ViewMode tests.
  *
  * @group search_api_page
  */
@@ -95,6 +95,8 @@ class ViewModeTest extends TestCase {
   }
 
   /**
+   * Tests getViewMode().
+   *
    * @dataProvider getViewModeTestDataProvider
    */
   public function testGetViewMode($input, $dataSourceId, $bundle, $expected) {
@@ -154,6 +156,8 @@ class ViewModeTest extends TestCase {
   }
 
   /**
+   * Tests getDefaultViewMode().
+   *
    * @dataProvider getDefaultViewModeTestDataProvider
    */
   public function testDefaultGetViewMode($input, $dataSourceId, $expected) {
@@ -231,6 +235,8 @@ class ViewModeTest extends TestCase {
   }
 
   /**
+   * Tests hasOverrides().
+   *
    * @dataProvider hasOverridesTestDataProvider
    */
   public function testHasOverrides($input, $dataSourceId, $expected) {
@@ -327,6 +333,8 @@ class ViewModeTest extends TestCase {
   }
 
   /**
+   * Tests isOverridden().
+   *
    * @dataProvider isOverriddenTestDataProvider
    */
   public function testisOverridden($input, $dataSourceId, $bundle, $expected) {

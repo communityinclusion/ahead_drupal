@@ -1,0 +1,3 @@
+guid,title,file_guid
+item-1,First Item,existing-file-guid-123
+item-2,Second Item,[absolute path to feeds resources directory]/assets/text-file.txt

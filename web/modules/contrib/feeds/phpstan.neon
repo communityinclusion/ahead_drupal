@@ -22,10 +22,6 @@ parameters:
       count: 1
       path: src/State.php
 
-    # Ignore deprecations from Drupal 10.3 for now.
-    # @todo remove when support for Drupal 12 gets added.
-    - "#in drupal:10.3.0 and is removed from drupal:12.0.0#"
-
     # Ignore deprecated ExtensionManagerInterface usage. The library
     # "laminas/laminas-feed" still makes active use of the interface as of
     # version 2.22.0, so therefore we still need it. See for example
@@ -100,6 +96,12 @@ parameters:
       message: "#^Method Drupal\\\\feeds\\\\Plugin\\\\Type\\\\PluginBase\\:\\:getConfiguration\\(\\) should return array but return statement is missing\\.$#"
       count: 1
       path: src/Plugin/Type/PluginBase.php
+
+    # getFileLegacy() is intentionally called for backward compatibility during
+    # deprecation. Remove in feeds:4.0.0.
+    -
+      message: "#^Call to deprecated method getFileLegacy\\(\\)#"
+      path: src/Feeds/Target/File.php
 
     # It is not ideal that some services in Feeds plugins aren't injected, but
     # trying to fix that likely causes BC breaks.

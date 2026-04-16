@@ -116,6 +116,12 @@ class FeedsItem extends EntityReferenceItem implements FeedsItemInterface {
         'lookup_url' => ['target_id', ['url', 128]],
         'lookup_guid' => ['target_id', ['guid', 128]],
         'imported' => ['imported'],
+        // There are queries that lookup the GUID over all feeds importers
+        // (example:
+        // \Drupal\feeds\Plugin\Type\Target\FieldTargetBase::getUniqueValue()).
+        // With a lot of feeds items this can become a performance problem, so
+        // we need an index over the GUID alone.
+        'guid' => [['guid', 128]],
       ],
       'foreign keys' => [
         'target_id' => [

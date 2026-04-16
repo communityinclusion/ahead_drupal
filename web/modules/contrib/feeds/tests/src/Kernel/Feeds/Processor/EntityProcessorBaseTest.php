@@ -13,6 +13,7 @@ use Drupal\feeds\Feeds\Item\ItemInterface;
 use Drupal\feeds\Feeds\Processor\EntityProcessorBase;
 use Drupal\feeds\Feeds\Target\StringTarget;
 use Drupal\feeds\FieldTargetDefinition;
+use Drupal\feeds\Plugin\Type\Target\TargetInterface;
 use Drupal\feeds\StateInterface;
 
 /**
@@ -439,6 +440,111 @@ class EntityProcessorBaseTest extends FeedsKernelTestBase {
 
     $this->processor->onFeedDeleteMultiple([$this->feed]);
     $this->markTestIncomplete('Test is a stub.');
+  }
+
+  /**
+   * @covers ::existingEntityId
+   */
+  public function testExistingEntityId() {
+    // Create a mocked target plugin.
+    $target_plugin = $this->createMock(TargetInterface::class);
+    $entity_id = 123;
+    $target_plugin->expects($this->once())
+      ->method('getUniqueValue')
+      ->with($this->feed, 'title', 'value', 'Test title')
+      ->willReturn($entity_id);
+
+    // Create mappings with unique setting.
+    $mappings = [
+      0 => [
+        'target' => 'title',
+        'map' => [
+          'value' => 'source_title',
+        ],
+        'unique' => [
+          'value' => TRUE,
+        ],
+      ],
+    ];
+
+    // Mock feedType to return the mappings and target plugin.
+    $feed_type = $this->createMock(FeedTypeInterface::class);
+    $feed_type->expects($this->once())
+      ->method('getMappings')
+      ->willReturn($mappings);
+    $feed_type->expects($this->once())
+      ->method('getTargetPlugin')
+      ->with(0)
+      ->willReturn($target_plugin);
+
+    // Set the mocked feed type on the processor.
+    $this->setProtectedProperty($this->processor, 'feedType', $feed_type);
+
+    // Create a mocked item.
+    $item = $this->createMock(ItemInterface::class);
+    $item->expects($this->once())
+      ->method('get')
+      ->with('source_title')
+      ->willReturn('Test title');
+
+    // Call the protected method.
+    $result = $this->callProtectedMethod($this->processor, 'existingEntityId', [
+      $this->feed,
+      $item,
+    ]);
+
+    // Assert that the entity ID is returned.
+    $this->assertEquals($entity_id, $result);
+  }
+
+  /**
+   * @covers ::existingEntityId
+   */
+  public function testExistingEntityIdWithoutImplementingGetUniqueValue() {
+    // Create a mocked target plugin.
+    $target_plugin = $this->createMock(TargetInterface::class);
+
+    // Create mappings with unique setting.
+    $mappings = [
+      0 => [
+        'target' => 'title',
+        'map' => [
+          'value' => 'source_title',
+        ],
+        'unique' => [
+          'value' => TRUE,
+        ],
+      ],
+    ];
+
+    // Mock feedType to return the mappings and target plugin.
+    $feed_type = $this->createMock(FeedTypeInterface::class);
+    $feed_type->expects($this->once())
+      ->method('getMappings')
+      ->willReturn($mappings);
+    $feed_type->expects($this->once())
+      ->method('getTargetPlugin')
+      ->with(0)
+      ->willReturn($target_plugin);
+
+    // Set the mocked feed type on the processor.
+    $this->setProtectedProperty($this->processor, 'feedType', $feed_type);
+
+    // Create a mocked item.
+    $item = $this->createMock(ItemInterface::class);
+    $item->expects($this->once())
+      ->method('get')
+      ->with('source_title')
+      ->willReturn('Test title');
+
+    // Call the protected method.
+    $result = $this->callProtectedMethod($this->processor, 'existingEntityId', [
+      $this->feed,
+      $item,
+    ]);
+
+    // Assert that no entity ID is returned.
+    $this->assertNull($result);
   }
 
 }

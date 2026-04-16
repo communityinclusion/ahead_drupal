@@ -10,6 +10,7 @@ use Drupal\search_api\ParseMode\ParseModePluginManager;
 use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api_page\Entity\SearchApiPage;
+use Drupal\search_api_page\Form\SearchApiPageBlockForm;
 use Drupal\search_api_page\SearchApiPageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,16 +36,26 @@ class SearchApiPageController extends ControllerBase {
   protected $pagerManager;
 
   /**
+   * The block form.
+   *
+   * @var \Drupal\search_api_page\Form\SearchApiPageBlockForm
+   */
+  protected $blockForm;
+
+  /**
    * SearchApiPageController constructor.
    *
    * @param \Drupal\search_api\ParseMode\ParseModePluginManager $parseModePluginManager
    *   The parse mode plugin manager.
    * @param \Drupal\Core\Pager\PagerManagerInterface $pagerManager
    *   The parse mode pager manager.
+   * @param \Drupal\search_api_page\Form\SearchApiPageBlockForm $block_form
+   *   The block form.
    */
-  public function __construct(ParseModePluginManager $parseModePluginManager, PagerManagerInterface $pagerManager) {
+  public function __construct(ParseModePluginManager $parseModePluginManager, PagerManagerInterface $pagerManager, SearchApiPageBlockForm $block_form) {
     $this->parseModePluginManager = $parseModePluginManager;
     $this->pagerManager = $pagerManager;
+    $this->blockForm = $block_form;
   }
 
   /**
@@ -53,7 +64,8 @@ class SearchApiPageController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('plugin.manager.search_api.parse_mode'),
-      $container->get('pager.manager')
+      $container->get('pager.manager'),
+      $container->get('block_form.search_api_page')
     );
   }
 
@@ -83,7 +95,7 @@ class SearchApiPageController extends ControllerBase {
 
     // Keys can be in the query.
     if (!$search_api_page->getCleanUrl()) {
-      $keys = $request->get('keys');
+      $keys = $request->query->get('keys');
     }
 
     $build['#theme'] = 'search_api_page';
@@ -100,6 +112,7 @@ class SearchApiPageController extends ControllerBase {
       $query->keys($keys);
     }
 
+    $result = NULL;
     $items = [];
     try {
       $result = $query->execute();
@@ -122,7 +135,7 @@ class SearchApiPageController extends ControllerBase {
     }
 
     if (empty($results)) {
-      return $this->finishBuildWithoutResults($build, $result, $search_api_page);
+      return $this->finishBuildWithoutResults($build, $search_api_page, $result);
     }
 
     return $this->finishBuildWithResults($build, $result, $results, $search_api_page);
@@ -142,12 +155,12 @@ class SearchApiPageController extends ControllerBase {
    *   The build with the search form added to it.
    */
   protected function addSearchForm(array $build, SearchApiPageInterface $search_api_page, $keys) {
-    $block_form = \Drupal::getContainer()->get('block_form.search_api_page');
-    $block_form->setPageId($search_api_page->id());
+    $this->blockForm->setPageId($search_api_page->id());
     $args = [
       'keys' => $keys,
+      'context' => 'page',
     ];
-    $build['#form'] = $this->formBuilder()->getForm($block_form, $args);
+    $build['#form'] = $this->formBuilder()->getForm($this->blockForm, $args);
     return $build;
   }
 
@@ -219,11 +232,12 @@ class SearchApiPageController extends ControllerBase {
    * @return array
    *   An array containing all page elements.
    */
-  protected function finishBuild(array $build, SearchApiPageInterface $searchApiPage, ResultSetInterface $result = NULL) {
+  protected function finishBuild(array $build, SearchApiPageInterface $searchApiPage, ?ResultSetInterface $result = NULL) {
     $this->moduleHandler()->alter('search_api_page', $build, $result, $searchApiPage);
 
     $build['#cache'] = [
       'contexts' => [
+        'languages:language_content',
         'url',
       ],
       'tags' => [
@@ -256,7 +270,7 @@ class SearchApiPageController extends ControllerBase {
       ->load($search_api_page->getIndex());
     $query = $search_api_index->query([
       'limit' => $search_api_page->getLimit(),
-      'offset' => $request->get('page') !== NULL ? $request->get('page') * $search_api_page->getLimit() : 0,
+      'offset' => $request->query->get('page') !== NULL ? $request->query->get('page') * $search_api_page->getLimit() : 0,
     ]);
     $query->setSearchID('search_api_page:' . $search_api_page->id());
 
@@ -273,7 +287,12 @@ class SearchApiPageController extends ControllerBase {
       LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ]);
 
-    $query->setFulltextFields($search_api_page->getSearchedFields());
+    // Only restrict fulltext fields when explicitly configured. An empty value
+    // means "search all available fulltext fields".
+    $searched_fields = $search_api_page->getSearchedFields();
+    if (!empty($searched_fields)) {
+      $query->setFulltextFields($searched_fields);
+    }
 
     return $query;
   }
@@ -283,17 +302,21 @@ class SearchApiPageController extends ControllerBase {
    *
    * @param array $build
    *   The build to finish.
-   * @param \Drupal\search_api\Query\ResultSetInterface $result
-   *   Search API result.
    * @param \Drupal\search_api_page\SearchApiPageInterface $searchApiPage
    *   The Search API page entity.
+   * @param \Drupal\search_api\Query\ResultSetInterface|null $result
+   *   Search API result.
    *
    * @return array
    *   The finished build render array.
    */
-  protected function finishBuildWithoutResults(array $build, ResultSetInterface $result, SearchApiPageInterface $searchApiPage) {
+  protected function finishBuildWithoutResults(array $build, SearchApiPageInterface $searchApiPage, ?ResultSetInterface $result = NULL) {
+    $langcode = $this->languageManager()
+      ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
+      ->getId();
+
     $build['#no_results_found'] = [
-      '#markup' => $this->t('Your search yielded no results.'),
+      '#markup' => $this->t('Your search yielded no results.', [], ['langcode' => $langcode]),
     ];
 
     $build['#search_help'] = [
@@ -301,7 +324,7 @@ class SearchApiPageController extends ControllerBase {
 <li>Check if your spelling is correct.</li>
 <li>Remove quotes around phrases to search for each word individually. <em>bike shed</em> will often show more results than <em>&quot;bike shed&quot;</em>.</li>
 <li>Consider loosening your query with <em>OR</em>. <em>bike OR shed</em> will often show more results than <em>bike shed</em>.</li>
-</ul>'),
+</ul>', [], ['langcode' => $langcode]),
     ];
     return $this->finishBuild($build, $searchApiPage, $result);
   }
@@ -322,12 +345,16 @@ class SearchApiPageController extends ControllerBase {
    *   The finished build.
    */
   protected function finishBuildWithResults(array $build, ResultSetInterface $result, array $results, SearchApiPageInterface $search_api_page) {
+    $langcode = $this->languageManager()
+      ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
+      ->getId();
+
     $build['#search_title'] = [
-      '#markup' => $this->t('Search results'),
+      '#markup' => $this->t('Search results', [], ['langcode' => $langcode]),
     ];
 
     $build['#no_of_results'] = [
-      '#markup' => $this->formatPlural($result->getResultCount(), '1 result found', '@count results found'),
+      '#markup' => $this->formatPlural($result->getResultCount(), '1 result found', '@count results found', [], ['langcode' => $langcode]),
     ];
 
     $build['#results'] = $results;
@@ -354,14 +381,30 @@ class SearchApiPageController extends ControllerBase {
    *   The page title.
    */
   public function title(Request $request, $search_api_page_name = NULL, $keys = '') {
+    $langcode = $this->languageManager()
+      ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
+      ->getId();
+
     // Provide a default title if no search API page name is provided.
     if ($search_api_page_name === NULL) {
-      return $this->t('Search');
+      return $this->t('Search', [], ['langcode' => $langcode]);
+    }
+
+    // Temporarily switch config override language to the content language
+    // so the entity label is returned in the correct language.
+    $original_language = $this->languageManager()->getConfigOverrideLanguage();
+    $content_language = $this->languageManager()->getLanguage($langcode);
+    if ($content_language) {
+      $this->languageManager()->setConfigOverrideLanguage($content_language);
     }
 
     /** @var \Drupal\search_api_page\SearchApiPageInterface $search_api_page */
     $search_api_page = SearchApiPage::load($search_api_page_name);
-    return $search_api_page->label();
+    $label = $search_api_page->label();
+
+    $this->languageManager()->setConfigOverrideLanguage($original_language);
+
+    return $label;
   }
 
 }

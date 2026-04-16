@@ -10,6 +10,8 @@ class ViewMode implements ViewModeConfigInterface {
   const DEFAULT_VIEW_MODE = 'default';
 
   /**
+   * The raw configuration.
+   *
    * @var array
    */
   private $rawConfig;
