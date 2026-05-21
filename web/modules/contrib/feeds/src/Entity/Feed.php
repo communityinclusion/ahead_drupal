@@ -26,6 +26,7 @@ use Drupal\feeds\FeedTypeForm;
 use Drupal\feeds\FeedTypeImportPeriodPerFeedInterface;
 use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Plugin\Type\FeedsPluginInterface;
+use Drupal\feeds\ScheduledFeedInterface;
 use Drupal\feeds\StateInterface;
 use Drupal\user\UserInterface;
 
@@ -84,7 +85,7 @@ use Drupal\user\UserInterface;
  *   }
  * )
  */
-class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodInterface {
+class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodInterface, ScheduledFeedInterface {
 
   use EntityChangedTrait;
 
@@ -263,6 +264,31 @@ class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodI
    */
   public function setActive($active) {
     $this->set('status', $active ? static::ACTIVE : static::INACTIVE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isScheduled(): bool {
+    // First, check the queued time. If an import is queued, it is scheduled to
+    // run, even if the feed is not active (periodic import is turned off).
+    if ($this->getQueuedTime() > 0) {
+      // Yes, it is scheduled to run or already running.
+      return TRUE;
+    }
+
+    // Check if periodic import is turned off.
+    if (!$this->isActive()) {
+      return FALSE;
+    }
+
+    // Check if it is never scheduled.
+    if ($this->getNextImportTime() === FeedTypeInterface::SCHEDULE_NEVER) {
+      return FALSE;
+    }
+
+    // feeds_cron() will schedule the import.
+    return TRUE;
   }
 
   /**

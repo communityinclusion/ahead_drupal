@@ -14,6 +14,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
 use Drupal\feeds\Entity\Feed;
+use Drupal\feeds\FeedTypeInterface;
 
 // Ludwig module integration.
 if (\Drupal::hasService('ludwig.require_once')) {
@@ -96,7 +97,7 @@ function feeds_cron() {
     ->accessCheck(FALSE)
     ->condition('queued', 0)
     ->condition('next', \Drupal::time()->getRequestTime(), '<=')
-    ->condition('next', -1, '<>')
+    ->condition('next', FeedTypeInterface::SCHEDULE_NEVER, '<>')
     ->condition('status', 1)
     ->range(0, 100)
     ->sort('imported')

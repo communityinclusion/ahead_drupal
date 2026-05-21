@@ -8,7 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'zaporylie\\ComposerDrupalOptimizations\\' => array($vendorDir . '/zaporylie/composer-drupal-optimizations/src'),
     'phpowermove\\docblock\\' => array($vendorDir . '/phpowermove/docblock/src'),
-    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/type-resolver/src', $vendorDir . '/phpdocumentor/reflection-docblock/src'),
+    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
     'phootwork\\lang\\' => array($vendorDir . '/phootwork/lang'),
     'phootwork\\collection\\' => array($vendorDir . '/phootwork/collection'),
     'mglaman\\PHPStanDrupal\\' => array($vendorDir . '/mglaman/phpstan-drupal/src'),
@@ -135,7 +135,7 @@ return array(
     'DrupalFinder\\' => array($vendorDir . '/webflo/drupal-finder/src'),
     'DrupalCodeGenerator\\' => array($vendorDir . '/chi-teck/drupal-code-generator/src'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
-    'Doctrine\\Persistence\\' => array($vendorDir . '/doctrine/persistence/src/Persistence'),
+    'Doctrine\\Persistence\\' => array($vendorDir . '/doctrine/persistence/src'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/src'),
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/src'),
@@ -163,7 +163,7 @@ return array(
     'ColinODell\\PsrTestLogger\\' => array($vendorDir . '/colinodell/psr-testlogger/src'),
     'Clue\\StreamFilter\\' => array($vendorDir . '/clue/stream-filter/src'),
     'Brick\\Math\\' => array($vendorDir . '/brick/math/src'),
-    'Behat\\Mink\\Driver\\' => array($vendorDir . '/lullabot/mink-selenium2-driver/src', $vendorDir . '/behat/mink-browserkit-driver/src'),
+    'Behat\\Mink\\Driver\\' => array($vendorDir . '/behat/mink-browserkit-driver/src', $vendorDir . '/lullabot/mink-selenium2-driver/src'),
     'Behat\\Mink\\' => array($vendorDir . '/behat/mink/src'),
     'Asm89\\Stack\\' => array($vendorDir . '/asm89/stack-cors/src'),
 );

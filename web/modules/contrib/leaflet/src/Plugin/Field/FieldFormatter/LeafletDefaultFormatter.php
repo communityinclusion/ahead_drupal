@@ -36,6 +36,13 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
   use LeafletSettingsElementsTrait;
 
   /**
+   * The Base Maps definition list.
+   *
+   * @var array
+   */
+  private $baseMaps;
+
+  /**
    * The Default Settings.
    *
    * @var array
@@ -131,6 +138,7 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->defaultSettings = self::getDefaultSettings();
+    $this->baseMaps = $this->getLeafletMaps();
     $this->leafletService = $leaflet_service;
     $this->entityFieldManager = $entity_field_manager;
     $this->token = $token;
@@ -254,7 +262,9 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
    * {@inheritdoc}
    */
   public function settingsSummary() {
+    $default_settings = self::defaultSettings();
     $settings = $this->getSettings();
+    $leaflet_map_options = $this->getLeafletMaps();
 
     // Define the Popup Control and Popup Content with backward
     // compatibility with Leaflet release < 2.x.
@@ -262,7 +272,9 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
     $popup_content = !empty($settings['popup_content']) ? $settings['popup_content'] : ($settings['leaflet_popup']['content'] ?? NULL);
 
     $summary = [];
-    $summary[] = $this->t('Leaflet Map: @map', ['@map' => $settings['leaflet_map']]);
+    $summary[] = $this->t('Leaflet Map: @map', [
+      '@map' => array_key_exists($settings['leaflet_map'], $leaflet_map_options) ? $this->baseMaps[$settings['leaflet_map']] : $this->baseMaps[$default_settings["leaflet_map"]],
+    ]);
     $summary[] = $this->t('Map height: @height @height_unit', [
       '@height' => $settings['height'],
       '@height_unit' => $settings['height_unit'],
@@ -302,8 +314,11 @@ class LeafletDefaultFormatter extends FormatterBase implements ContainerFactoryP
     $default_settings = self::defaultSettings();
     $settings = $this->getSettings();
 
+    $leaflet_map_options = $this->getLeafletMaps();
+    $leaflet_map_style = array_key_exists($settings['leaflet_map'], $leaflet_map_options) ? $settings['leaflet_map'] : $default_settings["leaflet_map"];
+
     // Get the base Map info.
-    $map = leaflet_map_get_info($settings['leaflet_map']) ?? $default_settings['leaflet_map'];
+    $map = leaflet_map_get_info($leaflet_map_style) ?? $default_settings['leaflet_map'];
 
     // Add a specific map id.
     $map['id'] = Html::getUniqueId("leaflet_map_{$entity_type}_{$bundle}_{$entity_id}_{$field->getName()}");

@@ -17,6 +17,7 @@ use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\ReferenceNotFoundException;
 use Drupal\feeds\Exception\TargetValidationException;
 use Drupal\feeds\FeedInterface;
+use Drupal\feeds\FeedsItemInterface;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
@@ -124,7 +125,10 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
         // import process more efficient by ignoring items it has already seen.
         // In this case we need to destroy the hash in order to be able to
         // import the reference on a next import.
-        $entity->get('feeds_item')->getItemByFeed($feed)->hash = NULL;
+        $feeds_item = $entity->get('feeds_item')->getItemByFeed($feed);
+        if ($feeds_item instanceof FeedsItemInterface) {
+          $feeds_item->hash = NULL;
+        }
         $feed->getState(StateInterface::PROCESS)->setMessage($e->getFormattedMessage(), 'warning', TRUE);
       }
       catch (EmptyFeedException $e) {

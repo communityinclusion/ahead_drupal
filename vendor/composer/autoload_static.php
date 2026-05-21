@@ -300,8 +300,8 @@ class ComposerStaticInit929302ef3a76efc6e3c94e0f78af629c
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'phootwork\\lang\\' => 
         array (
@@ -811,7 +811,7 @@ class ComposerStaticInit929302ef3a76efc6e3c94e0f78af629c
         ),
         'Doctrine\\Persistence\\' => 
         array (
-            0 => __DIR__ . '/..' . '/doctrine/persistence/src/Persistence',
+            0 => __DIR__ . '/..' . '/doctrine/persistence/src',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
@@ -924,8 +924,8 @@ class ComposerStaticInit929302ef3a76efc6e3c94e0f78af629c
         ),
         'Behat\\Mink\\Driver\\' => 
         array (
-            0 => __DIR__ . '/..' . '/lullabot/mink-selenium2-driver/src',
-            1 => __DIR__ . '/..' . '/behat/mink-browserkit-driver/src',
+            0 => __DIR__ . '/..' . '/behat/mink-browserkit-driver/src',
+            1 => __DIR__ . '/..' . '/lullabot/mink-selenium2-driver/src',
         ),
         'Behat\\Mink\\' => 
         array (

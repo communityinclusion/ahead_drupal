@@ -148,6 +148,9 @@ abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetI
    *
    * @param array $values
    *   The values.
+   *
+   * @return array
+   *   The prepared values.
    */
   protected function prepareValues(array $values) {
     $return = [];

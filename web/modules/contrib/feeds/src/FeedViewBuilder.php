@@ -48,4 +48,26 @@ class FeedViewBuilder extends EntityViewBuilder {
     return $build;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function buildMultiple(array $build_list) {
+    $builds = parent::buildMultiple($build_list);
+    foreach ($builds as &$build) {
+      if (isset($build['next'][0]['#text'])) {
+        // Correct text for the field "next" for feeds.
+        $feed = $build['#feeds_feed'];
+        if ($feed instanceof ScheduledFeedInterface) {
+          if (!$feed->isScheduled()) {
+            $build['next'][0]['#text'] = $this->t('Not scheduled');
+          }
+          elseif ($feed->getNextImportTime() <= 0) {
+            $build['next'][0]['#text'] = $this->t('On next cron run');
+          }
+        }
+      }
+    }
+    return $builds;
+  }
+
 }
