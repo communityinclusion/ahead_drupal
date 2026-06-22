@@ -237,6 +237,7 @@ class FileResolverTest extends FeedsUnitTestCase {
     $resolver = $this->createFileResolver();
 
     $file = $this->prophesize(FileInterface::class);
+    $file->getFileUri()->willReturn(NULL);
     $file->id()->willReturn(3);
     $this->fileStorage->load(3)
       ->willReturn($file->reveal());
@@ -247,6 +248,33 @@ class FileResolverTest extends FeedsUnitTestCase {
 
     $this->assertInstanceOf(FileInterface::class, $result);
     $this->assertEquals(3, $result->id());
+  }
+
+  /**
+   * Tests resolving existing file ID with a disallowed extension.
+   *
+   * Flow: Resolves an already existing file entity by ID and validates that
+   * extension restrictions are still applied for this lookup path.
+   *
+   * @covers ::resolve
+   * @covers ::resolveByFields
+   * @covers ::validateFileExtension
+   */
+  public function testResolveWithFileIdWithDisallowedExtension() {
+    $resolver = $this->createFileResolver();
+
+    $file = $this->prophesize(FileInterface::class);
+    $file->getFileUri()->willReturn('public://files/existing.exe');
+    $this->fileStorage->load(3)
+      ->willReturn($file->reveal());
+
+    $this->expectException(InvalidFileExtensionException::class);
+    $this->expectExceptionMessage('The file extension "exe" is not allowed');
+
+    $resolver->resolve(3, [
+      'fields' => ['fid'],
+      'file_extensions' => ['jpg', 'png'],
+    ]);
   }
 
   /**
@@ -330,6 +358,7 @@ class FileResolverTest extends FeedsUnitTestCase {
       ->willReturn([5]);
 
     $file = $this->prophesize(FileInterface::class);
+    $file->getFileUri()->willReturn('public://files/test.txt');
     $file->id()->willReturn(5);
     $this->fileStorage->load(5)
       ->willReturn($file->reveal());
@@ -936,6 +965,7 @@ class FileResolverTest extends FeedsUnitTestCase {
       ->willReturn([5]);
 
     $file = $this->prophesize(FileInterface::class);
+    $file->getFileUri()->willReturn('public://files/file.txt');
     $file->id()->willReturn(5);
     $this->fileStorage->load(5)
       ->willReturn($file->reveal());
@@ -1021,6 +1051,111 @@ class FileResolverTest extends FeedsUnitTestCase {
     if (file_exists($temp_path)) {
       unlink($temp_path);
     }
+  }
+
+  /**
+   * Tests getting file extension from URL.
+   *
+   * @covers ::getFileExtension
+   */
+  public function testGetFileExtensionFromUrl() {
+    $resolver = $this->createFileResolver();
+
+    $this->assertEquals('jpg', $resolver->getFileExtension('https://example.com/image.jpg'));
+    $this->assertEquals('pdf', $resolver->getFileExtension('https://example.com/document.pdf'));
+    $this->assertEquals('png', $resolver->getFileExtension('http://example.com/image.PNG'));
+    $this->assertEquals('txt', $resolver->getFileExtension('https://example.com/file.txt?param=value'));
+    $this->assertEquals('', $resolver->getFileExtension('https://example.com/file'));
+    $this->assertEquals('', $resolver->getFileExtension('https://example.com/'));
+    $this->assertEquals('', $resolver->getFileExtension('https://example.com/.well-known'));
+    $this->assertEquals('', $resolver->getFileExtension('https://example.com/.env?download=1'));
+  }
+
+  /**
+   * Tests getting file extension from file path.
+   *
+   * @covers ::getFileExtension
+   */
+  public function testGetFileExtensionFromPath() {
+    $resolver = $this->createFileResolver();
+
+    $this->assertEquals('txt', $resolver->getFileExtension('/var/www/files/document.txt'));
+    $this->assertEquals('pdf', $resolver->getFileExtension('public://files/document.pdf'));
+    $this->assertEquals('jpg', $resolver->getFileExtension('/path/to/image.JPG'));
+    $this->assertEquals('', $resolver->getFileExtension('/var/www/files/document'));
+    $this->assertEquals('', $resolver->getFileExtension('/var/www/files/'));
+    $this->assertEquals('', $resolver->getFileExtension('/var/www/files/.htaccess'));
+    $this->assertEquals('', $resolver->getFileExtension('/var/www/files/.env'));
+  }
+
+  /**
+   * Tests getting file extension from FileInterface.
+   *
+   * @covers ::getFileExtension
+   */
+  public function testGetFileExtensionFromFile() {
+    $resolver = $this->createFileResolver();
+
+    $file = $this->prophesize(FileInterface::class);
+    $file->getFileUri()->willReturn('public://files/image.jpg');
+    $hidden_file = $this->prophesize(FileInterface::class);
+    $hidden_file->getFileUri()->willReturn('public://files/.htaccess');
+
+    $this->assertEquals('jpg', $resolver->getFileExtension($file->reveal()));
+    $this->assertEquals('', $resolver->getFileExtension($hidden_file->reveal()));
+  }
+
+  /**
+   * Tests resolving with owner_id option.
+   *
+   * Flow: Resolves a file path with owner_id option provided. The file entity
+   * should be created with the specified owner ID instead of current user ID.
+   *
+   * @covers ::resolve
+   * @covers ::resolvePath
+   * @covers ::saveFileAndCreateEntity
+   */
+  public function testResolveWithOwnerId() {
+    $resolver = $this->createFileResolver();
+
+    // Mock file entity that will be created.
+    $file = $this->prophesize(FileInterface::class);
+    $file->id()->willReturn(10);
+    $file->getOwnerId()->willReturn(0);
+    $file->setOwnerId(5)->shouldBeCalled();
+    $file->save()->shouldBeCalled();
+
+    // Mock file repository to return the file when writeData is called.
+    $this->fileRepository->writeData(Argument::any(), Argument::any(), Argument::any())
+      ->willReturn($file->reveal());
+
+    // Mock file system for directory operations.
+    $this->fileSystem->prepareDirectory(Argument::any(), Argument::any())
+      ->willReturn(TRUE);
+
+    // Create a temporary file for the source.
+    $temp_file = tempnam(sys_get_temp_dir(), 'feeds_test_');
+    file_put_contents($temp_file, 'test content');
+
+    // Mock realpath to return different paths for source and destination
+    // to ensure we go through saveFileAndCreateEntity() instead of
+    // findOrCreateFileEntity().
+    $this->fileSystem->realpath($temp_file)
+      ->willReturn($temp_file);
+    $this->fileSystem->realpath('public://files/' . basename($temp_file))
+      ->willReturn('/different/path/' . basename($temp_file));
+
+    $result = $resolver->resolve($temp_file, [
+      'directory' => 'public://files',
+      'existing' => FileExists::Replace,
+      'owner_id' => 5,
+    ]);
+
+    $this->assertInstanceOf(FileInterface::class, $result);
+    $this->assertEquals(10, $result->id());
+
+    // Cleanup.
+    unlink($temp_file);
   }
 
 }

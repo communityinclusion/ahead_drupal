@@ -807,6 +807,287 @@ class FileResolverTest extends FeedsKernelTestBase {
   }
 
   /**
+   * Tests getting file extension from FileInterface.
+   *
+   * @covers ::getFileExtension
+   */
+  public function testGetFileExtensionFromFile() {
+    $file = $this->writeData('test content', 'public://files/image.jpg', FileExists::Replace);
+    $this->assertEquals('jpg', $this->fileResolver->getFileExtension($file));
+  }
+
+  /**
+   * Tests resolving with owner_id option.
+   *
+   * Flow: Resolves a file path with owner_id option provided. The file entity
+   * should be created with the specified owner ID instead of current user ID.
+   *
+   * @covers ::resolve
+   * @covers ::resolvePath
+   * @covers ::saveFileAndCreateEntity
+   */
+  public function testResolveWithOwnerId() {
+    // Create a source file.
+    $source_file = $this->writeData('test content', 'public://source/test.txt', FileExists::Replace);
+    $source_path = $this->getAbsolutePublicDirectoryPath() . '/source/test.txt';
+
+    // Create a test user to use as owner.
+    $test_user = $this->createUser();
+    $owner_id = $test_user->id();
+
+    // Resolve with owner_id option.
+    $result = $this->fileResolver->resolve($source_path, [
+      'directory' => 'public://files',
+      'existing' => FileExists::Replace,
+      'owner_id' => $owner_id,
+    ]);
+
+    $this->assertInstanceOf(FileInterface::class, $result);
+    $this->assertEquals($owner_id, $result->getOwnerId(), 'File should be owned by the specified owner ID');
+  }
+
+  /**
+   * Tests that an owner is set for an existing file that has no owner yet.
+   *
+   * Flow: Resolves a file path with owner_id option provided. The file entity
+   * that did not have a owner yet, should now get a owner.
+   *
+   * @covers ::resolve
+   * @covers ::resolvePath
+   * @covers ::findOrCreateFileEntity
+   */
+  public function testSetOwnerForExistingFileThatHasNoOwnerYet() {
+    // Create a test user to use as owner.
+    $test_user = $this->createUser();
+    $owner_id = $test_user->id();
+
+    // Create a source file without an owner.
+    $source_file = $this->writeData('test content', 'public://files/test.txt', FileExists::Replace);
+    $this->assertEquals(0, $source_file->getOwnerId());
+    $source_path = $this->getAbsolutePublicDirectoryPath() . '/files/test.txt';
+
+    // Resolve with owner_id option. Note that the destination of the file is
+    // the same as on the source, so no file copy should take place.
+    $result = $this->fileResolver->resolve($source_path, [
+      'directory' => 'public://files',
+      'existing' => FileExists::Replace,
+      'owner_id' => $owner_id,
+    ]);
+
+    $this->assertInstanceOf(FileInterface::class, $result);
+    $this->assertEquals($owner_id, $result->getOwnerId(), 'File should be owned by the specified owner ID');
+  }
+
+  /**
+   * Tests saveFileAndCreateEntity() sets owner for existing ownerless file.
+   *
+   * Flow: A file entity already exists at destination and has owner ID 0.
+   * Resolving a different source file with existing=Replace triggers
+   * saveFileAndCreateEntity(), which should set owner_id on the existing file
+   * entity if it does not have an owner yet.
+   *
+   * @covers ::resolve
+   * @covers ::resolvePath
+   * @covers ::handleDifferentContent
+   * @covers ::saveFileAndCreateEntity
+   */
+  public function testSetOwnerForExistingFileWithoutOwnerViaSaveFileAndCreateEntity() {
+    // Create a test user to use as owner.
+    $test_user = $this->createUser();
+    $owner_id = $test_user->id();
+
+    // Create destination file that exists but has no owner.
+    $destination_file = $this->writeData('old content', 'public://files/test-save-owner.txt', FileExists::Replace);
+    $this->assertEquals(0, $destination_file->getOwnerId());
+
+    // Create source file with different content.
+    $this->writeData('new content', 'public://source/test-save-owner.txt', FileExists::Replace);
+    $source_path = $this->getAbsolutePublicDirectoryPath() . '/source/test-save-owner.txt';
+
+    // Resolve with owner_id option.
+    // Because source and destination are different files and content differs,
+    // this exercises saveFileAndCreateEntity() via existing=Replace.
+    $result = $this->fileResolver->resolve($source_path, [
+      'directory' => 'public://files',
+      'existing' => FileExists::Replace,
+      'owner_id' => $owner_id,
+    ]);
+
+    $this->assertInstanceOf(FileInterface::class, $result);
+    $this->assertEquals($destination_file->id(), $result->id(), 'Destination file entity should be reused');
+    $this->assertEquals($owner_id, $result->getOwnerId(), 'File should be owned by the specified owner ID');
+  }
+
+  /**
+   * Tests that an existing file owner is not overwritten.
+   *
+   * Flow: Resolves a file path with owner_id option provided. The file entity's
+   * owner should not be changed.
+   *
+   * @covers ::resolve
+   * @covers ::resolvePath
+   * @covers ::findOrCreateFileEntity
+   */
+  public function testFileOwnerNoOverwrite() {
+    // Create a test user to use as owner.
+    $test_user1 = $this->createUser();
+
+    // Create another test user to attempt to use as owner.
+    $test_user2 = $this->createUser();
+
+    // Create a source file and set owner.
+    $source_file = $this->writeData('test content', 'public://files/test.txt', FileExists::Replace);
+    $source_file->setOwnerId($test_user1->id());
+    $source_file->save();
+
+    $source_path = $this->getAbsolutePublicDirectoryPath() . '/files/test.txt';
+
+    // Resolve with owner_id option. Note that the destination of the file is
+    // the same as on the source, so no file copy should take place.
+    $result = $this->fileResolver->resolve($source_path, [
+      'directory' => 'public://files',
+      'existing' => FileExists::Replace,
+      'owner_id' => $test_user2->id(),
+    ]);
+
+    $this->assertInstanceOf(FileInterface::class, $result);
+    $this->assertEquals($test_user1->id(), $result->getOwnerId(), 'File owner ID should not be changed');
+  }
+
+  /**
+   * Tests saveFileAndCreateEntity() does not overwrite existing file owner.
+   *
+   * Flow: A file entity already exists at destination and has an owner.
+   * Resolving a different source file with existing=Replace triggers
+   * saveFileAndCreateEntity(), which should keep the existing owner even when
+   * a different owner_id option is provided.
+   *
+   * @covers ::resolve
+   * @covers ::resolvePath
+   * @covers ::handleDifferentContent
+   * @covers ::saveFileAndCreateEntity
+   */
+  public function testFileOwnerNoOverwriteViaSaveFileAndCreateEntity() {
+    // Create a test user as the current owner of destination file.
+    $existing_owner = $this->createUser();
+
+    // Create another user that will be passed as owner_id option.
+    $requested_owner = $this->createUser();
+
+    // Create destination file and set its owner.
+    $destination_file = $this->writeData('old content', 'public://files/test-save-no-overwrite.txt', FileExists::Replace);
+    $destination_file->setOwnerId($existing_owner->id());
+    $destination_file->save();
+
+    // Create source file with different content.
+    $this->writeData('new content', 'public://source/test-save-no-overwrite.txt', FileExists::Replace);
+    $source_path = $this->getAbsolutePublicDirectoryPath() . '/source/test-save-no-overwrite.txt';
+
+    // Resolve with a different owner_id option.
+    // Because source and destination are different files and content differs,
+    // this exercises saveFileAndCreateEntity() via existing=Replace.
+    $result = $this->fileResolver->resolve($source_path, [
+      'directory' => 'public://files',
+      'existing' => FileExists::Replace,
+      'owner_id' => $requested_owner->id(),
+    ]);
+
+    $this->assertInstanceOf(FileInterface::class, $result);
+    $this->assertEquals($destination_file->id(), $result->id(), 'Destination file entity should be reused');
+    $this->assertEquals($existing_owner->id(), $result->getOwnerId(), 'File owner ID should not be changed');
+  }
+
+  /**
+   * Tests saveFileAndCreateEntity() sets current user as owner by default.
+   *
+   * Flow: A file entity already exists at destination and has owner ID 0.
+   * Resolving a different source file with existing=Replace triggers
+   * saveFileAndCreateEntity(). Without owner_id option, the file owner should
+   * be set to the current user ID.
+   *
+   * @covers ::resolve
+   * @covers ::resolvePath
+   * @covers ::handleDifferentContent
+   * @covers ::saveFileAndCreateEntity
+   */
+  public function testSetCurrentUserAsOwnerViaSaveFileAndCreateEntity() {
+    $current_user = $this->container->get('current_user');
+
+    // Create destination file that exists but has no owner.
+    $destination_file = $this->writeData('old content', 'public://files/test-save-current-owner.txt', FileExists::Replace);
+    $this->assertEquals(0, $destination_file->getOwnerId());
+
+    // Create source file with different content.
+    $this->writeData('new content', 'public://source/test-save-current-owner.txt', FileExists::Replace);
+    $source_path = $this->getAbsolutePublicDirectoryPath() . '/source/test-save-current-owner.txt';
+
+    // Resolve without owner_id option.
+    // Because source and destination are different files and content differs,
+    // this exercises saveFileAndCreateEntity() via existing=Replace.
+    $result = $this->fileResolver->resolve($source_path, [
+      'directory' => 'public://files',
+      'existing' => FileExists::Replace,
+    ]);
+
+    $this->assertInstanceOf(FileInterface::class, $result);
+    $this->assertEquals($destination_file->id(), $result->id(), 'Destination file entity should be reused');
+    $this->assertEquals($current_user->id(), $result->getOwnerId(), 'File should be owned by the current user');
+  }
+
+  /**
+   * Tests findOrCreateFileEntity with owner_id option.
+   *
+   * Flow: A physical file exists but no file entity. When
+   * findOrCreateFileEntity() is called with owner_id option, the new file
+   * entity should be created with the specified owner ID.
+   *
+   * @covers ::resolve
+   * @covers ::resolvePath
+   * @covers ::findOrCreateFileEntity
+   */
+  public function testFindOrCreateFileEntityWithOwnerId() {
+    $file_system = $this->container->get('file_system');
+    $file_repository = $this->container->get('file.repository');
+
+    // Create a physical file directly on disk without creating a file entity.
+    $destination_uri = 'public://files/orphan_owner.txt';
+    $destination_path = $this->getAbsolutePublicDirectoryPath() . '/files/orphan_owner.txt';
+
+    // Ensure directory exists.
+    $directory = 'public://files';
+    $file_system->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
+
+    // Create physical file directly (bypassing file repository).
+    file_put_contents($destination_path, 'orphan file content');
+
+    // Verify no file entity exists for this URI.
+    $existing_file = $file_repository->loadByUri($destination_uri);
+    $this->assertNull($existing_file, 'No file entity should exist for the orphan file');
+
+    // Create a test user to use as owner.
+    $test_user = $this->createUser();
+    $owner_id = $test_user->id();
+
+    // Resolve with source path pointing to the same location as destination.
+    // This will trigger findOrCreateFileEntity().
+    $result = $this->fileResolver->resolve($destination_path, [
+      'directory' => 'public://files',
+      'existing' => FileExists::Replace,
+      'owner_id' => $owner_id,
+    ]);
+
+    // Verify a new file entity was created.
+    $this->assertInstanceOf(FileInterface::class, $result);
+    $this->assertNotNull($result->id(), 'File entity should have an ID');
+
+    // Verify the file entity has the specified owner ID.
+    $this->assertEquals($owner_id, $result->getOwnerId(), 'File entity should be owned by the specified owner ID');
+
+    // Clean up the physical file.
+    unlink($destination_path);
+  }
+
+  /**
    * Helper method to write file data.
    *
    * @param string $data

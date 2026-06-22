@@ -36,6 +36,9 @@ interface FileResolverInterface {
    *     there will be searched by file ID.
    *   - file_extensions: (array, optional) List of allowed file extensions.
    *     If provided, files with extensions not in this list will be rejected.
+   *   - owner_id: (int, optional) User ID to set as the file owner in case the
+   *     file does not have an owner yet. If not provided, the current user ID
+   *     is used.
    *
    * @return \Drupal\file\FileInterface|null
    *   The file entity, or NULL if no file could be resolved.
@@ -50,5 +53,24 @@ interface FileResolverInterface {
    *   If file extension is not allowed.
    */
   public function resolve(mixed $input, array $options = []): ?FileInterface;
+
+  /**
+   * Gets the file extension from various input types.
+   *
+   * Domain-like strings without a URL scheme (for example "example.com") are
+   * treated as plain path/filename input.
+   *
+   * @param string|\Drupal\file\FileInterface $input
+   *   The input value. Can be:
+   *   - A URL (string starting with "http://" or "https://")
+   *   - A file path (string, can be server path or a stream like
+   *     "public://foo/bar")
+   *   - A FileInterface object (uses the file's URI).
+   *
+   * @return string
+   *   The file extension (without leading dot), or empty string if no
+   *   extension.
+   */
+  public function getFileExtension(string|FileInterface $input): string;
 
 }

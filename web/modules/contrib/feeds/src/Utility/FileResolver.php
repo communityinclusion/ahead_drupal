@@ -157,6 +157,12 @@ class FileResolver implements FileResolverInterface {
     // First try to find an existing entity.
     $existing_file = $this->resolveByFields($input, $options);
     if ($existing_file instanceof FileInterface) {
+      // Validate extension restrictions for pre-existing file entities too.
+      // Do make sure that a file uri exists before validating the extension.
+      $existing_file_uri = $existing_file->getFileUri();
+      if (is_string($existing_file_uri) && $existing_file_uri !== '') {
+        $this->validateFileExtension($existing_file_uri, $options);
+      }
       return $existing_file;
     }
 
@@ -298,7 +304,7 @@ class FileResolver implements FileResolverInterface {
 
       if ($existing_hash === $new_hash) {
         // Same content, find or create file entity for existing file.
-        return $this->findOrCreateFileEntity($destination);
+        return $this->findOrCreateFileEntity($destination, $options);
       }
 
       // Different content, handle according to 'existing' setting.
@@ -362,7 +368,7 @@ class FileResolver implements FileResolverInterface {
     $destination_real_path = $this->fileSystem->realpath($destination);
     if ($real_path === $destination_real_path) {
       // Same file, find or create file entity.
-      return $this->findOrCreateFileEntity($destination);
+      return $this->findOrCreateFileEntity($destination, $options);
     }
 
     $destination_to_check = is_string($destination_real_path) ? $destination_real_path : $destination;
@@ -375,7 +381,7 @@ class FileResolver implements FileResolverInterface {
       // If 'existing' is 'ignore', we can skip file comparison and reading
       // since no file will be written anyway. Just return the existing file.
       if ($existing_enum === FileExists::Error) {
-        return $this->findOrCreateFileEntity($destination);
+        return $this->findOrCreateFileEntity($destination, $options);
       }
 
       // Check if the file contents are exactly the same. If this is the case,
@@ -385,7 +391,7 @@ class FileResolver implements FileResolverInterface {
       $source_hash = hash_file('sha256', $real_path);
       if ($existing_hash === $source_hash) {
         // Same content, find or create file entity for existing file.
-        return $this->findOrCreateFileEntity($destination);
+        return $this->findOrCreateFileEntity($destination, $options);
       }
 
       // Different content, handle according to 'existing' setting.
@@ -553,7 +559,7 @@ class FileResolver implements FileResolverInterface {
     return match ($existing_enum) {
       FileExists::Replace => $this->saveFileAndCreateEntity($content, $destination, FileExists::Replace, $options),
       FileExists::Rename => $this->saveFileAndCreateEntity($content, $destination, FileExists::Rename, $options),
-      FileExists::Error => $this->findOrCreateFileEntity($destination),
+      FileExists::Error => $this->findOrCreateFileEntity($destination, $options),
     };
   }
 
@@ -591,10 +597,11 @@ class FileResolver implements FileResolverInterface {
       // Save file using file repository.
       $file = $this->fileRepository->writeData($content, $destination, $fileExists);
       if ($file instanceof FileInterface) {
-        // Set the file owner to the current user if it doesn't have an owner
-        // yet.
+        // Set the file owner. Use owner_id from options if provided, otherwise
+        // use current user ID.
         if (!$file->getOwnerId()) {
-          $file->setOwnerId($this->currentUser->id());
+          $owner_id = isset($options['owner_id']) && is_numeric($options['owner_id']) ? (int) $options['owner_id'] : $this->currentUser->id();
+          $file->setOwnerId($owner_id);
           $file->save();
         }
         return $file;
@@ -611,11 +618,13 @@ class FileResolver implements FileResolverInterface {
    *
    * @param string $uri
    *   The file URI.
+   * @param array $options
+   *   (optional) Additional options, including owner_id.
    *
    * @return \Drupal\file\FileInterface|null
    *   The file entity, or NULL if creation failed.
    */
-  protected function findOrCreateFileEntity(string $uri): ?FileInterface {
+  protected function findOrCreateFileEntity(string $uri, array $options = []): ?FileInterface {
     // Convert to URI if it's an absolute path.
     if (!empty($uri) && $uri[0] === '/') {
       // Try to convert to stream wrapper URI.
@@ -633,7 +642,13 @@ class FileResolver implements FileResolverInterface {
     $file = $this->fileRepository->loadByUri($uri);
     if ($file === NULL) {
       $file = File::create(['uri' => $uri]);
-      $file->setOwnerId($this->currentUser->id());
+    }
+
+    // Set the file owner if no owner exists yet. Use owner_id from options if
+    // provided, otherwise use current user ID.
+    if (!$file->getOwnerId()) {
+      $owner_id = isset($options['owner_id']) && is_numeric($options['owner_id']) ? (int) $options['owner_id'] : $this->currentUser->id();
+      $file->setOwnerId($owner_id);
     }
 
     $file->setPermanent();
@@ -659,14 +674,8 @@ class FileResolver implements FileResolverInterface {
       return;
     }
 
-    // Extract file extension from path.
-    $filename = basename($file_path);
-    // Remove query string if present.
-    [$filename] = explode('?', $filename);
-    $extension = '';
-    if (($pos = strrpos($filename, '.')) !== FALSE) {
-      $extension = strtolower(substr($filename, $pos + 1));
-    }
+    // Extract file extension using the centralized method.
+    $extension = $this->getFileExtension($file_path);
 
     // Normalize file extensions to lowercase for comparison.
     $allowed_extensions = array_map('strtolower', array_filter($options['file_extensions']));
@@ -675,6 +684,47 @@ class FileResolver implements FileResolverInterface {
     if (!empty($extension) && !in_array($extension, $allowed_extensions, TRUE)) {
       throw new InvalidFileExtensionException($file_path, $extension, $allowed_extensions);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFileExtension(string|FileInterface $input): string {
+    // If input is a FileInterface, use its URI.
+    if ($input instanceof FileInterface) {
+      $input = $input->getFileUri();
+    }
+
+    // Extract extension from path/URL.
+    // Remove query parameters from URLs first.
+    $path = strtok($input, '?');
+
+    // For URLs, check if there's actually a file path (not just domain).
+    if (preg_match('/^https?:\/\//', $input)) {
+      $url_path = parse_url($input, PHP_URL_PATH);
+      // If URL path is empty or just '/', there's no file.
+      if (empty($url_path) || $url_path === '/') {
+        return '';
+      }
+      // Use the URL path for extension extraction.
+      $path = $url_path;
+    }
+
+    // Get the filename (last part after the last slash).
+    $filename = basename($path);
+
+    // Check if there's a dot in the filename (but not as the first character).
+    $pos = strrpos($filename, '.');
+    if ($pos === FALSE || $pos === 0) {
+      // No extension found, or dot is first character (hidden file).
+      return '';
+    }
+
+    // Extract extension (everything after the last dot).
+    $extension = substr($filename, $pos + 1);
+
+    // Return lowercase extension.
+    return strtolower($extension);
   }
 
 }
