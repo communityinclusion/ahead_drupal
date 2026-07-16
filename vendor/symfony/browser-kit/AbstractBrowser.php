@@ -433,7 +433,7 @@ abstract class AbstractBrowser
         if (file_exists($deprecationsFile)) {
             $deprecations = file_get_contents($deprecationsFile);
             unlink($deprecationsFile);
-            foreach ($deprecations ? unserialize($deprecations) : [] as $deprecation) {
+            foreach ($deprecations ? unserialize($deprecations, ['allowed_classes' => false]) : [] as $deprecation) {
                 if ($deprecation[0]) {
                     // unsilenced on purpose
                     trigger_error($deprecation[1], \E_USER_DEPRECATED);
@@ -447,7 +447,7 @@ abstract class AbstractBrowser
             throw new RuntimeException(\sprintf('OUTPUT: %s ERROR OUTPUT: %s.', $process->getOutput(), $process->getErrorOutput()));
         }
 
-        return unserialize($process->getOutput());
+        return unserialize($process->getOutput(), ['allowed_classes' => true]);
     }
 
     /**
@@ -690,3 +690,5 @@ abstract class AbstractBrowser
         return $host;
     }
 }
+
+// @php-cs-fixer-ignore error_suppression This file is explicitly expected to not silence each of trigger_error calls
