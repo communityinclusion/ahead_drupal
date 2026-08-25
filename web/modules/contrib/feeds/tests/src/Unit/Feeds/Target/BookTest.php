@@ -244,6 +244,7 @@ namespace Drupal\Tests\feeds\Unit\Feeds\Target {
       $raw_values = [];
 
       $this->nodeStorage->loadUnchanged(3)->willReturn($entity);
+      $this->bookManager->checkNodeIsRemovable(Argument::any())->willReturn(FALSE);
 
       $target = $this->getTargetPlugin();
       $target->setTarget($feed->reveal(), $entity->reveal(), $field_name, $raw_values);

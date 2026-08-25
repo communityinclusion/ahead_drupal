@@ -3,17 +3,17 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
  * Defines a link field mapper.
- *
- * @FeedsTarget(
- *   id = "link",
- *   field_types = {"link"}
- * )
  */
+#[FeedsTarget(
+  id: 'link',
+  field_types: ['link'],
+)]
 class Link extends FieldTargetBase {
 
   /**

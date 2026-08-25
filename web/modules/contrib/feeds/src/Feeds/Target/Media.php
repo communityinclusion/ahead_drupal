@@ -11,32 +11,32 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Utility\Token;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\EntityFinderInterface;
+use Drupal\feeds\Exception\DownloadException;
 use Drupal\feeds\Exception\EmptyFeedException;
+use Drupal\feeds\Exception\InvalidFileExtensionException;
 use Drupal\feeds\Exception\ReferenceNotFoundException;
 use Drupal\feeds\Exception\TargetValidationException;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Processor\EntityProcessorInterface;
-use Drupal\feeds\Exception\DownloadException;
-use Drupal\feeds\Exception\InvalidFileExtensionException;
 use Drupal\feeds\Utility\FileResolverInterface;
 use Drupal\file\FileInterface;
 use Drupal\file\Plugin\Field\FieldType\FileItem;
-use Drupal\media\Entity\MediaType;
 use Drupal\media\Entity\Media as MediaEntity;
+use Drupal\media\Entity\MediaType;
 use Drupal\media\MediaInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a media field mapper.
- *
- * @FeedsTarget(
- *   id = "media",
- *   field_types = {"entity_reference"}
- * )
  */
+#[FeedsTarget(
+  id: 'media',
+  field_types: ['entity_reference'],
+)]
 class Media extends EntityReference {
 
   use FileExistsTrait;

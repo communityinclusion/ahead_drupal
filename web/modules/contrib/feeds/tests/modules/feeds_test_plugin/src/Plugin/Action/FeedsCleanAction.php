@@ -2,21 +2,23 @@
 
 namespace Drupal\feeds_test_plugin\Plugin\Action;
 
+use Drupal\Core\Action\Attribute\Action;
+use Drupal\Core\Action\Plugin\Action\Derivative\EntityPublishedActionDeriver;
 use Drupal\Core\Action\Plugin\Action\EntityActionBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\State\StateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Sets a variable for how many times an entity gets cleaned.
- *
- * @Action(
- *   id = "entity:feeds_test_plugin_clean_action_long_name",
- *   action_label = @Translation("Dummy clean"),
- *   deriver = "Drupal\Core\Action\Plugin\Action\Derivative\EntityPublishedActionDeriver",
- * )
  */
+#[Action(
+  id: 'entity:feeds_test_plugin_clean_action_long_name',
+  action_label: new TranslatableMarkup('Dummy clean'),
+  deriver: EntityPublishedActionDeriver::class
+)]
 final class FeedsCleanAction extends EntityActionBase {
 
   /**

@@ -3,16 +3,16 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 
 /**
  * Defines a string field mapper.
- *
- * @FeedsTarget(
- *   id = "uri",
- *   field_types = {"uri"}
- * )
  */
+#[FeedsTarget(
+  id: 'uri',
+  field_types: ['uri'],
+)]
 class Uri extends StringTarget {
 
   /**

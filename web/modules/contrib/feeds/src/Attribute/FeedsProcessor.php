@@ -25,10 +25,12 @@ class FeedsProcessor extends Plugin {
    *
    * @param string $id
    *   The plugin ID.
-   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|string $title
-   *   The plugin title.
+   * @param \Drupal\Core\StringTranslation\TranslatableMarkup|string|null $title
+   *   (optional) The plugin title. May be omitted when a deriver supplies it.
    * @param \Drupal\Core\StringTranslation\TranslatableMarkup|string|null $description
    *   (optional) The plugin description.
+   * @param string|null $entity_type
+   *   (optional) The entity type ID this processor creates or updates.
    * @param array $form
    *   (optional) Form classes for the plugin. Possible keys:
    *   - "configuration": Displayed when configuring the feed type.
@@ -42,12 +44,16 @@ class FeedsProcessor extends Plugin {
    *   create() method. The plugin will be set via
    *   \Drupal\feeds\Plugin\PluginAwareInterface::setPlugin() if that interface
    *   is implemented.
+   * @param class-string|null $deriver
+   *   (optional) The deriver class.
    */
   public function __construct(
     public readonly string $id,
-    public readonly TranslatableMarkup|string $title,
+    public readonly TranslatableMarkup|string|null $title = NULL,
     public readonly TranslatableMarkup|string|null $description = NULL,
+    public readonly ?string $entity_type = NULL,
     public readonly array $form = [],
+    public readonly ?string $deriver = NULL,
   ) {}
 
 }

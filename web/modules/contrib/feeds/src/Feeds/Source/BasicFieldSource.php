@@ -2,6 +2,8 @@
 
 namespace Drupal\feeds\Feeds\Source;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\feeds\Attribute\FeedsSource;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Feeds\Item\ItemInterface;
@@ -9,12 +11,11 @@ use Drupal\feeds\Plugin\Type\Source\SourceBase;
 
 /**
  * A source plugin that provides feed type fields as mapping sources.
- *
- * @FeedsSource(
- *   id = "basic_field",
- *   category = @Translation("Feed entity"),
- * )
  */
+#[FeedsSource(
+  id: 'basic_field',
+  category: new TranslatableMarkup('Feed entity')
+)]
 class BasicFieldSource extends SourceBase {
 
   /**

@@ -4,7 +4,6 @@ namespace Drupal\feeds\File;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\File\FileSystemInterface;
-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\feeds\FeedInterface;
 
@@ -96,8 +95,10 @@ abstract class FeedsFileSystemBase implements FeedsFileSystemInterface {
    *   The default directory.
    */
   protected function getDefaultDirectory(): string {
-    $schemes = $this->streamWrapperManager->getWrappers(StreamWrapperInterface::VISIBLE);
-    $scheme = isset($schemes['private']) ? 'private' : 'public';
+    // Use isValidScheme() instead of getWrappers(): after container rebuilds
+    // the wrappers cache can be empty while schemes remain registered.
+    // @see \Drupal\Core\StreamWrapper\StreamWrapperManager::unregister()
+    $scheme = $this->streamWrapperManager->isValidScheme('private') ? 'private' : 'public';
     return $scheme . '://' . $this->getRelativeDefaultDirectory();
   }
 

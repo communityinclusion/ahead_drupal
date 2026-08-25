@@ -3,15 +3,16 @@
 namespace Drupal\feeds\Feeds\CustomSource;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\feeds\Attribute\FeedsCustomSource;
 
 /**
  * A CSV source.
- *
- * @FeedsCustomSource(
- *   id = "csv",
- *   title = @Translation("CSV column"),
- * )
  */
+#[FeedsCustomSource(
+  id: 'csv',
+  title: new TranslatableMarkup('CSV column')
+)]
 class CsvSource extends BlankSource {
 
   /**

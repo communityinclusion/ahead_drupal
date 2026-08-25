@@ -3,6 +3,7 @@
 namespace Drupal\feeds;
 
 use Drupal\Component\Utility\SortArray;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
@@ -38,10 +39,13 @@ class FeedTypeListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function getOperations(EntityInterface $entity) {
-    $operations = parent::getOperations($entity);
+  public function getOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
+    $cacheability = $cacheability ?? new CacheableMetadata();
+    $operations = parent::getOperations($entity, $cacheability);
 
-    if ($entity->access('mapping') && $entity->hasLinkTemplate('mapping')) {
+    $mapping_access = $entity->access('mapping', return_as_object: TRUE);
+    $cacheability->addCacheableDependency($mapping_access);
+    if ($mapping_access->isAllowed() && $entity->hasLinkTemplate('mapping')) {
       $operations['mapping'] = [
         'title' => $this->t('Mapping'),
         'url' => $entity->toUrl('mapping'),

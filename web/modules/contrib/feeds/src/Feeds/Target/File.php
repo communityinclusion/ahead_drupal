@@ -13,6 +13,7 @@ use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Utility\Token;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\EntityFinderInterface;
 use Drupal\feeds\Exception\DownloadException;
 use Drupal\feeds\Exception\EmptyFeedException;
@@ -28,12 +29,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a file field mapper.
- *
- * @FeedsTarget(
- *   id = "file",
- *   field_types = {"file"}
- * )
  */
+#[FeedsTarget(
+  id: 'file',
+  field_types: ['file'],
+)]
 class File extends EntityReference {
 
   use FileExistsTrait;

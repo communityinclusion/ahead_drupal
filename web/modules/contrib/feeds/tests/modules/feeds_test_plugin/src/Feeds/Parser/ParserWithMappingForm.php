@@ -3,6 +3,8 @@
 namespace Drupal\feeds_test_plugin\Feeds\Parser;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\feeds\Attribute\FeedsParser;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\Plugin\Type\MappingPluginFormInterface;
 use Drupal\feeds\Plugin\Type\Parser\ParserInterface;
@@ -17,13 +19,12 @@ use Drupal\feeds\StateInterface;
  * This parser deliberately does not extend
  * \Drupal\feeds\Feeds\Parser\ParserBase, in order to have tests for parsers
  * that only implement \Drupal\feeds\Plugin\Type\Parser\ParserInterface.
- *
- * @FeedsParser(
- *   id = "parser_with_mapping_form",
- *   title = "Parser with mapping form",
- *   description = @Translation("Parser with form fields on the mapping form."),
- * )
  */
+#[FeedsParser(
+  id: 'parser_with_mapping_form',
+  title: 'Parser with mapping form',
+  description: new TranslatableMarkup('Parser with form fields on the mapping form.')
+)]
 class ParserWithMappingForm extends PluginBase implements ParserInterface, MappingPluginFormInterface {
 
   /**

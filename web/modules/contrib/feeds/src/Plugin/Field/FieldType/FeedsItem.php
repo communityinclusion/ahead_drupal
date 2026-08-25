@@ -2,8 +2,10 @@
 
 namespace Drupal\feeds\Plugin\Field\FieldType;
 
+use Drupal\Core\Field\Attribute\FieldType;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
 use Drupal\feeds\FeedsItemInterface;
@@ -11,23 +13,19 @@ use Drupal\feeds\FeedsItemInterface;
 /**
  * Plugin implementation of the 'feeds_item' field type.
  *
- * @FieldType(
- *   id = "feeds_item",
- *   label = @Translation("Feed"),
- *   description = @Translation("Feeds import metadata."),
- *   instance_settings = {
- *     "title" = "1"
- *   },
- *   default_formatter = "feeds_item_url",
- *   no_ui = TRUE,
- *   list_class = "\Drupal\feeds\Plugin\Field\FieldType\FeedsItemList",
- * )
- *
  * @property int $imported
  * @property string $url
  * @property string $guid
  * @property string $hash
  */
+#[FieldType(
+  id: 'feeds_item',
+  label: new TranslatableMarkup('Feed'),
+  description: new TranslatableMarkup('Feeds import metadata.'),
+  default_formatter: 'feeds_item_url',
+  no_ui: TRUE,
+  list_class: FeedsItemList::class,
+)]
 class FeedsItem extends EntityReferenceItem implements FeedsItemInterface {
 
   /**

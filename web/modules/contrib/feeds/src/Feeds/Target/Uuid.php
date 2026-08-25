@@ -5,6 +5,7 @@ namespace Drupal\feeds\Feeds\Target;
 use Drupal\Component\Uuid\Uuid as UuidValidator;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\TargetValidationException;
 use Drupal\feeds\FeedInterface;
@@ -13,14 +14,11 @@ use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
  * Defines a UUID field mapper.
- *
- * @FeedsTarget(
- *   id = "uuid",
- *   field_types = {
- *     "uuid"
- *   }
- * )
  */
+#[FeedsTarget(
+  id: 'uuid',
+  field_types: ['uuid'],
+)]
 class Uuid extends FieldTargetBase {
 
   /**

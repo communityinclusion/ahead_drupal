@@ -3,19 +3,17 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
  * Defines a language field mapper.
- *
- * @FeedsTarget(
- *   id = "langcode",
- *   field_types = {
- *     "language"
- *   }
- * )
  */
+#[FeedsTarget(
+  id: 'langcode',
+  field_types: ['language'],
+)]
 class Language extends FieldTargetBase {
 
   /**

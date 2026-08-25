@@ -3,16 +3,16 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 
 /**
  * Defines a daterange field mapper.
- *
- * @FeedsTarget(
- *   id = "daterange",
- *   field_types = {"daterange"}
- * )
  */
+#[FeedsTarget(
+  id: 'daterange',
+  field_types: ['daterange'],
+)]
 class DateRange extends DateTime {
 
   /**

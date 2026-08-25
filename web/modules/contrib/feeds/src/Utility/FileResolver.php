@@ -20,6 +20,7 @@ use Drupal\file\FileRepositoryInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Exception\MalformedUriException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -511,6 +512,10 @@ class FileResolver implements FileResolverInterface {
     }
     catch (RequestException $e) {
       // Other RequestExceptions (e.g., network errors, timeouts).
+      throw new DownloadException($url, NULL, $e->getMessage(), $e);
+    }
+    catch (MalformedUriException $e) {
+      // Malformed urls.
       throw new DownloadException($url, NULL, $e->getMessage(), $e);
     }
   }

@@ -162,6 +162,7 @@ class FeedsPluginManagerTest extends FeedsKernelTestBase {
       'provider' => 'feeds_test_plugin',
       'class' => AttributeTestProcessor::class,
       'plugin_type' => 'processor',
+      'entity_type' => NULL,
       'form' => [],
     ];
 

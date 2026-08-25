@@ -3,21 +3,22 @@
 namespace Drupal\feeds\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldFormatter\UriLinkFormatter;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 
 /**
  * Plugin implementation of the 'feeds_uri_link' formatter.
- *
- * @FieldFormatter(
- *   id = "feeds_uri_link",
- *   label = @Translation("Link to URI, or string"),
- *   field_types = {
- *     "uri",
- *   }
- * )
  */
+#[FieldFormatter(
+  id: 'feeds_uri_link',
+  label: new TranslatableMarkup('Link to URI, or string'),
+  field_types: [
+    'uri',
+  ]
+)]
 class FeedsUriLinkFormatter extends UriLinkFormatter {
 
   /**

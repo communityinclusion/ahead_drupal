@@ -3,18 +3,16 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 
 /**
  * Defines a telephone field mapper.
- *
- * @FeedsTarget(
- *   id = "telephone",
- *   field_types = {
- *     "telephone"
- *   }
- * )
  */
+#[FeedsTarget(
+  id: 'telephone',
+  field_types: ['telephone'],
+)]
 class Telephone extends StringTarget {
 
   /**

@@ -24,7 +24,7 @@ trait EventDispatcherTrait {
    *
    * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
-  private $_eventDispatcher;
+  protected $_eventDispatcher;
 
   /**
    * Dispatches an event.

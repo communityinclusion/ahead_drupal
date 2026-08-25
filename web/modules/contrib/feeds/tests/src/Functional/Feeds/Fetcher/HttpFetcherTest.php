@@ -274,12 +274,12 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
     // create the file in the Feeds in progress dir.
     $this->runQueue('feeds_feed_refresh:' . $this->feedType->id(), 1);
     // Assert that a file exist in the Feeds in progress dir.
-    $this->assertCountFilesInProgressDir(1, '', 'public');
-    $this->assertCountFilesInProgressDir(1, $feed->id(), 'public');
+    $this->assertCountFilesInProgressDir(1);
+    $this->assertCountFilesInProgressDir(1, $feed->id());
 
     // Now unlock the feed and assert that the file to import gets removed.
     $feed->unlock();
-    $this->assertCountFilesInProgressDir(0, '', 'public');
+    $this->assertCountFilesInProgressDir(0);
   }
 
   /**
@@ -297,11 +297,12 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
     // create the file in the Feeds in progress dir.
     $this->runQueue('feeds_feed_refresh:' . $this->feedType->id(), 1);
     // Assert that a file exist in the Feeds in progress dir.
-    $this->assertCountFilesInProgressDir(1, '', 'public');
-    $this->assertCountFilesInProgressDir(1, $feed->id(), 'public');
+    $this->assertCountFilesInProgressDir(1);
+    $this->assertCountFilesInProgressDir(1, $feed->id());
 
     // Remove all the files from the in progress dir.
-    $this->container->get('file_system')->deleteRecursive('public://feeds/in_progress');
+    $in_progress_dir = $this->container->get('feeds.file_system.in_progress')->getFeedsDirectory();
+    $this->container->get('file_system')->deleteRecursive($in_progress_dir);
 
     // Run the rest of the queue. No nodes should have been imported.
     // The import should abort, but not with uncaught exceptions.
@@ -383,7 +384,7 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
     }
 
     // Assert that temporary files got cleaned up.
-    $this->assertCountFilesInProgressDir(0, '', 'public');
+    $this->assertCountFilesInProgressDir(0);
 
     // Assert that a EmptyFeedException was thrown earlier.
     $this->assertInstanceOf(EmptyFeedException::class, $e, 'Failed asserting that a EmptyFeedException was thrown.');
@@ -415,7 +416,7 @@ class HttpFetcherTest extends FeedsBrowserTestBase {
     }
 
     // Assert that temporary files got cleaned up.
-    $this->assertCountFilesInProgressDir(0, '', 'public');
+    $this->assertCountFilesInProgressDir(0);
 
     // Assert that a EmptyFeedException was thrown earlier.
     $this->assertInstanceOf(EmptyFeedException::class, $e, 'Failed asserting that a EmptyFeedException was thrown.');

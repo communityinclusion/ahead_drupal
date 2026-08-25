@@ -2,19 +2,21 @@
 
 namespace Drupal\feeds\Plugin\QueueWorker;
 
+use Drupal\Core\Queue\Attribute\QueueWorker;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FeedsQueueExecutable;
+use Drupal\feeds\Plugin\Derivative\FeedQueueWorker as FeedQueueWorkerDeriver;
 
 /**
  * A queue worker for importing feeds.
- *
- * @QueueWorker(
- *   id = "feeds_feed_refresh",
- *   title = @Translation("Feed refresh"),
- *   cron = {"time" = 60},
- *   deriver = "Drupal\feeds\Plugin\Derivative\FeedQueueWorker"
- * )
  */
+#[QueueWorker(
+  id: 'feeds_feed_refresh',
+  title: new TranslatableMarkup('Feed refresh'),
+  cron: ['time' => 60],
+  deriver: FeedQueueWorkerDeriver::class
+)]
 class FeedRefresh extends FeedQueueWorkerBase {
 
   /**

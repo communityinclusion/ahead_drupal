@@ -21,7 +21,6 @@ trait FeedsReflectionTrait {
   protected function getMethod($class, $name) {
     $class = new \ReflectionClass($class);
     $method = $class->getMethod($name);
-    $method->setAccessible(TRUE);
     return $method;
   }
 
@@ -38,7 +37,6 @@ trait FeedsReflectionTrait {
   protected function setProtectedProperty($object, $property_name, $value) {
     $ref_object = new \ReflectionObject($object);
     $property = $ref_object->getProperty($property_name);
-    $property->setAccessible(TRUE);
     $property->setValue($object, $value);
   }
 
@@ -56,7 +54,6 @@ trait FeedsReflectionTrait {
   protected function getProtectedProperty($object, $property_name) {
     $ref_object = new \ReflectionObject($object);
     $property = $ref_object->getProperty($property_name);
-    $property->setAccessible(TRUE);
     return $property->getValue($object);
   }
 

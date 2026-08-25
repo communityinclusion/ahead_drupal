@@ -2,24 +2,25 @@
 
 namespace Drupal\feeds_log\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\File\FileUrlGeneratorInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'feeds_log_file_uri_link' formatter.
- *
- * @FieldFormatter(
- *   id = "feeds_log_file_uri_link",
- *   label = @Translation("Link to file"),
- *   field_types = {
- *     "uri",
- *   }
- * )
  */
+#[FieldFormatter(
+  id: 'feeds_log_file_uri_link',
+  label: new TranslatableMarkup('Link to file'),
+  field_types: [
+    'uri',
+  ]
+)]
 class FileUriLinkFormatter extends FormatterBase {
 
   /**

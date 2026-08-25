@@ -12,6 +12,7 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\EntityFinderInterface;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\ReferenceNotFoundException;
@@ -26,12 +27,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines an entity reference mapper.
- *
- * @FeedsTarget(
- *   id = "entity_reference",
- *   field_types = {"entity_reference"}
- * )
  */
+#[FeedsTarget(
+  id: 'entity_reference',
+  field_types: ['entity_reference'],
+)]
 class EntityReference extends FieldTargetBase implements ConfigurableTargetInterface, ContainerFactoryPluginInterface {
 
   /**

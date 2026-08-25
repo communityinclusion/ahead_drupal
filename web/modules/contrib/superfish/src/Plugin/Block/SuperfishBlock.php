@@ -1214,8 +1214,7 @@ class SuperfishBlock extends SystemMenuBlock {
     $parameters = (new MenuTreeParameters())
       ->setMinDepth($level)
       ->setMaxDepth($maxdepth)
-      ->setActiveTrail($this->menuActiveTrail->getActiveTrailIds($menu_name))
-      ->onlyEnabledLinks();
+      ->setActiveTrail($this->menuActiveTrail->getActiveTrailIds($menu_name));
 
     // For menu blocks with start level greater than 1, only show menu items
     // from the current active trail. Adjust the root according to the current
@@ -1239,6 +1238,7 @@ class SuperfishBlock extends SystemMenuBlock {
     $tree = $this->menuTree->load($menu_name, $parameters);
 
     $manipulators = [
+      ['callable' => 'superfish.menu_tree_manipulator:filterDisabledLinks'],
       ['callable' => 'menu.default_tree_manipulators:checkAccess'],
       ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
     ];

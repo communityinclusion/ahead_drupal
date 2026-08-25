@@ -2,20 +2,21 @@
 
 namespace Drupal\feeds\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 
 /**
  * Plugin implementation of the 'feeds_item_guid' formatter.
- *
- * @FieldFormatter(
- *   id = "feeds_item_guid",
- *   label = @Translation("GUID of the feed item"),
- *   field_types = {
- *     "feeds_item"
- *   }
- * )
  */
+#[FieldFormatter(
+  id: 'feeds_item_guid',
+  label: new TranslatableMarkup('GUID of the feed item'),
+  field_types: [
+    'feeds_item',
+  ]
+)]
 class FeedsItemGuidFormatter extends FeedsItemFormatterBase {
 
   /**

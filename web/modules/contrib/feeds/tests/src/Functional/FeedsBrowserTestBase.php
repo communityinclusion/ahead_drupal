@@ -94,15 +94,21 @@ abstract class FeedsBrowserTestBase extends BrowserTestBase {
    *   The expected number of files.
    * @param string $subdirectory
    *   (optional) The directory to look into within the "in progress" dir.
-   * @param string $stream
-   *   (optional) The stream to use: 'public' or 'private'. Defaults to
-   *   'private'.
    */
-  protected function assertCountFilesInProgressDir(int $count, string $subdirectory = '', string $stream = 'private') {
-    // Assert that a file exists in the in_progress dir.
-    $dir = $stream . '://feeds/in_progress';
+  protected function assertCountFilesInProgressDir(int $count, string $subdirectory = '') {
+    $dir = $this->container->get('feeds.file_system.in_progress')->getFeedsDirectory();
     if ($subdirectory) {
       $dir .= '/' . $subdirectory;
+    }
+    // Treat a missing directory as zero files (e.g. fetch aborted before any
+    // temp file was written).
+    if (!is_dir($dir)) {
+      $this->assertSame(0, $count, sprintf(
+        'Expected %d files in %s, but the directory does not exist.',
+        $count,
+        $dir,
+      ));
+      return;
     }
     $files = $this->container->get('file_system')->scanDirectory($dir, '/.*/');
     $this->assertCount($count, $files);

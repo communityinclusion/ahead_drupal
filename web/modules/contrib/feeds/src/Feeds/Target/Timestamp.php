@@ -3,18 +3,18 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Component\Datetime\DateTimePlus;
+use Drupal\feeds\Attribute\FeedsTarget;
 
 /**
  * Defines a timestamp field mapper.
- *
- * @FeedsTarget(
- *   id = "timestamp",
- *   field_types = {
- *     "created",
- *     "timestamp"
- *   }
- * )
  */
+#[FeedsTarget(
+  id: 'timestamp',
+  field_types: [
+    'created',
+    'timestamp',
+  ],
+)]
 class Timestamp extends DateTargetBase {
 
   /**

@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\book\BookManagerInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\EntityFinderInterface;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\ReferenceNotFoundException;
@@ -28,11 +29,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a mapper to book properties.
- *
- * @FeedsTarget(
- *   id = "book"
- * )
  */
+#[FeedsTarget(
+  id: 'book',
+)]
 class Book extends TargetBase implements ConfigurableTargetInterface, ContainerFactoryPluginInterface {
 
   /**
@@ -192,11 +192,12 @@ class Book extends TargetBase implements ConfigurableTargetInterface, ContainerF
     }
 
     $book = [];
+    $original = NULL;
     // Get original book values when updating the node.
     if (!$entity->isNew()) {
       $original = $this->nodeStorage->loadUnchanged($entity->id());
-      if (!empty($original->book)) {
-        $book = $original->book;
+      if ($original) {
+        $book = $this->getBookData($original);
       }
 
       // If 'bid' is set to 'new', set it to the node ID instead.
@@ -207,7 +208,7 @@ class Book extends TargetBase implements ConfigurableTargetInterface, ContainerF
 
     // Remove an existing node from book when the values are empty.
     if (empty($values)) {
-      if (!$entity->isNew()) {
+      if ($original && !empty($book)) {
         if ($this->bookManager->checkNodeIsRemovable($original)) {
           $this->bookManager->deleteFromBook($entity->id());
         }
@@ -218,7 +219,48 @@ class Book extends TargetBase implements ConfigurableTargetInterface, ContainerF
     }
 
     // Merge the new values with the original book values.
-    $entity->book = $values + $book;
+    $this->setBookData($entity, $values + $book);
+  }
+
+  /**
+   * Gets book outline data from a node.
+   *
+   * Compatible with Drupal 10 core Book ($node->book) and Drupal 11+ contrib
+   * Book (BookInterface::getBook()).
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The node entity.
+   *
+   * @return array
+   *   The book data, or an empty array if the node is not in a book.
+   */
+  protected function getBookData(EntityInterface $entity): array {
+    if (method_exists($entity, 'getBook')) {
+      return $entity->getBook();
+    }
+    if (!empty($entity->book) && is_array($entity->book)) {
+      return $entity->book;
+    }
+    return [];
+  }
+
+  /**
+   * Sets book outline data on a node.
+   *
+   * Compatible with Drupal 10 core Book ($node->book) and Drupal 11+ contrib
+   * Book (BookInterface::setBook()).
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The node entity.
+   * @param array $book
+   *   The book data to set.
+   */
+  protected function setBookData(EntityInterface $entity, array $book): void {
+    if (method_exists($entity, 'setBook')) {
+      $entity->setBook($book);
+      return;
+    }
+    $entity->book = $book;
   }
 
   /**
@@ -310,8 +352,11 @@ class Book extends TargetBase implements ConfigurableTargetInterface, ContainerF
     if (empty($values['bid']) && !empty($values['pid'])) {
       // Grab book ID from parent.
       $parent = $this->nodeStorage->load($values['pid']);
-      if ($parent && !empty($parent->book['bid'])) {
-        $values['bid'] = $parent->book['bid'];
+      if ($parent) {
+        $parent_book = $this->getBookData($parent);
+        if (!empty($parent_book['bid'])) {
+          $values['bid'] = $parent_book['bid'];
+        }
       }
     }
 
@@ -418,10 +463,8 @@ class Book extends TargetBase implements ConfigurableTargetInterface, ContainerF
    * {@inheritdoc}
    */
   public function isEmpty(FeedInterface $feed, EntityInterface $entity, $target) {
-    if (empty($entity->book['bid'])) {
-      return TRUE;
-    }
-    return FALSE;
+    $book = $this->getBookData($entity);
+    return empty($book['bid']);
   }
 
   /**

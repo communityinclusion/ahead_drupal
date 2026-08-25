@@ -4,15 +4,15 @@ namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 
 /**
  * Defines a datetime field mapper.
- *
- * @FeedsTarget(
- *   id = "datetime",
- *   field_types = {"datetime"}
- * )
  */
+#[FeedsTarget(
+  id: 'datetime',
+  field_types: ['datetime'],
+)]
 class DateTime extends DateTargetBase {
 
   /**

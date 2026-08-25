@@ -3,6 +3,7 @@
 namespace Drupal\feeds;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
@@ -127,14 +128,17 @@ class FeedListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function getDefaultOperations(EntityInterface $entity) {
-    $operations = parent::getDefaultOperations($entity);
+  protected function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
+    $cacheability = $cacheability ?? new CacheableMetadata();
+    $operations = parent::getDefaultOperations($entity, $cacheability);
 
     if ($entity->access('update')) {
       $operations['edit']['weight'] = 0;
     }
 
-    if ($entity->access('import') && $entity->hasLinkTemplate('import-form')) {
+    $import_access = $entity->access('import', return_as_object: TRUE);
+    $cacheability->addCacheableDependency($import_access);
+    if ($import_access->isAllowed() && $entity->hasLinkTemplate('import-form')) {
       $operations['import'] = [
         'title' => $this->t('Import'),
         'weight' => 2,
@@ -142,7 +146,9 @@ class FeedListBuilder extends EntityListBuilder {
       ];
     }
 
-    if ($entity->access('schedule_import') && $entity->hasLinkTemplate('schedule-import-form')) {
+    $schedule_import_access = $entity->access('schedule_import', return_as_object: TRUE);
+    $cacheability->addCacheableDependency($schedule_import_access);
+    if ($schedule_import_access->isAllowed() && $entity->hasLinkTemplate('schedule-import-form')) {
       $operations['schedule_import'] = [
         'title' => $this->t('Import in background'),
         'weight' => 3,
@@ -150,7 +156,9 @@ class FeedListBuilder extends EntityListBuilder {
       ];
     }
 
-    if ($entity->access('clear') && $entity->hasLinkTemplate('clear-form')) {
+    $clear_access = $entity->access('clear', return_as_object: TRUE);
+    $cacheability->addCacheableDependency($clear_access);
+    if ($clear_access->isAllowed() && $entity->hasLinkTemplate('clear-form')) {
       $operations['clear'] = [
         'title' => $this->t('Delete items'),
         'weight' => 4,
@@ -158,7 +166,9 @@ class FeedListBuilder extends EntityListBuilder {
       ];
     }
 
-    if ($entity->access('unlock') && $entity->hasLinkTemplate('unlock')) {
+    $unlock_access = $entity->access('unlock', return_as_object: TRUE);
+    $cacheability->addCacheableDependency($unlock_access);
+    if ($unlock_access->isAllowed() && $entity->hasLinkTemplate('unlock')) {
       $operations['unlock'] = [
         'title' => $this->t('Unlock'),
         'weight' => 5,

@@ -3,14 +3,14 @@
 namespace Drupal\feeds\Element;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Attribute\FormElement;
 use Drupal\Core\Render\Element\Url;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 
 /**
  * Provides a form element for input of a URI.
- *
- * @FormElement("feeds_uri")
  */
+#[FormElement('feeds_uri')]
 class Uri extends Url {
 
   /**

@@ -3,6 +3,7 @@
 namespace Drupal\Tests\feeds\Kernel\Feeds\Target;
 
 use Drupal\Tests\feeds\Kernel\FeedsKernelTestBase;
+use Drupal\book\Entity\Node\Book as NodeBook;
 use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
 use Drupal\node\Entity\Node;
 
@@ -38,6 +39,8 @@ class BookTest extends FeedsKernelTestBase {
     parent::setUp();
 
     $this->installSchema('book', 'book');
+    $this->installConfig(['book']);
+    $this->configureArticleAsBookType();
 
     // Create a feed type.
     $this->feedType = $this->createFeedTypeForCsv([
@@ -46,6 +49,58 @@ class BookTest extends FeedsKernelTestBase {
       'book_id' => 'book_id',
       'parent_id' => 'parent_id',
     ]);
+  }
+
+  /**
+   * Allows the article content type to be used in book outlines.
+   *
+   * Drupal 10 core Book stores allowed types as a flat list of bundle names.
+   * Drupal 11+ contrib Book uses a list of content_type/child_type pairs and
+   * only assigns the Book node bundle class to those allowed types.
+   */
+  protected function configureArticleAsBookType(): void {
+    $config = $this->config('book.settings');
+
+    // Contrib Book (Drupal 11+) provides a dedicated node bundle class.
+    if (class_exists(NodeBook::class)) {
+      $config->set('allowed_types', [
+        [
+          'content_type' => 'article',
+          'child_type' => 'article',
+        ],
+      ])->save();
+    }
+    else {
+      $allowed_types = $config->get('allowed_types') ?? [];
+      if (!in_array('article', $allowed_types, TRUE)) {
+        $allowed_types[] = 'article';
+        $config->set('allowed_types', $allowed_types)->save();
+      }
+    }
+
+    // Rebuild bundle info so the Book node class is assigned when applicable.
+    $this->container->get('entity_type.bundle.info')->clearCachedBundles();
+    $this->entityTypeManager->clearCachedDefinitions();
+  }
+
+  /**
+   * Returns book outline data from a node.
+   *
+   * @param \Drupal\node\NodeInterface|\Drupal\Core\Entity\EntityInterface|null $node
+   *   The node entity.
+   *
+   * @return array|null
+   *   The book data, or NULL when the node is not part of a book.
+   */
+  protected function getNodeBook($node): ?array {
+    if (!$node) {
+      return NULL;
+    }
+    if (method_exists($node, 'getBook')) {
+      $book = $node->getBook();
+      return !empty($book) ? $book : NULL;
+    }
+    return $node->book ?? NULL;
   }
 
   /**
@@ -125,8 +180,9 @@ class BookTest extends FeedsKernelTestBase {
     $feed->import();
 
     $node = Node::load(3);
-    $this->assertEquals(1, $node->book['bid']);
-    $this->assertEquals(2, $node->book['pid']);
+    $book = $this->getNodeBook($node);
+    $this->assertEquals(1, $book['bid']);
+    $this->assertEquals(2, $book['pid']);
   }
 
   /**
@@ -156,8 +212,9 @@ class BookTest extends FeedsKernelTestBase {
 
     // Assert that the node got a reference to book, taken from the parent.
     $node = Node::load(6);
-    $this->assertEquals(5, $node->book['bid']);
-    $this->assertEquals(2, $node->book['pid']);
+    $book = $this->getNodeBook($node);
+    $this->assertEquals(5, $book['bid']);
+    $this->assertEquals(2, $book['pid']);
   }
 
   /**
@@ -203,8 +260,9 @@ class BookTest extends FeedsKernelTestBase {
     $feed->import();
 
     $node = $this->reloadEntity($node);
-    $this->assertEquals(1, $node->book['bid']);
-    $this->assertEquals(2, $node->book['pid']);
+    $book = $this->getNodeBook($node);
+    $this->assertEquals(1, $book['bid']);
+    $this->assertEquals(2, $book['pid']);
   }
 
   /**
@@ -233,9 +291,10 @@ class BookTest extends FeedsKernelTestBase {
 
     // Assert that the imported node is now the top level page.
     $node = Node::load(1);
-    $this->assertEquals(1, $node->book['bid']);
-    $this->assertEquals(0, $node->book['pid']);
-    $this->assertEquals(1, $node->book['depth']);
+    $book = $this->getNodeBook($node);
+    $this->assertEquals(1, $book['bid']);
+    $this->assertEquals(0, $book['pid']);
+    $this->assertEquals(1, $book['depth']);
   }
 
   /**
@@ -288,9 +347,10 @@ class BookTest extends FeedsKernelTestBase {
     // Assert that the imported node is still the top level page and that the
     // field 'field_alpha' now has a value.
     $node = $this->reloadEntity($node);
-    $this->assertEquals(1, $node->book['bid']);
-    $this->assertEquals(0, $node->book['pid']);
-    $this->assertEquals(1, $node->book['depth']);
+    $book = $this->getNodeBook($node);
+    $this->assertEquals(1, $book['bid']);
+    $this->assertEquals(0, $book['pid']);
+    $this->assertEquals(1, $book['depth']);
     $this->assertEquals('Foo', $node->field_alpha->value);
 
     // Assert that there are no warnings or messages.
@@ -369,9 +429,10 @@ class BookTest extends FeedsKernelTestBase {
     foreach ($expected_book_values as $nid => $values) {
       $node = Node::load($nid);
       $this->assertEquals($values['title'], $node->title->value, "Title for node $nid is " . $values['title']);
-      $this->assertEquals($values['bid'], $node->book['bid'], "Book ID for node $nid is " . $values['bid']);
-      $this->assertEquals($values['pid'], $node->book['pid'], "Parent ID for node $nid is " . $values['pid']);
-      $this->assertEquals($values['depth'], $node->book['depth'], "Depth for node $nid is " . $values['depth']);
+      $book = $this->getNodeBook($node);
+      $this->assertEquals($values['bid'], $book['bid'], "Book ID for node $nid is " . $values['bid']);
+      $this->assertEquals($values['pid'], $book['pid'], "Parent ID for node $nid is " . $values['pid']);
+      $this->assertEquals($values['depth'], $book['depth'], "Depth for node $nid is " . $values['depth']);
     }
   }
 
@@ -405,7 +466,7 @@ class BookTest extends FeedsKernelTestBase {
     $feed->import();
 
     $node = Node::load(3);
-    $this->assertNull($node->book);
+    $this->assertNull($this->getNodeBook($node));
   }
 
   /**
@@ -451,7 +512,7 @@ class BookTest extends FeedsKernelTestBase {
 
     // Assert that the imported node does not have book details yet.
     $node = Node::load(1);
-    $this->assertNull($node->book);
+    $this->assertNull($this->getNodeBook($node));
 
     // Now create the book that is referenced.
     $this->createBookNode(4, [
@@ -461,8 +522,9 @@ class BookTest extends FeedsKernelTestBase {
     // Import again and assert that there's now a book reference.
     $feed->import();
     $node = $this->reloadEntity($node);
-    $this->assertEquals(4, $node->book['bid']);
-    $this->assertEquals(4, $node->book['pid']);
+    $book = $this->getNodeBook($node);
+    $this->assertEquals(4, $book['bid']);
+    $this->assertEquals(4, $book['pid']);
 
     // Clear the logged messages so no failure is reported on tear down.
     $this->logger->clearMessages();
@@ -507,7 +569,7 @@ class BookTest extends FeedsKernelTestBase {
 
     // Assert that the imported node does not have book details yet.
     $node = Node::load(43);
-    $this->assertNull($node->book);
+    $this->assertNull($this->getNodeBook($node));
 
     // Now create the child page that is referenced.
     $this->createChildPage(42, 42, [
@@ -518,8 +580,9 @@ class BookTest extends FeedsKernelTestBase {
     // Import again and assert that there's now a book reference.
     $feed->import();
     $node = $this->reloadEntity($node);
-    $this->assertEquals(42, $node->book['bid']);
-    $this->assertEquals(8, $node->book['pid']);
+    $book = $this->getNodeBook($node);
+    $this->assertEquals(42, $book['bid']);
+    $this->assertEquals(8, $book['pid']);
 
     // Clear the logged messages so no failure is reported on tear down.
     $this->logger->clearMessages();

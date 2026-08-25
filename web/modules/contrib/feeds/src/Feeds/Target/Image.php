@@ -3,16 +3,16 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 
 /**
  * Defines a file field mapper.
- *
- * @FeedsTarget(
- *   id = "image",
- *   field_types = {"image"}
- * )
  */
+#[FeedsTarget(
+  id: 'image',
+  field_types: ['image'],
+)]
 class Image extends File {
 
   /**

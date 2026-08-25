@@ -2,19 +2,19 @@
 
 namespace Drupal\feeds\Feeds\Target;
 
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
  * Defines a boolean field mapper.
- *
- * @FeedsTarget(
- *   id = "boolean",
- *   field_types = {
- *     "boolean",
- *     "list_boolean"
- *   }
- * )
  */
+#[FeedsTarget(
+  id: 'boolean',
+  field_types: [
+    'boolean',
+    'list_boolean',
+  ],
+)]
 class Boolean extends FieldTargetBase {
 
   /**

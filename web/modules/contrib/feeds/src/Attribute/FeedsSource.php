@@ -36,7 +36,7 @@ class FeedsSource extends Plugin {
    */
   public function __construct(
     public readonly string $id,
-    public readonly TranslatableMarkup|string|null $title,
+    public readonly TranslatableMarkup|string|null $title = NULL,
     public readonly TranslatableMarkup|string|null $description = NULL,
     public readonly ?array $field_types = NULL,
     public readonly TranslatableMarkup|string|null $category = NULL,

@@ -11,6 +11,7 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\EntityFinderInterface;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\ReferenceNotFoundException;
@@ -25,12 +26,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a config entity reference mapper.
- *
- * @FeedsTarget(
- *   id = "config_entity_reference",
- *   field_types = {"entity_reference"},
- * )
  */
+#[FeedsTarget(
+  id: 'config_entity_reference',
+  field_types: ['entity_reference'],
+)]
 class ConfigEntityReference extends FieldTargetBase implements ConfigurableTargetInterface, ContainerFactoryPluginInterface {
 
   /**

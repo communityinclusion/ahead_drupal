@@ -33,7 +33,14 @@ namespace Drupal\Tests\feeds\Unit\Element {
       $complete_form = [];
       $form_state = new FormState();
       /** @var \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface $stream_wrapper_manager */
-      $stream_wrapper_manager = new StreamWrapperManager($this->createMock('\Psr\Container\ContainerInterface'));
+
+      $stream_wrapper_manager = $this->createMock(StreamWrapperManager::class);
+      $stream_wrapper_manager->expects($this->any())
+        ->method('normalizeUri')
+        ->willReturnCallback(function ($uri) {
+          return $uri;
+        }
+      );
       $element_object = $this->createPartialMock(Uri::class, []);
 
       $element = ['#value' => ' public://test', '#parents' => ['element']];

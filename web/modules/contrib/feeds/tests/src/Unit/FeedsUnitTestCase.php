@@ -70,6 +70,12 @@ abstract class FeedsUnitTestCase extends UnitTestCase {
       ->method('getWrappers')
       ->willReturn($wrappers);
 
+    $mock->expects($this->any())
+      ->method('isValidScheme')
+      ->willReturnCallback(function ($scheme) use ($wrappers) {
+        return isset($wrappers[$scheme]);
+      });
+
     return $mock;
   }
 

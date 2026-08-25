@@ -2,6 +2,8 @@
 
 namespace Drupal\feeds\Feeds\Parser;
 
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\feeds\Attribute\FeedsParser;
 use Drupal\feeds\Component\XmlParserTrait;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\FeedInterface;
@@ -13,13 +15,12 @@ use Drupal\feeds\StateInterface;
 
 /**
  * Defines a SitemapXML feed parser.
- *
- * @FeedsParser(
- *   id = "sitemap",
- *   title = @Translation("Sitemap XML"),
- *   description = @Translation("Parse Sitemap XML format feeds."),
- * )
  */
+#[FeedsParser(
+  id: 'sitemap',
+  title: new TranslatableMarkup('Sitemap XML'),
+  description: new TranslatableMarkup('Parse Sitemap XML format feeds.')
+)]
 class SitemapParser extends ParserBase implements ParserInterface {
   use XmlParserTrait;
 

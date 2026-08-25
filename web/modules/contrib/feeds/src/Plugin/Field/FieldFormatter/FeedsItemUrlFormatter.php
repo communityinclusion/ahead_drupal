@@ -2,22 +2,23 @@
 
 namespace Drupal\feeds\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\feeds\FeedsItemInterface;
 
 /**
  * Plugin implementation of the 'feeds_item_url' formatter.
- *
- * @FieldFormatter(
- *   id = "feeds_item_url",
- *   label = @Translation("URL of the feed item"),
- *   field_types = {
- *     "feeds_item"
- *   }
- * )
  */
+#[FieldFormatter(
+  id: 'feeds_item_url',
+  label: new TranslatableMarkup('URL of the feed item'),
+  field_types: [
+    'feeds_item',
+  ]
+)]
 class FeedsItemUrlFormatter extends FeedsItemFormatterBase {
 
   /**
