@@ -15,11 +15,6 @@ abstract class ProcessorBase extends PluginBase implements ProcessorInterface {
   /**
    * {@inheritdoc}
    */
-  public function initialize(FeedInterface $feed) {}
-
-  /**
-   * {@inheritdoc}
-   */
   public function postProcess(FeedInterface $feed, StateInterface $state) {
     $tokens = [
       '@feed' => $feed->label(),

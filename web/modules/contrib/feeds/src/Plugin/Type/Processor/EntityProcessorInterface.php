@@ -39,28 +39,4 @@ interface EntityProcessorInterface extends ProcessorInterface, ClearableInterfac
    */
   public function entityLanguage();
 
-  /**
-   * Returns the entity type id of the entities.
-   *
-   * @return string
-   *   The entity type id.
-   */
-  public function entityType();
-
-  /**
-   * Returns the bundle id of the entities.
-   *
-   * @return string|null
-   *   The entity bundle id or NULL if the entity type does not have bundles.
-   */
-  public function bundle();
-
-  /**
-   * Returns the bundle key of the entity type.
-   *
-   * @return string|null
-   *   The entity bundle key or NULL if the entity type does not have bundles.
-   */
-  public function bundleKey();
-
 }

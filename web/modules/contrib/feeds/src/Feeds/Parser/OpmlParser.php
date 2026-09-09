@@ -2,8 +2,6 @@
 
 namespace Drupal\feeds\Feeds\Parser;
 
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\feeds\Attribute\FeedsParser;
 use Drupal\feeds\Component\GenericOpmlParser;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\FeedInterface;
@@ -15,12 +13,13 @@ use Drupal\feeds\StateInterface;
 
 /**
  * Defines an OPML feed parser.
+ *
+ * @FeedsParser(
+ *   id = "opml",
+ *   title = @Translation("OPML"),
+ *   description = @Translation("Parse OPML files.")
+ * )
  */
-#[FeedsParser(
-  id: 'opml',
-  title: new TranslatableMarkup('OPML'),
-  description: new TranslatableMarkup('Parse OPML files.')
-)]
 class OpmlParser extends ParserBase implements ParserInterface {
 
   /**

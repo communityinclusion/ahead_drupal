@@ -2,12 +2,7 @@
 
 namespace Drupal\feeds_test_entity\Entity;
 
-use Drupal\Core\Entity\Attribute\ContentEntityType;
-use Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_test\Entity\EntityTest;
-use Drupal\entity_test\EntityTestAccessControlHandler;
-use Drupal\entity_test\EntityTestForm;
 
 /**
  * An entity test class where generating a url could lead to an exception.
@@ -40,33 +35,6 @@ use Drupal\entity_test\EntityTestForm;
  *   },
  * )
  */
-#[ContentEntityType(
-  id: 'feeds_test_entity_test_no_url',
-  label: new TranslatableMarkup('Test entity with url exception'),
-  entity_keys: [
-    'id' => 'id',
-    'uuid' => 'uuid',
-    'bundle' => 'type',
-    'label' => 'name',
-  ],
-  handlers: [
-    'access' => EntityTestAccessControlHandler::class,
-    'form' => [
-      'default' => EntityTestForm::class,
-    ],
-    'route_provider' => [
-      'html' => DefaultHtmlRouteProvider::class,
-    ],
-  ],
-  links: [
-    'canonical' => '/feeds_test_entity_test_no_url/manage/{feeds_test_entity_test_no_url}',
-    'add-form' => '/feeds_test_entity_test_no_url/add',
-    'edit-form' => '/feeds_test_entity_test_no_url/manage/{feeds_test_entity_test_no_url}',
-  ],
-  admin_permission: 'administer entity_test content',
-  base_table: 'feeds_test_entity_test_no_url',
-  field_ui_base_route: 'entity.feeds_test_entity_test_no_url.admin_form',
-)]
 class EntityTestNoUrl extends EntityTest {
 
   /**

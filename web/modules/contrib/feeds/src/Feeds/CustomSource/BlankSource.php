@@ -3,17 +3,16 @@
 namespace Drupal\feeds\Feeds\CustomSource;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\feeds\Attribute\FeedsCustomSource;
 use Drupal\feeds\Plugin\Type\CustomSource\CustomSourceBase;
 
 /**
  * A custom source.
+ *
+ * @FeedsCustomSource(
+ *   id = "blank",
+ *   title = @Translation("Blank"),
+ * )
  */
-#[FeedsCustomSource(
-  id: 'blank',
-  title: new TranslatableMarkup('Blank')
-)]
 class BlankSource extends CustomSourceBase {
 
   /**

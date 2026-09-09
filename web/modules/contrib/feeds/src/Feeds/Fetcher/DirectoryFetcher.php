@@ -2,12 +2,8 @@
 
 namespace Drupal\feeds\Feeds\Fetcher;
 
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\feeds\Attribute\FeedsFetcher;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\FeedInterface;
-use Drupal\feeds\Feeds\Fetcher\Form\DirectoryFetcherFeedForm;
-use Drupal\feeds\Feeds\Fetcher\Form\DirectoryFetcherForm;
 use Drupal\feeds\Plugin\Type\Fetcher\FetcherInterface;
 use Drupal\feeds\Plugin\Type\PluginBase;
 use Drupal\feeds\Result\FetcherResult;
@@ -16,16 +12,17 @@ use Drupal\feeds\Utility\File;
 
 /**
  * Defines a directory fetcher.
+ *
+ * @FeedsFetcher(
+ *   id = "directory",
+ *   title = @Translation("Directory"),
+ *   description = @Translation("Uses a directory, or file, on the server."),
+ *   form = {
+ *     "configuration" = "Drupal\feeds\Feeds\Fetcher\Form\DirectoryFetcherForm",
+ *     "feed" = "\Drupal\feeds\Feeds\Fetcher\Form\DirectoryFetcherFeedForm",
+ *   },
+ * )
  */
-#[FeedsFetcher(
-  id: 'directory',
-  title: new TranslatableMarkup('Directory'),
-  description: new TranslatableMarkup('Uses a directory, or file, on the server.'),
-  form: [
-    'configuration' => DirectoryFetcherForm::class,
-    'feed' => DirectoryFetcherFeedForm::class,
-  ]
-)]
 class DirectoryFetcher extends PluginBase implements FetcherInterface {
 
   /**

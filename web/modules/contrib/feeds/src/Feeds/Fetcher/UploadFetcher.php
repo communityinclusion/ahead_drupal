@@ -7,11 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\feeds\Attribute\FeedsFetcher;
 use Drupal\feeds\FeedInterface;
-use Drupal\feeds\Feeds\Fetcher\Form\UploadFetcherFeedForm;
-use Drupal\feeds\Feeds\Fetcher\Form\UploadFetcherForm;
 use Drupal\feeds\Plugin\Type\Fetcher\FetcherInterface;
 use Drupal\feeds\Plugin\Type\PluginBase;
 use Drupal\feeds\Result\FetcherResult;
@@ -21,16 +17,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a file upload fetcher.
+ *
+ * @FeedsFetcher(
+ *   id = "upload",
+ *   title = @Translation("Upload file"),
+ *   description = @Translation("Upload content from a local file."),
+ *   form = {
+ *     "configuration" = "Drupal\feeds\Feeds\Fetcher\Form\UploadFetcherForm",
+ *     "feed" = "Drupal\feeds\Feeds\Fetcher\Form\UploadFetcherFeedForm",
+ *   },
+ * )
  */
-#[FeedsFetcher(
-  id: 'upload',
-  title: new TranslatableMarkup('Upload file'),
-  description: new TranslatableMarkup('Upload content from a local file.'),
-  form: [
-    'configuration' => UploadFetcherForm::class,
-    'feed' => UploadFetcherFeedForm::class,
-  ]
-)]
 class UploadFetcher extends PluginBase implements FetcherInterface, ContainerFactoryPluginInterface {
 
   /**

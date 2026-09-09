@@ -1,7 +1,0 @@
-name: 'Feeds test Media defaults'
-type: module
-description: 'Creates default media types.'
-package: Testing
-dependencies:
-  - feeds:feeds
-  - drupal:media

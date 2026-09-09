@@ -4,7 +4,6 @@ namespace Drupal\feeds_log\Plugin\views\field;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\views\Attribute\ViewsField;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
@@ -14,8 +13,9 @@ use Drupal\views\ViewExecutable;
  * Provides a field handler that renders a log event with replaced variables.
  *
  * @ingroup views_field_handlers
+ *
+ * @ViewsField("feeds_log_message")
  */
-#[ViewsField('feeds_log_message')]
 class LogMessage extends FieldPluginBase {
 
   /**

@@ -6,7 +6,6 @@
  */
 
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
@@ -14,7 +13,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
 use Drupal\feeds\Entity\Feed;
-use Drupal\feeds\FeedTypeInterface;
 
 // Ludwig module integration.
 if (\Drupal::hasService('ludwig.require_once')) {
@@ -97,7 +95,7 @@ function feeds_cron() {
     ->accessCheck(FALSE)
     ->condition('queued', 0)
     ->condition('next', \Drupal::time()->getRequestTime(), '<=')
-    ->condition('next', FeedTypeInterface::SCHEDULE_NEVER, '<>')
+    ->condition('next', -1, '<>')
     ->condition('status', 1)
     ->range(0, 100)
     ->sort('imported')
@@ -187,12 +185,7 @@ function feeds_file_download($uri) {
 
   foreach ($feeds as $feed) {
     if ($feed->getSource() === $uri && $feed->access('import')) {
-      return DeprecationHelper::backwardsCompatibleCall(
-        currentVersion: \Drupal::VERSION,
-        deprecatedVersion: '11.2',
-        currentCallable: fn() => $file->getDownloadHeaders(),
-        deprecatedCallable: fn() => file_get_content_headers($file),
-      );
+      return file_get_content_headers($file);
     }
   }
 

@@ -5,13 +5,9 @@ namespace Drupal\feeds\Feeds\Fetcher;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\feeds\Attribute\FeedsFetcher;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\FetchException;
 use Drupal\feeds\FeedInterface;
-use Drupal\feeds\Feeds\Fetcher\Form\HttpFetcherFeedForm;
-use Drupal\feeds\Feeds\Fetcher\Form\HttpFetcherForm;
 use Drupal\feeds\File\FeedsFileSystemInterface;
 use Drupal\feeds\Plugin\Type\ClearableInterface;
 use Drupal\feeds\Plugin\Type\Fetcher\FetcherInterface;
@@ -27,16 +23,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Defines an HTTP fetcher.
+ *
+ * @FeedsFetcher(
+ *   id = "http",
+ *   title = @Translation("Download from url"),
+ *   description = @Translation("Downloads data from a URL using Drupal's HTTP request handler."),
+ *   form = {
+ *     "configuration" = "Drupal\feeds\Feeds\Fetcher\Form\HttpFetcherForm",
+ *     "feed" = "Drupal\feeds\Feeds\Fetcher\Form\HttpFetcherFeedForm",
+ *   }
+ * )
  */
-#[FeedsFetcher(
-  id: 'http',
-  title: new TranslatableMarkup('Download from url'),
-  description: new TranslatableMarkup("Downloads data from a URL using Drupal's HTTP request handler."),
-  form: [
-    'configuration' => HttpFetcherForm::class,
-    'feed' => HttpFetcherFeedForm::class,
-  ]
-)]
 class HttpFetcher extends PluginBase implements ClearableInterface, FetcherInterface, ContainerFactoryPluginInterface {
 
   /**

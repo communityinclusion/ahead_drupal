@@ -2,19 +2,18 @@
 
 namespace Drupal\feeds\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\Plugin\Field\FieldFormatter\EntityReferenceLabelFormatter;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Plugin implementation of the 'feeds_item_target_label' formatter.
+ *
+ * @FieldFormatter(
+ *   id = "feeds_item_target_label",
+ *   label = @Translation("Feed label"),
+ *   description = @Translation("Display the label of the feed entity."),
+ *   field_types = {
+ *     "feeds_item"
+ *   }
+ * )
  */
-#[FieldFormatter(
-  id: 'feeds_item_target_label',
-  label: new TranslatableMarkup('Feed label'),
-  description: new TranslatableMarkup('Display the label of the feed entity.'),
-  field_types: [
-    'feeds_item',
-  ]
-)]
 class FeedsItemTargetLabelFormatter extends EntityReferenceLabelFormatter {}

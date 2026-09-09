@@ -13,17 +13,11 @@ interface ConfigurableTargetInterface extends ConfigurableInterface, DependentPl
   /**
    * Returns the summary for a target.
    *
-   * The summary is displayed in the feed type mapping form to show the current
-   * configuration of the target plugin. Returning the summary as an array is
-   * encouraged. The allowance of returning a string only exists for backwards
-   * compatibility.
+   * Returning the summary as array is encouraged. The allowance of returning a
+   * string only exists for backwards compatibility.
    *
-   * @return string|array<string|\Drupal\Component\Render\MarkupInterface|array>
-   *   The configuration summary. Can be:
-   *   - A string (for backwards compatibility)
-   *   - An array where each element is a string, MarkupInterface object, or
-   *     render array. Render arrays are particularly useful for displaying
-   *     warning messages with custom HTML markup.
+   * @return string|string[]
+   *   The configuration summary.
    */
   public function getSummary();
 

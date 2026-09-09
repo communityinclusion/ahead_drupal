@@ -17,11 +17,7 @@ abstract class UpdatePathTestBase extends CoreUpdatePathTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
-    'feeds',
-    'node',
-    'options',
-  ];
+  protected static $modules = ['feeds', 'node'];
 
   /**
    * Returns the path to the Drupal core fixture.

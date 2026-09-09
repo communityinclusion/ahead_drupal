@@ -1,6 +1,0 @@
-name: 'Feeds test broken'
-type: module
-description: 'Provides deliberately broken definitions for tests.'
-package: Testing
-dependencies:
-  - feeds:feeds

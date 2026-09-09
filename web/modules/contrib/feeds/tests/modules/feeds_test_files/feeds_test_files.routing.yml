@@ -1,53 +1,7 @@
-# CSV files.
 feeds_test_files.files_csv:
   path: '/testing/feeds/files.csv'
   defaults:
     _controller: 'Drupal\feeds_test_files\Controller\CsvController::files'
-  requirements:
-    _permission: 'access content'
-
-feeds_test_files.csv_images:
-  path: '/testing/feeds/images.csv'
-  defaults:
-    _controller: '\Drupal\feeds_test_files\Controller\CsvController::generateMediaCsv'
-    _title: 'CSV for images'
-    type: 'images'
-  requirements:
-    _permission: 'access content'
-
-feeds_test_files.csv_documents:
-  path: '/testing/feeds/documents.csv'
-  defaults:
-    _controller: '\Drupal\feeds_test_files\Controller\CsvController::generateMediaCsv'
-    _title: 'CSV for documents'
-    type: 'documents'
-  requirements:
-    _permission: 'access content'
-
-feeds_test_files.csv_audio:
-  path: '/testing/feeds/audio.csv'
-  defaults:
-    _controller: '\Drupal\feeds_test_files\Controller\CsvController::generateMediaCsv'
-    _title: 'CSV for audio'
-    type: 'audio'
-  requirements:
-    _permission: 'access content'
-
-feeds_test_files.csv_video_local:
-  path: '/testing/feeds/video_local.csv'
-  defaults:
-    _controller: '\Drupal\feeds_test_files\Controller\CsvController::generateMediaCsv'
-    _title: 'CSV for local video'
-    type: 'video_local'
-  requirements:
-    _permission: 'access content'
-
-feeds_test_files.csv_video_remote:
-  path: '/testing/feeds/video_remote.csv'
-  defaults:
-    _controller: '\Drupal\feeds_test_files\Controller\CsvController::generateMediaCsv'
-    _title: 'CSV for remote video'
-    type: 'video_remote'
   requirements:
     _permission: 'access content'
 
@@ -62,21 +16,5 @@ feeds_test_files.http304:
   path: '/testing/feeds/304.csv'
   defaults:
     _controller: 'Drupal\feeds_test_files\Controller\CsvController::return304'
-  requirements:
-    _permission: 'access content'
-
-feeds_test_files.non_existent_csv:
-  path: '/testing/feeds/files-404.csv'
-  defaults:
-    _controller: 'Drupal\feeds_test_files\Controller\CsvController::files404'
-  requirements:
-    _permission: 'access content'
-
-# Other files.
-feeds_test_files.video:
-  path: '/testing/feeds/video'
-  defaults:
-    _controller: '\Drupal\feeds_test_files\Controller\VideoController::serveVideo'
-    _title: 'Test Video'
   requirements:
     _permission: 'access content'

@@ -4,46 +4,24 @@ namespace Drupal\feeds\Entity;
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Entity\Attribute\ContentEntityType;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\KeyValueStore\KeyValueStoreInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\feeds\Event\DeleteFeedsEvent;
 use Drupal\feeds\Event\EntityEvent;
 use Drupal\feeds\Event\FeedsEvents;
 use Drupal\feeds\Event\ImportFinishedEvent;
 use Drupal\feeds\Exception\LockException;
-use Drupal\feeds\FeedAccessControlHandler;
-use Drupal\feeds\FeedClearHandler;
-use Drupal\feeds\FeedExpireHandler;
-use Drupal\feeds\FeedForm;
-use Drupal\feeds\FeedImportHandler;
-use Drupal\feeds\FeedImportPeriodInterface;
 use Drupal\feeds\FeedInterface;
-use Drupal\feeds\FeedListBuilder;
-use Drupal\feeds\FeedStorage;
-use Drupal\feeds\FeedViewBuilder;
-use Drupal\feeds\FeedViewsData;
+use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Feeds\Item\ItemInterface;
 use Drupal\feeds\Feeds\State\CleanState;
-use Drupal\feeds\FeedTypeForm;
-use Drupal\feeds\FeedTypeImportPeriodPerFeedInterface;
-use Drupal\feeds\FeedTypeInterface;
-use Drupal\feeds\Form\FeedClearForm;
-use Drupal\feeds\Form\FeedDeleteForm;
-use Drupal\feeds\Form\FeedImportForm;
-use Drupal\feeds\Form\FeedScheduleImportForm;
-use Drupal\feeds\Form\FeedUnlockForm;
 use Drupal\feeds\Plugin\Type\FeedsPluginInterface;
-use Drupal\feeds\ScheduledFeedInterface;
 use Drupal\feeds\StateInterface;
 use Drupal\user\UserInterface;
 
@@ -53,13 +31,6 @@ use Drupal\user\UserInterface;
  * @ContentEntityType(
  *   id = "feeds_feed",
  *   label = @Translation("Feed"),
- *   label_collection = @Translation("Feeds"),
- *   label_singular = @Translation("feed"),
- *   label_plural = @Translation("feeds"),
- *   label_count = @PluralTranslation(
- *     singular = "@count feed",
- *     plural = "@count feeds",
- *   ),
  *   bundle_label = @Translation("Feed type"),
  *   module = "feeds",
  *   handlers = {
@@ -90,9 +61,7 @@ use Drupal\user\UserInterface;
  *     "id" = "fid",
  *     "bundle" = "type",
  *     "label" = "title",
- *     "uuid" = "uuid",
- *     "uid" = "uid",
- *     "owner" = "uid"
+ *     "uuid" = "uuid"
  *   },
  *   permission_granularity = "bundle",
  *   bundle_entity_type = "feeds_feed_type",
@@ -111,65 +80,7 @@ use Drupal\user\UserInterface;
  *   }
  * )
  */
-#[ContentEntityType(
-  id: 'feeds_feed',
-  label: new TranslatableMarkup('Feed'),
-  label_collection: new TranslatableMarkup('Feeds'),
-  label_singular: new TranslatableMarkup('feed'),
-  label_plural: new TranslatableMarkup('feeds'),
-  entity_keys: [
-    'id' => 'fid',
-    'bundle' => 'type',
-    'label' => 'title',
-    'uuid' => 'uuid',
-    'uid' => 'uid',
-    'owner' => 'uid',
-  ],
-  handlers: [
-    'storage' => FeedStorage::class,
-    'view_builder' => FeedViewBuilder::class,
-    'access' => FeedAccessControlHandler::class,
-    'views_data' => FeedViewsData::class,
-    'form' => [
-      'default' => FeedForm::class,
-      'update' => FeedForm::class,
-      'delete' => FeedDeleteForm::class,
-      'import' => FeedImportForm::class,
-      'schedule_import' => FeedScheduleImportForm::class,
-      'clear' => FeedClearForm::class,
-      'unlock' => FeedUnlockForm::class,
-    ],
-    'list_builder' => FeedListBuilder::class,
-    'route_provider' => [
-      'html' => AdminHtmlRouteProvider::class,
-    ],
-    'feed_import' => FeedImportHandler::class,
-    'feed_clear' => FeedClearHandler::class,
-    'feed_expire' => FeedExpireHandler::class,
-  ],
-  links: [
-    'canonical' => '/feed/{feeds_feed}',
-    'add-page' => '/feed/add',
-    'add-form' => '/feed/add/{feeds_feed_type}',
-    'delete-form' => '/feed/{feeds_feed}/delete',
-    'edit-form' => '/feed/{feeds_feed}/edit',
-    'import-form' => '/feed/{feeds_feed}/import',
-    'schedule-import-form' => '/feed/{feeds_feed}/schedule-import',
-    'clear-form' => '/feed/{feeds_feed}/delete-items',
-    'unlock' => '/feed/{feeds_feed}/unlock',
-    'template' => '/feed/{feeds_feed}/template',
-  ],
-  permission_granularity: 'bundle',
-  bundle_entity_type: 'feeds_feed_type',
-  bundle_label: new TranslatableMarkup('Feed type'),
-  base_table: 'feeds_feed',
-  label_count: [
-    'singular' => '@count feed',
-    'plural' => '@count feeds',
-  ],
-  field_ui_base_route: 'entity.feeds_feed_type.edit_form',
-)]
-class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodInterface, ScheduledFeedInterface {
+class Feed extends ContentEntityBase implements FeedInterface {
 
   use EntityChangedTrait;
 
@@ -256,17 +167,6 @@ class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodI
   /**
    * {@inheritdoc}
    */
-  public function getImportPeriod(): int {
-    if ($this->get('periodic_import')->value === NULL) {
-      // If the field is not present, fall back to the feed type setting.
-      return FeedImportPeriodInterface::USE_FEED_TYPE_IMPORT_PERIOD;
-    }
-    return (int) $this->get('periodic_import')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getNextImportTime() {
     return (int) $this->get('next')->value;
   }
@@ -348,31 +248,6 @@ class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodI
    */
   public function setActive($active) {
     $this->set('status', $active ? static::ACTIVE : static::INACTIVE);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isScheduled(): bool {
-    // First, check the queued time. If an import is queued, it is scheduled to
-    // run, even if the feed is not active (periodic import is turned off).
-    if ($this->getQueuedTime() > 0) {
-      // Yes, it is scheduled to run or already running.
-      return TRUE;
-    }
-
-    // Check if periodic import is turned off.
-    if (!$this->isActive()) {
-      return FALSE;
-    }
-
-    // Check if it is never scheduled.
-    if ($this->getNextImportTime() === FeedTypeInterface::SCHEDULE_NEVER) {
-      return FALSE;
-    }
-
-    // feeds_cron() will schedule the import.
-    return TRUE;
   }
 
   /**
@@ -486,13 +361,6 @@ class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodI
     $this->set('imported', $time);
 
     $interval = $this->getType()->getImportPeriod();
-    if ($this->getType() instanceof FeedTypeImportPeriodPerFeedInterface && $this->getType()->isImportPeriodPerFeedAllowed()) {
-      $interval = $this->getImportPeriod();
-      // Fallback to the feed type's import period if the field value is -2.
-      if ($interval == FeedImportPeriodInterface::USE_FEED_TYPE_IMPORT_PERIOD) {
-        $interval = $this->getType()->getImportPeriod();
-      }
-    }
     if ($interval !== FeedTypeInterface::SCHEDULE_NEVER) {
       $this->set('next', $interval + $time);
     }
@@ -875,8 +743,6 @@ class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodI
       ])
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['periodic_import'] = self::basePeriodicImportFieldDefinition();
-
     $fields['queued'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Queued'))
       ->setDescription(t('Time when this feed was queued for refresh, 0 if not queued.'))
@@ -909,37 +775,6 @@ class Feed extends ContentEntityBase implements FeedInterface, FeedImportPeriodI
       ->setDisplayConfigurable('view', TRUE);
 
     return $fields;
-  }
-
-  /**
-   * Defines the 'periodic_import' base field for feeds.
-   *
-   * @return Drupal\Core\Field\FieldStorageDefinitionInterface
-   *   The base field definition.
-   */
-  public static function basePeriodicImportFieldDefinition(): FieldStorageDefinitionInterface {
-    $periods = FeedTypeForm::getImportPeriods();
-
-    $periods = [
-      FeedImportPeriodInterface::USE_FEED_TYPE_IMPORT_PERIOD => t('Use the feed type default'),
-      FeedTypeInterface::SCHEDULE_NEVER => t('Off'),
-      FeedTypeInterface::SCHEDULE_CONTINUOUSLY => t('As often as possible'),
-    ] + $periods;
-
-    return BaseFieldDefinition::create('list_integer')
-      ->setLabel(t('Import period'))
-      ->setDescription(t('Choose how often a feed should be imported.'))
-      ->setDefaultValue(FeedImportPeriodInterface::USE_FEED_TYPE_IMPORT_PERIOD)
-      ->setSetting('allowed_values', $periods)
-      ->setDisplayOptions('view', [
-        'type' => 'list_default',
-        'weight' => 0,
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'options_select',
-        'weight' => 0,
-      ])
-      ->setDisplayConfigurable('form', TRUE);
   }
 
   /**

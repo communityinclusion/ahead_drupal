@@ -29,7 +29,6 @@ use Drupal\feeds\Exception\MissingTargetException;
 use Drupal\feeds\Exception\ValidationException;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\Feeds\Item\ItemInterface;
-use Drupal\feeds\Feeds\Item\ValidatableItemInterface;
 use Drupal\feeds\Feeds\State\CleanStateInterface;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\MappingPluginFormInterface;
@@ -57,6 +56,21 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
    * @var int
    */
   const FEED_ITEM_HASH_MAX_LENGTH = 32;
+
+  /**
+   * Field mapping will be imported.
+   */
+  const FIELD_MAPPING_IMPORT = 'import';
+
+  /**
+   * Field mapping will be imported with existing values for missing properties.
+   */
+  const FIELD_MAPPING_IMPORT_KEEP_MISSING_PROPERTIES = 'import_keep_missing_properties';
+
+  /**
+   * Field mapping will be skipped.
+   */
+  const FIELD_MAPPING_SKIP = 'skip';
 
   /**
    * The entity type manager.
@@ -220,18 +234,13 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
   /**
    * {@inheritdoc}
    */
-  public function initialize(FeedInterface $feed) {
-    $clean_state = $feed->getState(StateInterface::CLEAN);
+  public function process(FeedInterface $feed, ItemInterface $item, StateInterface $state) {
     // Initialize clean list if needed.
-    if ($clean_state instanceof CleanStateInterface && !$clean_state->initiated()) {
+    $clean_state = $feed->getState(StateInterface::CLEAN);
+    if (!$clean_state->initiated()) {
       $this->initCleanList($feed, $clean_state);
     }
-  }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function process(FeedInterface $feed, ItemInterface $item, StateInterface $state) {
     $skip_new = $this->configuration['insert_new'] == static::SKIP_NEW;
     $existing_entity_id = $this->existingEntityId($feed, $item);
     $skip_existing = $this->configuration['update_existing'] == static::SKIP_EXISTING;
@@ -239,7 +248,6 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     // If the entity is an existing entity it must be removed from the clean
     // list.
     if ($existing_entity_id) {
-      $clean_state = $feed->getState(StateInterface::CLEAN);
       $clean_state->removeItem($existing_entity_id);
     }
 
@@ -298,9 +306,6 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       // Set feeds_item values.
       $feeds_item = $entity->get('feeds_item')->getItemByFeed($feed, TRUE);
       $feeds_item->hash = $hash;
-
-      // Validate the item.
-      $this->itemValidate($item, $entity, $feed);
 
       // Set new revision if needed.
       if ($this->configuration['revision']) {
@@ -707,57 +712,6 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
   }
 
   /**
-   * Checks if the source item is valid.
-   *
-   * @param \Drupal\feeds\Feeds\Item\ItemInterface $item
-   *   The source item.
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity that would be created or updated if the item is valid.
-   * @param \Drupal\feeds\FeedInterface $feed
-   *   The feed that controls the import.
-   *
-   * @throws \Drupal\feeds\Exception\ValidationException
-   *   In case the item is found to be invalid.
-   */
-  protected function itemValidate(ItemInterface $item, EntityInterface $entity, FeedInterface $feed) {
-    if (!$item instanceof ValidatableItemInterface) {
-      // The item has no known validation support.
-      return;
-    }
-
-    // Check if the item is valid.
-    if (!$item->isValid()) {
-      // The item is not valid, create a validation error message.
-      $entity_details = $this->identifyEntity($entity, $feed);
-      $message = $item->getInvalidMessage();
-      if (strlen($message) < 1) {
-        if (isset($entity_details['label'])) {
-          $message = $this->t('The source item for entity @label is invalid.', [
-            '@label' => $entity_details['label'],
-          ]);
-        }
-        else {
-          $message = $this->t('A source item could not be imported because it is invalid.');
-        }
-      }
-      else {
-        if (isset($entity_details['label'])) {
-          $message = $this->t('The source item for entity @label is invalid: @message', [
-            '@label' => $entity_details['label'],
-            '@message' => $message,
-          ]);
-        }
-        else {
-          $message = $this->t('A source item could not be imported because it is invalid: @message', [
-            '@message' => $message,
-          ]);
-        }
-      }
-      throw new ValidationException($message);
-    }
-  }
-
-  /**
    * {@inheritdoc}
    */
   protected function entityValidate(EntityInterface $entity, FeedInterface $feed) {
@@ -1073,6 +1027,7 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
       'expire' => static::EXPIRE_NEVER,
       'owner_id' => 0,
       'owner_feed_author' => 0,
+      'skip_missing_source' => FALSE,
     ];
 
     // Bundle.
@@ -1414,24 +1369,38 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
    */
   protected function map(FeedInterface $feed, EntityInterface $entity, ItemInterface $item) {
     $mappings = $this->feedType->getMappings();
+    // Mappers add to existing fields rather than replacing, and can be
+    // optionally skipped if missing from the source. Hence we need group the
+    // mappings to cleared now, skipped or merged with existing field properties
+    // in the case of sub property / multi target mappings with partially
+    // complete source values.
+    $grouped_mappings = $this->groupMappingsByAction($mappings, $item);
 
-    // Mappers add to existing fields rather than replacing them. Hence we need
-    // to clear target elements of each item before mapping in case we are
-    // mapping on a prepopulated item such as an existing node.
-    foreach ($mappings as $delta => $mapping) {
+    foreach ($grouped_mappings[self::FIELD_MAPPING_IMPORT] as $delta => $mapping) {
       if ($mapping['target'] == 'feeds_item') {
-        // Skip feeds item as this field gets default values before mapping.
+        // Do nothing for feeds item as this field gets default values before
+        // mapping.
         continue;
       }
 
-      // Clear the target.
       $this->clearTarget($feed, $entity, $this->feedType->getTargetPlugin($delta), $mapping['target']);
     }
 
     // Gather all of the values for this item.
     $source_values = [];
+    $target_values = [];
     foreach ($mappings as $delta => $mapping) {
-      $target = $mapping['target'];
+      if (array_key_exists($delta, $grouped_mappings[self::FIELD_MAPPING_SKIP])) {
+        // Skip mappings where the source is missing.
+        continue;
+      }
+
+      // When the source is incomplete get the original values from the target
+      // entity. These will be used to repair the mapped values.
+      if (array_key_exists($delta, $grouped_mappings[self::FIELD_MAPPING_IMPORT_KEEP_MISSING_PROPERTIES])) {
+        $plugin = $this->feedType->getTargetPlugin($delta);
+        $target_values[$delta] = $plugin->getTargetValues($feed, $entity, $mapping['target']);
+      }
 
       foreach ($mapping['map'] as $column => $source) {
 
@@ -1445,13 +1414,25 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
         }
 
         $value = $item->get($source);
-        if (!is_array($value)) {
+        if ($value === NULL && !array_key_exists($source, $item->toArray()) && isset($target_values[$delta])) {
+          // When the column is missing use the original column value.
+          $source_values[$delta][$column] = array_map(function ($value) use ($column) {
+            return $value[$column];
+          }, $target_values[$delta]);
+        }
+        elseif (!is_array($value)) {
           $source_values[$delta][$column][] = $value;
         }
         else {
           $source_values[$delta][$column] = array_merge($source_values[$delta][$column], $value);
         }
       }
+    }
+
+    // Now that the incomplete sources have been added to the field values we
+    // can clear the targets.
+    foreach ($grouped_mappings[self::FIELD_MAPPING_IMPORT_KEEP_MISSING_PROPERTIES] as $delta => $mapping) {
+      $this->clearTarget($feed, $entity, $this->feedType->getTargetPlugin($delta), $mapping['target']);
     }
 
     // Rearrange values into Drupal's field structure.
@@ -1481,6 +1462,61 @@ abstract class EntityProcessorBase extends ProcessorBase implements EntityProces
     }
 
     return $entity;
+  }
+
+  /**
+   * Group the field mappings into the action for the processor to take.
+   *
+   * @param array $mappings
+   *   The list of mappings.
+   * @param \Drupal\feeds\Feeds\Item\ItemInterface $item
+   *   The item being mapped.
+   *
+   * @return array[]
+   *   Array of arrays of field mappings, groups keyed by self::FIELD_MAPPING_*.
+   */
+  protected function groupMappingsByAction(array $mappings, ItemInterface $item): array {
+    $skip_missing_source = $this->configuration['skip_missing_source'];
+
+    $grouped = [
+      self::FIELD_MAPPING_IMPORT => [],
+      self::FIELD_MAPPING_IMPORT_KEEP_MISSING_PROPERTIES => [],
+      self::FIELD_MAPPING_SKIP => [],
+    ];
+
+    // Import everything if we do not require source values to be present.
+    if (!$skip_missing_source) {
+      $grouped[self::FIELD_MAPPING_IMPORT] = $mappings;
+      return $grouped;
+    }
+
+    // @todo: Refactor to `has` method on item.
+    $source_is_missing_from_item = function ($source) use ($item) {
+      return $item->get($source) === NULL && !array_key_exists($source, $item->toArray());
+    };
+
+    foreach ($mappings as $delta => $mapping) {
+      // Skip undefined sources.
+      $defined_sources = array_filter($mapping['map']);
+      $number_of_missing_sources = count(array_filter(array_map($source_is_missing_from_item, $defined_sources)));
+
+      if ($number_of_missing_sources > 0) {
+        // If all source values are missing this mapping will be skipped. If
+        // some but not all source values are missing. Only the provided
+        // properties should be updated so mark this mapping as needing to keep
+        // the missing properties.
+        $skip_mapping = $number_of_missing_sources === count($defined_sources);
+        $group = $skip_mapping ? self::FIELD_MAPPING_SKIP : self::FIELD_MAPPING_IMPORT_KEEP_MISSING_PROPERTIES;
+        $grouped[$group][$delta] = $mapping;
+      }
+      else {
+        // This mapping is complete and should be imported as provided.
+        $grouped[self::FIELD_MAPPING_IMPORT][$delta] = $mapping;
+      }
+
+    }
+
+    return $grouped;
   }
 
   /**

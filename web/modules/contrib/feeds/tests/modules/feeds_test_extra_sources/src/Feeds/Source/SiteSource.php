@@ -4,7 +4,6 @@ namespace Drupal\feeds_test_extra_sources\Feeds\Source;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\feeds\Attribute\FeedsSource;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Feeds\Item\ItemInterface;
@@ -13,8 +12,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * A source exposing site config.
+ *
+ * @FeedsSource(
+ *   id = "site"
+ * )
  */
-#[FeedsSource(id: 'site')]
 final class SiteSource extends SourceBase implements ContainerFactoryPluginInterface {
 
   /**

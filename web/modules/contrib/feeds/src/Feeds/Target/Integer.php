@@ -3,19 +3,19 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 
 /**
  * Defines an integer field mapper.
+ *
+ * @FeedsTarget(
+ *   id = "integer",
+ *   field_types = {
+ *     "integer",
+ *     "list_integer"
+ *   }
+ * )
  */
-#[FeedsTarget(
-  id: 'integer',
-  field_types: [
-    'integer',
-    'list_integer',
-  ],
-)]
 class Integer extends Number {
 
   /**

@@ -12,13 +12,11 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\TypedData\DataDefinitionInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\EntityFinderInterface;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\ReferenceNotFoundException;
 use Drupal\feeds\Exception\TargetValidationException;
 use Drupal\feeds\FeedInterface;
-use Drupal\feeds\FeedsItemInterface;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
@@ -27,11 +25,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines an entity reference mapper.
+ *
+ * @FeedsTarget(
+ *   id = "entity_reference",
+ *   field_types = {"entity_reference"}
+ * )
  */
-#[FeedsTarget(
-  id: 'entity_reference',
-  field_types: ['entity_reference'],
-)]
 class EntityReference extends FieldTargetBase implements ConfigurableTargetInterface, ContainerFactoryPluginInterface {
 
   /**
@@ -111,6 +110,23 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
   /**
    * {@inheritdoc}
    */
+  public function getTargetValues(FeedInterface $feed, EntityInterface $entity, $field_name): array {
+    $entity_target = $this->getEntityTarget($feed, $entity);
+    $values = $entity_target->get($field_name)->getValue();
+
+    foreach ($values as $delta => $value) {
+      // The target id should reflect the value of how the entity is referenced
+      // by the reference_by setting.
+      $referenced_entity = $entity_target->get($field_name)->get($delta)->get('entity')->getValue();
+      $referenced_by_value = $referenced_entity->get($this->configuration['reference_by'])->first()->getValue();
+      $values[$delta]['target_id'] = current($referenced_by_value);
+    }
+    return $values;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setTarget(FeedInterface $feed, EntityInterface $entity, $field_name, array $raw_values) {
     $values = [];
     foreach ($raw_values as $delta => $columns) {
@@ -125,10 +141,7 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
         // import process more efficient by ignoring items it has already seen.
         // In this case we need to destroy the hash in order to be able to
         // import the reference on a next import.
-        $feeds_item = $entity->get('feeds_item')->getItemByFeed($feed);
-        if ($feeds_item instanceof FeedsItemInterface) {
-          $feeds_item->hash = NULL;
-        }
+        $entity->get('feeds_item')->getItemByFeed($feed)->hash = NULL;
         $feed->getState(StateInterface::PROCESS)->setMessage($e->getFormattedMessage(), 'warning', TRUE);
       }
       catch (EmptyFeedException $e) {
@@ -326,7 +339,7 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
       return $target_ids;
     }
 
-    if ($this->hasAutocreateSupport() && $this->configuration['autocreate'] && $field === $this->getLabelKey()) {
+    if ($this->configuration['autocreate'] && $field === $this->getLabelKey()) {
       return [$this->createEntity($search)];
     }
 
@@ -367,28 +380,16 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
   }
 
   /**
-   * Determines if this target has autocreate support.
-   *
-   * @return bool
-   *   TRUE if supported, FALSE otherwise.
-   */
-  protected function hasAutocreateSupport() {
-    return TRUE;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
     $config = parent::defaultConfiguration() + [
       'reference_by' => $this->getLabelKey(),
+      'autocreate' => FALSE,
+      'autocreate_bundle' => FALSE,
     ];
     if (array_key_exists('feeds_item', $this->getPotentialFields())) {
       $config['feeds_item'] = FALSE;
-    }
-    if ($this->hasAutocreateSupport()) {
-      $config['autocreate'] = FALSE;
-      $config['autocreate_bundle'] = FALSE;
     }
     return $config;
   }
@@ -441,43 +442,41 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
       ],
     ];
 
-    if ($this->hasAutocreateSupport()) {
-      $form['autocreate'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Autocreate entity'),
-        '#default_value' => $this->configuration['autocreate'],
+    $form['autocreate'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Autocreate entity'),
+      '#default_value' => $this->configuration['autocreate'],
+      '#states' => [
+        'visible' => [
+          ':input[name="mappings[' . $delta . '][settings][reference_by]"]' => [
+            'value' => $this->getLabelKey(),
+          ],
+        ],
+      ],
+    ];
+
+    $bundles = $this->getBundles();
+    if (count($bundles) > 0) {
+
+      // Check that recent field configuration changes haven't invalidated any
+      // previous selection.
+      if (!in_array($this->configuration['autocreate_bundle'], $bundles)) {
+        $this->configuration['autocreate_bundle'] = reset($bundles);
+      }
+
+      $form['autocreate_bundle'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Bundle to autocreate'),
+        '#options' => $bundles,
+        '#default_value' => $this->configuration['autocreate_bundle'],
         '#states' => [
           'visible' => [
-            ':input[name="mappings[' . $delta . '][settings][reference_by]"]' => [
-              'value' => $this->getLabelKey(),
+            ':input[name="mappings[' . $delta . '][settings][autocreate]"]' => [
+              ['checked' => TRUE, 'visible' => TRUE],
             ],
           ],
         ],
       ];
-
-      $bundles = $this->getBundles();
-      if (count($bundles) > 0) {
-
-        // Check that recent field configuration changes haven't invalidated any
-        // previous selection.
-        if (!in_array($this->configuration['autocreate_bundle'], $bundles)) {
-          $this->configuration['autocreate_bundle'] = reset($bundles);
-        }
-
-        $form['autocreate_bundle'] = [
-          '#type' => 'select',
-          '#title' => $this->t('Bundle to autocreate'),
-          '#options' => $bundles,
-          '#default_value' => $this->configuration['autocreate_bundle'],
-          '#states' => [
-            'visible' => [
-              ':input[name="mappings[' . $delta . '][settings][autocreate]"]' => [
-                ['checked' => TRUE, 'visible' => TRUE],
-              ],
-            ],
-          ],
-        ];
-      }
     }
 
     return $form;
@@ -506,7 +505,7 @@ class EntityReference extends FieldTargetBase implements ConfigurableTargetInter
       ];
     }
 
-    if ($this->hasAutocreateSupport() && $this->configuration['reference_by'] === $this->getLabelKey()) {
+    if ($this->configuration['reference_by'] === $this->getLabelKey()) {
       $create = $this->configuration['autocreate'] ? $this->t('Yes') : $this->t('No');
       $summary[] = $this->t('Autocreate entities: %create', ['%create' => $create]);
       if ($this->configuration['autocreate'] && in_array($this->configuration['autocreate_bundle'], $this->getBundles())) {

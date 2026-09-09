@@ -3,17 +3,17 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
  * Defines a path field mapper.
+ *
+ * @FeedsTarget(
+ *   id = "path",
+ *   field_types = {"path"}
+ * )
  */
-#[FeedsTarget(
-  id: 'path',
-  field_types: ['path'],
-)]
 class Path extends FieldTargetBase {
 
   /**

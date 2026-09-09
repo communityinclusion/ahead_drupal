@@ -1,6 +1,5 @@
 Adaptivethemes
 Alzq
-apenheul
 Après
 asdfasdf
 atomentry
@@ -34,8 +33,6 @@ Façade
 FDCF
 febbraro
 FFFD
-fileresolver
-freesound
 foodir
 georss
 georssentry
@@ -65,7 +62,6 @@ MQNAY
 msnbc
 MUNDO
 mydescription
-mymodule
 natew
 NEWSMAKER
 newsmaker
@@ -84,14 +80,12 @@ postsaving
 presaving
 prevalidate
 propbool
-prophesized
 proptext
 pubsubhubbub
 Pugsley
 qaeda
 Quxawitz
 refetched
-rosje
 sanitizations
 servicemanager
 Skeletor

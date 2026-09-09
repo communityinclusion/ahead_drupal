@@ -19,23 +19,21 @@ class FeedsInstallTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = [
-    'options',
-  ];
+  protected static $modules = [];
 
   /**
    * Module handler to ensure installed modules.
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  protected $moduleHandler;
+  public $moduleHandler;
 
   /**
    * Module installer.
    *
    * @var \Drupal\Core\Extension\ModuleInstallerInterface
    */
-  protected $moduleInstaller;
+  public $moduleInstaller;
 
   /**
    * {@inheritdoc}
@@ -63,6 +61,9 @@ class FeedsInstallTest extends BrowserTestBase {
     $this->assertFalse($this->moduleHandler->moduleExists('feeds'));
     $this->assertTrue($this->moduleInstaller->install(['views', 'feeds']));
 
+    // Workaround https://www.drupal.org/node/2021959
+    // See \Drupal\Core\Test\FunctionalTestSetupTrait::rebuildContainer.
+    unset($this->moduleHandler);
     $this->rebuildContainer();
     $this->moduleHandler = $this->container->get('module_handler');
 

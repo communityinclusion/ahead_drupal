@@ -2,7 +2,6 @@
 
 namespace Drupal\feeds_log;
 
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
@@ -78,8 +77,8 @@ class LogListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
-    $operations = parent::getDefaultOperations($entity, $cacheability);
+  protected function getDefaultOperations(EntityInterface $entity) {
+    $operations = parent::getDefaultOperations($entity);
     $operations['view'] = [
       'title' => $this->t('View entries'),
       'weight' => 1,

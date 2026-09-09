@@ -2,7 +2,7 @@
 
 namespace Drupal\feeds\Component;
 
-// phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
+// phpcs:disable Drupal.Classes.PropertyDeclaration
 // phpcs:disable Drupal.NamingConventions.ValidVariableName.LowerCamelName
 
 /**
@@ -112,14 +112,7 @@ trait XmlParserTrait {
    *   The XML string with the default namespaces removed.
    */
   protected static function removeDefaultNamespaces($xml) {
-    if (!str_contains($xml, 'xmlns')) {
-      return $xml;
-    }
-    $xml = preg_replace('/(<' . static::$_elementRegex . '[^>]*)\s+xmlns\s*=\s*("|\').*?(\2)([^>]*>)/u', '$1$4', $xml);
-    if (($preg_error = preg_last_error()) !== PREG_NO_ERROR) {
-      throw new \RuntimeException(sprintf('PCRE error while processing XML namespaces: %s (%d)', preg_last_error_msg(), $preg_error), $preg_error);
-    }
-    return $xml;
+    return preg_replace('/(<' . static::$_elementRegex . '[^>]*)\s+xmlns\s*=\s*("|\').*?(\2)([^>]*>)/u', '$1$4', $xml);
   }
 
 }

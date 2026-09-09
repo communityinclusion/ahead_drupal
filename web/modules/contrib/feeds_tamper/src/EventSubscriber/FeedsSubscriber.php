@@ -148,7 +148,9 @@ class FeedsSubscriber implements EventSubscriberInterface {
       catch (SkipTamperDataException $e) {
         // @todo We would rather unset the source, but that isn't possible yet
         // with ItemInterface.
-        $item->set($source, NULL);
+        if ($item->get($source) !== NULL) {
+          $item->set($source, NULL);
+        }
       }
       catch (SkipTamperItemException $e) {
         // Should be caught by ::afterParse().

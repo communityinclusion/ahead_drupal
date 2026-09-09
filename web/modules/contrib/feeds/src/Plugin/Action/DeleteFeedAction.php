@@ -2,19 +2,18 @@
 
 namespace Drupal\feeds\Plugin\Action;
 
-use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Redirects to a feed deletion form.
+ *
+ * @Action(
+ *   id = "feeds_feed_delete_action",
+ *   label = @Translation("Delete selected feeds"),
+ *   type = "feeds_feed",
+ *   confirm_form_route_name = "feeds.multiple_delete_confirm"
+ * )
  */
-#[Action(
-  id: 'feeds_feed_delete_action',
-  label: new TranslatableMarkup('Delete selected feeds'),
-  type: 'feeds_feed',
-  confirm_form_route_name: 'feeds.multiple_delete_confirm'
-)]
 class DeleteFeedAction extends FeedActionBase {
 
   /**

@@ -3,20 +3,12 @@
 namespace Drupal\feeds\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
-use Drupal\Core\Entity\Attribute\ConfigEntityType;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
-use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Utility\Error;
 use Drupal\feeds\Exception\MissingTargetException;
-use Drupal\feeds\FeedTypeAccessControlHandler;
-use Drupal\feeds\FeedTypeForm;
-use Drupal\feeds\FeedTypeImportPeriodPerFeedInterface;
 use Drupal\feeds\FeedTypeInterface;
-use Drupal\feeds\FeedTypeListBuilder;
 use Drupal\feeds\Feeds\FeedsSingleLazyPluginCollection;
-use Drupal\feeds\Form\FeedTypeDeleteForm;
 use Drupal\feeds\Plugin\DependentWithRemovalPluginInterface;
 use Drupal\feeds\Plugin\Type\LockableInterface;
 use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
@@ -27,13 +19,6 @@ use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
  * @ConfigEntityType(
  *   id = "feeds_feed_type",
  *   label = @Translation("Feed type"),
- *   label_collection = @Translation("Feed types"),
- *   label_singular = @Translation("feed type"),
- *   label_plural = @Translation("feed types"),
- *   label_count = @PluralTranslation(
- *     singular = "@count feed type",
- *     plural = "@count feed types",
- *   ),
  *   module = "feeds",
  *   handlers = {
  *     "access" = "Drupal\feeds\FeedTypeAccessControlHandler",
@@ -62,7 +47,6 @@ use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
  *     "description",
  *     "help",
  *     "import_period",
- *     "import_period_per_feed",
  *     "fetcher",
  *     "fetcher_configuration",
  *     "parser",
@@ -82,63 +66,7 @@ use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
  *   admin_permission = "administer feeds"
  * )
  */
-#[ConfigEntityType(
-  id: 'feeds_feed_type',
-  label: new TranslatableMarkup('Feed type'),
-  label_collection: new TranslatableMarkup('Feed types'),
-  label_singular: new TranslatableMarkup('feed type'),
-  label_plural: new TranslatableMarkup('feed types'),
-  config_prefix: 'feed_type',
-  entity_keys: [
-    'id' => 'id',
-    'label' => 'label',
-    'uuid' => 'uuid',
-    'status' => 'status',
-  ],
-  handlers: [
-    'access' => FeedTypeAccessControlHandler::class,
-    'list_builder' => FeedTypeListBuilder::class,
-    'route_provider' => [
-      'html' => AdminHtmlRouteProvider::class,
-    ],
-    'form' => [
-      'default' => FeedTypeForm::class,
-      'create' => FeedTypeForm::class,
-      'edit' => FeedTypeForm::class,
-      'delete' => FeedTypeDeleteForm::class,
-    ],
-  ],
-  links: [
-    'collection' => '/admin/structure/feeds',
-    'add-form' => '/admin/structure/feeds/add',
-    'edit-form' => '/admin/structure/feeds/manage/{feeds_feed_type}',
-    'mapping' => '/admin/structure/feeds/manage/{feeds_feed_type}/mapping',
-    'delete-form' => '/admin/structure/feeds/manage/{feeds_feed_type}/delete',
-  ],
-  admin_permission: 'administer feeds',
-  bundle_of: 'feeds_feed',
-  label_count: [
-    'singular' => '@count feed type',
-    'plural' => '@count feed types',
-  ],
-  config_export: [
-    'id',
-    'label',
-    'description',
-    'help',
-    'import_period',
-    'import_period_per_feed',
-    'fetcher',
-    'fetcher_configuration',
-    'parser',
-    'parser_configuration',
-    'processor',
-    'processor_configuration',
-    'custom_sources',
-    'mappings',
-  ],
-)]
-class FeedType extends ConfigEntityBundleBase implements FeedTypeInterface, FeedTypeImportPeriodPerFeedInterface, EntityWithPluginCollectionInterface {
+class FeedType extends ConfigEntityBundleBase implements FeedTypeInterface, EntityWithPluginCollectionInterface {
 
   /**
    * The feed type ID.
@@ -174,13 +102,6 @@ class FeedType extends ConfigEntityBundleBase implements FeedTypeInterface, Feed
    * @var int
    */
   protected $import_period = 3600;
-
-  /**
-   * Whether the import period is allowed per feed.
-   *
-   * @var bool
-   */
-  protected bool $import_period_per_feed = FALSE;
 
   /**
    * The types of plugins we support.
@@ -352,20 +273,6 @@ class FeedType extends ConfigEntityBundleBase implements FeedTypeInterface, Feed
    */
   public function setImportPeriod($import_period) {
     $this->import_period = (int) $import_period;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isImportPeriodPerFeedAllowed(): bool {
-    return $this->import_period_per_feed;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setImportPeriodPerFeedAllowed(bool $import_period_per_feed): void {
-    $this->import_period_per_feed = $import_period_per_feed;
   }
 
   /**
@@ -698,13 +605,6 @@ class FeedType extends ConfigEntityBundleBase implements FeedTypeInterface, Feed
       }
       else {
         unset($this->mappings[$delta]['settings']);
-      }
-    }
-
-    // Make sure that disabled "unique" flags are filtered out.
-    foreach ($this->mappings as $delta => $mapping) {
-      if (isset($mapping['unique']) && is_array($mapping['unique'])) {
-        $this->mappings[$delta]['unique'] = array_filter($mapping['unique']);
       }
     }
 

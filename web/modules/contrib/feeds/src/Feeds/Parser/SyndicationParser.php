@@ -3,8 +3,6 @@
 namespace Drupal\feeds\Feeds\Parser;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\feeds\Attribute\FeedsParser;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\Feeds\Item\SyndicationItem;
@@ -19,12 +17,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines an RSS and Atom feed parser.
+ *
+ * @FeedsParser(
+ *   id = "syndication",
+ *   title = @Translation("RSS/Atom"),
+ *   description = @Translation("Default parser for RSS, Atom and RDF feeds.")
+ * )
  */
-#[FeedsParser(
-  id: 'syndication',
-  title: new TranslatableMarkup('RSS/Atom'),
-  description: new TranslatableMarkup('Default parser for RSS, Atom and RDF feeds.')
-)]
 class SyndicationParser extends ParserBase implements ParserInterface, ContainerFactoryPluginInterface {
 
   /**
@@ -124,15 +123,6 @@ class SyndicationParser extends ParserBase implements ParserInterface, Container
         $item->set('author_name', $author['name'])
           ->set('author_email', $author['email']);
       }
-      if ($authors = $entry->getAuthors()) {
-        $author_names = [];
-        foreach ($authors as $author) {
-          if (isset($author['name'])) {
-            $author_names[] = $author['name'];
-          }
-        }
-        $item->set('authors', $author_names);
-      }
       if ($date = $entry->getDateCreated()) {
         $item->set('timestamp', $date->getTimestamp());
       }
@@ -217,13 +207,6 @@ class SyndicationParser extends ParserBase implements ParserInterface, Container
       'author_email' => [
         'label' => $this->t('Author email'),
         'description' => $this->t("Mail address of the feed item's author."),
-      ],
-      'authors' => [
-        'label' => $this->t('Authors'),
-        'description' => $this->t('An array of authors of the feed item.'),
-        'suggestions' => [
-          'types' => ['field_item:text' => []],
-        ],
       ],
       'timestamp' => [
         'label' => $this->t('Published date'),

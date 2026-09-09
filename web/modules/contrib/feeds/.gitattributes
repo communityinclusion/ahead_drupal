@@ -1,8 +1,0 @@
-/tests export-ignore
-/.cspell-project-words.txt export-ignore
-/.gitattributes export-ignore
-/.gitlab-ci.yml export-ignore
-/logo.png export-ignore
-/phpcs.xml export-ignore
-/phpstan.neon export-ignore
-/phpunit.xml.dist export-ignore

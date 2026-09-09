@@ -2,15 +2,11 @@
 
 namespace Drupal\feeds\Feeds\Parser;
 
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\feeds\Attribute\FeedsParser;
 use Drupal\feeds\Component\CsvParser as CsvFileParser;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Feeds\Item\DynamicItem;
-use Drupal\feeds\Feeds\Parser\Form\CsvParserFeedForm;
-use Drupal\feeds\Feeds\Parser\Form\CsvParserForm;
 use Drupal\feeds\Plugin\Type\Parser\ParserWithTemplateInterface;
 use Drupal\feeds\Result\FetcherResultInterface;
 use Drupal\feeds\Result\ParserResult;
@@ -19,16 +15,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Defines a CSV feed parser.
+ *
+ * @FeedsParser(
+ *   id = "csv",
+ *   title = "CSV",
+ *   description = @Translation("Parse CSV files."),
+ *   form = {
+ *     "configuration" = "Drupal\feeds\Feeds\Parser\Form\CsvParserForm",
+ *     "feed" = "Drupal\feeds\Feeds\Parser\Form\CsvParserFeedForm",
+ *   },
+ * )
  */
-#[FeedsParser(
-  id: 'csv',
-  title: 'CSV',
-  description: new TranslatableMarkup('Parse CSV files.'),
-  form: [
-    'configuration' => CsvParserForm::class,
-    'feed' => CsvParserFeedForm::class,
-  ]
-)]
 class CsvParser extends ParserBase implements ParserWithTemplateInterface {
 
   /**

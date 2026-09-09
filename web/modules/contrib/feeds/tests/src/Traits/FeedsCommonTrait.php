@@ -90,16 +90,12 @@ trait FeedsCommonTrait {
       'field' => [],
     ];
 
-    // Check if field storage already exists first.
-    $field_storage = FieldStorageConfig::loadByName($config['entity_type'], $field_name);
-    if (!$field_storage instanceof FieldStorageConfig) {
-      FieldStorageConfig::create($config['storage'] + [
-        'field_name' => $field_name,
-        'entity_type' => $config['entity_type'],
-        'type' => $config['type'],
-        'settings' => [],
-      ])->save();
-    }
+    FieldStorageConfig::create($config['storage'] + [
+      'field_name' => $field_name,
+      'entity_type' => $config['entity_type'],
+      'type' => $config['type'],
+      'settings' => [],
+    ])->save();
 
     FieldConfig::create($config['field'] + [
       'entity_type' => $config['entity_type'],

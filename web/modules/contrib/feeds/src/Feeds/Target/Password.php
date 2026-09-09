@@ -7,7 +7,6 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Password\PasswordInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\Exception\TargetValidationException;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
@@ -16,11 +15,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a password field mapper.
+ *
+ * @FeedsTarget(
+ *   id = "password",
+ *   field_types = {"password"}
+ * )
  */
-#[FeedsTarget(
-  id: 'password',
-  field_types: ['password'],
-)]
 class Password extends FieldTargetBase implements ConfigurableTargetInterface, ContainerFactoryPluginInterface {
 
   /**

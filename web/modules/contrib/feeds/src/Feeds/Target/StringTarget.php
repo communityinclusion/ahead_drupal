@@ -3,21 +3,21 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
  * Defines a string field mapper.
+ *
+ * @FeedsTarget(
+ *   id = "string",
+ *   field_types = {
+ *     "string",
+ *     "string_long",
+ *     "list_string"
+ *   }
+ * )
  */
-#[FeedsTarget(
-  id: 'string',
-  field_types: [
-    'string',
-    'string_long',
-    'list_string',
-  ],
-)]
 class StringTarget extends FieldTargetBase {
 
   /**

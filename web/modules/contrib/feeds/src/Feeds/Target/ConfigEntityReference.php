@@ -11,13 +11,11 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\EntityFinderInterface;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\ReferenceNotFoundException;
 use Drupal\feeds\Exception\TargetValidationException;
 use Drupal\feeds\FeedInterface;
-use Drupal\feeds\FeedsItemInterface;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
@@ -26,11 +24,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a config entity reference mapper.
+ *
+ * @FeedsTarget(
+ *   id = "config_entity_reference",
+ *   field_types = {"entity_reference"},
+ * )
  */
-#[FeedsTarget(
-  id: 'config_entity_reference',
-  field_types: ['entity_reference'],
-)]
 class ConfigEntityReference extends FieldTargetBase implements ConfigurableTargetInterface, ContainerFactoryPluginInterface {
 
   /**
@@ -132,10 +131,7 @@ class ConfigEntityReference extends FieldTargetBase implements ConfigurableTarge
         // import process more efficient by ignoring items it has already seen.
         // In this case we need to destroy the hash in order to be able to
         // import the reference on a next import.
-        $feeds_item = $entity->get('feeds_item')->getItemByFeed($feed);
-        if ($feeds_item instanceof FeedsItemInterface) {
-          $feeds_item->hash = NULL;
-        }
+        $entity->get('feeds_item')->getItemByFeed($feed)->hash = NULL;
         $feed->getState(StateInterface::PROCESS)->setMessage($e->getFormattedMessage(), 'warning', TRUE);
       }
       catch (EmptyFeedException $e) {

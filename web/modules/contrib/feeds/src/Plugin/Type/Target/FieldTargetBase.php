@@ -88,6 +88,14 @@ abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetI
   /**
    * {@inheritdoc}
    */
+  public function getTargetValues(FeedInterface $feed, EntityInterface $entity, $field_name): array {
+    $entity_target = $this->getEntityTarget($feed, $entity);
+    return parent::getTargetValues($feed, $entity_target, $field_name);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setTarget(FeedInterface $feed, EntityInterface $entity, $field_name, array $values) {
     if ($values = $this->prepareValues($values)) {
       $entity_target = $this->getEntityTarget($feed, $entity);
@@ -148,9 +156,6 @@ abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetI
    *
    * @param array $values
    *   The values.
-   *
-   * @return array
-   *   The prepared values.
    */
   protected function prepareValues(array $values) {
     $return = [];
@@ -199,7 +204,19 @@ abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetI
   }
 
   /**
-   * {@inheritdoc}
+   * Looks for an existing entity and returns an entity ID if found.
+   *
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed that is being processed.
+   * @param string $target
+   *   The ID of the field target plugin.
+   * @param string $key
+   *   The property of the field to search on.
+   * @param string $value
+   *   The value to look for.
+   *
+   * @return string|int|null
+   *   An entity ID, if found. Null otherwise.
    */
   public function getUniqueValue(FeedInterface $feed, $target, $key, $value) {
     // Make sure the passed value is a string.

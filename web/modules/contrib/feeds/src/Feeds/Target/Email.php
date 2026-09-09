@@ -4,18 +4,18 @@ namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
  * Defines a email field mapper.
+ *
+ * @FeedsTarget(
+ *   id = "email",
+ *   field_types = {"email"}
+ * )
  */
-#[FeedsTarget(
-  id: 'email',
-  field_types: ['email'],
-)]
 class Email extends FieldTargetBase implements ConfigurableTargetInterface {
 
   /**

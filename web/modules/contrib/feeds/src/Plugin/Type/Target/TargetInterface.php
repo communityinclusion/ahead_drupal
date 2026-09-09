@@ -25,6 +25,20 @@ interface TargetInterface extends DependentWithRemovalPluginInterface {
   public static function targets(array &$targets, FeedTypeInterface $feed_type, array $definition);
 
   /**
+   * Gets the values on an object.
+   *
+   * @param \Drupal\feeds\FeedInterface $feed
+   *   The feed object.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The target object.
+   * @param string $target
+   *   The name of the target to get.
+   *
+   * @return array
+   */
+  public function getTargetValues(FeedInterface $feed, EntityInterface $entity, string $target): array;
+
+  /**
    * Sets the values on an object.
    *
    * @param \Drupal\feeds\FeedInterface $feed
@@ -80,26 +94,4 @@ interface TargetInterface extends DependentWithRemovalPluginInterface {
    *   True if the value on the entity is empty. False otherwise.
    */
   public function isEmpty(FeedInterface $feed, EntityInterface $entity, $target);
-
-  /**
-   * Looks for an existing entity and returns an entity ID if found.
-   *
-   * This method is used by the entity processor to find existing entities
-   * based on unique target values. If a target plugin does not support
-   * unique value lookup, it should return NULL.
-   *
-   * @param \Drupal\feeds\FeedInterface $feed
-   *   The feed that is being processed.
-   * @param string $target
-   *   The ID of the target plugin.
-   * @param string $key
-   *   The property of the target to search on.
-   * @param mixed $value
-   *   The value to look for.
-   *
-   * @return string|int|null
-   *   An entity ID, if found. Null otherwise.
-   */
-  public function getUniqueValue(FeedInterface $feed, $target, $key, $value);
-
 }

@@ -217,7 +217,7 @@ class CsvParser implements \Iterator {
       }
 
       // Skip empty lines that aren't wrapped in an enclosure.
-    } while (!strlen(rtrim($line, "\r\n" . $this->delimiter)));
+    } while (!strlen(rtrim($line, "\r\n")));
 
     $this->currentLine = $this->parseLine($line);
     $this->linesRead++;

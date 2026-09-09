@@ -62,6 +62,13 @@ abstract class TargetBase extends PluginBase implements TargetInterface, PluginF
   /**
    * {@inheritdoc}
    */
+  public function getTargetValues(FeedInterface $feed, EntityInterface $entity, $target): array {
+    return $entity->get($target)->getValue();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function clearTarget(FeedInterface $feed, EntityInterface $entity, string $target) {
     unset($entity->{$target});
   }
@@ -126,16 +133,6 @@ abstract class TargetBase extends PluginBase implements TargetInterface, PluginF
    */
   protected function addMessage($message, $type = 'status', $repeat = FALSE) {
     $this->getMessenger()->addMessage($message, $type, $repeat);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getUniqueValue(FeedInterface $feed, $target, $key, $value) {
-    // Default implementation returns NULL for backwards compatibility.
-    // Plugins that extend TargetBase directly and need unique value lookup
-    // should override this method.
-    return NULL;
   }
 
 }

@@ -2,13 +2,11 @@
 
 namespace Drupal\Tests\feeds\Kernel;
 
-use Drupal\Tests\field\Traits\EntityReferenceFieldCreationTrait;
 use Drupal\feeds\Event\FeedsEvents;
 use Drupal\feeds\Event\ImportFinishedEvent;
 use Drupal\feeds\Plugin\Type\Processor\ProcessorInterface;
 use Drupal\feeds\StateInterface;
 use Drupal\node\Entity\Node;
-use Drupal\node\Entity\NodeType;
 
 /**
  * Tests adding two feeds on the same entities with unlimited cardinality.
@@ -16,8 +14,6 @@ use Drupal\node\Entity\NodeType;
  * @group feeds
  */
 class MultiFeedTest extends FeedsKernelTestBase {
-
-  use EntityReferenceFieldCreationTrait;
 
   /**
    * The process state after an import.
@@ -156,147 +152,6 @@ class MultiFeedTest extends FeedsKernelTestBase {
       return $value['target_id'];
     }, $node->feeds_item->getValue());
     $this->assertEquals($expected_feed_item_target_ids, $node_feed_item_target_ids);
-  }
-
-  /**
-   * Tests feeds_item mapping when updating the same node with multiple feeds.
-   *
-   * When a node gets updated using two different feeds and for at least one of
-   * the feeds there is being mapped to the feeds item field, the node needs to
-   * keep a reference to both feeds in the feeds_item field.
-   *
-   * When there is also being mapped to an entity reference field and the
-   * reference in question isn't found, the hash on the feeds_item for the right
-   * feed is expected to be cleared.
-   */
-  public function testWithFeedsItemAndEntityReferenceMapping() {
-    // Create a content type for which a node is going to be referenced.
-    $event_type = NodeType::create([
-      'type' => 'event',
-      'name' => 'Event',
-    ]);
-    $event_type->save();
-    // Add a field on the content type that one of the feed types will use to
-    // attempt to find existing entities by.
-    $this->createFieldWithStorage('field_alpha', [
-      'bundle' => 'event',
-    ]);
-
-    // Create an entity reference field referencing nodes of type 'event' (the
-    // content type we just created above).
-    $this->createEntityReferenceField(
-      'node',
-      'article',
-      'field_event',
-      'Event',
-      'node',
-      'default',
-      [
-        'target_bundles' => ['event'],
-      ]
-    );
-
-    // Create the first feed type. This will import a node that we later will
-    // update with an other feed type.
-    $feed_type1 = $this->createFeedTypeForCsv([
-      'guid' => 'guid',
-      'title' => 'title',
-      'body' => 'body',
-    ], [
-      'processor_configuration' => [
-        'authorize' => FALSE,
-        'update_existing' => ProcessorInterface::UPDATE_EXISTING,
-        'values' => [
-          'type' => 'article',
-        ],
-      ],
-      'mappings' => [
-        [
-          'target' => 'feeds_item',
-          'map' => ['guid' => 'guid'],
-          'unique' => ['guid' => TRUE],
-        ],
-        [
-          'target' => 'title',
-          'map' => ['value' => 'title'],
-          'unique' => ['value' => TRUE],
-        ],
-        [
-          'target' => 'body',
-          'map' => ['value' => 'body'],
-          'settings' => [
-            'format' => 'plain_text',
-            'language' => NULL,
-          ],
-        ],
-      ],
-    ]);
-
-    $feed1 = $this->createFeed($feed_type1->id(), [
-      'source' => $this->resourcesPath() . '/csv/multi-feed-entity-reference-feed1.csv',
-    ]);
-    $feed1->import();
-    $this->assertNodeCount(1);
-
-    // Create a second feed type that will update the node created using the
-    // first feed. Also map to the entity reference field to test that clearing
-    // the hash on a feeds_item will work.
-    $feed_type2 = $this->createFeedTypeForCsv([
-      'guid' => 'guid',
-      'title' => 'title',
-      'ref' => 'ref',
-    ], [
-      'processor_configuration' => [
-        'authorize' => FALSE,
-        'update_existing' => ProcessorInterface::UPDATE_EXISTING,
-        'values' => [
-          'type' => 'article',
-        ],
-      ],
-      'mappings' => [
-        [
-          'target' => 'feeds_item',
-          'map' => ['guid' => 'guid'],
-          'unique' => ['guid' => TRUE],
-        ],
-        [
-          'target' => 'title',
-          'map' => ['value' => 'title'],
-          'unique' => ['value' => TRUE],
-        ],
-        [
-          'target' => 'field_event',
-          'map' => ['target_id' => 'ref'],
-          'settings' => [
-            'reference_by' => 'field_alpha',
-            'autocreate' => FALSE,
-          ],
-        ],
-      ],
-    ]);
-
-    $feed2 = $this->createFeed($feed_type2->id(), [
-      'source' => $this->resourcesPath() . '/csv/multi-feed-entity-reference-feed2.csv',
-    ]);
-    $feed2->import();
-
-    // Assert the following:
-    // - Node 1 should exist.
-    // - Node 1 should have a reference to both feeds.
-    // - For the item that references the second feed, the hash value should be
-    //   empty because the referenced event node was not found.
-    // - The entity reference field is still empty, because no event node was
-    //   found.
-    $node = Node::load(1);
-    $this->assertNotNull($node);
-    $this->assertTrue($node->get('feeds_item')->hasItem($feed1));
-    $this->assertTrue($node->get('feeds_item')->hasItem($feed2));
-    $this->assertEmpty($node->get('feeds_item')->getItemByFeed($feed2)->hash);
-    $this->assertTrue($node->get('field_event')->isEmpty());
-
-    // A warning would exist that a referenced entity was not found. Clear this
-    // message so teardown() doesn't see it as a test failure.
-    $this->logger->clearMessages();
   }
 
 }

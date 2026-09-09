@@ -3,12 +3,10 @@
 namespace Drupal\feeds\Entity;
 
 use Drupal\Component\Utility\Crypt;
-use Drupal\Core\Entity\Attribute\ContentEntityType;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\feeds\SubscriptionInterface;
 
 /**
@@ -22,14 +20,6 @@ use Drupal\feeds\SubscriptionInterface;
  *   entity_keys = {"id" = "fid"}
  * )
  */
-#[ContentEntityType(
-  id: 'feeds_subscription',
-  label: new TranslatableMarkup('Subscription'),
-  entity_keys: [
-    'id' => 'fid',
-  ],
-  base_table: 'feeds_subscription',
-)]
 class Subscription extends ContentEntityBase implements SubscriptionInterface {
 
   /**

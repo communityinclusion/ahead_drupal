@@ -21,7 +21,7 @@ class MappingFormTest extends FeedsJavascriptTestBase {
     ]);
 
     // Add body field.
-    $this->setUpBodyField();
+    node_add_body_field($this->nodeType);
 
     // Create a filter format.
     $format = FilterFormat::create([

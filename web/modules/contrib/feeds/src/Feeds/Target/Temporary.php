@@ -3,7 +3,6 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FeedInterface;
 use Drupal\feeds\FeedTypeInterface;
 use Drupal\feeds\Plugin\Type\Target\TargetBase;
@@ -11,10 +10,11 @@ use Drupal\feeds\TargetDefinition;
 
 /**
  * Defines a target that does not set data.
+ *
+ * @FeedsTarget(
+ *   id = "temporary_target"
+ * )
  */
-#[FeedsTarget(
-  id: 'temporary_target',
-)]
 class Temporary extends TargetBase {
 
   /**

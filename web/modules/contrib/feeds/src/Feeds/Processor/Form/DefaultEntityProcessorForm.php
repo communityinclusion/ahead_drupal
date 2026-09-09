@@ -171,12 +171,12 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase implements Conta
 
     $options = $this->getUpdateNonExistentActions();
     $selected = $this->plugin->getConfiguration('update_non_existent');
-    if (is_string($selected) && strlen($selected) > 0 && !isset($options[$selected])) {
+    if (!isset($options[$selected])) {
       $options[$selected] = $this->t('@label (action no longer available)', [
         '@label' => $selected,
       ]);
     }
-    if ($options !== []) {
+    if (!empty($options)) {
       $form['update_non_existent'] = [
         '#type' => 'select',
         '#title' => $this->t('Previously imported items'),
@@ -293,6 +293,21 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase implements Conta
       ],
     ];
 
+    $form['advanced']['skip_missing_source'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Only process mappings found in the source'),
+      '#description' => $this->t('This will avoid wiping existing target data if a source is missing for a mapping. If a mapping is composed of multiple properties this will update only the properties that have a source provided. E.g. for a <em>Text (formatted, long, with summary)</em> field where both the <em>Text</em> and <em>Summary</em> properties are mapped but only the <em>Summary</em> source is provided then the existing value for <em>Text</em> target will be retained.'),
+      '#default_value' => $this->plugin->getConfiguration('skip_missing_source'),
+      '#parents' => ['processor_configuration', 'skip_missing_source'],
+      '#states' => [
+        'visible' => [
+          'input[name="processor_configuration[update_existing]"]' => [
+            'value' => ProcessorInterface::UPDATE_EXISTING,
+          ],
+        ],
+      ],
+    ];
+
     return $form;
   }
 
@@ -371,11 +386,6 @@ class DefaultEntityProcessorForm extends ExternalPluginFormBase implements Conta
 
     $action_definitions = $this->actionManager->getDefinitionsByType($this->plugin->entityType());
     foreach ($action_definitions as $id => $definition) {
-      // Filter out definitions that do not have a class specified.
-      if (!isset($definition['class'])) {
-        continue;
-      }
-
       // Filter out configurable actions.
       $interfaces = class_implements($definition['class']);
       if (isset($interfaces[ConfigurableInterface::class])) {

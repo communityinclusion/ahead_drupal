@@ -7,22 +7,22 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\ConfigurableTargetInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a text field mapper.
+ *
+ * @FeedsTarget(
+ *   id = "text",
+ *   field_types = {
+ *     "text",
+ *     "text_long",
+ *     "text_with_summary"
+ *   }
+ * )
  */
-#[FeedsTarget(
-  id: 'text',
-  field_types: [
-    'text',
-    'text_long',
-    'text_with_summary',
-  ],
-)]
 class Text extends StringTarget implements ConfigurableTargetInterface, ContainerFactoryPluginInterface {
 
   /**

@@ -2,21 +2,20 @@
 
 namespace Drupal\feeds\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldFormatter\TimestampFormatter;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Plugin implementation of the 'feeds_item_imported' formatter.
+ *
+ * @FieldFormatter(
+ *   id = "feeds_item_imported",
+ *   label = @Translation("Import timestamp of the feed item"),
+ *   field_types = {
+ *     "feeds_item"
+ *   }
+ * )
  */
-#[FieldFormatter(
-  id: 'feeds_item_imported',
-  label: new TranslatableMarkup('Import timestamp of the feed item'),
-  field_types: [
-    'feeds_item',
-  ]
-)]
 class FeedsItemImportedFormatter extends TimestampFormatter {
 
   /**

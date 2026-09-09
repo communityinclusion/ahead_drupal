@@ -35,7 +35,7 @@ abstract class ParserTestBase extends FeedsJavascriptTestBase {
       'mappings' => [],
     ]);
 
-    $this->setUpBodyField();
+    node_add_body_field($this->nodeType);
   }
 
 }

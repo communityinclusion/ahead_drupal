@@ -35,7 +35,6 @@ abstract class FeedsJavascriptTestBase extends WebDriverTestBase {
     'node',
     'user',
     'file',
-    'options',
   ];
 
   /**
@@ -60,23 +59,6 @@ abstract class FeedsJavascriptTestBase extends WebDriverTestBase {
       'administer users',
     ]);
     $this->drupalLogin($this->adminUser);
-  }
-
-  /**
-   * Installs body field.
-   */
-  protected function setUpBodyField() {
-    $this->createFieldWithStorage('body', [
-      'type' => 'text_with_summary',
-      'bundle' => $this->nodeType->id(),
-      'label' => 'Body',
-      'field' => [
-        'settings' => [
-          'display_summary' => TRUE,
-          'allowed_formats' => [],
-        ],
-      ],
-    ]);
   }
 
   /**

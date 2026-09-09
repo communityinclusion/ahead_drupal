@@ -4,6 +4,7 @@ namespace Drupal\feeds\File;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\feeds\FeedInterface;
 
@@ -95,10 +96,8 @@ abstract class FeedsFileSystemBase implements FeedsFileSystemInterface {
    *   The default directory.
    */
   protected function getDefaultDirectory(): string {
-    // Use isValidScheme() instead of getWrappers(): after container rebuilds
-    // the wrappers cache can be empty while schemes remain registered.
-    // @see \Drupal\Core\StreamWrapper\StreamWrapperManager::unregister()
-    $scheme = $this->streamWrapperManager->isValidScheme('private') ? 'private' : 'public';
+    $schemes = $this->streamWrapperManager->getWrappers(StreamWrapperInterface::VISIBLE);
+    $scheme = isset($schemes['private']) ? 'private' : 'public';
     return $scheme . '://' . $this->getRelativeDefaultDirectory();
   }
 
@@ -123,9 +122,7 @@ abstract class FeedsFileSystemBase implements FeedsFileSystemInterface {
    */
   protected function prepareDirectory(string $dir) {
     if (!$this->fileSystem->prepareDirectory($dir, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
-      throw new \RuntimeException(t('Feeds directory "@directory" either cannot be created or is not writable.', [
-        '@directory' => $dir,
-      ]));
+      throw new \RuntimeException(t('Feeds directory either cannot be created or is not writable.'));
     }
   }
 

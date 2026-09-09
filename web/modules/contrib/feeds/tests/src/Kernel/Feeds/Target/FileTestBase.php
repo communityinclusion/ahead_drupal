@@ -2,23 +2,19 @@
 
 namespace Drupal\Tests\feeds\Kernel\Feeds\Target;
 
-use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\Exception\FileException;
-use Drupal\Core\File\FileExists;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\Tests\feeds\Kernel\FeedsKernelTestBase;
 use Drupal\Tests\feeds\Traits\FeedsMockingTrait;
 use Drupal\feeds\EntityFinderInterface;
 use Drupal\feeds\Exception\EmptyFeedException;
 use Drupal\feeds\Exception\TargetValidationException;
-use Drupal\feeds\Feeds\Target\File;
-use Drupal\feeds\Feeds\Target\FileExistsTrait;
 use Drupal\feeds\FeedTypeInterface;
-use Drupal\feeds\Utility\FileResolver;
 use Drupal\user\Entity\Role;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
@@ -32,7 +28,6 @@ abstract class FileTestBase extends FeedsKernelTestBase {
 
   use ProphecyTrait;
   use FeedsMockingTrait;
-  use FileExistsTrait;
 
   /**
    * The entity type manager prophecy used in the test.
@@ -82,7 +77,6 @@ abstract class FileTestBase extends FeedsKernelTestBase {
   public function setUp(): void {
     parent::setUp();
     $this->setUpFileFields();
-    $this->setUpPrivateFileSystem();
 
     $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);
     $this->client = $this->prophesize(ClientInterface::class);
@@ -94,10 +88,34 @@ abstract class FileTestBase extends FeedsKernelTestBase {
 
     // Made-up entity type that we are referencing to.
     $referenceable_entity_type = $this->prophesize(EntityTypeInterface::class);
-    $referenceable_entity_type->getKey('label')->willReturn('filename');
+    $referenceable_entity_type->getKey('label')->willReturn('file label');
     $this->entityTypeManager->getDefinition('file')->willReturn($referenceable_entity_type)->shouldBeCalled();
 
-    $this->targetPlugin = $this->getTargetPlugin();
+    $configuration = [
+      'feed_type' => $this->createMock(FeedTypeInterface::class),
+      'target_definition' => $this->getTargetDefinition(),
+    ];
+
+    $this->targetPlugin = $this->getMockBuilder($this->getTargetPluginClass())
+      ->onlyMethods(['getDestinationDirectory'])
+      ->setConstructorArgs([
+        $configuration,
+        'file',
+        [],
+        $this->entityTypeManager->reveal(),
+        $this->client->reveal(),
+        $this->token->reveal(),
+        $this->entityFieldManager->reveal(),
+        $this->entityFinder->reveal(),
+        $this->container->get('file_system'),
+        $this->container->get('file.repository'),
+        $this->container->get('config.factory')->get('system.file'),
+      ])
+      ->getMock();
+
+    $this->targetPlugin->expects($this->any())
+      ->method('getDestinationDirectory')
+      ->willReturn('public:/');
 
     // Role::load fails without installing the user config.
     $this->installConfig(['user']);
@@ -107,16 +125,6 @@ abstract class FileTestBase extends FeedsKernelTestBase {
     Role::load(Role::ANONYMOUS_ID)
       ->grantPermission('access content')
       ->save();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function register(ContainerBuilder $container) {
-    // Make sure that the private file system can get used.
-    parent::register($container);
-    $container->register('stream_wrapper.private', 'Drupal\Core\StreamWrapper\PrivateStream')
-      ->addTag('stream_wrapper', ['scheme' => 'private']);
   }
 
   /**
@@ -136,58 +144,6 @@ abstract class FileTestBase extends FeedsKernelTestBase {
   abstract protected function getTargetDefinition();
 
   /**
-   * Returns a mocked file target plugin.
-   *
-   * @param string|null $plugin_class
-   *   The plugin class to instantiate or null to instantiate the default.
-   *
-   * @return \Drupal\feeds\Feeds\Target\File
-   *   The mocked file target plugin.
-   */
-  protected function getTargetPlugin(?string $plugin_class = NULL): File {
-    if ($plugin_class === NULL) {
-      $plugin_class = $this->getTargetPluginClass();
-    }
-
-    $configuration = [
-      'feed_type' => $this->createMock(FeedTypeInterface::class),
-      'target_definition' => $this->getTargetDefinition(),
-    ];
-
-    // Mock the HTTP client in the container so FileResolver service uses it.
-    // This must be done before getting the FileResolver service.
-    $this->container->set('http_client', $this->client->reveal());
-
-    // Re-instantiate FileResolver service with the mocked HTTP client.
-    // This ensures FileResolver uses the mocked client instead of the real one.
-    $file_resolver = FileResolver::create($this->container);
-
-    $plugin = $this->getMockBuilder($plugin_class)
-      ->onlyMethods(['getDestinationDirectory'])
-      ->setConstructorArgs([
-        $configuration,
-        'file',
-        [],
-        $this->entityTypeManager->reveal(),
-        $this->client->reveal(),
-        $this->token->reveal(),
-        $this->entityFieldManager->reveal(),
-        $this->entityFinder->reveal(),
-        $this->container->get('file_system'),
-        $this->container->get('file.repository'),
-        $this->container->get('config.factory')->get('system.file'),
-        $file_resolver,
-      ])
-      ->getMock();
-
-    $plugin->expects($this->any())
-      ->method('getDestinationDirectory')
-      ->willReturn('public://');
-
-    return $plugin;
-  }
-
-  /**
    * Tests prepareValue() for file target plugins.
    *
    * @param array $expected
@@ -202,6 +158,8 @@ abstract class FileTestBase extends FeedsKernelTestBase {
    * @dataProvider dataProviderPrepareValue
    */
   public function testPrepareValue(array $expected, array $values, $expected_exception = NULL, $expected_exception_message = NULL) {
+    $method = $this->getProtectedClosure($this->targetPlugin, 'prepareValue');
+
     // Add in base URL.
     if (isset($values['target_id'])) {
       $file_path = strtr($values['target_id'], [
@@ -223,9 +181,6 @@ abstract class FileTestBase extends FeedsKernelTestBase {
         });
       }
     }
-
-    $plugin = $this->getTargetPlugin();
-    $method = $this->getProtectedClosure($plugin, 'prepareValue');
 
     // Set expected exception if there is one expected.
     if ($expected_exception) {
@@ -259,7 +214,7 @@ abstract class FileTestBase extends FeedsKernelTestBase {
           'target_id' => '',
         ],
         'expected_exception' => EmptyFeedException::class,
-        'expected_exception_message' => 'The given file value is empty.',
+        'expected_exception_message' => 'The given file url is empty.',
       ],
       // Importing a file url that exists.
       'file-success' => [
@@ -297,7 +252,7 @@ abstract class FileTestBase extends FeedsKernelTestBase {
           'target_id' => '[url]/file.foo',
         ],
         'expected_exception' => TargetValidationException::class,
-        'expected_exception_message' => 'The file, <em class="placeholder">[url]/file.foo</em>, failed to save because the extension, <em class="placeholder">foo</em>, is not allowed.',
+        'expected_exception_message' => 'The file, <em class="placeholder">[url]/file.foo</em>, failed to save because the extension, <em class="placeholder">foo</em>, is invalid.',
       ],
     ];
     return $return;
@@ -313,26 +268,23 @@ abstract class FileTestBase extends FeedsKernelTestBase {
    *   wrapper URI. If no value or NULL is provided, a randomized name will be
    *   generated and the file will be saved using Drupal's default files scheme,
    *   usually "public://".
-   * @param \Drupal\Core\File\FileExists|int $replace
+   * @param int $replace
    *   (optional) The replace behavior when the destination file already exists.
-   *   Can be a FileExists enum or legacy integer constant. Possible values:
-   *   - FileExists::Replace: Replace the existing file. If a managed file with
-   *     the destination name exists, then its database entry will be updated.
-   *     If no database entry is found, then a new one will be created.
-   *   - FileExists::Rename: (default) Append _{incrementing number} until the
-   *     filename is unique.
-   *   - FileExists::Error: Do nothing and return FALSE.
+   *   Possible values include:
+   *   - FileSystemInterface::EXISTS_REPLACE: Replace the existing file. If a
+   *     managed file with the destination name exists, then its database entry
+   *     will be updated. If no database entry is found, then a new one will be
+   *     created.
+   *   - FileSystemInterface::EXISTS_RENAME: (default) Append
+   *     _{incrementing number} until the filename is unique.
+   *   - FileSystemInterface::EXISTS_ERROR: Do nothing and return FALSE.
    *
    * @return \Drupal\file\FileInterface|false
    *   A file entity, or FALSE on error.
    */
-  protected function writeData($data, $destination = NULL, FileExists|int $replace = FileExists::Rename) {
+  protected function writeData($data, $destination = NULL, $replace = FileSystemInterface::EXISTS_RENAME) {
     if (empty($destination)) {
       $destination = \Drupal::config('system.file')->get('default_scheme') . '://';
-    }
-    // Normalize to FileExists enum if needed.
-    if (!$replace instanceof FileExists) {
-      $replace = $this->mapLegacyIntToFileExists($replace);
     }
     /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
     $fileRepository = \Drupal::service('file.repository');

@@ -105,68 +105,6 @@ final class CsvController extends ControllerBase {
   }
 
   /**
-   * Generates a CSV file for importing media.
-   *
-   * @param string $type
-   *   The type of media to generate a CSV file for.
-   *
-   * @return \Symfony\Component\HttpFoundation\Response
-   *   A HTTP response.
-   */
-  public function generateMediaCsv(string $type): Response {
-    $headers = ['Content-Type' => 'text/csv', 'Content-Disposition' => 'attachment; filename="' . $type . '.csv"'];
-    $assets_url = $this->getResourcesUrl() . '/assets';
-
-    $rows = [];
-    switch ($type) {
-      case 'images':
-        $rows = [
-          ['title', 'file'],
-          ['Tubing', $assets_url . '/tubing.jpeg'],
-        ];
-        break;
-
-      case 'documents':
-        $rows = [
-          ['title', 'file'],
-          ['Sample Document', $assets_url . '/example.txt'],
-        ];
-        break;
-
-      case 'audio':
-        $rows = [
-          ['title', 'file'],
-          ['Water drip by freesound_community', $assets_url . '/water-drip-45622.mp3'],
-        ];
-        break;
-
-      case 'video_local':
-        $rows = [
-          ['title', 'file'],
-          ['Monkey climbing into a stick', $assets_url . '/apenheul.mp4'],
-        ];
-        break;
-
-      case 'video_remote':
-        $rows = [
-          ['title', 'url'],
-          ['Monkey climbing into a stick', 'https://vimeo.com/7073899'],
-        ];
-        break;
-
-      default:
-        return new Response('Invalid type', 400);
-    }
-
-    $csv_content = '';
-    foreach ($rows as $row) {
-      $csv_content .= implode(',', $row) . "\n";
-    }
-
-    return new Response($csv_content, 200, $headers);
-  }
-
-  /**
    * Generates a test feed and simulates last-modified.
    *
    * This is used to test the following:
@@ -233,32 +171,6 @@ final class CsvController extends ControllerBase {
     $response->headers->set('Last-Modified', gmdate(static::DATE_RFC7231, strtotime('Sun, 19 Nov 1978 05:00:00 GMT')));
     $response->setStatusCode(304);
     $response->headers->set('Status', '304 Not Modified');
-    return $response;
-  }
-
-  /**
-   * Outputs a CSV file with a file URL that results in a 404.
-   *
-   * @return \Symfony\Component\HttpFoundation\Response
-   *   A HTTP response.
-   */
-  public function files404() {
-    $file_url_404 = Url::fromUserInput('/file-that-does-not-exist.jpg')
-      ->setAbsolute()
-      ->toString();
-
-    $csv_lines = [
-      ['title', 'file'],
-      ['Test Item', $file_url_404],
-    ];
-
-    $csv = '';
-    foreach ($csv_lines as $line) {
-      $csv .= implode(',', $line) . "\n";
-    }
-
-    $response = new Response();
-    $response->setContent($csv);
     return $response;
   }
 

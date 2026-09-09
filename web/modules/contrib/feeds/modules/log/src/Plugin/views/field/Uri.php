@@ -5,15 +5,15 @@ namespace Drupal\feeds_log\Plugin\views\field;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url as CoreUrl;
-use Drupal\views\Attribute\ViewsField;
 use Drupal\views\Plugin\views\field\Url;
 use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Handler that turns a file uri into a clickable link.
+ *
+ * @ViewsField("feeds_log_uri")
  */
-#[ViewsField('feeds_log_uri')]
 class Uri extends Url {
 
   /**

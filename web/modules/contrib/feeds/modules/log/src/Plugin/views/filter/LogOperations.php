@@ -2,13 +2,13 @@
 
 namespace Drupal\feeds_log\Plugin\views\filter;
 
-use Drupal\views\Attribute\ViewsFilter;
 use Drupal\views\Plugin\views\filter\InOperator;
 
 /**
  * Exposes log types to the views module.
+ *
+ * @ViewsFilter("feeds_log_operations")
  */
-#[ViewsFilter('feeds_log_operations')]
 class LogOperations extends InOperator {
 
   /**

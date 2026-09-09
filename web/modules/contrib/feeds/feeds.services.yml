@@ -73,10 +73,6 @@ services:
   feeds.entity_finder:
     class: Drupal\feeds\EntityFinder
     arguments: ['@entity_type.manager', '@entity.repository']
-  feeds.file_resolver:
-    class: Drupal\feeds\Utility\FileResolver
-    factory: Drupal\feeds\Utility\FileResolver::create
-    arguments: ['@service_container']
   feeds.file_system.in_progress:
     class: Drupal\feeds\File\InProgress
     arguments: ['@config.factory', '@file_system', '@stream_wrapper_manager']

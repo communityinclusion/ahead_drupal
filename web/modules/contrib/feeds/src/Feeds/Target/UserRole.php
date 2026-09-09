@@ -4,7 +4,6 @@ namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\Exception\ReferenceNotFoundException;
 use Drupal\feeds\Exception\TargetValidationException;
 use Drupal\feeds\FeedInterface;
@@ -14,10 +13,11 @@ use Drupal\user\RoleInterface;
 
 /**
  * Defines a user role mapper.
+ *
+ * @FeedsTarget(
+ *   id = "user_role",
+ * )
  */
-#[FeedsTarget(
-  id: 'user_role',
-)]
 class UserRole extends ConfigEntityReference {
 
   /**

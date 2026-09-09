@@ -3,21 +3,21 @@
 namespace Drupal\feeds\Feeds\Target;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\feeds\Attribute\FeedsTarget;
 use Drupal\feeds\FieldTargetDefinition;
 use Drupal\feeds\Plugin\Type\Target\FieldTargetBase;
 
 /**
  * Defines a number field mapper.
+ *
+ * @FeedsTarget(
+ *   id = "number",
+ *   field_types = {
+ *     "decimal",
+ *     "float",
+ *     "list_float"
+ *   }
+ * )
  */
-#[FeedsTarget(
-  id: 'number',
-  field_types: [
-    'decimal',
-    'float',
-    'list_float',
-  ],
-)]
 class Number extends FieldTargetBase {
 
   /**

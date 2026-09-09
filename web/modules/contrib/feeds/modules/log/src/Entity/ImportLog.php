@@ -5,22 +5,14 @@ namespace Drupal\feeds_log\Entity;
 use Drupal\Core\Database\Query\PagerSelectExtender;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Database\Query\TableSortExtender;
-use Drupal\Core\Entity\Attribute\ContentEntityType;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\feeds\Feeds\Item\ItemInterface;
 use Drupal\feeds\Result\FetcherResultInterface;
-use Drupal\feeds_log\FeedsLogAccessControlHandler;
-use Drupal\feeds_log\Form\DeleteForm;
 use Drupal\feeds_log\ImportLogInterface;
-use Drupal\feeds_log\LogListBuilder;
-use Drupal\feeds_log\LogStorage;
-use Drupal\feeds_log\LogViewBuilder;
-use Drupal\feeds_log\LogViewsData;
 
 /**
  * Defines the import log entity class.
@@ -55,35 +47,6 @@ use Drupal\feeds_log\LogViewsData;
  *   }
  * )
  */
-#[ContentEntityType(
-  id: 'feeds_import_log',
-  label: new TranslatableMarkup('Feeds Import Log'),
-  label_singular: new TranslatableMarkup('logged import'),
-  label_plural: new TranslatableMarkup('logged imports'),
-  entity_keys: [
-    'id' => 'import_id',
-    'uuid' => 'uuid',
-  ],
-  handlers: [
-    'list_builder' => LogListBuilder::class,
-    'storage' => LogStorage::class,
-    'view_builder' => LogViewBuilder::class,
-    'access' => FeedsLogAccessControlHandler::class,
-    'views_data' => LogViewsData::class,
-    'form' => [
-      'delete' => DeleteForm::class,
-    ],
-  ],
-  links: [
-    'canonical' => '/feed/{feeds_feed}/log/{feeds_import_log}',
-    'delete-form' => '/feed/{feeds_feed}/log/{feeds_import_log}/delete',
-  ],
-  base_table: 'feeds_import_log',
-  label_count: [
-    'singular' => '@count feeds import log',
-    'plural' => '@count feeds import logs',
-  ],
-)]
 class ImportLog extends ContentEntityBase implements ImportLogInterface {
 
   /**
@@ -91,7 +54,7 @@ class ImportLog extends ContentEntityBase implements ImportLogInterface {
    */
   public function logSource(FetcherResultInterface $result): string {
     $file_manager = $this->getFeedsLogFileManager();
-    $file_path = basename($result->getFilePath());
+    $file_path = \Drupal::service('file_system')->basename($result->getFilePath());
     $destination = $file_manager->saveData($result->getRaw(), $this->id() . '/source/' . $file_path);
     $this->sources[] = $destination;
 
