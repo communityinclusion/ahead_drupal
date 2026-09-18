@@ -23,7 +23,7 @@
           if (map_container.data('leaflet_widget') === undefined && leaflet_settings.lMap) {
             const lMap = leaflet_settings.lMap;
             map_container.data('leaflet_widget', new Drupal.Leaflet_Widget(map_container, lMap, leaflet_settings));
-            // Define the global Drupal.Leaflet[mapid] object to be accessible
+            // Define the global Drupal.Leaflet_Widget[mapid] object to be accessible
             // from outside.
             Drupal.Leaflet_Widget[map_id] = map_container.data('leaflet_widget');
           }

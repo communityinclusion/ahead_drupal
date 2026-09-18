@@ -126,7 +126,7 @@
      */
     processGeoJsonOverlay(geoJsonContent, geojson_style, lMap, mapid, geojsonFieldOverlay) {
       const LeafletGeoJson = this.setGeoJsonOverlay(geoJsonContent, geojson_style, lMap, mapid);
-      if ($.isEmptyObject(Drupal.Leaflet_Widget.get_json_value()) && geojsonFieldOverlay.zoom_to_geojson) {
+      if ($.isEmptyObject(Drupal.Leaflet_Widget[mapid].get_json_value()) && geojsonFieldOverlay.zoom_to_geojson) {
         this.extendGeoJsonBounds(LeafletGeoJson);
         // If geoJsonBounds are properly defined, then fit Leaflet Map
         // bounds and reset the StartZoom and StartCenter.

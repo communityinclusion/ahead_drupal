@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.12.0] - 2026-09-04
+
+### Fixed
+- Report additional property errors at the property path ([#942](https://github.com/jsonrainbow/json-schema/pull/942))
+- Fix RFC 3339 date-time validation with high-precision fractional seconds ([#940](https://github.com/jsonrainbow/json-schema/pull/940))
+
+### Added
+- Define minimal permissions on every workflow ([#941](https://github.com/jsonrainbow/json-schema/pull/941))
+- feat: Add --allow-invalid-content-type-endpoint option to validate-json ([#932](https://github.com/jsonrainbow/json-schema/pull/932))
+
+
+### Changed
+- fix: Avoid restricted stargazers endpoint in Welcome workflow and avoid running for bot user types ([#946](https://github.com/jsonrainbow/json-schema/pull/946))
+- fix: Correct changelog and changelog updates ([#945](https://github.com/jsonrainbow/json-schema/pull/945))
+
+
 ## [6.11.0] - 2026-08-21
 
 ### Fixed
