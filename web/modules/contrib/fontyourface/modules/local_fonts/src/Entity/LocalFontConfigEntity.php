@@ -31,7 +31,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "font_classification" = "font_classification"
  *   },
  *   links = {
- *     "canonical" = "/admin/appearance/font/local_font_config_entity/{local_font_config_entity}",
  *     "add-form" = "/admin/appearance/font/local_font_config_entity/add",
  *     "edit-form" = "/admin/appearance/font/local_font_config_entity/{local_font_config_entity}/edit",
  *     "delete-form" = "/admin/appearance/font/local_font_config_entity/{local_font_config_entity}/delete",

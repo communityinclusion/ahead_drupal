@@ -1,7 +1,7 @@
 name: '@fontyourface - Font Squirrel'
 type: module
 description: '@font-your-face provider with Font Squirrel fonts.'
-core_version_requirement: ^9.4 || ^10.0
+core_version_requirement: ^10.2 || ^11.0
 package: '@font-your-face'
 dependencies:
   - fontyourface:fontyourface

@@ -4,39 +4,29 @@ status: true
 dependencies:
   module:
     - node
+    - system
 id: cedardatabase
 label: cedardatabase
 weight: 1
-container_id: GTM-5R83BJC
-hostname: www.googletagmanager.com
-data_layer: dataLayer
-include_classes: false
-whitelist_classes: |-
-  google
-  nonGooglePixels
-  nonGoogleScripts
-  nonGoogleIframes
-blacklist_classes: |-
-  customScripts
-  customPixels
-include_environment: false
-environment_id: ''
-environment_token: ''
-path_toggle: 'exclude listed'
-path_list: |-
-  /admin*
-  /batch*
-  /node/add*
-  /node/*/edit
-  /node/*/delete
-  /user/*/edit*
-  /user/*/cancel*
-role_toggle: 'exclude listed'
-role_list: {  }
-status_toggle: 'exclude listed'
-status_list: |-
-  403
-  404
+tag_container_ids:
+  - GTM-5R83BJC
+advanced_settings:
+  gtm:
+    GTM-5R83BJC:
+      data_layer: dataLayer
+      include_classes: false
+      allowlist_classes: |-
+        google
+        nonGooglePixels
+        nonGoogleScripts
+        nonGoogleIframes
+      blocklist_classes: |-
+        customScripts
+        customPixels
+      include_environment: false
+      environment_id: ''
+      environment_token: ''
+dimensions_metrics: {  }
 conditions:
   'entity_bundle:node':
     id: 'entity_bundle:node'
@@ -47,3 +37,30 @@ conditions:
       article: article
       cedar_record: cedar_record
       page: page
+  request_path:
+    id: request_path
+    negate: true
+    pages: |-
+      /admin*
+      /batch*
+      /node/add*
+      /node/*/edit
+      /node/*/delete
+      /user/*/edit*
+      /user/*/cancel*
+  response_code:
+    id: response_code
+    negate: true
+    response_codes: |-
+      403
+      404
+events:
+  search: {  }
+  generate_lead:
+    value: ''
+    currency: ''
+  sign_up:
+    method: CMS
+  custom: {  }
+  login:
+    method: CMS

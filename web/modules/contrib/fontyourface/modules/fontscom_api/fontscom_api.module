@@ -172,7 +172,7 @@ function fontscom_api_page_attachments(&$page) {
 /**
  * Implements hook_fontyourface_font_css().
  */
-function fontscom_api_fontyourface_font_css(FontInterface $font, FontDisplayInterface $font_style = NULL, $separator = ' ') {
+function fontscom_api_fontyourface_font_css(FontInterface $font, ?FontDisplayInterface $font_style = NULL, $separator = ' ') {
   if ($font->pid->value == 'fontscom_api') {
     $css = [];
 
