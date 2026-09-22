@@ -1,0 +1,22 @@
+uuid: 50dc5283-80a3-4ebe-8d93-f6fb04d37b07
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - ahead_boot4
+_core:
+  default_config_hash: 9EoWV2Lot6FVSr50t4hoKgiz1LIXYWNG-IIPYsWxBqo
+id: ahead_boot4_content
+theme: ahead_boot4
+region: content
+weight: -9
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  label_display: '0'
+  provider: system
+visibility: {  }

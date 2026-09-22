@@ -1,0 +1,19 @@
+uuid: 7d6258b4-9acd-4707-9b43-e05bef8421a0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_telephone
+    - paragraphs.paragraphs_type.d_o_contacts
+id: paragraph.d_o_contacts.field_telephone
+field_name: field_telephone
+entity_type: paragraph
+bundle: d_o_contacts
+label: Telephone
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

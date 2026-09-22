@@ -1,0 +1,51 @@
+uuid: 4ed4f3e3-7517-4a93-bea3-a1c1cb0ad28a
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_general_campus_resources
+field_name: field_general_campus_resources
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'TRIO Student Support Services programs designed for students with disabilities'
+    -
+      value: '2'
+      label: 'Food shelf or food pantry'
+    -
+      value: '3'
+      label: 'Child care services that are accessible to students with disabilities'
+    -
+      value: '4'
+      label: 'Services for veterans with disabilities'
+    -
+      value: '6'
+      label: 'Campus scholarships for students with disabilities'
+    -
+      value: '7'
+      label: 'Disability cultural center (only select this if you have a cultural center – this does not include all types of student organizations related to disability)'
+    -
+      value: '8'
+      label: 'Adaptive sports and recreation programming for students with disabilities (e.g., wheelchair basketball, goalball)'
+    -
+      value: '9'
+      label: 'Resources for students with disabilities to address assistive technology needs and information technology (IT) access needs'
+    -
+      value: '10'
+      label: Other
+    -
+      value: '11'
+      label: 'No additional general campus resources are offered at this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

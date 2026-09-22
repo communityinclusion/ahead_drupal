@@ -1,0 +1,39 @@
+uuid: 3961ea38-c5fc-49c1-b951-8dfd3cf2a90a
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_institution_size_category
+field_name: field_institution_size_category
+entity_type: node
+type: list_integer
+settings:
+  allowed_values:
+    -
+      value: 0
+      label: NA
+    -
+      value: 1
+      label: 'Very small (less than 1500)'
+    -
+      value: 2
+      label: 'Small (1,500-5,000)'
+    -
+      value: 3
+      label: 'Medium (5,000-15,000)'
+    -
+      value: 4
+      label: 'Large (15,000-25,000)'
+    -
+      value: 5
+      label: 'Very large (25,000 +)'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,24 @@
+uuid: 884e981f-ae01-4a37-b42d-ea7957905640
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_number_of_students_who_hav
+    - node.type.cedar_record
+  module:
+    - field_display_label
+third_party_settings:
+  field_display_label:
+    display_label: 'Number of students who have submitted disability documentation'
+id: node.cedar_record.field_number_of_students_who_hav
+field_name: field_number_of_students_who_hav
+entity_type: node
+bundle: cedar_record
+label: 'Number of students who have submitted disability documentation (approximate)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,69 @@
+uuid: a05cfef7-3e43-4928-8481-83c0174734f9
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.default_solr_index
+    - views.view.solr_search_content
+  module:
+    - search_api
+id: your_search
+name: 'Your search'
+facets:
+  courses_or_degree_programs_in_the_area_of_disabili:
+    checked: true
+    label: 'Courses or degree programs in the area of disability'
+    separator: ', '
+    show_count: false
+    weight: 0
+  degree_type:
+    checked: true
+    label: 'Degree type'
+    separator: ', '
+    show_count: false
+    weight: 0
+  disability_related_programs_and_courses:
+    checked: true
+    label: 'Disability-Related Programs and Courses'
+    separator: ', '
+    show_count: false
+    weight: 0
+  disability_related_services:
+    checked: true
+    label: 'Disability-Related Services'
+    separator: ', '
+    show_count: false
+    weight: 0
+  institution_size:
+    checked: true
+    label: 'Institution size'
+    separator: ', '
+    show_count: false
+    weight: 0
+  minority_serving_:
+    checked: true
+    label: 'Minority serving?'
+    separator: ', '
+    show_count: false
+    weight: 0
+  public_or_private:
+    checked: true
+    label: 'Public or Private'
+    separator: ', '
+    show_count: false
+    weight: 0
+  state:
+    checked: true
+    label: State
+    separator: ', '
+    show_count: false
+    weight: 0
+facet_source_id: 'search_api:views_page__solr_search_content__page_1'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '30'
+    settings:
+      link_text: 'Clear your search'
+      position: before

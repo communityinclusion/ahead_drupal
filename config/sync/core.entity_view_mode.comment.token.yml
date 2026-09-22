@@ -1,4 +1,4 @@
-uuid: 9f168ee4-5508-4537-9fc3-158141813a96
+uuid: 0a4b150f-a6e0-4af3-882f-9a7c61bb9b16
 langcode: en
 status: true
 dependencies:
@@ -6,5 +6,6 @@ dependencies:
     - comment
 id: comment.token
 label: Token
+description: ''
 targetEntityType: comment
 cache: true

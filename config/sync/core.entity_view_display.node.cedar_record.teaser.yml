@@ -1,0 +1,288 @@
+uuid: 8fb64cbd-7aca-4003-a228-567d5276e019
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.cedar_record.body
+    - field.field.node.cedar_record.feeds_item
+    - field.field.node.cedar_record.field_2_or_4_year_institution
+    - field.field.node.cedar_record.field__policies_and_procedures_r
+    - field.field.node.cedar_record.field__types_of_counseling_and_p
+    - field.field.node.cedar_record.field_academic_other_frequency
+    - field.field.node.cedar_record.field_academics_other_specify_
+    - field.field.node.cedar_record.field_accommodation2_and_service
+    - field.field.node.cedar_record.field_accommodations_and_service
+    - field.field.node.cedar_record.field_accommodations_for_online_
+    - field.field.node.cedar_record.field_accommodations_in_residenc
+    - field.field.node.cedar_record.field_alternate_formats_e_g_e_te
+    - field.field.node.cedar_record.field_assistive_technology_e_g_s
+    - field.field.node.cedar_record.field_autistic_students_includes
+    - field.field.node.cedar_record.field_campus_groups_that_address
+    - field.field.node.cedar_record.field_cart_or_c_print
+    - field.field.node.cedar_record.field_col_u_address_line_1
+    - field.field.node.cedar_record.field_col_u_address_line_2
+    - field.field.node.cedar_record.field_col_u_city
+    - field.field.node.cedar_record.field_col_u_zip_code
+    - field.field.node.cedar_record.field_college_university_state
+    - field.field.node.cedar_record.field_completed_survey
+    - field.field.node.cedar_record.field_counseling_and_psychologic
+    - field.field.node.cedar_record.field_course_substitutions
+    - field.field.node.cedar_record.field_courses_or_degree_programs
+    - field.field.node.cedar_record.field_culturally_deaf_students_w
+    - field.field.node.cedar_record.field_dietary_accommodations_for
+    - field.field.node.cedar_record.field_disability_office_addr
+    - field.field.node.cedar_record.field_disability_related_program
+    - field.field.node.cedar_record.field_disability_related_service
+    - field.field.node.cedar_record.field_during_the_2017_2018_schoo
+    - field.field.node.cedar_record.field_entertainment_theater_and_
+    - field.field.node.cedar_record.field_general_campus_resources
+    - field.field.node.cedar_record.field_how_often_does_your_instit
+    - field.field.node.cedar_record.field_institution_map
+    - field.field.node.cedar_record.field_institution_size_category
+    - field.field.node.cedar_record.field_institution_websites
+    - field.field.node.cedar_record.field_international_students_or_
+    - field.field.node.cedar_record.field_ipeds_unique_id
+    - field.field.node.cedar_record.field_key_administrative_offices
+    - field.field.node.cedar_record.field_law_students
+    - field.field.node.cedar_record.field_level_of_degree_offered
+    - field.field.node.cedar_record.field_main_academic_buildings_wh
+    - field.field.node.cedar_record.field_medical_leave
+    - field.field.node.cedar_record.field_minority_serving_
+    - field.field.node.cedar_record.field_most_common_disability_typ
+    - field.field.node.cedar_record.field_ncaa_athletes
+    - field.field.node.cedar_record.field_nearby_off_campus_transpor
+    - field.field.node.cedar_record.field_notetaking
+    - field.field.node.cedar_record.field_number_of_full_time_disabi
+    - field.field.node.cedar_record.field_number_of_staff_exact
+    - field.field.node.cedar_record.field_number_of_stud_exact
+    - field.field.node.cedar_record.field_number_of_students_who_had
+    - field.field.node.cedar_record.field_number_of_students_who_hav
+    - field.field.node.cedar_record.field_on_campus_transportation
+    - field.field.node.cedar_record.field_online_serving_only
+    - field.field.node.cedar_record.field_other
+    - field.field.node.cedar_record.field_other_contacts
+    - field.field.node.cedar_record.field_other_counsel_psych
+    - field.field.node.cedar_record.field_other_dis_relat_services
+    - field.field.node.cedar_record.field_other_disabl_rel_courses
+    - field.field.node.cedar_record.field_other_gen_campus_resources
+    - field.field.node.cedar_record.field_other_other_frequency
+    - field.field.node.cedar_record.field_other_other_specify
+    - field.field.node.cedar_record.field_percent_of_faculty_exact
+    - field.field.node.cedar_record.field_percent_of_staff_exact
+    - field.field.node.cedar_record.field_percent_of_students_eligib
+    - field.field.node.cedar_record.field_priority_registration
+    - field.field.node.cedar_record.field_professional_and_graduate_
+    - field.field.node.cedar_record.field_programmatic_other
+    - field.field.node.cedar_record.field_programmatic_other_freq
+    - field.field.node.cedar_record.field_programmatic_other_specify
+    - field.field.node.cedar_record.field_readers
+    - field.field.node.cedar_record.field_recreation_and_athletic_fa
+    - field.field.node.cedar_record.field_reduced_courseload
+    - field.field.node.cedar_record.field_residence_halls
+    - field.field.node.cedar_record.field_scribes_
+    - field.field.node.cedar_record.field_security_and_saftety_progr
+    - field.field.node.cedar_record.field_service_animals_or_emotion
+    - field.field.node.cedar_record.field_sexual_assault_services_an
+    - field.field.node.cedar_record.field_sign_language_interpreters
+    - field.field.node.cedar_record.field_student_health_services
+    - field.field.node.cedar_record.field_student_organizations_rela
+    - field.field.node.cedar_record.field_student_population
+    - field.field.node.cedar_record.field_student_population_undergr
+    - field.field.node.cedar_record.field_student_union_or_other_mai
+    - field.field.node.cedar_record.field_students_from_a_particular
+    - field.field.node.cedar_record.field_students_from_disenfranchi
+    - field.field.node.cedar_record.field_students_in_stem_fields_in
+    - field.field.node.cedar_record.field_students_of_color
+    - field.field.node.cedar_record.field_students_with_chronic_heal
+    - field.field.node.cedar_record.field_students_with_food_allergi
+    - field.field.node.cedar_record.field_students_with_intellectual
+    - field.field.node.cedar_record.field_survey_contact
+    - field.field.node.cedar_record.field_survey_contact_email
+    - field.field.node.cedar_record.field_survey_contact_phone
+    - field.field.node.cedar_record.field_test_accomodations
+    - field.field.node.cedar_record.field_the_library_ies_
+    - field.field.node.cedar_record.field_three_most_common_types_of
+    - field.field.node.cedar_record.field_total_number_students_regi
+    - field.field.node.cedar_record.field_type_of_institution
+    - field.field.node.cedar_record.field_university_link
+    - field.field.node.cedar_record.field_veterans
+    - field.field.node.cedar_record.field_what_percent_of_faculty_on
+    - field.field.node.cedar_record.field_what_percent_of_staff_on_c
+    - node.type.cedar_record
+  module:
+    - entity_reference_revisions
+    - field_group
+    - options
+    - user
+third_party_settings:
+  field_group:
+    group_city_state:
+      children:
+        - field_col_u_city
+        - field_college_university_state
+        - field_completed_survey
+      label: city-state
+      parent_name: ''
+      region: content
+      weight: 0
+      format_type: html_element
+      format_settings:
+        classes: 'clearfix citystate'
+        id: ''
+        element: div
+        show_label: false
+        label_element: h3
+        label_element_classes: ''
+        attributes: ''
+        effect: none
+        speed: fast
+id: node.cedar_record.teaser
+targetEntityType: node
+bundle: cedar_record
+mode: teaser
+content:
+  field_col_u_city:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_college_university_state:
+    type: list_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_completed_survey:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_disability_office_addr:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  flag_bookmark:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 4
+    region: content
+hidden:
+  body: true
+  feeds_item: true
+  field_2_or_4_year_institution: true
+  field__policies_and_procedures_r: true
+  field__types_of_counseling_and_p: true
+  field_academic_other_frequency: true
+  field_academics_other_specify_: true
+  field_accommodation2_and_service: true
+  field_accommodations_and_service: true
+  field_accommodations_for_online_: true
+  field_accommodations_in_residenc: true
+  field_alternate_formats_e_g_e_te: true
+  field_assistive_technology_e_g_s: true
+  field_autistic_students_includes: true
+  field_campus_groups_that_address: true
+  field_cart_or_c_print: true
+  field_col_u_address_line_1: true
+  field_col_u_address_line_2: true
+  field_col_u_zip_code: true
+  field_counseling_and_psychologic: true
+  field_course_substitutions: true
+  field_courses_or_degree_programs: true
+  field_culturally_deaf_students_w: true
+  field_dietary_accommodations_for: true
+  field_disability_related_program: true
+  field_disability_related_service: true
+  field_during_the_2017_2018_schoo: true
+  field_entertainment_theater_and_: true
+  field_general_campus_resources: true
+  field_how_often_does_your_instit: true
+  field_institution_map: true
+  field_institution_size_category: true
+  field_institution_websites: true
+  field_international_students_or_: true
+  field_ipeds_unique_id: true
+  field_key_administrative_offices: true
+  field_law_students: true
+  field_level_of_degree_offered: true
+  field_main_academic_buildings_wh: true
+  field_medical_leave: true
+  field_minority_serving_: true
+  field_most_common_disability_typ: true
+  field_ncaa_athletes: true
+  field_nearby_off_campus_transpor: true
+  field_notetaking: true
+  field_number_of_full_time_disabi: true
+  field_number_of_staff_exact: true
+  field_number_of_stud_exact: true
+  field_number_of_students_who_had: true
+  field_number_of_students_who_hav: true
+  field_on_campus_transportation: true
+  field_online_serving_only: true
+  field_other: true
+  field_other_contacts: true
+  field_other_counsel_psych: true
+  field_other_dis_relat_services: true
+  field_other_disabl_rel_courses: true
+  field_other_gen_campus_resources: true
+  field_other_other_frequency: true
+  field_other_other_specify: true
+  field_percent_of_faculty_exact: true
+  field_percent_of_staff_exact: true
+  field_percent_of_students_eligib: true
+  field_priority_registration: true
+  field_professional_and_graduate_: true
+  field_programmatic_other: true
+  field_programmatic_other_freq: true
+  field_programmatic_other_specify: true
+  field_readers: true
+  field_recreation_and_athletic_fa: true
+  field_reduced_courseload: true
+  field_residence_halls: true
+  field_scribes_: true
+  field_security_and_saftety_progr: true
+  field_service_animals_or_emotion: true
+  field_sexual_assault_services_an: true
+  field_sign_language_interpreters: true
+  field_student_health_services: true
+  field_student_organizations_rela: true
+  field_student_population: true
+  field_student_population_undergr: true
+  field_student_union_or_other_mai: true
+  field_students_from_a_particular: true
+  field_students_from_disenfranchi: true
+  field_students_in_stem_fields_in: true
+  field_students_of_color: true
+  field_students_with_chronic_heal: true
+  field_students_with_food_allergi: true
+  field_students_with_intellectual: true
+  field_survey_contact: true
+  field_survey_contact_email: true
+  field_survey_contact_phone: true
+  field_test_accomodations: true
+  field_the_library_ies_: true
+  field_three_most_common_types_of: true
+  field_total_number_students_regi: true
+  field_type_of_institution: true
+  field_university_link: true
+  field_veterans: true
+  field_what_percent_of_faculty_on: true
+  field_what_percent_of_staff_on_c: true
+  langcode: true
+  links: true
+  search_api_excerpt: true

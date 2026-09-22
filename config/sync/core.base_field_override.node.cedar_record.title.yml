@@ -1,0 +1,18 @@
+uuid: bfdb9660-8d3d-4e92-a4f5-dc3f8385825d
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.cedar_record
+id: node.cedar_record.title
+field_name: title
+entity_type: node
+bundle: cedar_record
+label: 'College/University name'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

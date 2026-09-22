@@ -1,0 +1,39 @@
+uuid: 41ad36f3-f6ad-4f68-9b4a-270e12a5cff1
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_disability_related_program
+field_name: field_disability_related_program
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Specialized programs or courses for students with autism'
+    -
+      value: '2'
+      label: 'Specialized programs or courses for students who are Deaf and/or Hard of hearing'
+    -
+      value: '3'
+      label: 'Specialized programs or courses for students with intellectual disabilities (like Down syndrome)'
+    -
+      value: '4'
+      label: 'Specialized programs or courses for students with learning disabilities and/or ADHD'
+    -
+      value: '5'
+      label: 'Specialized programs or courses for students with OTHER types of disabilities'
+    -
+      value: '6'
+      label: 'No additional specialized programs are offered at this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

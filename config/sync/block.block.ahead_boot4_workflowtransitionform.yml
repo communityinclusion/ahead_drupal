@@ -1,0 +1,22 @@
+uuid: b827828a-26ac-4c63-a853-d7d2ca8a648a
+langcode: en
+status: true
+dependencies:
+  module:
+    - workflow
+  theme:
+    - ahead_boot4
+_core:
+  default_config_hash: Vlu0W1a-S5N7EuSAx6SrVtfAkv0TdnMZV5WagVaBvJk
+id: ahead_boot4_workflowtransitionform
+theme: ahead_boot4
+region: sidebar_second
+weight: -13
+provider: null
+plugin: workflow_transition_form_block
+settings:
+  id: workflow_transition_form_block
+  label: 'Workflow Transition form'
+  label_display: visible
+  provider: workflow
+visibility: {  }

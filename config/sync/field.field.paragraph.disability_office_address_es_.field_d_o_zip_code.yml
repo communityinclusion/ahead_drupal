@@ -1,0 +1,19 @@
+uuid: 2d96afcf-6de9-4f84-9aa9-f5b7c7f3017c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_d_o_zip_code
+    - paragraphs.paragraphs_type.disability_office_address_es_
+id: paragraph.disability_office_address_es_.field_d_o_zip_code
+field_name: field_d_o_zip_code
+entity_type: paragraph
+bundle: disability_office_address_es_
+label: 'Zip code'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

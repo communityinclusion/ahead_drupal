@@ -1,0 +1,21 @@
+uuid: f088be1c-a85f-4ec2-ac98-2fb2d9bc76f5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_culturally_deaf_students_w
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_culturally_deaf_students_w
+field_name: field_culturally_deaf_students_w
+entity_type: node
+bundle: cedar_record
+label: 'Culturally Deaf students who use American Sign Language'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

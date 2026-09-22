@@ -1,0 +1,9 @@
+uuid: 50cc92d0-5afd-4f97-9783-0621fc8107b3
+langcode: en
+status: true
+dependencies: {  }
+id: other_response
+label: 'Other response'
+icon_uuid: null
+description: ''
+behavior_plugins: {  }

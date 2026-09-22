@@ -1,0 +1,25 @@
+uuid: 7b509527-2733-4ba9-8eaf-41db212de896
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_level_of_degree_offered
+    - node.type.cedar_record
+  module:
+    - field_display_label
+    - options
+third_party_settings:
+  field_display_label:
+    display_label: 'Highest level of degree offered:'
+id: node.cedar_record.field_level_of_degree_offered
+field_name: field_level_of_degree_offered
+entity_type: node
+bundle: cedar_record
+label: 'Level of Degree offered'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

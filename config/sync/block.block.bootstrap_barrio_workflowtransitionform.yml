@@ -1,0 +1,22 @@
+uuid: f8849a1b-9404-435e-9d70-77cdb554cf9c
+langcode: en
+status: true
+dependencies:
+  module:
+    - workflow
+  theme:
+    - bootstrap_barrio
+_core:
+  default_config_hash: Vlu0W1a-S5N7EuSAx6SrVtfAkv0TdnMZV5WagVaBvJk
+id: bootstrap_barrio_workflowtransitionform
+theme: bootstrap_barrio
+region: sidebar_second
+weight: -7
+provider: null
+plugin: workflow_transition_form_block
+settings:
+  id: workflow_transition_form_block
+  label: 'Workflow Transition form'
+  label_display: visible
+  provider: workflow
+visibility: {  }

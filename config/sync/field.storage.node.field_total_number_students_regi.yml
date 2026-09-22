@@ -1,0 +1,21 @@
+uuid: 61d8b60a-c2f8-496b-aa49-8bea0876ec3b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_total_number_students_regi
+field_name: field_total_number_students_regi
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

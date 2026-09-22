@@ -1,0 +1,33 @@
+uuid: 58ffb132-2164-4ef9-bf3c-9de8e4684cff
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_residence_halls
+field_name: field_residence_halls
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Generally not accessible'
+    -
+      value: '2'
+      label: 'Somewhat accessible'
+    -
+      value: '3'
+      label: 'Completely accessible'
+    -
+      value: '4'
+      label: 'Not applicable to this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

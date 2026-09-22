@@ -1,0 +1,21 @@
+uuid: 92fc43b5-ffe8-4fab-bcc8-19d1e7727d86
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_type_of_institution
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_type_of_institution
+field_name: field_type_of_institution
+entity_type: node
+bundle: cedar_record
+label: 'Type of institution'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

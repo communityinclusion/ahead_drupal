@@ -1,0 +1,23 @@
+uuid: ae9bc599-545b-4399-9fa3-f36a2ee2f672
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.feeds_item
+    - node.type.cedar_record
+  module:
+    - feeds
+id: node.cedar_record.feeds_item
+field_name: feeds_item
+entity_type: node
+bundle: cedar_record
+label: 'Feeds item'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:feeds_feed'
+  handler_settings: {  }
+field_type: feeds_item

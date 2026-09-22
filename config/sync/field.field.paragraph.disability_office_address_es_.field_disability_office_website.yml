@@ -1,0 +1,27 @@
+uuid: 46ec166c-d64b-4703-b6f0-77db3858a9c3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_disability_office_website
+    - paragraphs.paragraphs_type.disability_office_address_es_
+  module:
+    - field_display_label
+    - link
+third_party_settings:
+  field_display_label:
+    display_label: Website
+id: paragraph.disability_office_address_es_.field_disability_office_website
+field_name: field_disability_office_website
+entity_type: paragraph
+bundle: disability_office_address_es_
+label: 'Disability office website'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 1
+  link_type: 16
+field_type: link

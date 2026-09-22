@@ -1,0 +1,48 @@
+uuid: 136cb07b-f63b-44eb-b2ee-872521a4582f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.d_o_contacts.field_email_address
+    - field.field.paragraph.d_o_contacts.field_job_title_or_role
+    - field.field.paragraph.d_o_contacts.field_name_of_contact
+    - field.field.paragraph.d_o_contacts.field_telephone
+    - paragraphs.paragraphs_type.d_o_contacts
+id: paragraph.d_o_contacts.default
+targetEntityType: paragraph
+bundle: d_o_contacts
+mode: default
+content:
+  field_email_address:
+    type: basic_string
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_job_title_or_role:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_name_of_contact:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_telephone:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden:
+  search_api_excerpt: true

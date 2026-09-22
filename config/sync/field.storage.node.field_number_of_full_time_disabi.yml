@@ -1,0 +1,21 @@
+uuid: 20fa1253-14b1-4a71-8fa8-46aceb40925e
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_number_of_full_time_disabi
+field_name: field_number_of_full_time_disabi
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

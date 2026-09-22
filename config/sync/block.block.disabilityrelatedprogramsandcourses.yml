@@ -1,0 +1,29 @@
+uuid: b2d61f76-94a7-4917-b114-19ca7e412cce
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.disability_related_programs_and_courses
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: disabilityrelatedprogramsandcourses
+theme: ahead_boot4
+region: sidebar_firstb
+weight: -10
+provider: null
+plugin: 'facet_block:disability_related_programs_and_courses'
+settings:
+  id: 'facet_block:disability_related_programs_and_courses'
+  label: 'Disability-Related Programs and Courses'
+  label_display: visible
+  provider: facets
+  block_id: disabilityrelatedprogramsandcourses
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/general-search*\r\n/home\r\n/solr-search*"

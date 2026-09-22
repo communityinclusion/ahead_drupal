@@ -1,4 +1,4 @@
-uuid: 70278dae-9f33-454a-90b3-793f4d2865f4
+uuid: 33c1312d-a976-4e32-8b21-443d1fa48bdd
 langcode: en
 status: true
 dependencies:
@@ -9,5 +9,5 @@ _core:
 id: profile_unpublish_action
 label: 'Unpublish selected profile'
 type: profile
-plugin: profile_unpublish_action
+plugin: 'entity:unpublish_action:profile'
 configuration: {  }

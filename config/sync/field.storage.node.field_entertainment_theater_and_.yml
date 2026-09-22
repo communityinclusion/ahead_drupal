@@ -1,0 +1,33 @@
+uuid: db050860-9a13-4962-8e1c-cb3494459072
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_entertainment_theater_and_
+field_name: field_entertainment_theater_and_
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Generally not accessible'
+    -
+      value: '2'
+      label: 'Somewhat accessible'
+    -
+      value: '3'
+      label: 'Completely accessible'
+    -
+      value: '4'
+      label: 'Not applicable to this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

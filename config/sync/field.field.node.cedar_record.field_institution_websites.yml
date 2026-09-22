@@ -1,0 +1,21 @@
+uuid: 040fb336-0e90-40a5-882c-8f6817522b34
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_institution_websites
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_institution_websites
+field_name: field_institution_websites
+entity_type: node
+bundle: cedar_record
+label: 'Institution websites'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

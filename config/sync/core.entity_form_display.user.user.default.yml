@@ -1,4 +1,4 @@
-uuid: a72611ad-47aa-4248-b409-caad3ac226dc
+uuid: 05bb6ec7-e31c-4664-afae-eb18b54d6ef7
 langcode: en
 status: true
 dependencies:
@@ -6,15 +6,11 @@ dependencies:
     - field.field.user.user.user_picture
     - image.style.thumbnail
   module:
-    - field_layout
     - image
-    - layout_discovery
     - path
     - user
-third_party_settings:
-  field_layout:
-    id: layout_onecol
-    settings: {  }
+_core:
+  default_config_hash: K-1rBM8mTIkFp9RqOC2tMRUukOQ1xbRCfSKK8dEddnA
 id: user.user.default
 targetEntityType: user
 bundle: user
@@ -22,36 +18,37 @@ mode: default
 content:
   account:
     weight: -10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
   contact:
     weight: 5
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
-  google_analytics:
-    weight: 3
-    settings: {  }
-    third_party_settings: {  }
-    region: content
   language:
     weight: 0
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
   path:
     type: path
     weight: 30
     region: content
     settings: {  }
     third_party_settings: {  }
+  timezone:
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   user_picture:
+    type: image_image
+    weight: -1
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
-    type: image_image
-    weight: 31
     third_party_settings: {  }
-    region: content
-hidden: {  }
+hidden:
+  langcode: true

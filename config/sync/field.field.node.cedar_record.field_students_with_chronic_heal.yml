@@ -1,0 +1,21 @@
+uuid: 6b274216-539d-4201-8072-fdbbef1762df
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_students_with_chronic_heal
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_students_with_chronic_heal
+field_name: field_students_with_chronic_heal
+entity_type: node
+bundle: cedar_record
+label: 'Students with chronic health conditions and illness'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

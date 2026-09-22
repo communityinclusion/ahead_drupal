@@ -1,0 +1,21 @@
+uuid: 3b055863-dcb6-4462-b06b-b327035a753d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_course_substitutions
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_course_substitutions
+field_name: field_course_substitutions
+entity_type: node
+bundle: cedar_record
+label: 'Course substitutions'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

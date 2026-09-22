@@ -1,0 +1,21 @@
+uuid: 3d9a480c-62b5-49fd-b862-4ff36a51b201
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_cart_or_c_print
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_cart_or_c_print
+field_name: field_cart_or_c_print
+entity_type: node
+bundle: cedar_record
+label: 'CART or C-Print'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

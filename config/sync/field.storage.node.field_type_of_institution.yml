@@ -1,0 +1,30 @@
+uuid: 66a1201e-6e3e-4e25-b036-842c2abacb9d
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_type_of_institution
+field_name: field_type_of_institution
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: Public
+    -
+      value: '2'
+      label: 'Private, not-for-profit'
+    -
+      value: '3'
+      label: 'Private, for-profit'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

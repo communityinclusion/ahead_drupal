@@ -1,0 +1,29 @@
+uuid: 03c54ac3-c1ad-4dcb-b1ef-27273313504c
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.disability_related_services
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: disabilityrelatedservices
+theme: ahead_boot4
+region: sidebar_firstb
+weight: -8
+provider: null
+plugin: 'facet_block:disability_related_services'
+settings:
+  id: 'facet_block:disability_related_services'
+  label: 'Disability-Related Services'
+  label_display: visible
+  provider: facets
+  block_id: disabilityrelatedservices
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/general-search*\r\n/home\r\n/solr-search*"

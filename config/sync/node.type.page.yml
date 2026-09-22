@@ -1,11 +1,13 @@
-uuid: 819332c9-ee34-4f17-ac33-45f85b103f84
+uuid: c1c4d27a-0d7b-4292-9485-c290fac7daf5
 langcode: en
 status: true
 dependencies: {  }
-name: Page
+_core:
+  default_config_hash: KuyA4NHPXcmKAjRtwa0vQc2ZcyrUJy6IlS2TAyMNRbc
+name: 'Basic page'
 type: page
-description: 'A <em>page</em>, similar in form to a <em>story</em>, is a simple method for creating and displaying information that rarely changes, such as an "About us" section of a website. By default, a <em>page</em> entry does not allow visitor comments and is not featured on the site''s initial home page.'
-help: ''
-new_revision: false
+description: "Use <em>basic pages</em> for your static content, such as an 'About us' page."
+help: null
+new_revision: true
 preview_mode: 1
 display_submitted: false

@@ -1,0 +1,21 @@
+uuid: ebf1e039-8e28-40a3-abc1-486da37230c5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_other_specify_below_
+    - paragraphs.paragraphs_type.other_response
+  module:
+    - options
+id: paragraph.other_response.field_other_specify_below_
+field_name: field_other_specify_below_
+entity_type: paragraph
+bundle: other_response
+label: 'Other (specify below)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

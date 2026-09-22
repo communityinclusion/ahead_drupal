@@ -1,0 +1,1181 @@
+uuid: ddb31e9d-827e-41bf-ae84-a9e529ce9ee7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.cedar_record.body
+    - field.field.node.cedar_record.feeds_item
+    - field.field.node.cedar_record.field_2_or_4_year_institution
+    - field.field.node.cedar_record.field__policies_and_procedures_r
+    - field.field.node.cedar_record.field__types_of_counseling_and_p
+    - field.field.node.cedar_record.field_academic_other_frequency
+    - field.field.node.cedar_record.field_academics_other_specify_
+    - field.field.node.cedar_record.field_accommodation2_and_service
+    - field.field.node.cedar_record.field_accommodations_and_service
+    - field.field.node.cedar_record.field_accommodations_for_online_
+    - field.field.node.cedar_record.field_accommodations_in_residenc
+    - field.field.node.cedar_record.field_alternate_formats_e_g_e_te
+    - field.field.node.cedar_record.field_assistive_technology_e_g_s
+    - field.field.node.cedar_record.field_autistic_students_includes
+    - field.field.node.cedar_record.field_campus_groups_that_address
+    - field.field.node.cedar_record.field_cart_or_c_print
+    - field.field.node.cedar_record.field_col_u_address_line_1
+    - field.field.node.cedar_record.field_col_u_address_line_2
+    - field.field.node.cedar_record.field_col_u_city
+    - field.field.node.cedar_record.field_col_u_zip_code
+    - field.field.node.cedar_record.field_college_university_state
+    - field.field.node.cedar_record.field_completed_survey
+    - field.field.node.cedar_record.field_counseling_and_psychologic
+    - field.field.node.cedar_record.field_course_substitutions
+    - field.field.node.cedar_record.field_courses_or_degree_programs
+    - field.field.node.cedar_record.field_culturally_deaf_students_w
+    - field.field.node.cedar_record.field_dietary_accommodations_for
+    - field.field.node.cedar_record.field_disability_office_addr
+    - field.field.node.cedar_record.field_disability_related_program
+    - field.field.node.cedar_record.field_disability_related_service
+    - field.field.node.cedar_record.field_during_the_2017_2018_schoo
+    - field.field.node.cedar_record.field_entertainment_theater_and_
+    - field.field.node.cedar_record.field_general_campus_resources
+    - field.field.node.cedar_record.field_how_often_does_your_instit
+    - field.field.node.cedar_record.field_institution_map
+    - field.field.node.cedar_record.field_institution_size_category
+    - field.field.node.cedar_record.field_institution_websites
+    - field.field.node.cedar_record.field_international_students_or_
+    - field.field.node.cedar_record.field_ipeds_unique_id
+    - field.field.node.cedar_record.field_key_administrative_offices
+    - field.field.node.cedar_record.field_law_students
+    - field.field.node.cedar_record.field_level_of_degree_offered
+    - field.field.node.cedar_record.field_main_academic_buildings_wh
+    - field.field.node.cedar_record.field_medical_leave
+    - field.field.node.cedar_record.field_minority_serving_
+    - field.field.node.cedar_record.field_most_common_disability_typ
+    - field.field.node.cedar_record.field_ncaa_athletes
+    - field.field.node.cedar_record.field_nearby_off_campus_transpor
+    - field.field.node.cedar_record.field_notetaking
+    - field.field.node.cedar_record.field_number_of_full_time_disabi
+    - field.field.node.cedar_record.field_number_of_staff_exact
+    - field.field.node.cedar_record.field_number_of_stud_exact
+    - field.field.node.cedar_record.field_number_of_students_who_had
+    - field.field.node.cedar_record.field_number_of_students_who_hav
+    - field.field.node.cedar_record.field_on_campus_transportation
+    - field.field.node.cedar_record.field_online_serving_only
+    - field.field.node.cedar_record.field_other
+    - field.field.node.cedar_record.field_other_contacts
+    - field.field.node.cedar_record.field_other_counsel_psych
+    - field.field.node.cedar_record.field_other_dis_relat_services
+    - field.field.node.cedar_record.field_other_disabl_rel_courses
+    - field.field.node.cedar_record.field_other_gen_campus_resources
+    - field.field.node.cedar_record.field_other_other_frequency
+    - field.field.node.cedar_record.field_other_other_specify
+    - field.field.node.cedar_record.field_percent_of_faculty_exact
+    - field.field.node.cedar_record.field_percent_of_staff_exact
+    - field.field.node.cedar_record.field_percent_of_students_eligib
+    - field.field.node.cedar_record.field_priority_registration
+    - field.field.node.cedar_record.field_professional_and_graduate_
+    - field.field.node.cedar_record.field_programmatic_other
+    - field.field.node.cedar_record.field_programmatic_other_freq
+    - field.field.node.cedar_record.field_programmatic_other_specify
+    - field.field.node.cedar_record.field_readers
+    - field.field.node.cedar_record.field_recreation_and_athletic_fa
+    - field.field.node.cedar_record.field_reduced_courseload
+    - field.field.node.cedar_record.field_residence_halls
+    - field.field.node.cedar_record.field_scribes_
+    - field.field.node.cedar_record.field_security_and_saftety_progr
+    - field.field.node.cedar_record.field_service_animals_or_emotion
+    - field.field.node.cedar_record.field_sexual_assault_services_an
+    - field.field.node.cedar_record.field_sign_language_interpreters
+    - field.field.node.cedar_record.field_student_health_services
+    - field.field.node.cedar_record.field_student_organizations_rela
+    - field.field.node.cedar_record.field_student_population
+    - field.field.node.cedar_record.field_student_population_undergr
+    - field.field.node.cedar_record.field_student_union_or_other_mai
+    - field.field.node.cedar_record.field_students_from_a_particular
+    - field.field.node.cedar_record.field_students_from_disenfranchi
+    - field.field.node.cedar_record.field_students_in_stem_fields_in
+    - field.field.node.cedar_record.field_students_of_color
+    - field.field.node.cedar_record.field_students_with_chronic_heal
+    - field.field.node.cedar_record.field_students_with_food_allergi
+    - field.field.node.cedar_record.field_students_with_intellectual
+    - field.field.node.cedar_record.field_survey_contact
+    - field.field.node.cedar_record.field_survey_contact_email
+    - field.field.node.cedar_record.field_survey_contact_phone
+    - field.field.node.cedar_record.field_test_accomodations
+    - field.field.node.cedar_record.field_the_library_ies_
+    - field.field.node.cedar_record.field_three_most_common_types_of
+    - field.field.node.cedar_record.field_total_number_students_regi
+    - field.field.node.cedar_record.field_type_of_institution
+    - field.field.node.cedar_record.field_university_link
+    - field.field.node.cedar_record.field_veterans
+    - field.field.node.cedar_record.field_what_percent_of_faculty_on
+    - field.field.node.cedar_record.field_what_percent_of_staff_on_c
+    - node.type.cedar_record
+  module:
+    - computed_field
+    - field_group
+    - geofield
+    - link
+    - paragraphs
+    - path
+    - scheduler
+third_party_settings:
+  field_group:
+    group_college_university_address:
+      children:
+        - field_col_u_address_line_1
+        - field_col_u_address_line_2
+        - field_col_u_city
+        - field_college_university_state
+        - field_col_u_zip_code
+        - field_university_link
+      label: 'College/University address'
+      region: content
+      parent_name: ''
+      weight: 2
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_general_information:
+      children:
+        - field_2_or_4_year_institution
+        - field_type_of_institution
+        - field_level_of_degree_offered
+        - field_minority_serving_
+        - field_student_population
+        - field_student_population_undergr
+        - field_online_serving_only
+        - field_number_of_stud_exact
+        - field_number_of_students_who_hav
+      label: 'General information'
+      region: content
+      parent_name: ''
+      weight: 4
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_disability_resource_office:
+      children:
+        - field_disability_office_addr
+        - field_other_contacts
+        - field_number_of_full_time_disabi
+        - field_number_of_staff_exact
+        - field_three_most_common_types_of
+        - field_most_common_disability_typ
+        - group_specific_populations_of_st
+      label: 'Disability resource office'
+      region: content
+      parent_name: ''
+      weight: 5
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_specific_populations_of_st:
+      children:
+        - group_students_with_low_incidenc
+        - group_dis_adv_academ
+        - group_students_with_disabilities
+      label: 'Specific populations of students with disabilities'
+      region: content
+      parent_name: group_disability_resource_office
+      weight: 89
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_students_with_low_incidenc:
+      children:
+        - field_autistic_students_includes
+        - field_culturally_deaf_students_w
+        - field_students_with_chronic_heal
+        - field_students_with_food_allergi
+        - field_students_with_intellectual
+      label: 'Students with low-incidence types of disabilities'
+      region: content
+      parent_name: group_specific_populations_of_st
+      weight: 22
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_students_with_disabilities:
+      children:
+        - field_students_of_color
+        - field_students_from_a_particular
+        - field_students_from_disenfranchi
+        - field_international_students_or_
+      label: 'Students with disabilities sharing a common background, community, or identity'
+      region: content
+      parent_name: group_specific_populations_of_st
+      weight: 24
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_dis_adv_academ:
+      children:
+        - field_students_in_stem_fields_in
+        - field_professional_and_graduate_
+        - field_law_students
+        - field_ncaa_athletes
+        - field_veterans
+      label: 'Students withdis. in advanced academics or interests'
+      region: content
+      parent_name: group_specific_populations_of_st
+      weight: 23
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_disability_accommodations_:
+      children:
+        - group_accommodations_rating
+      label: 'Disability accommodations and services'
+      region: content
+      parent_name: ''
+      weight: 6
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_accommodations_rating:
+      children:
+        - group_academic_accomm_subgroup
+        - group_programmatic_accommodation
+        - group_other_accommodations_sub
+      label: 'Accommodations for students with disabilities'
+      region: content
+      parent_name: group_disability_accommodations_
+      weight: 20
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+        element: div
+        show_label: false
+        label_element: h3
+        label_element_classes: ''
+        effect: none
+        speed: fast
+        attributes: ''
+    group_academic_accomm_subgroup:
+      children:
+        - field_notetaking
+        - field_test_accomodations
+        - field_alternate_formats_e_g_e_te
+        - field_scribes_
+        - field_readers
+        - field_assistive_technology_e_g_s
+        - field_sign_language_interpreters
+        - field_cart_or_c_print
+        - field_academics_other_specify_
+        - field_academic_other_frequency
+      label: 'Academic accommodations'
+      region: content
+      parent_name: group_accommodations_rating
+      weight: 20
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: acad_accomm
+        description: ''
+        required_fields: true
+        element: div
+        show_label: true
+        label_element: h3
+        label_element_classes: ''
+        attributes: ''
+        effect: none
+        speed: fast
+    group_programmatic_accommodation:
+      children:
+        - field_course_substitutions
+        - field_priority_registration
+        - field_reduced_courseload
+        - field_medical_leave
+        - field_accommodations_in_residenc
+        - field_programmatic_other_specify
+        - field_programmatic_other_freq
+      label: 'Programmatic Accommodations'
+      region: content
+      parent_name: group_accommodations_rating
+      weight: 21
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_other_accommodations_sub:
+      children:
+        - field_dietary_accommodations_for
+        - field_service_animals_or_emotion
+        - field_accommodations_and_service
+        - field_accommodation2_and_service
+        - field_accommodations_for_online_
+        - field_other_other_specify
+        - field_other_other_frequency
+      label: 'Other accommodations'
+      region: content
+      parent_name: group_accommodations_rating
+      weight: 22
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_campus_accessibility_and_r:
+      children:
+        - group_campus_access_ques
+        - field__policies_and_procedures_r
+        - field__types_of_counseling_and_p
+        - field_other_counsel_psych
+        - field_during_the_2017_2018_schoo
+        - field_number_of_students_who_had
+        - field_disability_related_program
+        - field_other_disabl_rel_courses
+        - field_disability_related_service
+        - field_other_dis_relat_services
+        - field_general_campus_resources
+        - field_other_gen_campus_resources
+      label: 'Campus accessibility and resources'
+      region: content
+      parent_name: ''
+      weight: 7
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_campus_access_ques:
+      children:
+        - field_student_health_services
+        - field_counseling_and_psychologic
+        - field_the_library_ies_
+        - field_institution_websites
+        - field_recreation_and_athletic_fa
+        - field_student_union_or_other_mai
+        - field_main_academic_buildings_wh
+        - field_entertainment_theater_and_
+        - field_on_campus_transportation
+        - field_nearby_off_campus_transpor
+        - field_residence_halls
+        - field_key_administrative_offices
+        - field_sexual_assault_services_an
+        - field_security_and_saftety_progr
+      label: 'Campus access'
+      region: content
+      parent_name: group_campus_accessibility_and_r
+      weight: 20
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_academics_and_campus_clima:
+      children:
+        - field_courses_or_degree_programs
+        - field_campus_groups_that_address
+        - field_student_organizations_rela
+        - field_how_often_does_your_instit
+        - field_percent_of_faculty_exact
+        - field_what_percent_of_faculty_on
+        - field_percent_of_staff_exact
+        - field_what_percent_of_staff_on_c
+      label: 'Academics and campus climate for students with disabilities'
+      region: content
+      parent_name: ''
+      weight: 8
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+    group_survey_contact_info:
+      children:
+        - field_survey_contact
+        - field_survey_contact_email
+        - field_survey_contact_phone
+      label: 'Survey contact info'
+      region: content
+      parent_name: ''
+      weight: 9
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: ''
+        description: ''
+        required_fields: true
+id: node.cedar_record.default
+targetEntityType: node
+bundle: cedar_record
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 16
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_2_or_4_year_institution:
+    type: options_buttons
+    weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field__policies_and_procedures_r:
+    type: options_buttons
+    weight: 21
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field__types_of_counseling_and_p:
+    type: options_buttons
+    weight: 22
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_academic_other_frequency:
+    type: options_select
+    weight: 36
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_academics_other_specify_:
+    type: string_textfield
+    weight: 35
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_accommodation2_and_service:
+    type: options_buttons
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_accommodations_and_service:
+    type: options_buttons
+    weight: 29
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_accommodations_for_online_:
+    type: options_buttons
+    weight: 31
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_accommodations_in_residenc:
+    type: options_buttons
+    weight: 41
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_alternate_formats_e_g_e_te:
+    type: options_buttons
+    weight: 29
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_assistive_technology_e_g_s:
+    type: options_buttons
+    weight: 32
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_autistic_students_includes:
+    type: options_buttons
+    weight: 26
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_campus_groups_that_address:
+    type: string_textfield
+    weight: 20
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_cart_or_c_print:
+    type: options_buttons
+    weight: 34
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_col_u_address_line_1:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_col_u_address_line_2:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_col_u_city:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_col_u_zip_code:
+    type: string_textfield
+    weight: 6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_college_university_state:
+    type: options_select
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_completed_survey:
+    type: boolean_checkbox
+    weight: 10
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_counseling_and_psychologic:
+    type: options_buttons
+    weight: 29
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_course_substitutions:
+    type: options_buttons
+    weight: 37
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_courses_or_degree_programs:
+    type: options_select
+    weight: 19
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_culturally_deaf_students_w:
+    type: options_buttons
+    weight: 27
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_dietary_accommodations_for:
+    type: options_buttons
+    weight: 27
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_disability_office_addr:
+    type: entity_reference_paragraphs
+    weight: 82
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+  field_disability_related_program:
+    type: options_buttons
+    weight: 26
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_disability_related_service:
+    type: options_buttons
+    weight: 28
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_during_the_2017_2018_schoo:
+    type: number
+    weight: 24
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_entertainment_theater_and_:
+    type: options_buttons
+    weight: 35
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_general_campus_resources:
+    type: options_buttons
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_how_often_does_your_instit:
+    type: options_select
+    weight: 22
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_institution_map:
+    type: geofield_latlon
+    weight: 19
+    region: content
+    settings:
+      html5_geolocation: false
+    third_party_settings: {  }
+  field_institution_size_category:
+    type: options_select
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_institution_websites:
+    type: options_buttons
+    weight: 31
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_international_students_or_:
+    type: options_buttons
+    weight: 39
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_ipeds_unique_id:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_key_administrative_offices:
+    type: options_buttons
+    weight: 39
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_law_students:
+    type: options_buttons
+    weight: 33
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_level_of_degree_offered:
+    type: options_select
+    weight: 15
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_main_academic_buildings_wh:
+    type: options_buttons
+    weight: 34
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_medical_leave:
+    type: options_buttons
+    weight: 40
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_minority_serving_:
+    type: options_select
+    weight: 16
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_most_common_disability_typ:
+    type: string_textfield
+    weight: 88
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_ncaa_athletes:
+    type: options_buttons
+    weight: 34
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_nearby_off_campus_transpor:
+    type: options_buttons
+    weight: 37
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_notetaking:
+    type: options_buttons
+    weight: 27
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_number_of_full_time_disabi:
+    type: string_textfield
+    weight: 85
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_number_of_staff_exact:
+    type: number
+    weight: 86
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_number_of_stud_exact:
+    type: number
+    weight: 20
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_number_of_students_who_had:
+    type: string_textfield
+    weight: 25
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_number_of_students_who_hav:
+    type: string_textfield
+    weight: 21
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_on_campus_transportation:
+    type: options_buttons
+    weight: 36
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_online_serving_only:
+    type: options_select
+    weight: 19
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_other_contacts:
+    type: entity_reference_paragraphs
+    weight: 84
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: d_o_contacts
+    third_party_settings: {  }
+  field_other_counsel_psych:
+    type: string_textfield
+    weight: 23
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_other_dis_relat_services:
+    type: string_textfield
+    weight: 29
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_other_disabl_rel_courses:
+    type: string_textfield
+    weight: 27
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_other_gen_campus_resources:
+    type: string_textfield
+    weight: 31
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_other_other_frequency:
+    type: options_select
+    weight: 33
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_other_other_specify:
+    type: string_textfield
+    weight: 32
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_percent_of_faculty_exact:
+    type: number
+    weight: 23
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_percent_of_staff_exact:
+    type: number
+    weight: 26
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_percent_of_students_eligib:
+    type: computed_number_widget
+    weight: 21
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_priority_registration:
+    type: options_buttons
+    weight: 38
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_professional_and_graduate_:
+    type: options_buttons
+    weight: 32
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_programmatic_other_freq:
+    type: options_select
+    weight: 43
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_programmatic_other_specify:
+    type: string_textfield
+    weight: 42
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_readers:
+    type: options_buttons
+    weight: 31
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_recreation_and_athletic_fa:
+    type: options_buttons
+    weight: 32
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_reduced_courseload:
+    type: options_buttons
+    weight: 39
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_residence_halls:
+    type: options_buttons
+    weight: 38
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_scribes_:
+    type: options_buttons
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_security_and_saftety_progr:
+    type: options_buttons
+    weight: 41
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_service_animals_or_emotion:
+    type: options_buttons
+    weight: 28
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_sexual_assault_services_an:
+    type: options_buttons
+    weight: 40
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_sign_language_interpreters:
+    type: options_buttons
+    weight: 33
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_student_health_services:
+    type: options_buttons
+    weight: 28
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_student_organizations_rela:
+    type: string_textfield
+    weight: 21
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_student_population:
+    type: number
+    weight: 17
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_student_population_undergr:
+    type: number
+    weight: 18
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_student_union_or_other_mai:
+    type: options_buttons
+    weight: 33
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_students_from_a_particular:
+    type: options_buttons
+    weight: 37
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_students_from_disenfranchi:
+    type: options_buttons
+    weight: 38
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_students_in_stem_fields_in:
+    type: options_buttons
+    weight: 31
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_students_of_color:
+    type: options_buttons
+    weight: 36
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_students_with_chronic_heal:
+    type: options_buttons
+    weight: 28
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_students_with_food_allergi:
+    type: options_buttons
+    weight: 29
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_students_with_intellectual:
+    type: options_buttons
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_survey_contact:
+    type: string_textfield
+    weight: 18
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_survey_contact_email:
+    type: string_textfield
+    weight: 19
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_survey_contact_phone:
+    type: string_textfield
+    weight: 20
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_test_accomodations:
+    type: options_buttons
+    weight: 28
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_the_library_ies_:
+    type: options_buttons
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_three_most_common_types_of:
+    type: options_buttons
+    weight: 87
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_type_of_institution:
+    type: options_buttons
+    weight: 14
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_university_link:
+    type: link_default
+    weight: 7
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_veterans:
+    type: options_buttons
+    weight: 35
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_what_percent_of_faculty_on:
+    type: string_textfield
+    weight: 24
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_what_percent_of_staff_on_c:
+    type: string_textfield
+    weight: 27
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 3
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    weight: 17
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 12
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 14
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    weight: 18
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 15
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  body: true
+  feeds_item: true
+  field_other: true
+  field_programmatic_other: true
+  field_total_number_students_regi: true

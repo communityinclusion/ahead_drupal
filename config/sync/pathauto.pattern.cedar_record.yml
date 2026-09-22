@@ -1,0 +1,23 @@
+uuid: 20968dbd-7d93-45cd-bb8c-04081e0c1cad
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.cedar_record
+  module:
+    - node
+id: cedar_record
+label: 'CEDAR record'
+type: 'canonical_entities:node'
+pattern: '/institution/[node:title]'
+selection_criteria:
+  c3faa856-007f-48f0-a133-7ef89ac287aa:
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: node
+    bundles:
+      cedar_record: cedar_record
+selection_logic: and
+weight: -5
+relationships: {  }

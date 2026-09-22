@@ -1,0 +1,20 @@
+uuid: 7c84a0c0-ae41-460d-9f0f-5a4f3666944c
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_during_the_2017_2018_schoo
+field_name: field_during_the_2017_2018_schoo
+entity_type: node
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

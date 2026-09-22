@@ -1,0 +1,20 @@
+uuid: 44ed5029-a863-4c92-9cc6-53f2e04d7f1c
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_percent_of_staff_exact
+field_name: field_percent_of_staff_exact
+entity_type: node
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

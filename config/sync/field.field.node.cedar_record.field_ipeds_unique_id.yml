@@ -1,0 +1,19 @@
+uuid: c7b6e969-ebda-4679-9a19-1b82527a178c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ipeds_unique_id
+    - node.type.cedar_record
+id: node.cedar_record.field_ipeds_unique_id
+field_name: field_ipeds_unique_id
+entity_type: node
+bundle: cedar_record
+label: 'IPEDS Unique ID'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,29 @@
+uuid: 2851c46f-ad62-406d-93c5-ff1884301657
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.degree_type
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: degreetype
+theme: ahead_boot4
+region: sidebar_first
+weight: -9
+provider: null
+plugin: 'facet_block:degree_type'
+settings:
+  id: 'facet_block:degree_type'
+  label: 'Degree type'
+  label_display: visible
+  provider: facets
+  block_id: degreetype
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/general-search*\r\n/home\r\n/solr-search*"

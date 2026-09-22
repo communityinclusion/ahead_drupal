@@ -1,0 +1,21 @@
+uuid: eb18bd4f-73b3-4b81-984d-2e4a59b91fb6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_main_academic_buildings_wh
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_main_academic_buildings_wh
+field_name: field_main_academic_buildings_wh
+entity_type: node
+bundle: cedar_record
+label: 'Main academic buildings where most undergraduates would attend classes'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

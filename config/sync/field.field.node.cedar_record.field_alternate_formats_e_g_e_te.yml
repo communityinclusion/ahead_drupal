@@ -1,0 +1,21 @@
+uuid: 59da1632-367b-4fe7-875d-036860fd8a5b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alternate_formats_e_g_e_te
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_alternate_formats_e_g_e_te
+field_name: field_alternate_formats_e_g_e_te
+entity_type: node
+bundle: cedar_record
+label: 'Alternate formats (e.g.,e-text, large print)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

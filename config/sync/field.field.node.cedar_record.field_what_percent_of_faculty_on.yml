@@ -1,0 +1,19 @@
+uuid: 23b555b7-bf5e-45d2-bf7d-6d134c7e3d1b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_what_percent_of_faculty_on
+    - node.type.cedar_record
+id: node.cedar_record.field_what_percent_of_faculty_on
+field_name: field_what_percent_of_faculty_on
+entity_type: node
+bundle: cedar_record
+label: 'What percent of faculty on campus have a disclosed disability? (approximate)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

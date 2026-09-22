@@ -1,0 +1,11 @@
+uuid: 8d6bb444-5d03-4f2c-adc3-dcb0ebff2c84
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.printable
+label: printable
+description: ''
+targetEntityType: node
+cache: true

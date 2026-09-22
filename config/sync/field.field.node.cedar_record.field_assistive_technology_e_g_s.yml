@@ -1,0 +1,21 @@
+uuid: 1e9446c0-e892-46c1-bc84-821d57b5e970
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_assistive_technology_e_g_s
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_assistive_technology_e_g_s
+field_name: field_assistive_technology_e_g_s
+entity_type: node
+bundle: cedar_record
+label: 'Assistive technology (e.g., screen readers, voice input)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

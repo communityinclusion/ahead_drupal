@@ -1,0 +1,21 @@
+uuid: 7b25ae7b-b96d-4b49-bfe6-bc893ce89e79
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sexual_assault_services_an
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_sexual_assault_services_an
+field_name: field_sexual_assault_services_an
+entity_type: node
+bundle: cedar_record
+label: 'Sexual assault services and reporting mechanisms'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

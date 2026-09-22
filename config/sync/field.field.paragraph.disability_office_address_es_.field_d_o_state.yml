@@ -1,0 +1,21 @@
+uuid: 76c7f711-829b-49bd-b9f9-f15fb6876b8c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_d_o_state
+    - paragraphs.paragraphs_type.disability_office_address_es_
+  module:
+    - options
+id: paragraph.disability_office_address_es_.field_d_o_state
+field_name: field_d_o_state
+entity_type: paragraph
+bundle: disability_office_address_es_
+label: State
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,4 +1,4 @@
-uuid: 49b45e3f-7eb5-49cb-97d5-28f33ad8d60b
+uuid: 50106784-2eb1-4a8b-8fde-4be9d8b5b44b
 langcode: en
 status: true
 dependencies:
@@ -7,7 +7,7 @@ dependencies:
 _core:
   default_config_hash: LhdsoZPL_pFas2fjaAWue4zvrQ_tEVofLYtcNec-JGM
 id: node_save_action
-label: 'Save post'
+label: 'Save content'
 type: node
 plugin: 'entity:save_action:node'
 configuration: {  }

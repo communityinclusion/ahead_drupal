@@ -1,0 +1,29 @@
+uuid: bd3a81aa-a056-4118-886f-a02292af4099
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.minority_serving_
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: minorityserving
+theme: ahead_boot4
+region: sidebar_firstb
+weight: -9
+provider: null
+plugin: 'facet_block:minority_serving_'
+settings:
+  id: 'facet_block:minority_serving_'
+  label: 'Minority serving?'
+  label_display: visible
+  provider: facets
+  block_id: minorityserving
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/general-search*\r\n/home\r\n/solr-search*"

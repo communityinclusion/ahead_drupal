@@ -1,0 +1,21 @@
+uuid: b3fa27a0-84a3-47b4-a9cd-69cf95695318
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sign_language_interpreters
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_sign_language_interpreters
+field_name: field_sign_language_interpreters
+entity_type: node
+bundle: cedar_record
+label: 'Sign language interpreters'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,21 @@
+uuid: 5cdfd73f-dd5e-4aed-9803-5f311863e9a7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_residence_halls
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_residence_halls
+field_name: field_residence_halls
+entity_type: node
+bundle: cedar_record
+label: 'Residence halls'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

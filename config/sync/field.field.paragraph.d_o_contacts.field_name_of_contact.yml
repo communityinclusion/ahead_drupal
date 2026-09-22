@@ -1,0 +1,24 @@
+uuid: 6336b538-9e82-4251-a7d0-26d7289b4cf7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_name_of_contact
+    - paragraphs.paragraphs_type.d_o_contacts
+  module:
+    - field_display_label
+third_party_settings:
+  field_display_label:
+    display_label: Name
+id: paragraph.d_o_contacts.field_name_of_contact
+field_name: field_name_of_contact
+entity_type: paragraph
+bundle: d_o_contacts
+label: 'Name of contact'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

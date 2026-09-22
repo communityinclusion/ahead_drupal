@@ -1,0 +1,22 @@
+uuid: 15aeec1e-5e5c-4ac7-9fd6-18fd6a9f102b
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - ahead_boot4
+_core:
+  default_config_hash: KHQIJ7Vfl25lTjzIc7qIvnuistt-Mw2O0kG4jCofmkI
+id: ahead_boot4_messages
+theme: ahead_boot4
+region: highlighted
+weight: 0
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 'Status messages'
+  label_display: '0'
+  provider: system
+visibility: {  }

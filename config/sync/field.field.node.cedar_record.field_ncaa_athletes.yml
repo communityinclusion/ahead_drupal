@@ -1,0 +1,21 @@
+uuid: 9725022e-8ab1-4fc4-8a66-8f9e77d96af5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ncaa_athletes
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_ncaa_athletes
+field_name: field_ncaa_athletes
+entity_type: node
+bundle: cedar_record
+label: 'NCAA athletes'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

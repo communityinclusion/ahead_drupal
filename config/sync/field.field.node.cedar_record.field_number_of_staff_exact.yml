@@ -1,0 +1,23 @@
+uuid: 12d400e9-ed20-42aa-bf18-d26e2ecccdbd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_number_of_staff_exact
+    - node.type.cedar_record
+id: node.cedar_record.field_number_of_staff_exact
+field_name: field_number_of_staff_exact
+entity_type: node
+bundle: cedar_record
+label: 'Number of full-time disability service staff'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

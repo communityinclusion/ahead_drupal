@@ -1,0 +1,21 @@
+uuid: 98177e2f-aff3-4730-89b6-d44131b40dfc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_disability_related_program
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_disability_related_program
+field_name: field_disability_related_program
+entity_type: node
+bundle: cedar_record
+label: 'Disability-Related Programs and Courses'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

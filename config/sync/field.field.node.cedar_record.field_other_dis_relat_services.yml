@@ -1,0 +1,19 @@
+uuid: e620f60b-2d59-48ba-8d8b-f1573e5cafb1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_other_dis_relat_services
+    - node.type.cedar_record
+id: node.cedar_record.field_other_dis_relat_services
+field_name: field_other_dis_relat_services
+entity_type: node
+bundle: cedar_record
+label: Other
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

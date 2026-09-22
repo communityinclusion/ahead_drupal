@@ -1,0 +1,51 @@
+uuid: 4cf186a4-0410-4e19-8bfb-799ecf6a2d08
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_disability_related_service
+field_name: field_disability_related_service
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Coaching services for students with disabilities'
+    -
+      value: '2'
+      label: 'Supports to help students with disabilities navigate social interactions on campus (e.g., peer supports, training sessions)'
+    -
+      value: '3'
+      label: 'Tutoring specifically for students with disabilities'
+    -
+      value: '4'
+      label: 'Dedicated transition program or campus orientation for students with disabilities'
+    -
+      value: '5'
+      label: 'Repair services or referrals to community repair services for disability-related needs(e.g., wheelchair, hearing aid, or other)'
+    -
+      value: '6'
+      label: 'Resources or referrals to community resources for students using personal care attendants'
+    -
+      value: '7'
+      label: 'Testing to provide documentation of a disability (e.g., for diagnosis of learning disability)'
+    -
+      value: '8'
+      label: 'Mentoring for students with disabilities'
+    -
+      value: '9'
+      label: Other
+    -
+      value: '10'
+      label: 'No additional disability-related resources are offered at this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

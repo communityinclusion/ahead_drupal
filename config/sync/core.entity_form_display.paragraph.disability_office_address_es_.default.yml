@@ -1,0 +1,95 @@
+uuid: dde1abd4-7a75-4588-993b-d2990e53bed4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.disability_office_address_es_.field_d_o_address_line_1
+    - field.field.paragraph.disability_office_address_es_.field_d_o_address_line_2
+    - field.field.paragraph.disability_office_address_es_.field_d_o_city
+    - field.field.paragraph.disability_office_address_es_.field_d_o_office_name
+    - field.field.paragraph.disability_office_address_es_.field_d_o_state
+    - field.field.paragraph.disability_office_address_es_.field_d_o_zip_code
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_email_ad
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_phone
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_website
+    - paragraphs.paragraphs_type.disability_office_address_es_
+  module:
+    - link
+id: paragraph.disability_office_address_es_.default
+targetEntityType: paragraph
+bundle: disability_office_address_es_
+mode: default
+content:
+  field_d_o_address_line_1:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_d_o_address_line_2:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_d_o_city:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_d_o_office_name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_d_o_state:
+    type: options_select
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_d_o_zip_code:
+    type: string_textfield
+    weight: 5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_disability_office_email_ad:
+    type: string_textfield
+    weight: 7
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_disability_office_phone:
+    type: string_textfield
+    weight: 6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_disability_office_website:
+    type: link_default
+    weight: 8
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

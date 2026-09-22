@@ -1,0 +1,19 @@
+uuid: 9438f095-1526-4de7-9cff-792027274427
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_number_of_students_who_had
+    - node.type.cedar_record
+id: node.cedar_record.field_number_of_students_who_had
+field_name: field_number_of_students_who_had
+entity_type: node
+bundle: cedar_record
+label: 'Number of students who had accessed counseling and psychological services'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

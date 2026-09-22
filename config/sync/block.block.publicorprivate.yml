@@ -1,0 +1,29 @@
+uuid: 855c40e8-2ad1-4183-b522-63038ecc3334
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.public_or_private
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: publicorprivate
+theme: ahead_boot4
+region: sidebar_first
+weight: -8
+provider: null
+plugin: 'facet_block:public_or_private'
+settings:
+  id: 'facet_block:public_or_private'
+  label: 'Public or Private'
+  label_display: visible
+  provider: facets
+  block_id: publicorprivate
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/general-search*\r\n/home\r\n/solr-search*"

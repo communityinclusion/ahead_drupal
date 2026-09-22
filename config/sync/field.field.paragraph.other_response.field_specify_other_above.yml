@@ -1,0 +1,19 @@
+uuid: 23d30650-31ef-463b-bff4-8475413b79ea
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_specify_other_above
+    - paragraphs.paragraphs_type.other_response
+id: paragraph.other_response.field_specify_other_above
+field_name: field_specify_other_above
+entity_type: paragraph
+bundle: other_response
+label: "Specify 'other' above"
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

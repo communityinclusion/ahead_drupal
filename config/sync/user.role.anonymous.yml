@@ -1,7 +1,16 @@
-uuid: 9ee73864-95d5-4d5e-8218-c99e50a01738
+uuid: 189c8e8f-9bbf-4ea2-a731-00457968a662
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.restricted_html
+  module:
+    - comment
+    - filter
+    - media
+    - search_api_page
+    - search_api_saved_searches
+    - system
 _core:
   default_config_hash: j5zLMOdJBqC0bMvSdth5UebkprJB8g_2FXHqhfpJzow
 id: anonymous
@@ -9,6 +18,9 @@ label: 'Anonymous user'
 weight: 0
 is_admin: false
 permissions:
+  - 'access comments'
   - 'access content'
-  - 'access user profiles'
+  - 'use default search_api_saved_searches'
+  - 'use text format restricted_html'
   - 'view media'
+  - 'view search api pages'

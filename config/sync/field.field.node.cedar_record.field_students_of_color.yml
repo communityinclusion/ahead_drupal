@@ -1,0 +1,21 @@
+uuid: 9554df2c-c2d7-44b4-840f-50f89b843dd1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_students_of_color
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_students_of_color
+field_name: field_students_of_color
+entity_type: node
+bundle: cedar_record
+label: 'Students of color'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

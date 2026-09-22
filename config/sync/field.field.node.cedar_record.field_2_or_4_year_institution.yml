@@ -1,0 +1,25 @@
+uuid: 2b76e3f8-eecc-43b2-9a1d-408afb0401ac
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_2_or_4_year_institution
+    - node.type.cedar_record
+  module:
+    - field_display_label
+    - options
+third_party_settings:
+  field_display_label:
+    display_label: 'This campus is:'
+id: node.cedar_record.field_2_or_4_year_institution
+field_name: field_2_or_4_year_institution
+entity_type: node
+bundle: cedar_record
+label: '2 or 4 year institution'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

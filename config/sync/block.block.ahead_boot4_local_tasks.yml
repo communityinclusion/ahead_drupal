@@ -1,0 +1,22 @@
+uuid: 97ec4ec8-bc87-4423-bd2f-b278d55c2164
+langcode: en
+status: true
+dependencies:
+  theme:
+    - ahead_boot4
+_core:
+  default_config_hash: X9I1OB0W3WlWtrK-CNcg6hNWwa8wficanpH8pYnDZDE
+id: ahead_boot4_local_tasks
+theme: ahead_boot4
+region: content
+weight: -13
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: Tabs
+  label_display: '0'
+  provider: core
+  primary: true
+  secondary: true
+visibility: {  }

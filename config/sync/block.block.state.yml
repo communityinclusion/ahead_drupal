@@ -1,0 +1,29 @@
+uuid: 1f9a3fc5-362c-40f8-98a2-6ec414461272
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.state
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: state
+theme: ahead_boot4
+region: sidebar_first
+weight: -10
+provider: null
+plugin: 'facet_block:state'
+settings:
+  id: 'facet_block:state'
+  label: State
+  label_display: visible
+  provider: facets
+  block_id: state
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/home\r\n/solr-search*"

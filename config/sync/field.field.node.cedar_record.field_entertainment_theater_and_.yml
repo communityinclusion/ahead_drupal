@@ -1,0 +1,21 @@
+uuid: 0c3efd67-716f-4a13-bb65-ae3e3ca9abc7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_entertainment_theater_and_
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_entertainment_theater_and_
+field_name: field_entertainment_theater_and_
+entity_type: node
+bundle: cedar_record
+label: 'Entertainment, theater, and event facilities'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

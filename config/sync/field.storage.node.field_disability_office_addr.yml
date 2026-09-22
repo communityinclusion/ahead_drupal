@@ -1,0 +1,21 @@
+uuid: a04ddcb4-14f9-4576-b33f-b77f094c4d80
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_reference_revisions
+    - node
+    - paragraphs
+id: node.field_disability_office_addr
+field_name: field_disability_office_addr
+entity_type: node
+type: entity_reference_revisions
+settings:
+  target_type: paragraph
+module: entity_reference_revisions
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

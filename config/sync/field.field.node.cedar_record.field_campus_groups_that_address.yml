@@ -1,0 +1,19 @@
+uuid: 67aa646c-5a87-4c8a-97d0-05e1b5d892ff
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_campus_groups_that_address
+    - node.type.cedar_record
+id: node.cedar_record.field_campus_groups_that_address
+field_name: field_campus_groups_that_address
+entity_type: node
+bundle: cedar_record
+label: 'Campus groups that address disability issues but do not provide direct services to students'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

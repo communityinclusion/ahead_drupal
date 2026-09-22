@@ -1,0 +1,36 @@
+uuid: 0e466faa-98cf-4195-ade5-fb7ca1a2b747
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_courses_or_degree_programs
+field_name: field_courses_or_degree_programs
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Disability studies courses or degree programs'
+    -
+      value: '2'
+      label: 'American Sign Language courses or degree programs'
+    -
+      value: '3'
+      label: 'Deaf studies courses or degree programs'
+    -
+      value: '4'
+      label: 'Braille courses'
+    -
+      value: '5'
+      label: 'No specialized degree programs or courses are offered at this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

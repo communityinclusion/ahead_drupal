@@ -1,0 +1,23 @@
+uuid: 9a15ac2d-bb64-44f6-ac9f-28976577a3c9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_student_population_undergr
+    - node.type.cedar_record
+id: node.cedar_record.field_student_population_undergr
+field_name: field_student_population_undergr
+entity_type: node
+bundle: cedar_record
+label: 'Student population: undergraduate'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

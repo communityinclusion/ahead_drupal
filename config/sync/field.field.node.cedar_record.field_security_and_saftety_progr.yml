@@ -1,0 +1,21 @@
+uuid: ea063735-443b-4a84-ae3a-f1bdb8852754
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_security_and_saftety_progr
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_security_and_saftety_progr
+field_name: field_security_and_saftety_progr
+entity_type: node
+bundle: cedar_record
+label: 'Security and saftety programs (e.g., late-night escort services on campus)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

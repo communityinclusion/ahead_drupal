@@ -1,34 +1,29 @@
-uuid: 77056ae0-7370-4bcf-a1cf-cad099a60696
+uuid: 10b7be5b-e1d0-4ee1-b58d-a5ec62d6b96a
 langcode: en
-status: false
+status: true
 dependencies:
   config:
     - core.entity_view_mode.node.search_index
     - field.field.node.page.body
-    - field.field.node.page.field_happening
-    - field.field.node.page.upload
     - node.type.page
   module:
+    - text
     - user
+_core:
+  default_config_hash: xBTs8g0qAlUrHQcyKIdGpebgUBgF-FOb_c0Lyu71hVc
 id: node.page.search_index
 targetEntityType: node
 bundle: page
 mode: search_index
 content:
-  field_happening:
+  body:
+    type: text_default
     label: hidden
-    weight: 31
-    type: number_integer
-    settings:
-      thousand_separator: ''
-      prefix_suffix: true
-    third_party_settings: {  }
-    region: content
-  links:
-    weight: 100
     settings: {  }
     third_party_settings: {  }
+    weight: 0
     region: content
 hidden:
-  body: true
-  upload: true
+  langcode: true
+  links: true
+  search_api_excerpt: true

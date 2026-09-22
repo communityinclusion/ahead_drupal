@@ -1,0 +1,23 @@
+uuid: 43b9b05e-a026-41cb-881b-bc3d87ab29f2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_university_link
+    - node.type.cedar_record
+  module:
+    - link
+id: node.cedar_record.field_university_link
+field_name: field_university_link
+entity_type: node
+bundle: cedar_record
+label: 'University Link'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 1
+  link_type: 17
+field_type: link

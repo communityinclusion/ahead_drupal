@@ -1,0 +1,21 @@
+uuid: 42212f0b-9849-424b-9489-45adad88caae
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_on_campus_transportation
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_on_campus_transportation
+field_name: field_on_campus_transportation
+entity_type: node
+bundle: cedar_record
+label: 'On-campus transportation'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,44 @@
+uuid: 9c113d28-c35c-486a-92a4-c218378e937c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_other_contacts
+    - node.type.cedar_record
+    - paragraphs.paragraphs_type.d_o_contacts
+  module:
+    - entity_reference_revisions
+    - field_display_label
+third_party_settings:
+  field_display_label:
+    display_label: 'Contact people'
+id: node.cedar_record.field_other_contacts
+field_name: field_other_contacts
+entity_type: node
+bundle: cedar_record
+label: 'Other contacts'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      d_o_contacts: d_o_contacts
+    negate: 0
+    target_bundles_drag_drop:
+      d_o_contacts:
+        weight: 3
+        enabled: true
+      disability_office_address_es_:
+        weight: 5
+        enabled: false
+      from_library:
+        weight: 4
+        enabled: false
+      other_response:
+        weight: 8
+        enabled: false
+field_type: entity_reference_revisions

@@ -1,0 +1,21 @@
+uuid: dfa4e686-250e-4733-a573-dd6e62e5248d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field__types_of_counseling_and_p
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field__types_of_counseling_and_p
+field_name: field__types_of_counseling_and_p
+entity_type: node
+bundle: cedar_record
+label: ' Types of counseling and psychological services available at the institution'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

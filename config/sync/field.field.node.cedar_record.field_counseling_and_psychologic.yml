@@ -1,0 +1,21 @@
+uuid: f1e2d96d-af7d-4588-9d4d-be13cd3b6ea9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_counseling_and_psychologic
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_counseling_and_psychologic
+field_name: field_counseling_and_psychologic
+entity_type: node
+bundle: cedar_record
+label: 'Counseling and psychological services'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

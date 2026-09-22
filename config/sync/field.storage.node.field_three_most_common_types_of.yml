@@ -1,0 +1,57 @@
+uuid: 0955d3c2-c172-4c36-8991-3e02a0e215ad
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_three_most_common_types_of
+field_name: field_three_most_common_types_of
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Attention Deficit Hyperacticity Disorder (ADHD)'
+    -
+      value: '2'
+      label: 'Autism,  autism spectrum disorder'
+    -
+      value: '3'
+      label: 'Difficulty seeing (includes visual impairment and blindness)'
+    -
+      value: '4'
+      label: 'Chronic illnesses (examples: diabetes, arthritis, epilepsy, HIV/AIDS, cancer)'
+    -
+      value: '5'
+      label: 'Difficulty hearing (includes Deafness and hearing loss)'
+    -
+      value: '6'
+      label: 'Intellectual disability (example, Down syndrome)'
+    -
+      value: '7'
+      label: 'Specific learning disabilities'
+    -
+      value: '8'
+      label: 'Physical, orthopedic, and mobility-related disabilities'
+    -
+      value: '9'
+      label: 'Psychiatric and disabilities related to mental and emotional health'
+    -
+      value: '10'
+      label: 'Speech and language disabilities'
+    -
+      value: '11'
+      label: 'Traumatic brain injuries'
+    -
+      value: '12'
+      label: Other
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

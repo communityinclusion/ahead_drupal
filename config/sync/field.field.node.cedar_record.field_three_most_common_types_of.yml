@@ -1,0 +1,21 @@
+uuid: 1093397e-c665-4a99-9383-955a83ff4ff0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_three_most_common_types_of
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_three_most_common_types_of
+field_name: field_three_most_common_types_of
+entity_type: node
+bundle: cedar_record
+label: 'Three most common types of disabilities disclosed by students to the disability resource office'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

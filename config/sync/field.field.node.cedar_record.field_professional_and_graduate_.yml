@@ -1,0 +1,21 @@
+uuid: 9db2c559-c4df-4ea8-bc6c-be75989ed89b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_professional_and_graduate_
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_professional_and_graduate_
+field_name: field_professional_and_graduate_
+entity_type: node
+bundle: cedar_record
+label: 'Professional and graduate students'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

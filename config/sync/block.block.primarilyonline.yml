@@ -1,0 +1,29 @@
+uuid: 01c2820c-f999-4d9b-8280-823b9717af26
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.primarily_online_
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: primarilyonline
+theme: ahead_boot4
+region: sidebar_firstb
+weight: -11
+provider: null
+plugin: 'facet_block:primarily_online_'
+settings:
+  id: 'facet_block:primarily_online_'
+  label: 'Primarily online?'
+  label_display: visible
+  provider: facets
+  block_id: primarilyonline
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/general-search*\r\n/home\r\n/solr-search*"

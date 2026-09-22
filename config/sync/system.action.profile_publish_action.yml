@@ -1,4 +1,4 @@
-uuid: 0d28321f-9c75-4b59-a9af-cab763f89c51
+uuid: c9988d9d-4641-4ec5-a7e4-4f908cc4404a
 langcode: en
 status: true
 dependencies:
@@ -9,5 +9,5 @@ _core:
 id: profile_publish_action
 label: 'Publish selected profile'
 type: profile
-plugin: profile_publish_action
+plugin: 'entity:publish_action:profile'
 configuration: {  }

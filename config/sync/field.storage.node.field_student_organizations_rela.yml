@@ -1,0 +1,21 @@
+uuid: 58e4e8a2-5fa2-4355-8afa-38a381302c94
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_student_organizations_rela
+field_name: field_student_organizations_rela
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

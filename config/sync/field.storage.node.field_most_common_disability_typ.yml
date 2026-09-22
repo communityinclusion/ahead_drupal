@@ -1,0 +1,21 @@
+uuid: cdb778b7-466e-4d85-881e-c442f3e9e7f7
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_most_common_disability_typ
+field_name: field_most_common_disability_typ
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

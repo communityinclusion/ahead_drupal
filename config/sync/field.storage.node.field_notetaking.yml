@@ -1,0 +1,30 @@
+uuid: 7f6deed8-2e91-4d0e-a2ea-64a41feaa68e
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_notetaking
+field_name: field_notetaking
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Not provided within the last 3 years'
+    -
+      value: '2'
+      label: 'Provided occasionally within the last 3 years'
+    -
+      value: '3'
+      label: 'Commonly provided within the last 3 years'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

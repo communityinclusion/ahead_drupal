@@ -1,14 +1,15 @@
-uuid: 7a1fe8e4-b637-4158-9bf6-22d6aa39506b
-name: 'Northeast Resource Center for Vision Education'
-mail: help@nercve.org
-slogan: 'Improving Education for Individuals with Visual Impairments.'
-page:
-  403: /
-  404: /
-  front: /node/6685
-admin_compact_mode: false
-weight_select_max: 100
-langcode: en
-default_langcode: en
 _core:
   default_config_hash: yXadRE77Va-G6dxhd2kPYapAvbnSvTF6hO4oXiOEynI
+langcode: en
+uuid: c7459928-376c-41d7-be7c-ebd5cf953422
+name: 'Campus Disability Resource Database'
+mail: admin@rsmail.communityinclusion.org
+slogan: ''
+page:
+  403: ''
+  404: ''
+  front: /solr-search/content
+admin_compact_mode: false
+weight_select_max: 100
+default_langcode: en
+mail_notification: ''

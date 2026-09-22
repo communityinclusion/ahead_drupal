@@ -1,0 +1,21 @@
+uuid: f03c1126-c62a-4538-b38b-f31863a96fd5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_students_from_a_particular
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_students_from_a_particular
+field_name: field_students_from_a_particular
+entity_type: node
+bundle: cedar_record
+label: 'Students from a particular religious backround (e.g., Catholic students, Muslim students, Jewish students)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

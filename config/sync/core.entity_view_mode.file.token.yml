@@ -1,4 +1,4 @@
-uuid: f6f07080-cee3-4dcd-b1e6-d660b397e5e0
+uuid: 947e6e0a-f54c-4a5c-9483-6ac133788a40
 langcode: en
 status: true
 dependencies:
@@ -6,5 +6,6 @@ dependencies:
     - file
 id: file.token
 label: Token
+description: ''
 targetEntityType: file
 cache: true

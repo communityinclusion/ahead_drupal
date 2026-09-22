@@ -1,0 +1,21 @@
+uuid: eaddd49e-5f62-4144-9aef-d796e99739aa
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_reduced_courseload
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_reduced_courseload
+field_name: field_reduced_courseload
+entity_type: node
+bundle: cedar_record
+label: 'Reduced courseload'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

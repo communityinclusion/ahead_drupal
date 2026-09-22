@@ -1,0 +1,21 @@
+uuid: 3c1616d5-4a67-4839-972c-3b52005d2dd3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_other_other_frequency
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_other_other_frequency
+field_name: field_other_other_frequency
+entity_type: node
+bundle: cedar_record
+label: 'Other: frequency'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,30 @@
+uuid: 8c27a17e-bc26-4364-af48-8272c1b7c102
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_ncaa_athletes
+field_name: field_ncaa_athletes
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Not provided within the last 3 years'
+    -
+      value: '2'
+      label: 'Provided occasionally within the last 3 years'
+    -
+      value: '3'
+      label: 'Commonly provided within the last 3 years'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

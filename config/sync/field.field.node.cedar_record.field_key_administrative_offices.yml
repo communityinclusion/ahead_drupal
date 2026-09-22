@@ -1,0 +1,21 @@
+uuid: e633c9ac-bca6-4090-baa7-0a0f0071e666
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_key_administrative_offices
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_key_administrative_offices
+field_name: field_key_administrative_offices
+entity_type: node
+bundle: cedar_record
+label: 'Key administrative offices (e.g., financial aid, registration, multi-cultural affairs, students services, career counseling)'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

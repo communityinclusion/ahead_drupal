@@ -1,0 +1,30 @@
+uuid: 65d7da89-78d5-498b-ad9c-ec7b836f5140
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_reduced_courseload
+field_name: field_reduced_courseload
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Not provided within the last 3 years'
+    -
+      value: '2'
+      label: 'Provided occasionally within the last 3 years'
+    -
+      value: '3'
+      label: 'Commonly provided within the last 3 years'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

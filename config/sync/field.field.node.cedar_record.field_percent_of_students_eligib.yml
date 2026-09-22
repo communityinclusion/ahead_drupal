@@ -1,0 +1,26 @@
+uuid: 60ef7ec9-0fa5-42c4-9bce-7926e8051f20
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_percent_of_students_eligib
+    - node.type.cedar_record
+  module:
+    - computed_field
+id: node.cedar_record.field_percent_of_students_eligib
+field_name: field_percent_of_students_eligib
+entity_type: node
+bundle: cedar_record
+label: 'Percent of students eligible to receive disability services '
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  code: '$value =  $entity->field_number_of_stud_exact->value && $entity->field_student_population->value && $entity->field_student_population->value > 0 && $entity->field_number_of_stud_exact->value > 0 ?  ($entity->field_number_of_stud_exact->value / $entity->field_student_population->value) * 100 : 0;'
+  prefix: ''
+  suffix: '%'
+field_type: computed_decimal

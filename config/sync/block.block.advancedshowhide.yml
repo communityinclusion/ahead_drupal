@@ -1,0 +1,31 @@
+uuid: 2e02e99a-d3e0-4368-926d-6003704a161d
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:973edb6a-7217-4fda-b383-30ee3570e7ae'
+  module:
+    - block_content
+    - system
+  theme:
+    - ahead_boot4
+id: advancedshowhide
+theme: ahead_boot4
+region: sidebar_first
+weight: -7
+provider: null
+plugin: 'block_content:973edb6a-7217-4fda-b383-30ee3570e7ae'
+settings:
+  id: 'block_content:973edb6a-7217-4fda-b383-30ee3570e7ae'
+  label: 'advanced show/hide'
+  label_display: '0'
+  provider: block_content
+  status: true
+  info: ''
+  view_mode: full
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "/solr-search*\r\n<front>"

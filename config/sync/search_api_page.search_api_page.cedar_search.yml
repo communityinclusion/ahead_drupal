@@ -1,0 +1,19 @@
+uuid: 911f35dd-51d9-42c9-91a1-1d9426c39f59
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.default_solr_index
+id: cedar_search
+label: 'CEDAR Search'
+path: cedar-search
+clean_url: true
+show_all_when_no_keys: false
+index: default_solr_index
+limit: 20
+searched_fields:
+  title: title
+style: search_results
+view_mode_configuration: {  }
+show_search_form: true
+parse_mode: direct

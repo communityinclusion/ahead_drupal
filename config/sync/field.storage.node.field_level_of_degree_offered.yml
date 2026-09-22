@@ -1,0 +1,36 @@
+uuid: 36ff366a-0ade-474e-8fce-602694e64aff
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_level_of_degree_offered
+field_name: field_level_of_degree_offered
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '0'
+      label: 'Not applicable'
+    -
+      value: '1'
+      label: Certificate
+    -
+      value: '2'
+      label: "Associate's Degree"
+    -
+      value: '3'
+      label: "Bachelor's Degree"
+    -
+      value: '4'
+      label: 'Advanced Degree'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

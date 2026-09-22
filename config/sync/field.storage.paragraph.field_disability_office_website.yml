@@ -1,0 +1,19 @@
+uuid: 2458fafc-5396-4918-af09-4e0a162a1453
+langcode: en
+status: true
+dependencies:
+  module:
+    - link
+    - paragraphs
+id: paragraph.field_disability_office_website
+field_name: field_disability_office_website
+entity_type: paragraph
+type: link
+settings: {  }
+module: link
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

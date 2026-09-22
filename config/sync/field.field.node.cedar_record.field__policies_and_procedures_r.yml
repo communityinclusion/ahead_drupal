@@ -1,0 +1,21 @@
+uuid: a9ca6737-3acd-4df0-b716-7e7aa588c583
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field__policies_and_procedures_r
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field__policies_and_procedures_r
+field_name: field__policies_and_procedures_r
+entity_type: node
+bundle: cedar_record
+label: ' Policies and procedures related to students with disabilities'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

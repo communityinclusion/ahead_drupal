@@ -1,0 +1,30 @@
+uuid: af2e7790-e3cf-435b-906a-160b47d7242c
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - paragraphs
+id: paragraph.field_other_specify_below_
+field_name: field_other_specify_below_
+entity_type: paragraph
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Not provided within the last 3 years'
+    -
+      value: '2'
+      label: 'Provided occasionally within the last 3 years'
+    -
+      value: '3'
+      label: 'Commonly provided within the last 3 years'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

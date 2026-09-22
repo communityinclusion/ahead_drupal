@@ -1,0 +1,29 @@
+uuid: 78f96835-ea84-4f66-894a-712c11c5d914
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.institution_provided_disability_information
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: institutionprovideddisabilityinformation
+theme: ahead_boot4
+region: sidebar_first
+weight: -11
+provider: null
+plugin: 'facet_block:institution_provided_disability_information'
+settings:
+  id: 'facet_block:institution_provided_disability_information'
+  label: 'Institution provided disability information'
+  label_display: '0'
+  provider: facets
+  block_id: institutionprovideddisabilityinformation
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "/solr-search/*\r\n<front>\r\n/home"

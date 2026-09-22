@@ -1,0 +1,48 @@
+uuid: adb4e805-498e-4eec-aaae-56894ab6f5e1
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field__policies_and_procedures_r
+field_name: field__policies_and_procedures_r
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Standardized or recommended syllabus statements regarding disability accommodations'
+    -
+      value: '2'
+      label: 'Institutional policy requiring that all online materials are accessible to students with disabilities ( compliant with Section 508)'
+    -
+      value: '3'
+      label: 'Centralized funding for disability accommodations at events (e.g. individuals, student organizations, and departments are not responsible for paying for disability-related accommodations)Provision of interpreters and Communication Access Realtime Translation (CART)  for all major events'
+    -
+      value: '4'
+      label: 'Provision of interpreters and Communication Access Realtime Translation (CART) for all major events'
+    -
+      value: '5'
+      label: 'Emergency evacuation procedures include plans for students with disabilities'
+    -
+      value: '6'
+      label: 'Faculty diversity hiring initiatives  include efforts to recruit and retain faculty with disabilities'
+    -
+      value: '7'
+      label: 'Opportunities for students with disabilities and without a high school diploma to take courses (i.e., "open enrollment")'
+    -
+      value: '8'
+      label: 'Formal grievance policies and procedures for students with complaints about campus disability access'
+    -
+      value: '9'
+      label: 'Grievance procedures for students with complaints about the disability resource office'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

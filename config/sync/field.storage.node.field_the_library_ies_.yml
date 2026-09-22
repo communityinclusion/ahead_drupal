@@ -1,0 +1,33 @@
+uuid: 6c01fcd3-03c4-4f13-96e2-a9ae435d6902
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_the_library_ies_
+field_name: field_the_library_ies_
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Generally not accessible'
+    -
+      value: '2'
+      label: 'Somewhat accessible'
+    -
+      value: '3'
+      label: 'Completely accessible'
+    -
+      value: '4'
+      label: 'Not applicable to this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

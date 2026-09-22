@@ -1,0 +1,11 @@
+uuid: f1d1e98c-5a17-43ec-8d03-761927aeb817
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: lRLlMHtAftGXOKGJyMblVU24LDFCeBIuSU_mOWdKQcM
+name: 'Font Tags'
+vid: font_tags
+description: 'The tags that came with the font.'
+weight: 0
+new_revision: false

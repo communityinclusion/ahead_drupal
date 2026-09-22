@@ -1,0 +1,22 @@
+uuid: ee530b3c-5ea8-4532-ad09-5655c725ea8d
+langcode: en
+status: true
+dependencies:
+  module:
+    - help
+  theme:
+    - ahead_boot4
+_core:
+  default_config_hash: 8I8iACSa0sKO3k3jlvUG1ge52rfcKX7USJAQYnzuBgg
+id: ahead_boot4_help
+theme: ahead_boot4
+region: content
+weight: -12
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: Help
+  label_display: '0'
+  provider: help
+visibility: {  }

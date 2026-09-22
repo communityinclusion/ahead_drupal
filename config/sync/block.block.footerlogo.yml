@@ -1,0 +1,29 @@
+uuid: b16b2dc9-144d-45b2-a4dc-52184a421003
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:9fcc43ad-8426-4d0b-9f80-5cc09055c231'
+  module:
+    - block_class
+    - block_content
+  theme:
+    - ahead_boot4
+third_party_settings:
+  block_class:
+    classes: 'col-lg-4 col-md-12 border-0'
+id: footerlogo
+theme: ahead_boot4
+region: footer_first
+weight: 0
+provider: null
+plugin: 'block_content:9fcc43ad-8426-4d0b-9f80-5cc09055c231'
+settings:
+  id: 'block_content:9fcc43ad-8426-4d0b-9f80-5cc09055c231'
+  label: 'footer logo'
+  label_display: '0'
+  provider: block_content
+  status: true
+  info: ''
+  view_mode: full
+visibility: {  }

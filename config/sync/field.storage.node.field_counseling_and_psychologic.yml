@@ -1,0 +1,33 @@
+uuid: 964b081d-e704-484a-965e-c3ad28da6021
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_counseling_and_psychologic
+field_name: field_counseling_and_psychologic
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Generally not accessible'
+    -
+      value: '2'
+      label: 'Somewhat accessible'
+    -
+      value: '3'
+      label: 'Completely accessible'
+    -
+      value: '4'
+      label: 'Not applicable to this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

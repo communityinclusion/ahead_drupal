@@ -1,0 +1,19 @@
+uuid: 9fac8ea1-b847-4e50-8be2-10ba59509b4f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_d_o_city
+    - paragraphs.paragraphs_type.disability_office_address_es_
+id: paragraph.disability_office_address_es_.field_d_o_city
+field_name: field_d_o_city
+entity_type: paragraph
+bundle: disability_office_address_es_
+label: City
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

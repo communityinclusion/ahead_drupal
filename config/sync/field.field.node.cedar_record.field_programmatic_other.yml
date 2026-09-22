@@ -1,0 +1,37 @@
+uuid: 84944f57-0a5d-44ca-af8e-c92921408d6d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_programmatic_other
+    - node.type.cedar_record
+    - paragraphs.paragraphs_type.other_response
+  module:
+    - entity_reference_revisions
+id: node.cedar_record.field_programmatic_other
+field_name: field_programmatic_other
+entity_type: node
+bundle: cedar_record
+label: Other
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      other_response: other_response
+    negate: 0
+    target_bundles_drag_drop:
+      d_o_contacts:
+        weight: 4
+        enabled: false
+      from_library:
+        weight: 5
+        enabled: false
+      other_response:
+        weight: 6
+        enabled: true
+field_type: entity_reference_revisions

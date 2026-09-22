@@ -1,0 +1,49 @@
+uuid: ff25d332-a8fa-44d6-b026-d1146658e753
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: cedardatabase
+label: cedardatabase
+weight: 1
+container_id: GTM-5R83BJC
+hostname: www.googletagmanager.com
+data_layer: dataLayer
+include_classes: false
+whitelist_classes: |-
+  google
+  nonGooglePixels
+  nonGoogleScripts
+  nonGoogleIframes
+blacklist_classes: |-
+  customScripts
+  customPixels
+include_environment: false
+environment_id: ''
+environment_token: ''
+path_toggle: 'exclude listed'
+path_list: |-
+  /admin*
+  /batch*
+  /node/add*
+  /node/*/edit
+  /node/*/delete
+  /user/*/edit*
+  /user/*/cancel*
+role_toggle: 'exclude listed'
+role_list: {  }
+status_toggle: 'exclude listed'
+status_list: |-
+  403
+  404
+conditions:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      article: article
+      cedar_record: cedar_record
+      page: page

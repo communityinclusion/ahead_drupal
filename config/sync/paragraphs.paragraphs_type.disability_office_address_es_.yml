@@ -1,0 +1,14 @@
+uuid: 0f08a801-c1d0-4061-b9e8-755f0d58c3c9
+langcode: en
+status: true
+dependencies:
+  module:
+    - paragraphs_library
+third_party_settings:
+  paragraphs_library:
+    allow_library_conversion: true
+id: disability_office_address_es_
+label: 'Disability office address(es)'
+icon_uuid: null
+description: ''
+behavior_plugins: {  }

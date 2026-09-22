@@ -1,0 +1,29 @@
+uuid: 1259e608-acbd-4fa8-9e7a-ebda2f7e6f38
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.institution_size
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: institutionsize
+theme: ahead_boot4
+region: sidebar_firstb
+weight: -12
+provider: null
+plugin: 'facet_block:institution_size'
+settings:
+  id: 'facet_block:institution_size'
+  label: 'Institution size'
+  label_display: visible
+  provider: facets
+  block_id: institutionsize
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/general-search*\r\n/home\r\n/solr-search*"

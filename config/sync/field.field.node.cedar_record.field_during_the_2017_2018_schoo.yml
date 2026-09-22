@@ -1,0 +1,23 @@
+uuid: a939b429-705e-4801-8568-fb3a358a47f9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_during_the_2017_2018_schoo
+    - node.type.cedar_record
+id: node.cedar_record.field_during_the_2017_2018_schoo
+field_name: field_during_the_2017_2018_schoo
+entity_type: node
+bundle: cedar_record
+label: 'During the 2017-2018 school year, what was the total number of students who had accessed counseling and psychological services'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

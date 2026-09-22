@@ -1,0 +1,21 @@
+uuid: 789496ff-6c37-45c8-9d5c-075dc88ec59e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_accommodations_and_service
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_accommodations_and_service
+field_name: field_accommodations_and_service
+entity_type: node
+bundle: cedar_record
+label: 'Accommodations and services for institution-sponsored  study abroad programs'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

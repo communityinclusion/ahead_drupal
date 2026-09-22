@@ -1,0 +1,30 @@
+uuid: 14704327-5792-4188-90cc-47b9a6281cd5
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_students_of_color
+field_name: field_students_of_color
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Not provided within the last 3 years'
+    -
+      value: '2'
+      label: 'Provided occasionally within the last 3 years'
+    -
+      value: '3'
+      label: 'Commonly provided within the last 3 years'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

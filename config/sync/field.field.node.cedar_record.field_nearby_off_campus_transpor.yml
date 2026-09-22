@@ -1,0 +1,21 @@
+uuid: 18101dbd-f9fa-49c6-a1ca-3aae817da06a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_nearby_off_campus_transpor
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_nearby_off_campus_transpor
+field_name: field_nearby_off_campus_transpor
+entity_type: node
+bundle: cedar_record
+label: 'Nearby off-campus transportation'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

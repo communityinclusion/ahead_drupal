@@ -1,0 +1,21 @@
+uuid: 7fda9d4b-d162-4429-9676-a7ba8655d07d
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_survey_contact_email
+field_name: field_survey_contact_email
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

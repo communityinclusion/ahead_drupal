@@ -1,0 +1,30 @@
+uuid: 58b320d8-ad92-48c0-9e59-02e95b61d849
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_2_or_4_year_institution
+field_name: field_2_or_4_year_institution
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '2'
+      label: '2 year'
+    -
+      value: '4'
+      label: '4 year'
+    -
+      value: '3'
+      label: Other
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

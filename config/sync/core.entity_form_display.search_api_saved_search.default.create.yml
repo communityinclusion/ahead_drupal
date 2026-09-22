@@ -1,0 +1,42 @@
+uuid: dc245ad5-9d9b-4d6c-aceb-ce8b7a1074e2
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.search_api_saved_search.create
+    - search_api_saved_searches.type.default
+id: search_api_saved_search.default.create
+targetEntityType: search_api_saved_search
+bundle: default
+mode: create
+content:
+  label:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  mail:
+    type: email_default
+    weight: 2
+    region: content
+    settings:
+      placeholder: user@example.com
+      size: 60
+    third_party_settings: {  }
+  notify_interval:
+    type: options_select
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  langcode: true
+  last_executed: true
+  next_execution: true
+  path: true
+  status: true
+  uid: true

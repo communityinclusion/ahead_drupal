@@ -1,0 +1,363 @@
+uuid: 8d83d936-8642-4b15-bf46-8e5bd2eafb8f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.search_index
+    - field.storage.node.field_2_or_4_year_institution
+    - field.storage.node.field_accommodations_in_residenc
+    - field.storage.node.field_college_university_state
+    - field.storage.node.field_completed_survey
+    - field.storage.node.field_courses_or_degree_programs
+    - field.storage.node.field_disability_related_program
+    - field.storage.node.field_disability_related_service
+    - field.storage.node.field_institution_size_category
+    - field.storage.node.field_minority_serving_
+    - field.storage.node.field_online_serving_only
+    - field.storage.node.field_type_of_institution
+    - field.storage.paragraph.field_d_o_state
+    - search_api.server.default_solr_server
+  module:
+    - node
+    - paragraphs
+    - search_api_solr
+    - taxonomy
+    - user
+third_party_settings:
+  search_api_solr:
+    finalize: false
+    commit_before_finalize: false
+    commit_after_finalize: false
+    highlighter:
+      maxAnalyzedChars: 51200
+      fragmenter: regex
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
+      regex:
+        slop: 0.5
+        pattern: blank
+        maxAnalyzedChars: 10000
+      highlight:
+        mergeContiguous: false
+        requireFieldMatch: false
+        snippets: 3
+        fragsize: 0
+    mlt:
+      mintf: 1
+      mindf: 1
+      maxdf: 0
+      maxdfpct: 0
+      minwl: 0
+      maxwl: 0
+      maxqt: 100
+      maxntp: 2000
+      boost: false
+      interestingTerms: none
+    term_modifiers:
+      slop: 10000000
+      fuzzy: 2
+    advanced:
+      index_prefix: ''
+      collection: ''
+      timezone: ''
+    multilingual:
+      limit_to_content_language: false
+      include_language_independent: true
+      specific_languages: {  }
+      use_language_undefined_as_fallback_language: false
+      use_universal_collation: false
+_core:
+  default_config_hash: lcYnKd7EBuLnAdRQR3jS8E4SqChn3zAaFqUx9DdoTqA
+id: default_solr_index
+name: 'Default Solr content index'
+description: 'CEDAR content index created by the Solr Search Defaults module'
+read_only: false
+field_settings:
+  aggregated_field:
+    label: 'Aggregated field'
+    property_path: aggregated_field
+    type: string
+    configuration:
+      type: union
+      fields: {  }
+  author:
+    label: 'Author name'
+    datasource_id: 'entity:node'
+    property_path: 'uid:entity:name'
+    type: string
+    dependencies:
+      module:
+        - node
+        - user
+  changed:
+    label: Changed
+    datasource_id: 'entity:node'
+    property_path: changed
+    type: date
+    dependencies:
+      module:
+        - node
+  created:
+    label: 'Authored on'
+    datasource_id: 'entity:node'
+    property_path: created
+    type: date
+    dependencies:
+      module:
+        - node
+  field_2_or_4_year_institution:
+    label: '2 or 4 year institution'
+    datasource_id: 'entity:node'
+    property_path: field_2_or_4_year_institution
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_2_or_4_year_institution
+  field_accommodations_in_residenc:
+    label: 'Accommodations in residence halls'
+    datasource_id: 'entity:node'
+    property_path: field_accommodations_in_residenc
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_accommodations_in_residenc
+  field_college_university_state:
+    label: 'College/University State'
+    datasource_id: 'entity:node'
+    property_path: field_college_university_state
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_college_university_state
+  field_completed_survey:
+    label: 'Completed survey'
+    datasource_id: 'entity:node'
+    property_path: field_completed_survey
+    type: boolean
+    dependencies:
+      config:
+        - field.storage.node.field_completed_survey
+  field_courses_or_degree_programs:
+    label: 'Courses or degree programs'
+    datasource_id: 'entity:node'
+    property_path: field_courses_or_degree_programs
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_courses_or_degree_programs
+  field_d_o_state:
+    label: State
+    datasource_id: 'entity:paragraph'
+    property_path: field_d_o_state
+    type: string
+    dependencies:
+      config:
+        - field.storage.paragraph.field_d_o_state
+  field_disability_related_program:
+    label: 'Disability-Related Programs and Courses'
+    datasource_id: 'entity:node'
+    property_path: field_disability_related_program
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_disability_related_program
+  field_disability_related_service:
+    label: 'Disability-Related Services'
+    datasource_id: 'entity:node'
+    property_path: field_disability_related_service
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_disability_related_service
+  field_institution_size_category:
+    label: 'Institution size category'
+    datasource_id: 'entity:node'
+    property_path: field_institution_size_category
+    type: integer
+    dependencies:
+      config:
+        - field.storage.node.field_institution_size_category
+  field_minority_serving_:
+    label: 'Minority serving?'
+    datasource_id: 'entity:node'
+    property_path: field_minority_serving_
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_minority_serving_
+  field_online_serving_only:
+    label: 'Online serving only'
+    datasource_id: 'entity:node'
+    property_path: field_online_serving_only
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_online_serving_only
+  field_type_of_institution:
+    label: 'Type of institution'
+    datasource_id: 'entity:node'
+    property_path: field_type_of_institution
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_type_of_institution
+  node_grants:
+    label: 'Node access information'
+    property_path: search_api_node_grants
+    type: string
+    indexed_locked: true
+    type_locked: true
+    hidden: true
+  rendered_item:
+    label: 'Rendered item'
+    property_path: rendered_item
+    type: text
+    configuration:
+      roles:
+        anonymous: anonymous
+      view_mode:
+        'entity:node':
+          article: search_index
+          page: search_index
+  status:
+    label: 'Publishing status'
+    datasource_id: 'entity:node'
+    property_path: status
+    type: boolean
+    indexed_locked: true
+    type_locked: true
+    dependencies:
+      module:
+        - node
+  sticky:
+    label: 'Sticky at top of lists'
+    datasource_id: 'entity:node'
+    property_path: sticky
+    type: boolean
+    dependencies:
+      module:
+        - node
+  title:
+    label: Title
+    datasource_id: 'entity:node'
+    property_path: title
+    type: text
+    boost: 8.0
+    dependencies:
+      module:
+        - node
+  type:
+    label: 'Content type'
+    datasource_id: 'entity:node'
+    property_path: type
+    type: string
+    dependencies:
+      module:
+        - node
+  uid:
+    label: 'Author ID'
+    datasource_id: 'entity:node'
+    property_path: uid
+    type: integer
+    indexed_locked: true
+    type_locked: true
+    dependencies:
+      module:
+        - node
+datasource_settings:
+  'entity:node':
+    bundles:
+      default: true
+      selected: {  }
+    languages:
+      default: true
+      selected: {  }
+  'entity:paragraph':
+    bundles:
+      default: true
+      selected: {  }
+    languages:
+      default: true
+      selected: {  }
+  'entity:taxonomy_term':
+    bundles:
+      default: true
+      selected: {  }
+    languages:
+      default: true
+      selected: {  }
+  solr_document:
+    id_field: _version_
+    request_handler: ''
+    default_query: '*:*'
+    label_field: ''
+    language_field: ''
+    url_field: ''
+processor_settings:
+  add_url:
+    weights:
+      preprocess_index: -30
+  aggregated_field:
+    weights:
+      add_properties: 20
+  content_access:
+    weights:
+      preprocess_query: -30
+  html_filter:
+    weights:
+      preprocess_index: -15
+      preprocess_query: -15
+    all_fields: false
+    fields:
+      - aggregated_field
+      - author
+      - field_2_or_4_year_institution
+      - field_accommodations_in_residenc
+      - field_college_university_state
+      - field_d_o_state
+      - field_disability_related_program
+      - field_disability_related_service
+      - field_minority_serving_
+      - field_type_of_institution
+      - rendered_item
+      - title
+      - type
+    title: true
+    alt: true
+    tags:
+      b: 2
+      em: 1
+      h1: 5
+      h2: 3
+      h3: 2
+      strong: 2
+      u: 1
+  language_with_fallback: {  }
+  rendered_item:
+    weights:
+      add_properties: 0
+      pre_index_save: -10
+  solr_date_range:
+    weights:
+      preprocess_index: 0
+  type_boost:
+    weights:
+      preprocess_index: 0
+    boosts:
+      'entity:node':
+        datasource_boost: 1.0
+      'entity:paragraph':
+        datasource_boost: 1.0
+      'entity:taxonomy_term':
+        datasource_boost: 1.0
+      solr_document:
+        datasource_boost: 1.0
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  cron_limit: 50
+  index_directly: true
+  track_changes_in_references: true
+server: default_solr_server

@@ -1,0 +1,30 @@
+uuid: 1fb6936a-ae7f-4ea6-a36b-492c4426b5d9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.other_response.field_other_specify_below_
+    - field.field.paragraph.other_response.field_specify_other_above
+    - paragraphs.paragraphs_type.other_response
+id: paragraph.other_response.default
+targetEntityType: paragraph
+bundle: other_response
+mode: default
+content:
+  field_other_specify_below_:
+    type: options_select
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_specify_other_above:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

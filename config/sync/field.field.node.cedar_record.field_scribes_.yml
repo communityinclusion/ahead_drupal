@@ -1,0 +1,21 @@
+uuid: 0a9275d3-03d8-4d27-912c-c8322c0e0fa1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_scribes_
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_scribes_
+field_name: field_scribes_
+entity_type: node
+bundle: cedar_record
+label: 'Scribes '
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

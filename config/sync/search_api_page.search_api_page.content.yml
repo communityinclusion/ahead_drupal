@@ -1,0 +1,20 @@
+uuid: 9d7d6d08-fee1-42de-9727-477ed840243a
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.default_solr_index
+id: content
+label: Content
+path: cedar-search-page
+clean_url: true
+show_all_when_no_keys: false
+index: default_solr_index
+limit: 10
+searched_fields:
+  rendered_item: rendered_item
+  title: title
+style: search_results
+view_mode_configuration: {  }
+show_search_form: true
+parse_mode: direct

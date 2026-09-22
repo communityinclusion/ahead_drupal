@@ -1,0 +1,29 @@
+uuid: dcae2dcb-b585-4abe-94aa-be31b216b351
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.courses_or_degree_programs_in_the_area_of_disabili
+  module:
+    - facets
+    - system
+  theme:
+    - ahead_boot4
+id: coursesordegreeprogramsintheareaofdisability
+theme: ahead_boot4
+region: sidebar_firstb
+weight: -7
+provider: null
+plugin: 'facet_block:courses_or_degree_programs_in_the_area_of_disabili'
+settings:
+  id: 'facet_block:courses_or_degree_programs_in_the_area_of_disabili'
+  label: 'Courses or degree programs in the area of disability'
+  label_display: visible
+  provider: facets
+  block_id: coursesordegreeprogramsintheareaofdisability
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    context_mapping: {  }
+    pages: "<front>\r\n/general-search*\r\n/home\r\n/solr-search*"

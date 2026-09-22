@@ -1,0 +1,21 @@
+uuid: fdcaa1b9-8963-4998-acf3-01a09b686063
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_international_students_or_
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_international_students_or_
+field_name: field_international_students_or_
+entity_type: node
+bundle: cedar_record
+label: 'International students or recent immigrants'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

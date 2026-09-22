@@ -1,0 +1,19 @@
+uuid: b1275731-be36-4b4c-8b30-25e4dd0e1168
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_job_title_or_role
+    - paragraphs.paragraphs_type.d_o_contacts
+id: paragraph.d_o_contacts.field_job_title_or_role
+field_name: field_job_title_or_role
+entity_type: paragraph
+bundle: d_o_contacts
+label: 'Job title or role'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

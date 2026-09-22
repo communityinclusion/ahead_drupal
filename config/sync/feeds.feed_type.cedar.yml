@@ -1,0 +1,2319 @@
+uuid: 34536cdd-c22f-4bac-a1d1-b4d7be0e0182
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.base_field_override.node.cedar_record.title
+    - field.field.node.cedar_record.field_2_or_4_year_institution
+    - field.field.node.cedar_record.field__policies_and_procedures_r
+    - field.field.node.cedar_record.field__types_of_counseling_and_p
+    - field.field.node.cedar_record.field_academic_other_frequency
+    - field.field.node.cedar_record.field_academics_other_specify_
+    - field.field.node.cedar_record.field_accommodation2_and_service
+    - field.field.node.cedar_record.field_accommodations_and_service
+    - field.field.node.cedar_record.field_accommodations_for_online_
+    - field.field.node.cedar_record.field_accommodations_in_residenc
+    - field.field.node.cedar_record.field_alternate_formats_e_g_e_te
+    - field.field.node.cedar_record.field_assistive_technology_e_g_s
+    - field.field.node.cedar_record.field_autistic_students_includes
+    - field.field.node.cedar_record.field_campus_groups_that_address
+    - field.field.node.cedar_record.field_cart_or_c_print
+    - field.field.node.cedar_record.field_col_u_address_line_1
+    - field.field.node.cedar_record.field_col_u_city
+    - field.field.node.cedar_record.field_col_u_zip_code
+    - field.field.node.cedar_record.field_college_university_state
+    - field.field.node.cedar_record.field_completed_survey
+    - field.field.node.cedar_record.field_counseling_and_psychologic
+    - field.field.node.cedar_record.field_course_substitutions
+    - field.field.node.cedar_record.field_courses_or_degree_programs
+    - field.field.node.cedar_record.field_culturally_deaf_students_w
+    - field.field.node.cedar_record.field_dietary_accommodations_for
+    - field.field.node.cedar_record.field_disability_office_addr
+    - field.field.node.cedar_record.field_disability_related_program
+    - field.field.node.cedar_record.field_disability_related_service
+    - field.field.node.cedar_record.field_during_the_2017_2018_schoo
+    - field.field.node.cedar_record.field_entertainment_theater_and_
+    - field.field.node.cedar_record.field_general_campus_resources
+    - field.field.node.cedar_record.field_how_often_does_your_instit
+    - field.field.node.cedar_record.field_institution_map
+    - field.field.node.cedar_record.field_institution_size_category
+    - field.field.node.cedar_record.field_institution_websites
+    - field.field.node.cedar_record.field_international_students_or_
+    - field.field.node.cedar_record.field_ipeds_unique_id
+    - field.field.node.cedar_record.field_key_administrative_offices
+    - field.field.node.cedar_record.field_law_students
+    - field.field.node.cedar_record.field_level_of_degree_offered
+    - field.field.node.cedar_record.field_main_academic_buildings_wh
+    - field.field.node.cedar_record.field_medical_leave
+    - field.field.node.cedar_record.field_minority_serving_
+    - field.field.node.cedar_record.field_most_common_disability_typ
+    - field.field.node.cedar_record.field_ncaa_athletes
+    - field.field.node.cedar_record.field_nearby_off_campus_transpor
+    - field.field.node.cedar_record.field_notetaking
+    - field.field.node.cedar_record.field_number_of_full_time_disabi
+    - field.field.node.cedar_record.field_number_of_staff_exact
+    - field.field.node.cedar_record.field_number_of_stud_exact
+    - field.field.node.cedar_record.field_number_of_students_who_had
+    - field.field.node.cedar_record.field_number_of_students_who_hav
+    - field.field.node.cedar_record.field_on_campus_transportation
+    - field.field.node.cedar_record.field_online_serving_only
+    - field.field.node.cedar_record.field_other_contacts
+    - field.field.node.cedar_record.field_other_counsel_psych
+    - field.field.node.cedar_record.field_other_dis_relat_services
+    - field.field.node.cedar_record.field_other_disabl_rel_courses
+    - field.field.node.cedar_record.field_other_gen_campus_resources
+    - field.field.node.cedar_record.field_other_other_frequency
+    - field.field.node.cedar_record.field_other_other_specify
+    - field.field.node.cedar_record.field_percent_of_faculty_exact
+    - field.field.node.cedar_record.field_percent_of_staff_exact
+    - field.field.node.cedar_record.field_priority_registration
+    - field.field.node.cedar_record.field_professional_and_graduate_
+    - field.field.node.cedar_record.field_programmatic_other_freq
+    - field.field.node.cedar_record.field_programmatic_other_specify
+    - field.field.node.cedar_record.field_readers
+    - field.field.node.cedar_record.field_recreation_and_athletic_fa
+    - field.field.node.cedar_record.field_reduced_courseload
+    - field.field.node.cedar_record.field_residence_halls
+    - field.field.node.cedar_record.field_scribes_
+    - field.field.node.cedar_record.field_security_and_saftety_progr
+    - field.field.node.cedar_record.field_service_animals_or_emotion
+    - field.field.node.cedar_record.field_sexual_assault_services_an
+    - field.field.node.cedar_record.field_sign_language_interpreters
+    - field.field.node.cedar_record.field_student_health_services
+    - field.field.node.cedar_record.field_student_organizations_rela
+    - field.field.node.cedar_record.field_student_population
+    - field.field.node.cedar_record.field_student_population_undergr
+    - field.field.node.cedar_record.field_student_union_or_other_mai
+    - field.field.node.cedar_record.field_students_from_a_particular
+    - field.field.node.cedar_record.field_students_from_disenfranchi
+    - field.field.node.cedar_record.field_students_in_stem_fields_in
+    - field.field.node.cedar_record.field_students_of_color
+    - field.field.node.cedar_record.field_students_with_chronic_heal
+    - field.field.node.cedar_record.field_students_with_food_allergi
+    - field.field.node.cedar_record.field_students_with_intellectual
+    - field.field.node.cedar_record.field_survey_contact
+    - field.field.node.cedar_record.field_survey_contact_email
+    - field.field.node.cedar_record.field_survey_contact_phone
+    - field.field.node.cedar_record.field_test_accomodations
+    - field.field.node.cedar_record.field_the_library_ies_
+    - field.field.node.cedar_record.field_three_most_common_types_of
+    - field.field.node.cedar_record.field_type_of_institution
+    - field.field.node.cedar_record.field_university_link
+    - field.field.node.cedar_record.field_veterans
+    - field.field.node.cedar_record.field_what_percent_of_faculty_on
+    - field.field.node.cedar_record.field_what_percent_of_staff_on_c
+    - field.field.paragraph.d_o_contacts.field_email_address
+    - field.field.paragraph.d_o_contacts.field_job_title_or_role
+    - field.field.paragraph.d_o_contacts.field_name_of_contact
+    - field.field.paragraph.d_o_contacts.field_telephone
+    - field.field.paragraph.disability_office_address_es_.field_d_o_address_line_1
+    - field.field.paragraph.disability_office_address_es_.field_d_o_address_line_2
+    - field.field.paragraph.disability_office_address_es_.field_d_o_city
+    - field.field.paragraph.disability_office_address_es_.field_d_o_office_name
+    - field.field.paragraph.disability_office_address_es_.field_d_o_state
+    - field.field.paragraph.disability_office_address_es_.field_d_o_zip_code
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_email_ad
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_phone
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_website
+    - node.type.cedar_record
+  module:
+    - feeds_para_mapper
+    - feeds_tamper
+    - geofield
+    - node
+third_party_settings:
+  feeds_tamper:
+    tampers:
+      acaf87e0-d5c3-421c-a24c-4c28e16d6d61:
+        find: '2'
+        replace: '1'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: acaf87e0-d5c3-421c-a24c-4c28e16d6d61
+        plugin: find_replace
+        source: hloffer
+        weight: -9
+      4bf8a503-e06a-4e19-8d7c-3e255c7a01c6:
+        find: '3'
+        replace: '2'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 4bf8a503-e06a-4e19-8d7c-3e255c7a01c6
+        plugin: find_replace
+        source: hloffer
+        weight: -8
+      8340fb85-c41e-416a-bff4-43ae7abeb8a0:
+        find: '4'
+        replace: '1'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 8340fb85-c41e-416a-bff4-43ae7abeb8a0
+        plugin: find_replace
+        source: hloffer
+        weight: -7
+      1a5131db-7bbc-4693-ae5c-f6add04a9766:
+        find: '5'
+        replace: '3'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 1a5131db-7bbc-4693-ae5c-f6add04a9766
+        plugin: find_replace
+        source: hloffer
+        weight: -6
+      5f474c3a-0415-46d2-8a37-1a616a6fe5e9:
+        find: '6'
+        replace: '4'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 5f474c3a-0415-46d2-8a37-1a616a6fe5e9
+        plugin: find_replace
+        source: hloffer
+        weight: -5
+      d9b266c5-cdd9-4e93-ba5d-7140fbb133fa:
+        find: '7'
+        replace: '4'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: d9b266c5-cdd9-4e93-ba5d-7140fbb133fa
+        plugin: find_replace
+        source: hloffer
+        weight: -4
+      9b6ee211-7b9e-460d-b710-ef0a9344d67d:
+        find: '8'
+        replace: '4'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 9b6ee211-7b9e-460d-b710-ef0a9344d67d
+        plugin: find_replace
+        source: hloffer
+        weight: -3
+      b985ec07-4d2f-43d2-b233-32afc7156bdb:
+        find: '9'
+        replace: '4'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: b985ec07-4d2f-43d2-b233-32afc7156bdb
+        plugin: find_replace
+        source: hloffer
+        weight: -2
+      3434d21b-56c5-4609-8911-d4137d3c20fa:
+        find: b
+        replace: '0'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 3434d21b-56c5-4609-8911-d4137d3c20fa
+        plugin: find_replace
+        source: hloffer
+        weight: -1
+      8dc3686d-68da-4066-8464-9779d0502871:
+        find: '-2'
+        replace: '0'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 8dc3686d-68da-4066-8464-9779d0502871
+        plugin: find_replace
+        source: hloffer
+        weight: 0
+      2c2bbfc4-939d-4a8a-ac61-4ee3e45afb70:
+        find: '-3'
+        replace: '0'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 2c2bbfc4-939d-4a8a-ac61-4ee3e45afb70
+        plugin: find_replace
+        source: hloffer
+        weight: 1
+      55e11be4-67e9-435f-8faa-ae74808bc571:
+        find: '1'
+        replace: '4'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 55e11be4-67e9-435f-8faa-ae74808bc571
+        plugin: find_replace
+        source: iclevel
+        weight: -9
+      a3d5553b-2ec6-40d2-b236-75a559e0d8ba:
+        find: '/^(?!https?:\/\/)/'
+        replace: 'http://$1'
+        limit: null
+        uuid: a3d5553b-2ec6-40d2-b236-75a559e0d8ba
+        plugin: find_replace_regex
+        source: webaddr
+        weight: -9
+        label: 'Find replace REGEX'
+      bfbd17dd-4175-45de-a8ca-382507833e3b:
+        find: '0'
+        replace: '2'
+        case_sensitive: false
+        word_boundaries: false
+        whole: true
+        uuid: bfbd17dd-4175-45de-a8ca-382507833e3b
+        plugin: find_replace
+        source: msi
+        weight: -9
+      551979d7-f6df-47f6-8cd9-ffb4e91c5174:
+        find: '-1'
+        replace: '0'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 551979d7-f6df-47f6-8cd9-ffb4e91c5174
+        plugin: find_replace
+        source: instsize
+        weight: -9
+        label: 'Find replace'
+      4bac1add-0797-4799-b6d7-d0f94d96110c:
+        find: '-2'
+        replace: '0'
+        case_sensitive: false
+        word_boundaries: false
+        whole: false
+        uuid: 4bac1add-0797-4799-b6d7-d0f94d96110c
+        plugin: find_replace
+        source: instsize
+        weight: -8
+        label: 'Find replace'
+      5674aeac-7217-40d5-aa50-7cbe2717c7b6:
+        default_value: ''
+        only_if_empty: true
+        uuid: 5674aeac-7217-40d5-aa50-7cbe2717c7b6
+        plugin: default_value
+        source: iclevel
+        weight: -10
+        label: 'Set value or default value'
+      afea4654-0130-4142-951e-a0be854c0d99:
+        default_value: ''
+        only_if_empty: true
+        uuid: afea4654-0130-4142-951e-a0be854c0d99
+        plugin: default_value
+        source: msi
+        weight: -10
+        label: 'Set value or default value'
+      5960ce4a-3aa7-4ef7-b8bd-e84a4eb5e547:
+        default_value: ''
+        only_if_empty: true
+        uuid: 5960ce4a-3aa7-4ef7-b8bd-e84a4eb5e547
+        plugin: default_value
+        source: hloffer
+        weight: -10
+        label: 'Set value or default value'
+      b9951cce-63f3-4745-91ca-9d1032ab934c:
+        default_value: ''
+        only_if_empty: true
+        uuid: b9951cce-63f3-4745-91ca-9d1032ab934c
+        plugin: default_value
+        source: webaddr
+        weight: -10
+        label: 'Set value or default value'
+      c7aeab62-d97a-4c37-a8a7-b214f4dd952b:
+        default_value: ''
+        only_if_empty: true
+        uuid: c7aeab62-d97a-4c37-a8a7-b214f4dd952b
+        plugin: default_value
+        source: instsize
+        weight: -10
+        label: 'Set value or default value'
+label: cedar
+id: cedar
+description: 'cedar records'
+help: ''
+import_period: -1
+fetcher: upload
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  directory: 'private://feeds'
+parser: csv
+parser_configuration:
+  delimiter: ','
+  no_headers: false
+  line_limit: 100
+processor: 'entity:node'
+processor_configuration:
+  values:
+    type: cedar_record
+  langcode: en
+  insert_new: 1
+  update_existing: 2
+  update_non_existent: _keep
+  skip_hash_check: false
+  skip_validation: false
+  skip_validation_types: {  }
+  authorize: true
+  revision: false
+  expire: -1
+  owner_feed_author: false
+  owner_id: 0
+  skip_missing_source: true
+custom_sources:
+  q9:
+    value: Q9
+    label: Q9
+    machine_name: q9
+    type: csv
+  q37:
+    value: Q37
+    label: Q37
+    machine_name: q37
+    type: csv
+  q38:
+    value: Q38
+    label: Q38
+    machine_name: q38
+    type: csv
+  q35:
+    value: Q35
+    label: Q35
+    machine_name: q35
+    type: csv
+  q39:
+    value: Q39
+    label: Q39
+    machine_name: q39
+    type: csv
+  q36:
+    value: Q36
+    label: Q36
+    machine_name: q36
+    type: csv
+  q77:
+    value: Q39
+    label: Q39
+    machine_name: q77
+    type: csv
+  '':
+    value: Q5_9
+    label: Q5_9
+    machine_name: ''
+    type: csv
+  link_name:
+    value: Q77
+    label: Q77
+    machine_name: link_name
+    type: csv
+  q40:
+    value: Q40
+    label: Q40
+    machine_name: q40
+    type: csv
+  q41:
+    value: Q41
+    label: Q41
+    machine_name: q41
+    type: csv
+  q42:
+    value: Q42
+    label: Q42
+    machine_name: q42
+    type: csv
+  q43:
+    value: Q43
+    label: Q43
+    machine_name: q43
+    type: csv
+  q78:
+    value: Q78
+    label: Q78
+    machine_name: q78
+    type: csv
+  q54:
+    value: Q54
+    label: Q54
+    machine_name: q54
+    type: csv
+  q55:
+    value: Q55
+    label: Q55
+    machine_name: q55
+    type: csv
+  q56:
+    value: Q56
+    label: Q56
+    machine_name: q56
+    type: csv
+  q57:
+    value: Q57
+    label: Q57
+    machine_name: q57
+    type: csv
+  q58:
+    value: Q58
+    label: Q58
+    machine_name: q58
+    type: csv
+  q60:
+    value: Q60
+    label: Q60
+    machine_name: q60
+    type: csv
+  q64:
+    value: Q64
+    label: Q64
+    machine_name: q64
+    type: csv
+  q65:
+    value: Q65
+    label: Q65
+    machine_name: q65
+    type: csv
+  q66:
+    value: Q66
+    label: Q66
+    machine_name: q66
+    type: csv
+  q67:
+    value: Q67
+    label: Q67
+    machine_name: q67
+    type: csv
+  q68:
+    value: Q68
+    label: Q68
+    machine_name: q68
+    type: csv
+  q69:
+    value: Q69
+    label: Q69
+    machine_name: q69
+    type: csv
+  q70:
+    value: Q70
+    label: Q70
+    machine_name: q70
+    type: csv
+  q71:
+    value: Q71
+    label: Q71
+    machine_name: q71
+    type: csv
+  q72:
+    value: Q72
+    label: Q72
+    machine_name: q72
+    type: csv
+  q73:
+    value: Q73
+    label: Q73
+    machine_name: q73
+    type: csv
+  q74:
+    value: Q74
+    label: Q74
+    machine_name: q74
+    type: csv
+  q75:
+    value: Q75
+    label: Q75
+    machine_name: q75
+    type: csv
+  q12_1_1:
+    value: Q12_1_1
+    label: Q12_1_1
+    machine_name: q12_1_1
+    type: csv
+  q12_1_2:
+    value: Q12_1_2
+    label: Q12_1_2
+    machine_name: q12_1_2
+    type: csv
+  q12_1_3:
+    value: Q12_1_3
+    label: Q12_1_3
+    machine_name: q12_1_3
+    type: csv
+  q12_1_4:
+    value: Q12_1_4
+    label: Q12_1_4
+    machine_name: q12_1_4
+    type: csv
+  q12_2_1:
+    value: Q12_2_1
+    label: Q12_2_1
+    machine_name: q12_2_1
+    type: csv
+  q12_2_2:
+    value: Q12_2_2
+    label: Q12_2_2
+    machine_name: q12_2_2
+    type: csv
+  q12_2_3:
+    value: Q12_2_3
+    label: Q12_2_3
+    machine_name: q12_2_3
+    type: csv
+  q12_2_4:
+    value: Q12_2_4
+    label: Q12_2_4
+    machine_name: q12_2_4
+    type: csv
+  link_text:
+    value: link_text
+    label: link_text
+    machine_name: link_text
+    type: csv
+  q12_3_1:
+    value: Q12_3_1
+    label: Q12_3_1
+    machine_name: q12_3_1
+    type: csv
+  q12_3_2:
+    value: Q12_3_2
+    label: Q12_3_2
+    machine_name: q12_3_2
+    type: csv
+  q12_3_3:
+    value: Q12_3_3
+    label: Q12_3_3
+    machine_name: q12_3_3
+    type: csv
+  q12_3_4:
+    value: Q12_3_4
+    label: Q12_3_4
+    machine_name: q12_3_4
+    type: csv
+  q12_4_1:
+    value: Q12_4_1
+    label: Q12_4_1
+    machine_name: q12_4_1
+    type: csv
+  q12_4_2:
+    value: Q12_4_2
+    label: Q12_4_2
+    machine_name: q12_4_2
+    type: csv
+  '12_4_3':
+    value: '12_4_3'
+    label: '12_4_3'
+    machine_name: '12_4_3'
+    type: csv
+  '12_4_4':
+    value: '12_4_4'
+    label: '12_4_4'
+    machine_name: '12_4_4'
+    type: csv
+  '12_5_1':
+    value: '12_5_1'
+    label: '12_5_1'
+    machine_name: '12_5_1'
+    type: csv
+  '12_5_2':
+    value: '12_5_2'
+    label: '12_5_2'
+    machine_name: '12_5_2'
+    type: csv
+  '12_5_3':
+    value: '12_5_3'
+    label: '12_5_3'
+    machine_name: '12_5_3'
+    type: csv
+  '12_5_4':
+    value: '12_5_4'
+    label: '12_5_4'
+    machine_name: '12_5_4'
+    type: csv
+  '12_6_1':
+    value: '12_6_1'
+    label: '12_6_1'
+    machine_name: '12_6_1'
+    type: csv
+  '12_6_2':
+    value: '12_6_2'
+    label: '12_6_2'
+    machine_name: '12_6_2'
+    type: csv
+  '12_6_3':
+    value: '12_6_3'
+    label: '12_6_3'
+    machine_name: '12_6_3'
+    type: csv
+  '12_6_4':
+    value: '12_6_4'
+    label: '12_6_4'
+    machine_name: '12_6_4'
+    type: csv
+  q13:
+    value: Q13
+    label: Q13
+    machine_name: q13
+    type: csv
+  q14_1:
+    value: Q14_1
+    label: Q14_1
+    machine_name: q14_1
+    type: csv
+  q14_2:
+    value: Q14_2
+    label: Q14_2
+    machine_name: q14_2
+    type: csv
+  q14_3:
+    value: Q14_3
+    label: Q14_3
+    machine_name: q14_3
+    type: csv
+  q15:
+    value: Q15
+    label: Q15
+    machine_name: q15
+    type: csv
+  q15_12_text:
+    value: Q15_12_TEXT
+    label: Q15_12_TEXT
+    machine_name: q15_12_text
+    type: csv
+  q17_1:
+    value: Q17_1
+    label: Q17_1
+    machine_name: q17_1
+    type: csv
+  '17_2':
+    value: '17_2'
+    label: '17_2'
+    machine_name: '17_2'
+    type: csv
+  '17_3':
+    value: '17_3'
+    label: '17_3'
+    machine_name: '17_3'
+    type: csv
+  '17_4':
+    value: '17_4'
+    label: '17_4'
+    machine_name: '17_4'
+    type: csv
+  '17_5':
+    value: '17_5'
+    label: '17_5'
+    machine_name: '17_5'
+    type: csv
+  '17_6':
+    value: '17_6'
+    label: '17_6'
+    machine_name: '17_6'
+    type: csv
+  '17_7':
+    value: '17_7'
+    label: '17_7'
+    machine_name: '17_7'
+    type: csv
+  '17_8':
+    value: '17_8'
+    label: '17_8'
+    machine_name: '17_8'
+    type: csv
+  '17_9':
+    value: '17_9'
+    label: '17_9'
+    machine_name: '17_9'
+    type: csv
+  '17_10':
+    value: '17_10'
+    label: '17_10'
+    machine_name: '17_10'
+    type: csv
+  '17_11':
+    value: '17_11'
+    label: '17_11'
+    machine_name: '17_11'
+    type: csv
+  '17_12':
+    value: '17_12'
+    label: '17_12'
+    machine_name: '17_12'
+    type: csv
+  '17_13':
+    value: '17_13'
+    label: '17_13'
+    machine_name: '17_13'
+    type: csv
+  '17_14':
+    value: '17_14'
+    label: '17_14'
+    machine_name: '17_14'
+    type: csv
+  '19_1':
+    value: '19_1'
+    label: '19_1'
+    machine_name: '19_1'
+    type: csv
+  '19_2':
+    value: '19_2'
+    label: '19_2'
+    machine_name: '19_2'
+    type: csv
+  '19_3':
+    value: '19_3'
+    label: '19_3'
+    machine_name: '19_3'
+    type: csv
+  '19_4':
+    value: '19_4'
+    label: '19_4'
+    machine_name: '19_4'
+    type: csv
+  '19_5':
+    value: '19_5'
+    label: '19_5'
+    machine_name: '19_5'
+    type: csv
+  '19_6':
+    value: '19_6'
+    label: '19_6'
+    machine_name: '19_6'
+    type: csv
+  '19_7':
+    value: '19_7'
+    label: '19_7'
+    machine_name: '19_7'
+    type: csv
+  '19_8':
+    value: '19_8'
+    label: '19_8'
+    machine_name: '19_8'
+    type: csv
+  '19_9':
+    value: '19_9'
+    label: '19_9'
+    machine_name: '19_9'
+    type: csv
+  q19_9_text:
+    value: Q19_9_TEXT
+    label: Q19_9_TEXT
+    machine_name: q19_9_text
+    type: csv
+  q19_10:
+    value: Q19_10
+    label: Q19_10
+    machine_name: q19_10
+    type: csv
+  q19_11:
+    value: Q19_11
+    label: Q19_11
+    machine_name: q19_11
+    type: csv
+  q19_12:
+    value: Q19_12
+    label: Q19_12
+    machine_name: q19_12
+    type: csv
+  q19_13:
+    value: Q19_13
+    label: Q19_13
+    machine_name: q19_13
+    type: csv
+  q19_14:
+    value: Q19_14
+    label: Q19_14
+    machine_name: q19_14
+    type: csv
+  q19_15_text:
+    value: Q19_15_TEXT
+    label: Q19_15_TEXT
+    machine_name: q19_15_text
+    type: csv
+  q19_15:
+    value: Q19_15
+    label: Q19_15
+    machine_name: q19_15
+    type: csv
+  q19_16:
+    value: Q19_16
+    label: Q19_16
+    machine_name: q19_16
+    type: csv
+  q19_17:
+    value: Q19_17
+    label: Q19_17
+    machine_name: q19_17
+    type: csv
+  q19_18:
+    value: Q19_18
+    label: Q19_18
+    machine_name: q19_18
+    type: csv
+  q19_19:
+    value: Q19_19
+    label: Q19_19
+    machine_name: q19_19
+    type: csv
+  q19_20:
+    value: Q19_20
+    label: Q19_20
+    machine_name: q19_20
+    type: csv
+  q12_4_3:
+    value: Q12_4_3
+    label: Q12_4_3
+    machine_name: q12_4_3
+    type: csv
+  q12_4_4:
+    value: Q12_4_4
+    label: Q12_4_4
+    machine_name: q12_4_4
+    type: csv
+  q12_5_1:
+    value: Q12_5_1
+    label: Q12_5_1
+    machine_name: q12_5_1
+    type: csv
+  q_19_8_huh:
+    value: Q_19_8
+    label: Q_19_8
+    machine_name: q_19_8_huh
+    type: csv
+  q19_9:
+    value: Q19_9
+    label: Q19_9
+    machine_name: q19_9
+    type: csv
+  q19_7:
+    value: Q19_7
+    label: Q19_7
+    machine_name: q19_7
+    type: csv
+  q19_8:
+    value: Q19_8
+    label: Q19_8
+    machine_name: q19_8
+    type: csv
+  q19_6:
+    value: Q19_6
+    label: Q19_6
+    machine_name: q19_6
+    type: csv
+  q12_5_2:
+    value: Q12_5_2
+    label: Q12_5_2
+    machine_name: q12_5_2
+    type: csv
+  q12_5_3:
+    value: Q12_5_3
+    label: Q12_5_3
+    machine_name: q12_5_3
+    type: csv
+  q19_21_text:
+    value: Q19_21_TEXT
+    label: Q19_21_TEXT
+    machine_name: q19_21_text
+    type: csv
+  q19_21:
+    value: Q19_21
+    label: Q19_21
+    machine_name: q19_21
+    type: csv
+  q20_1:
+    value: Q20_1
+    label: Q20_1
+    machine_name: q20_1
+    type: csv
+  q12_5_4:
+    value: Q12_5_4
+    label: Q12_5_4
+    machine_name: q12_5_4
+    type: csv
+  q12_6_1:
+    value: Q12_6_1
+    label: Q12_6_1
+    machine_name: q12_6_1
+    type: csv
+  q12_6_2:
+    value: Q12_6_2
+    label: Q12_6_2
+    machine_name: q12_6_2
+    type: csv
+  q12_6_3:
+    value: Q12_6_3
+    label: Q12_6_3
+    machine_name: q12_6_3
+    type: csv
+  q12_6_4:
+    value: Q12_6_4
+    label: Q12_6_4
+    machine_name: q12_6_4
+    type: csv
+  q17_2:
+    value: Q17_2
+    label: Q17_2
+    machine_name: q17_2
+    type: csv
+  q17_3:
+    value: Q17_3
+    label: Q17_3
+    machine_name: q17_3
+    type: csv
+  q17_4:
+    value: Q17_4
+    label: Q17_4
+    machine_name: q17_4
+    type: csv
+  q17_5:
+    value: Q17_5
+    label: Q17_5
+    machine_name: q17_5
+    type: csv
+  q17_6:
+    value: Q17_6
+    label: Q17_6
+    machine_name: q17_6
+    type: csv
+  q17_7:
+    value: Q17_7
+    label: Q17_7
+    machine_name: q17_7
+    type: csv
+  q17_8:
+    value: Q17_8
+    label: Q17_8
+    machine_name: q17_8
+    type: csv
+  q17_9:
+    value: Q17_9
+    label: Q17_9
+    machine_name: q17_9
+    type: csv
+  q17_10:
+    value: Q17_10
+    label: Q17_10
+    machine_name: q17_10
+    type: csv
+  q17_11:
+    value: Q17_11
+    label: Q17_11
+    machine_name: q17_11
+    type: csv
+  q17_12:
+    value: Q17_12
+    label: Q17_12
+    machine_name: q17_12
+    type: csv
+  q17_13:
+    value: Q17_13
+    label: Q17_13
+    machine_name: q17_13
+    type: csv
+  q17_14:
+    value: Q17_14
+    label: Q17_14
+    machine_name: q17_14
+    type: csv
+  q19_1:
+    value: Q19_1
+    label: Q19_1
+    machine_name: q19_1
+    type: csv
+  q19_2:
+    value: Q19_2
+    label: Q19_2
+    machine_name: q19_2
+    type: csv
+  q19_3:
+    value: Q19_3
+    label: Q19_3
+    machine_name: q19_3
+    type: csv
+  q19_4:
+    value: Q19_4
+    label: Q19_4
+    machine_name: q19_4
+    type: csv
+  q19_5:
+    value: Q19_5
+    label: Q19_5
+    machine_name: q19_5
+    type: csv
+  q20_2:
+    value: Q20_2
+    label: Q20_2
+    machine_name: q20_2
+    type: csv
+  q20_3:
+    value: Q20_3
+    label: Q20_3
+    machine_name: q20_3
+    type: csv
+  q20_4:
+    value: Q20_4
+    label: Q20_4
+    machine_name: q20_4
+    type: csv
+  q20_5:
+    value: Q20_5
+    label: Q20_5
+    machine_name: q20_5
+    type: csv
+  q20_6:
+    value: Q20_6
+    label: Q20_6
+    machine_name: q20_6
+    type: csv
+  q20_7:
+    value: Q20_7
+    label: Q20_7
+    machine_name: q20_7
+    type: csv
+  q20_8:
+    value: Q20_8
+    label: Q20_8
+    machine_name: q20_8
+    type: csv
+  q20_9:
+    value: Q20_9
+    label: Q20_9
+    machine_name: q20_9
+    type: csv
+  q20_10:
+    value: Q20_10
+    label: Q20_10
+    machine_name: q20_10
+    type: csv
+  q20_11:
+    value: Q20_11
+    label: Q20_11
+    machine_name: q20_11
+    type: csv
+  q20_12:
+    value: Q20_12
+    label: Q20_12
+    machine_name: q20_12
+    type: csv
+  q20_13:
+    value: Q20_13
+    label: Q20_13
+    machine_name: q20_13
+    type: csv
+  q20_14:
+    value: Q20_14
+    label: Q20_14
+    machine_name: q20_14
+    type: csv
+  q21:
+    value: Q21
+    label: Q21
+    machine_name: q21
+    type: csv
+  q22:
+    value: Q22
+    label: Q22
+    machine_name: q22
+    type: csv
+  q22_9_text:
+    value: Q22_9_TEXT
+    label: Q22_9_TEXT
+    machine_name: q22_9_text
+    type: csv
+  q23:
+    value: Q23
+    label: Q23
+    machine_name: q23
+    type: csv
+  q24:
+    value: Q24
+    label: Q24
+    machine_name: q24
+    type: csv
+  q24_14_text:
+    value: Q24_14_TEXT
+    label: Q24_14_TEXT
+    machine_name: q24_14_text
+    type: csv
+  q80:
+    value: Q80
+    label: Q80
+    machine_name: q80
+    type: csv
+  q81:
+    value: Q81
+    label: Q81
+    machine_name: q81
+    type: csv
+  q80_9_text:
+    value: Q80_9_TEXT
+    label: Q80_9_TEXT
+    machine_name: q80_9_text
+    type: csv
+  q81_9_text:
+    value: Q81_9_TEXT
+    label: Q81_9_TEXT
+    machine_name: q81_9_text
+    type: csv
+  q25:
+    value: Q25
+    label: Q25
+    machine_name: q25
+    type: csv
+  q27:
+    value: Q27
+    label: Q27
+    machine_name: q27
+    type: csv
+  q26_1:
+    value: Q26_1
+    label: Q26_1
+    machine_name: q26_1
+    type: csv
+  q26_2:
+    value: Q26_2
+    label: Q26_2
+    machine_name: q26_2
+    type: csv
+  q26_3:
+    value: Q26_3
+    label: Q26_3
+    machine_name: q26_3
+    type: csv
+  q26_4:
+    value: Q26_4
+    label: Q26_4
+    machine_name: q26_4
+    type: csv
+  q26_5:
+    value: Q26_5
+    label: Q26_5
+    machine_name: q26_5
+    type: csv
+  q28:
+    value: Q28
+    label: Q28
+    machine_name: q28
+    type: csv
+  q29:
+    value: Q29
+    label: Q29
+    machine_name: q29
+    type: csv
+  q84:
+    value: Q84
+    label: Q84
+    machine_name: q84
+    type: csv
+  q85:
+    value: Q85
+    label: Q85
+    machine_name: q85
+    type: csv
+  q86:
+    value: Q86
+    label: Q86
+    machine_name: q86
+    type: csv
+  q89:
+    value: Q89
+    label: Q89
+    machine_name: q89
+    type: csv
+  q87:
+    value: Q87
+    label: Q87
+    machine_name: q87
+    type: csv
+  q91:
+    value: Q91
+    label: Q91
+    machine_name: q91
+    type: csv
+  q93:
+    value: Q93
+    label: Q93
+    machine_name: q93
+    type: csv
+  intstitution:
+    value: Intstitution
+    label: Intstitution
+    machine_name: intstitution
+    type: csv
+  q104:
+    value: Q104
+    label: Q104
+    machine_name: q104
+    type: csv
+  q105:
+    value: Q105
+    label: Q105
+    machine_name: q105
+    type: csv
+  q106:
+    value: Q106
+    label: Q106
+    machine_name: q106
+    type: csv
+  q107:
+    value: Q107
+    label: Q107
+    machine_name: q107
+    type: csv
+  q133:
+    value: Q133
+    label: Q133
+    machine_name: q133
+    type: csv
+  q108:
+    value: Q108
+    label: Q108
+    machine_name: q108
+    type: csv
+  q109:
+    value: Q109
+    label: Q109
+    machine_name: q109
+    type: csv
+  q111:
+    value: Q111
+    label: Q111
+    machine_name: q111
+    type: csv
+  q112:
+    value: Q112
+    label: Q112
+    machine_name: q112
+    type: csv
+  q113:
+    value: Q113
+    label: Q113
+    machine_name: q113
+    type: csv
+  q115:
+    value: Q115
+    label: Q115
+    machine_name: q115
+    type: csv
+  q116:
+    value: Q116
+    label: Q116
+    machine_name: q116
+    type: csv
+  q117:
+    value: Q117
+    label: Q117
+    machine_name: q117
+    type: csv
+  q118:
+    value: Q118
+    label: Q118
+    machine_name: q118
+    type: csv
+  q138:
+    value: Q138
+    label: Q138
+    machine_name: q138
+    type: csv
+  q120:
+    value: Q120
+    label: Q120
+    machine_name: q120
+    type: csv
+  q123:
+    value: Q123
+    label: Q123
+    machine_name: q123
+    type: csv
+  q124:
+    value: Q124
+    label: Q124
+    machine_name: q124
+    type: csv
+  q97_1:
+    value: Q97_1
+    label: Q97_1
+    machine_name: q97_1
+    type: csv
+  q97_2:
+    value: Q97_2
+    label: Q97_2
+    machine_name: q97_2
+    type: csv
+  q97_3:
+    value: Q97_3
+    label: Q97_3
+    machine_name: q97_3
+    type: csv
+  q97_4:
+    value: Q97_4
+    label: Q97_4
+    machine_name: q97_4
+    type: csv
+  q97_5:
+    value: Q97_5
+    label: Q97_5
+    machine_name: q97_5
+    type: csv
+  q98_1:
+    value: Q98_1
+    label: Q98_1
+    machine_name: q98_1
+    type: csv
+  q98_2:
+    value: Q98_2
+    label: Q98_2
+    machine_name: q98_2
+    type: csv
+  q98_3:
+    value: Q98_3
+    label: Q98_3
+    machine_name: q98_3
+    type: csv
+  q98_4:
+    value: Q98_4
+    label: Q98_4
+    machine_name: q98_4
+    type: csv
+  q98_5:
+    value: Q98_5
+    label: Q98_5
+    machine_name: q98_5
+    type: csv
+  q99_1:
+    value: Q99_1
+    label: Q99_1
+    machine_name: q99_1
+    type: csv
+  q99_2:
+    value: Q99_2
+    label: Q99_2
+    machine_name: q99_2
+    type: csv
+  q99_3:
+    value: Q99_3
+    label: Q99_3
+    machine_name: q99_3
+    type: csv
+  q99_4:
+    value: Q99_4
+    label: Q99_4
+    machine_name: q99_4
+    type: csv
+  q99_5:
+    value: Q99_5
+    label: Q99_5
+    machine_name: q99_5
+    type: csv
+  q_99_6_text:
+    value: Q_99_6_TEXT
+    label: Q_99_6_TEXT
+    machine_name: q_99_6_text
+    type: csv
+  q99_6:
+    value: Q99_6
+    label: Q99_6
+    machine_name: q99_6
+    type: csv
+  q134:
+    value: Q134
+    label: Q134
+    machine_name: q134
+    type: csv
+  q103:
+    value: Q103
+    label: Q103
+    machine_name: q103
+    type: csv
+  q103_5_text:
+    value: Q103_5_TEXT
+    label: Q103_5_TEXT
+    machine_name: q103_5_text
+    type: csv
+  q81_10_text:
+    value: Q81_10_TEXT
+    label: Q81_10_TEXT
+    machine_name: q81_10_text
+    type: csv
+  q95:
+    value: Q95
+    label: Q95
+    machine_name: q95
+    type: csv
+  q_94_1:
+    value: Q_94_1
+    label: Q_94_1
+    machine_name: q_94_1
+    type: csv
+  q94_1:
+    value: Q94_1
+    label: Q94_1
+    machine_name: q94_1
+    type: csv
+  q94_2:
+    value: Q94_2
+    label: Q94_2
+    machine_name: q94_2
+    type: csv
+  q94_3:
+    value: Q94_3
+    label: Q94_3
+    machine_name: q94_3
+    type: csv
+  q94_4:
+    value: Q94_4
+    label: Q94_4
+    machine_name: q94_4
+    type: csv
+  q94_5:
+    value: Q94_5
+    label: Q94_5
+    machine_name: q94_5
+    type: csv
+  unitid:
+    value: UNITID
+    label: UNITID
+    machine_name: unitid
+    type: csv
+  iclevel:
+    value: ICLEVEL
+    label: ICLEVEL
+    machine_name: iclevel
+    type: csv
+  control:
+    value: CONTROL
+    label: CONTROL
+    machine_name: control
+    type: csv
+  hloffer:
+    value: HLOFFER
+    label: HLOFFER
+    machine_name: hloffer
+    type: csv
+  msi:
+    value: MSI
+    label: MSI
+    machine_name: msi
+    type: csv
+  basic2018:
+    value: BASIC2018
+    label: BASIC2018
+    machine_name: basic2018
+    type: csv
+  fallenr17:
+    value: FALLENR17
+    label: FALLENR17
+    machine_name: fallenr17
+    type: csv
+  ugtenr17:
+    value: UGTENR17
+    label: UGTENR17
+    machine_name: ugtenr17
+    type: csv
+  name:
+    value: NAME
+    label: NAME
+    machine_name: name
+    type: csv
+  addr:
+    value: ADDR
+    label: ADDR
+    machine_name: addr
+    type: csv
+  city:
+    value: CITY
+    label: CITY
+    machine_name: city
+    type: csv
+  stabbr:
+    value: STABBR
+    label: STABBR
+    machine_name: stabbr
+    type: csv
+  zip:
+    value: ZIP
+    label: ZIP
+    machine_name: zip
+    type: csv
+  webaddr:
+    value: WEBADDR
+    label: WEBADDR
+    machine_name: webaddr
+    type: csv
+  instnm:
+    value: INSTNM
+    label: INSTNM
+    machine_name: instnm
+    type: csv
+  efytotlt:
+    value: EFYTOTLT
+    label: EFYTOTLT
+    machine_name: efytotlt
+    type: csv
+  ugtotl:
+    value: UGTOTL
+    label: UGTOTL
+    machine_name: ugtotl
+    type: csv
+  q5_1:
+    value: Q5_1
+    label: Q5_1
+    machine_name: q5_1
+    type: csv
+  q5_8:
+    value: Q5_8
+    label: Q5_8
+    machine_name: q5_8
+    type: csv
+  q5_9:
+    value: Q5_9
+    label: Q5_9
+    machine_name: q5_9
+    type: csv
+  lat:
+    value: LAT
+    label: LAT
+    machine_name: lat
+    type: csv
+  long:
+    value: LONG
+    label: LONG
+    machine_name: long
+    type: csv
+  instsize:
+    value: INSTSIZE
+    label: INSTSIZE
+    machine_name: instsize
+    type: csv
+  distnced:
+    value: DISTNCED
+    label: DISTNCED
+    machine_name: distnced
+    type: csv
+  q19_22_text:
+    value: Q19_22_TEXT
+    label: Q19_22_TEXT
+    machine_name: q19_22_text
+    type: csv
+  q19_22:
+    value: Q19_22
+    label: Q19_22
+    machine_name: q19_22
+    type: csv
+  q99_22_text:
+    value: Q99_22_TEXT
+    label: Q99_22_TEXT
+    machine_name: q99_22_text
+    type: csv
+  q99_22:
+    value: Q99_22
+    label: Q99_22
+    machine_name: q99_22
+    type: csv
+  dro_linktext:
+    value: DRO_linktext
+    label: DRO_linktext
+    machine_name: dro_linktext
+    type: csv
+  comp_surv:
+    value: comp_surv
+    label: comp_surv
+    machine_name: comp_surv
+    type: csv
+mappings:
+  -
+    target: disability_office_address_es__field_d_o_address_line_1
+    map:
+      value: q105
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_address_line_2
+    map:
+      value: q106
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_city
+    map:
+      value: q107
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_zip_code
+    map:
+      value: q109
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_disability_office_phone
+    map:
+      value: q111
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_disability_office_email_ad
+    map:
+      value: q112
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_disability_office_website
+    map:
+      uri: q113
+      title: dro_linktext
+    settings: {  }
+  -
+    target: disability_office_address_es__field_d_o_address_line_1
+    map:
+      value: q116
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_address_line_2
+    map:
+      value: q117
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_city
+    map:
+      value: q118
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_zip_code
+    map:
+      value: q120
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_disability_office_phone
+    map:
+      value: q123
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_disability_office_email_ad
+    map:
+      value: q124
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_name_of_contact
+    map:
+      value: q12_1_1
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_job_title_or_role
+    map:
+      value: q12_1_2
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_email_address
+    map:
+      value: q12_1_3
+    settings:
+      defuse: false
+    unique: {  }
+  -
+    target: d_o_contacts_field_telephone
+    map:
+      value: q12_1_4
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_name_of_contact
+    map:
+      value: q12_2_1
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_job_title_or_role
+    map:
+      value: q12_2_2
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_email_address
+    map:
+      value: q12_2_3
+    settings:
+      defuse: false
+    unique: {  }
+  -
+    target: d_o_contacts_field_telephone
+    map:
+      value: q12_2_4
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_name_of_contact
+    map:
+      value: q12_3_1
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_job_title_or_role
+    map:
+      value: q12_3_2
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_email_address
+    map:
+      value: q12_3_3
+    settings:
+      defuse: false
+    unique: {  }
+  -
+    target: d_o_contacts_field_telephone
+    map:
+      value: q12_3_4
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_name_of_contact
+    map:
+      value: q12_4_1
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_job_title_or_role
+    map:
+      value: q12_4_2
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_email_address
+    map:
+      value: q12_4_3
+    settings:
+      defuse: false
+    unique: {  }
+  -
+    target: d_o_contacts_field_telephone
+    map:
+      value: q12_4_4
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_name_of_contact
+    map:
+      value: q12_5_1
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_job_title_or_role
+    map:
+      value: q12_5_2
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_email_address
+    map:
+      value: q12_5_3
+    settings:
+      defuse: false
+    unique: {  }
+  -
+    target: d_o_contacts_field_telephone
+    map:
+      value: q12_5_4
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_name_of_contact
+    map:
+      value: q12_6_1
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_job_title_or_role
+    map:
+      value: q12_6_2
+    settings: {  }
+    unique: {  }
+  -
+    target: d_o_contacts_field_email_address
+    map:
+      value: q12_6_3
+    settings:
+      defuse: false
+    unique: {  }
+  -
+    target: d_o_contacts_field_telephone
+    map:
+      value: q12_6_4
+    settings: {  }
+    unique: {  }
+  -
+    target: field_number_of_full_time_disabi
+    map:
+      value: q84
+    unique: {  }
+  -
+    target: field_student_population
+    map:
+      value: efytotlt
+  -
+    target: field_student_population_undergr
+    map:
+      value: ugtotl
+  -
+    target: field_number_of_students_who_hav
+    map:
+      value: q89
+    unique: {  }
+  -
+    target: field_three_most_common_types_of
+    map:
+      value: q15
+  -
+    target: field_most_common_disability_typ
+    map:
+      value: q15_12_text
+    unique: {  }
+  -
+    target: field_autistic_students_includes
+    map:
+      value: q17_1
+  -
+    target: field_culturally_deaf_students_w
+    map:
+      value: q17_2
+  -
+    target: field_students_with_chronic_heal
+    map:
+      value: q17_3
+  -
+    target: field_students_with_intellectual
+    map:
+      value: q17_4
+  -
+    target: field_students_with_food_allergi
+    map:
+      value: q17_5
+  -
+    target: field_students_in_stem_fields_in
+    map:
+      value: q97_1
+  -
+    target: field_professional_and_graduate_
+    map:
+      value: q97_2
+  -
+    target: field_law_students
+    map:
+      value: q97_3
+  -
+    target: field_ncaa_athletes
+    map:
+      value: q97_4
+  -
+    target: field_veterans
+    map:
+      value: q97_5
+  -
+    target: field_students_of_color
+    map:
+      value: q17_11
+  -
+    target: field_students_from_a_particular
+    map:
+      value: q17_12
+  -
+    target: field_students_from_disenfranchi
+    map:
+      value: q17_13
+  -
+    target: field_international_students_or_
+    map:
+      value: q17_14
+  -
+    target: field_notetaking
+    map:
+      value: q19_1
+  -
+    target: field_test_accomodations
+    map:
+      value: q19_2
+  -
+    target: field_alternate_formats_e_g_e_te
+    map:
+      value: q19_3
+  -
+    target: field_scribes_
+    map:
+      value: q19_4
+  -
+    target: field_readers
+    map:
+      value: q19_5
+  -
+    target: field_assistive_technology_e_g_s
+    map:
+      value: q19_6
+  -
+    target: field_sign_language_interpreters
+    map:
+      value: q19_7
+  -
+    target: field_cart_or_c_print
+    map:
+      value: q19_8
+  -
+    target: field_academics_other_specify_
+    map:
+      value: q19_22_text
+    unique: {  }
+  -
+    target: field_academic_other_frequency
+    map:
+      value: q19_22
+  -
+    target: field_course_substitutions
+    map:
+      value: q98_1
+  -
+    target: field_priority_registration
+    map:
+      value: q98_2
+  -
+    target: field_reduced_courseload
+    map:
+      value: q98_3
+  -
+    target: field_medical_leave
+    map:
+      value: q98_4
+  -
+    target: field_accommodations_in_residenc
+    map:
+      value: q98_5
+  -
+    target: field_programmatic_other_specify
+    map:
+      value: q19_15_text
+    unique: {  }
+  -
+    target: field_programmatic_other_freq
+    map:
+      value: q19_15
+  -
+    target: field_dietary_accommodations_for
+    map:
+      value: q99_1
+  -
+    target: field_service_animals_or_emotion
+    map:
+      value: q99_2
+  -
+    target: field_accommodations_and_service
+    map:
+      value: q99_3
+  -
+    target: field_accommodation2_and_service
+    map:
+      value: q99_4
+  -
+    target: field_accommodations_for_online_
+    map:
+      value: q99_5
+  -
+    target: field_other_other_specify
+    map:
+      value: q99_22_text
+    unique: {  }
+  -
+    target: field_other_other_frequency
+    map:
+      value: q99_22
+  -
+    target: field_student_health_services
+    map:
+      value: q20_1
+  -
+    target: field_counseling_and_psychologic
+    map:
+      value: q20_2
+  -
+    target: field_the_library_ies_
+    map:
+      value: q20_3
+  -
+    target: field_institution_websites
+    map:
+      value: q20_4
+  -
+    target: field_recreation_and_athletic_fa
+    map:
+      value: q20_5
+  -
+    target: field_student_union_or_other_mai
+    map:
+      value: q20_6
+  -
+    target: field_main_academic_buildings_wh
+    map:
+      value: q20_7
+  -
+    target: field_entertainment_theater_and_
+    map:
+      value: q20_8
+  -
+    target: field_on_campus_transportation
+    map:
+      value: q20_9
+  -
+    target: field_nearby_off_campus_transpor
+    map:
+      value: q20_10
+  -
+    target: field_residence_halls
+    map:
+      value: q20_11
+  -
+    target: field_key_administrative_offices
+    map:
+      value: q20_12
+  -
+    target: field_sexual_assault_services_an
+    map:
+      value: q20_13
+  -
+    target: field_security_and_saftety_progr
+    map:
+      value: q20_14
+  -
+    target: field__policies_and_procedures_r
+    map:
+      value: q21
+  -
+    target: field_other_counsel_psych
+    map:
+      value: q22_9_text
+    unique: {  }
+  -
+    target: field_during_the_2017_2018_schoo
+    map:
+      value: q23
+  -
+    target: field_disability_related_program
+    map:
+      value: q103
+  -
+    target: field_other_disabl_rel_courses
+    map:
+      value: q103_5_text
+    unique: {  }
+  -
+    target: field_disability_related_service
+    map:
+      value: q80
+  -
+    target: field_general_campus_resources
+    map:
+      value: q81
+  -
+    target: field_other_dis_relat_services
+    map:
+      value: q80_9_text
+    unique: {  }
+  -
+    target: field_other_gen_campus_resources
+    map:
+      value: q81_10_text
+    unique: {  }
+  -
+    target: field_courses_or_degree_programs
+    map:
+      value: q25
+  -
+    target: field_how_often_does_your_instit
+    map:
+      value: q95
+  -
+    target: field_student_organizations_rela
+    map:
+      value: q26_1
+    unique: {  }
+  -
+    target: field_student_organizations_rela
+    map:
+      value: q26_2
+    unique: {  }
+  -
+    target: field_student_organizations_rela
+    map:
+      value: q26_3
+    unique: {  }
+  -
+    target: field_student_organizations_rela
+    map:
+      value: q26_4
+    unique: {  }
+  -
+    target: field_student_organizations_rela
+    map:
+      value: q26_5
+    unique: {  }
+  -
+    target: field_what_percent_of_staff_on_c
+    map:
+      value: q93
+    unique: {  }
+  -
+    target: field__types_of_counseling_and_p
+    map:
+      value: q22
+  -
+    target: field_number_of_staff_exact
+    map:
+      value: q13
+  -
+    target: field_number_of_stud_exact
+    map:
+      value: q87
+  -
+    target: field_percent_of_faculty_exact
+    map:
+      value: q28
+  -
+    target: field_what_percent_of_faculty_on
+    map:
+      value: q91
+    unique: {  }
+  -
+    target: field_percent_of_staff_exact
+    map:
+      value: q29
+  -
+    target: title
+    map:
+      value: instnm
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_office_name
+    map:
+      value: q104
+    settings: {  }
+    unique: {  }
+  -
+    target: field_number_of_students_who_had
+    map:
+      value: q134
+    unique: {  }
+  -
+    target: field_campus_groups_that_address
+    map:
+      value: q94_1
+    unique: {  }
+  -
+    target: field_campus_groups_that_address
+    map:
+      value: q94_2
+    unique: {  }
+  -
+    target: field_campus_groups_that_address
+    map:
+      value: q94_3
+    unique: {  }
+  -
+    target: field_campus_groups_that_address
+    map:
+      value: q94_4
+    unique: {  }
+  -
+    target: field_campus_groups_that_address
+    map:
+      value: q94_5
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_office_name
+    map:
+      value: q115
+    settings: {  }
+    unique: {  }
+  -
+    target: disability_office_address_es__field_d_o_state
+    map:
+      value: q133
+    settings: {  }
+  -
+    target: disability_office_address_es__field_d_o_state
+    map:
+      value: q138
+    settings: {  }
+  -
+    target: field_ipeds_unique_id
+    map:
+      value: unitid
+    unique:
+      value: '1'
+  -
+    target: field_2_or_4_year_institution
+    map:
+      value: iclevel
+  -
+    target: field_type_of_institution
+    map:
+      value: control
+  -
+    target: field_minority_serving_
+    map:
+      value: msi
+  -
+    target: field_level_of_degree_offered
+    map:
+      value: hloffer
+  -
+    target: field_col_u_address_line_1
+    map:
+      value: addr
+    unique: {  }
+  -
+    target: field_col_u_city
+    map:
+      value: city
+    unique: {  }
+  -
+    target: field_college_university_state
+    map:
+      value: stabbr
+  -
+    target: field_col_u_zip_code
+    map:
+      value: zip
+    unique: {  }
+  -
+    target: field_university_link
+    map:
+      uri: webaddr
+      title: ''
+  -
+    target: field_survey_contact
+    map:
+      value: q5_1
+    unique: {  }
+  -
+    target: field_survey_contact_email
+    map:
+      value: q5_8
+    unique: {  }
+  -
+    target: field_survey_contact_phone
+    map:
+      value: q5_9
+    unique: {  }
+  -
+    target: field_institution_map
+    map:
+      lat: lat
+      lon: long
+  -
+    target: field_institution_size_category
+    map:
+      value: instsize
+  -
+    target: field_online_serving_only
+    map:
+      value: distnced
+  -
+    target: field_completed_survey
+    map:
+      value: comp_surv

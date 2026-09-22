@@ -1,0 +1,19 @@
+uuid: eb7365b5-1254-41f0-b8c8-43e24ea32de4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_d_o_address_line_1
+    - paragraphs.paragraphs_type.disability_office_address_es_
+id: paragraph.disability_office_address_es_.field_d_o_address_line_1
+field_name: field_d_o_address_line_1
+entity_type: paragraph
+bundle: disability_office_address_es_
+label: 'Address line 1'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

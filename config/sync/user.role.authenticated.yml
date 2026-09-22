@@ -1,7 +1,19 @@
-uuid: 62feb848-9a56-4ec4-9caa-cbde9c835854
+uuid: a95c31f5-5886-4b20-850f-7bee82384c77
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.basic_html
+  module:
+    - comment
+    - file
+    - filter
+    - fontawesome
+    - media
+    - search_api_page
+    - search_api_saved_searches
+    - shortcut
+    - system
 _core:
   default_config_hash: dJ0L2DNSj5q6XVZAGsuVDpJTh5UeYkIPwKrUOOpr8YI
 id: authenticated
@@ -9,8 +21,14 @@ label: 'Authenticated user'
 weight: 1
 is_admin: false
 permissions:
+  - 'access comments'
   - 'access content'
-  - 'access user profiles'
-  - 'opt-in or out of google analytics tracking'
-  - 'use text format full_html'
+  - 'access fontawesome additional settings'
+  - 'access shortcuts'
+  - 'delete own files'
+  - 'post comments'
+  - 'skip comment approval'
+  - 'use default search_api_saved_searches'
+  - 'use text format basic_html'
   - 'view media'
+  - 'view search api pages'

@@ -1,0 +1,19 @@
+uuid: 9a42a8cc-238c-4ad7-a735-ff55e56ae0a8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_other_gen_campus_resources
+    - node.type.cedar_record
+id: node.cedar_record.field_other_gen_campus_resources
+field_name: field_other_gen_campus_resources
+entity_type: node
+bundle: cedar_record
+label: Other
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

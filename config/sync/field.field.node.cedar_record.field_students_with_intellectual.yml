@@ -1,0 +1,21 @@
+uuid: 4d77258c-addc-434e-901b-ebdfa055a315
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_students_with_intellectual
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_students_with_intellectual
+field_name: field_students_with_intellectual
+entity_type: node
+bundle: cedar_record
+label: 'Students with intellectual disabilities'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

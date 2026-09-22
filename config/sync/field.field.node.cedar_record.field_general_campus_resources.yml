@@ -1,0 +1,21 @@
+uuid: 9026b60c-07cc-47af-acd6-5629ebcff8dd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_general_campus_resources
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_general_campus_resources
+field_name: field_general_campus_resources
+entity_type: node
+bundle: cedar_record
+label: 'General Campus Resources'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

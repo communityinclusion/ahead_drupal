@@ -1,0 +1,23 @@
+uuid: 62e23855-3f17-424b-8a99-ce0c576fb68e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_institution_size_category
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_institution_size_category
+field_name: field_institution_size_category
+entity_type: node
+bundle: cedar_record
+label: 'Institution size category'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings: {  }
+field_type: list_integer

@@ -1,0 +1,25 @@
+uuid: e9e09669-ad0f-4cf9-919b-077dac27847d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_college_university_state
+    - node.type.cedar_record
+  module:
+    - field_display_label
+    - options
+third_party_settings:
+  field_display_label:
+    display_label: State
+id: node.cedar_record.field_college_university_state
+field_name: field_college_university_state
+entity_type: node
+bundle: cedar_record
+label: 'College/University State'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

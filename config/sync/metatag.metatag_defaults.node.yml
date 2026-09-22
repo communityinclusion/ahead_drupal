@@ -1,0 +1,13 @@
+uuid: b762cdc5-9a0f-4cdd-b0e2-afb9a3de44dc
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: rpwvgyEURXLz_JjgMCrkS1rUv-0k3L79BpO-ReN7fDI
+id: node
+label: Content
+tags:
+  robots: 'index, follow'
+  canonical_url: '[node:url]'
+  description: 'Search disability services information for United States colleges and universities'
+  title: '[node:title] | [site:name]'

@@ -1,0 +1,21 @@
+uuid: 1da5ce46-d66a-4eaf-be32-19c127ae08c7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_students_in_stem_fields_in
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_students_in_stem_fields_in
+field_name: field_students_in_stem_fields_in
+entity_type: node
+bundle: cedar_record
+label: 'Students in STEM fields, including health sciences'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

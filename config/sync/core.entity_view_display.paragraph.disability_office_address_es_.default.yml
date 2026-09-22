@@ -1,0 +1,100 @@
+uuid: ef5de56a-72c7-4c60-b7e3-98980d6c1686
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.disability_office_address_es_.field_d_o_address_line_1
+    - field.field.paragraph.disability_office_address_es_.field_d_o_address_line_2
+    - field.field.paragraph.disability_office_address_es_.field_d_o_city
+    - field.field.paragraph.disability_office_address_es_.field_d_o_office_name
+    - field.field.paragraph.disability_office_address_es_.field_d_o_state
+    - field.field.paragraph.disability_office_address_es_.field_d_o_zip_code
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_email_ad
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_phone
+    - field.field.paragraph.disability_office_address_es_.field_disability_office_website
+    - paragraphs.paragraphs_type.disability_office_address_es_
+  module:
+    - link
+    - options
+id: paragraph.disability_office_address_es_.default
+targetEntityType: paragraph
+bundle: disability_office_address_es_
+mode: default
+content:
+  field_d_o_address_line_1:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_d_o_address_line_2:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_d_o_city:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_d_o_office_name:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_d_o_state:
+    type: list_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_d_o_zip_code:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_disability_office_email_ad:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_disability_office_phone:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_disability_office_website:
+    type: link
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 8
+    region: content
+hidden:
+  search_api_excerpt: true

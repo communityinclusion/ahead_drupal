@@ -1,0 +1,24 @@
+_core:
+  default_config_hash: r8uAx4mTBwCkgDFbdKCmhjgbb91BQ4HbWSYRKrlowMY
+load_all_enabled_fonts: 1
+enabled_fonts:
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#100'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#100'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#100italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#100italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#300'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#300'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#300italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#300italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#700'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#700'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#700italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#700italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#900'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#900'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#regular'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#regular'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin-ext#900italic'
+  - 'https://www.google.com/webfonts/family?family=Lato&subset=latin#900italic'

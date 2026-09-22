@@ -1,4 +1,4 @@
-uuid: 1f3c3a50-0fa3-481a-ab44-264d97127a28
+uuid: e112e092-006d-4cf3-86c8-e1ff7589c1fc
 langcode: en
 status: true
 dependencies:
@@ -9,5 +9,5 @@ _core:
 id: profile_delete_action
 label: 'Delete selected profile'
 type: profile
-plugin: profile_delete_action
+plugin: 'entity:delete_action:profile'
 configuration: {  }

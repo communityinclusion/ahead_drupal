@@ -1,4 +1,4 @@
-uuid: f0d10985-260e-4f6b-8a74-1edb017a0120
+uuid: d67e39ee-47e4-4cc0-83c2-2919be99a108
 langcode: en
 status: true
 dependencies:
@@ -9,7 +9,7 @@ dependencies:
   theme:
     - bootstrap_barrio
 _core:
-  default_config_hash: xCOijLdB1-UgXxQ9a0D1_pd8vxNEhfMnxXZc8jYhHjs
+  default_config_hash: NeHSoqm4XFqA7_0bDmR429ZZQt3LRbZMNRJTMsFyOfI
 id: bootstrap_barrio_tools
 theme: bootstrap_barrio
 region: sidebar_first
@@ -19,8 +19,9 @@ plugin: 'system_menu_block:tools'
 settings:
   id: 'system_menu_block:tools'
   label: Tools
-  provider: system
   label_display: visible
+  provider: system
   level: 1
   depth: 0
+  expand_all_items: false
 visibility: {  }

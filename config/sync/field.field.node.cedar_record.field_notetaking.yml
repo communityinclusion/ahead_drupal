@@ -1,0 +1,21 @@
+uuid: 3a0b9274-e998-4e89-8bdc-59fb587deb14
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_notetaking
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_notetaking
+field_name: field_notetaking
+entity_type: node
+bundle: cedar_record
+label: Notetaking
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,21 @@
+uuid: 2cb2f424-668f-4070-9384-bc2deb386dc5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_recreation_and_athletic_fa
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_recreation_and_athletic_fa
+field_name: field_recreation_and_athletic_fa
+entity_type: node
+bundle: cedar_record
+label: 'Recreation and athletic facilities'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

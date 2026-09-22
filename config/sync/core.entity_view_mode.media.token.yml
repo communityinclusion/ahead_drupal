@@ -1,4 +1,4 @@
-uuid: 42ebb68e-7742-4f7a-9db6-5c50cbae1ca7
+uuid: b0e56c9d-4bca-40a0-aac1-914216611d6b
 langcode: en
 status: true
 dependencies:
@@ -6,5 +6,6 @@ dependencies:
     - media
 id: media.token
 label: Token
+description: ''
 targetEntityType: media
 cache: true

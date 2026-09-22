@@ -1,0 +1,30 @@
+uuid: 79da0976-30d8-48b4-8ed7-ea894bc1d176
+langcode: en
+status: false
+dependencies:
+  module:
+    - search_api_saved_searches
+_core:
+  default_config_hash: 7YpUVAINe3evLUA7ECr76zx2Bk-eqOLM6vlH4h3uG_w
+id: default
+label: Default
+description: 'A default type created automatically at module installation.'
+notification_settings:
+  email:
+    registered_choose_mail: true
+    activate:
+      send: true
+      title: 'Link to your saved search at [site:name]'
+      body: "A saved search on [site:name] with this e-mail address was created.\r\nIf you didn't create this saved search, just ignore this mail and the saved search will be deleted.\r\n- View your saved search at this link: [search-api-saved-search:view-url]\r\n--  [site:name] team"
+    notification:
+      title: 'New results for your saved search at [site:name]'
+      body: "[user:display-name],\r\n\r\nThere are new results for your saved search \"[search-api-saved-search:label]\":\r\n\r\n[search-api-saved-search-results:links]\r\n\r\n--  [site:name] team"
+options:
+  displays:
+    default: true
+    selected: {  }
+  date_field:
+    ahead_search: null
+    default_index: ''
+    default_solr_index: ''
+  description: ''

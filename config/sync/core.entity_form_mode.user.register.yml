@@ -1,4 +1,4 @@
-uuid: ed655810-ef34-42b9-afdb-c245eec190c8
+uuid: c98f70cc-679b-4351-9b88-65cd6b883616
 langcode: en
 status: true
 dependencies:
@@ -8,5 +8,6 @@ _core:
   default_config_hash: flXhTcp55yLcyy7ZLOhPGKGZobZQJdkAFVWV3LseiuI
 id: user.register
 label: Register
+description: ''
 targetEntityType: user
 cache: true

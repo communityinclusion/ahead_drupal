@@ -1,0 +1,21 @@
+uuid: 0994d608-6b5f-4c08-9c95-a1bc1d3e3739
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_student_union_or_other_mai
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_student_union_or_other_mai
+field_name: field_student_union_or_other_mai
+entity_type: node
+bundle: cedar_record
+label: 'Student union or other main building designated for students to socialize'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

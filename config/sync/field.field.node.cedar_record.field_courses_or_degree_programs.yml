@@ -1,0 +1,21 @@
+uuid: 7f14d587-852c-41ba-b694-4ebe2111bfea
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_courses_or_degree_programs
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_courses_or_degree_programs
+field_name: field_courses_or_degree_programs
+entity_type: node
+bundle: cedar_record
+label: 'Courses or degree programs'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

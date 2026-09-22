@@ -1,0 +1,21 @@
+uuid: 4332a04c-c71e-44e9-a4d9-6f0e8cc84de6
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_other_disabl_rel_courses
+field_name: field_other_disabl_rel_courses
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

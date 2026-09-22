@@ -1,0 +1,48 @@
+uuid: ef37362d-7ea1-48b9-8cef-e2396e00e575
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field__types_of_counseling_and_p
+field_name: field__types_of_counseling_and_p
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Short-term counseling (e.g., 10 session limit)'
+    -
+      value: '2'
+      label: 'Long-term counseling'
+    -
+      value: '3'
+      label: 'Support groups'
+    -
+      value: '4'
+      label: '24/7 Mental health hotline or crisis line'
+    -
+      value: '5'
+      label: 'Peer counselors or peer supports'
+    -
+      value: '6'
+      label: 'Online mental health services, trainings or supports'
+    -
+      value: '7'
+      label: 'Cross-campus behavioral, mental health, or crisis team(s)'
+    -
+      value: '8'
+      label: 'Campus-based chaplains'
+    -
+      value: '9'
+      label: Other
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

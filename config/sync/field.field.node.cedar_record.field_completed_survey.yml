@@ -1,0 +1,23 @@
+uuid: 157ac99a-9243-4b29-92bb-1a39140ecce5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_completed_survey
+    - node.type.cedar_record
+id: node.cedar_record.field_completed_survey
+field_name: field_completed_survey
+entity_type: node
+bundle: cedar_record
+label: 'Completed survey'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

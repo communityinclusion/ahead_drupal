@@ -1,0 +1,33 @@
+uuid: 906bd1df-3865-4354-9ee0-85be63c8dc5f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_sexual_assault_services_an
+field_name: field_sexual_assault_services_an
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'Generally not accessible'
+    -
+      value: '2'
+      label: 'Somewhat accessible'
+    -
+      value: '3'
+      label: 'Completely accessible'
+    -
+      value: '4'
+      label: 'Not applicable to this institution'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

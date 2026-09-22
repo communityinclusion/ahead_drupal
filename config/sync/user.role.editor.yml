@@ -1,0 +1,113 @@
+uuid: 92338074-ea67-49bd-8192-8fcbc89d1c8e
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.full_html
+    - media.type.audio
+    - media.type.file
+    - media.type.image
+    - media.type.remote_video
+    - media.type.video
+    - node.type.article
+    - node.type.cedar_record
+    - node.type.page
+  module:
+    - actions_permissions
+    - conditional_fields
+    - entity_browser
+    - field_ui
+    - file
+    - filter
+    - help
+    - media
+    - node
+    - panels_ipe
+    - paragraphs
+    - paragraphs_library
+    - search_api_page
+    - system
+    - toolbar
+id: editor
+label: Editor
+weight: 3
+is_admin: null
+permissions:
+  - 'access administration pages'
+  - 'access content overview'
+  - 'access help pages'
+  - 'access panels in-place editing'
+  - 'access paragraphs_library_items entity browser pages'
+  - 'access toolbar'
+  - 'access user profiles'
+  - 'administer entity browsers'
+  - 'administer media display'
+  - 'administer menu'
+  - 'administer nodes'
+  - 'administer paragraph display'
+  - 'change own username'
+  - 'create article content'
+  - 'create cedar_record content'
+  - 'create file media'
+  - 'create image media'
+  - 'create media'
+  - 'create page content'
+  - 'create remote_video media'
+  - 'delete any article content'
+  - 'delete any audio media'
+  - 'delete any cedar_record content'
+  - 'delete any file media'
+  - 'delete any media'
+  - 'delete any page content'
+  - 'delete article revisions'
+  - 'delete cedar_record revisions'
+  - 'delete media'
+  - 'delete own article content'
+  - 'delete own audio media'
+  - 'delete own cedar_record content'
+  - 'delete own file media'
+  - 'delete own files'
+  - 'delete own page content'
+  - 'delete own video media'
+  - 'delete page revisions'
+  - 'edit any article content'
+  - 'edit any cedar_record content'
+  - 'edit any file media'
+  - 'edit any image media'
+  - 'edit any page content'
+  - 'edit conditional fields'
+  - 'edit own article content'
+  - 'edit own cedar_record content'
+  - 'edit own file media'
+  - 'edit own image media'
+  - 'edit own page content'
+  - 'edit paragraph library item'
+  - 'execute bookmark_unflag node'
+  - 'execute entity:publish_action block_content'
+  - 'execute entity:publish_action node'
+  - 'execute entity:publish_action paragraph'
+  - 'execute entity:publish_action paragraphs_library_item'
+  - 'execute entity:publish_action path_alias'
+  - 'execute entity:save_action block_content'
+  - 'execute entity:save_action file'
+  - 'execute entity:save_action node'
+  - 'execute entity:save_action taxonomy_term'
+  - 'execute entity:unpublish_action block_content'
+  - 'execute entity:unpublish_action node'
+  - 'execute node_assign_owner_action node'
+  - 'execute node_make_sticky_action node'
+  - 'execute node_promote_action node'
+  - 'execute node_unpublish_by_keyword_action node'
+  - 'execute workflow_node_next_state_action node'
+  - 'revert article revisions'
+  - 'revert cedar_record revisions'
+  - 'revert page revisions'
+  - 'update any media'
+  - 'update media'
+  - 'use text format full_html'
+  - 'view article revisions'
+  - 'view cedar_record revisions'
+  - 'view page revisions'
+  - 'view search api pages'
+  - 'view the administration theme'
+  - 'view unpublished paragraphs'

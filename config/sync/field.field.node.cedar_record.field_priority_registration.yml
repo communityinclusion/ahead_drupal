@@ -1,0 +1,21 @@
+uuid: 1726d32c-04c9-401d-a0fc-5fd855ebcb7a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_priority_registration
+    - node.type.cedar_record
+  module:
+    - options
+id: node.cedar_record.field_priority_registration
+field_name: field_priority_registration
+entity_type: node
+bundle: cedar_record
+label: 'Priority registration'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

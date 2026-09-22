@@ -1,0 +1,33 @@
+uuid: f2ad3d7e-134e-4ec7-9185-d6aae8176844
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_how_often_does_your_instit
+field_name: field_how_often_does_your_instit
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: '1'
+      label: 'More than twice per term or semester'
+    -
+      value: '2'
+      label: '1-2 times each term or semester'
+    -
+      value: '3'
+      label: 'About once each year'
+    -
+      value: '4'
+      label: 'Very rarely or never'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
