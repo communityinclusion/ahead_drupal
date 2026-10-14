@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a125351ad12f50bfaa38bfba462f0c75",
+    "content-hash": "dc647d5cdc2da1209231019126edc876",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4415,14 +4415,20 @@
         },
         {
             "name": "drupal/feeds",
-            "version": "dev-3.x",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/feeds.git",
-                "reference": "21daefc7d187c71ee20428311e4ec2a11bc3ba2a"
+                "reference": "8.x-3.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/feeds-8.x-3.2.zip",
+                "reference": "8.x-3.2",
+                "shasum": "0cf6a160151e411c585ae7ce281212e10393f71c"
             },
             "require": {
-                "drupal/core": "^10.3 || ^11",
+                "drupal/core": "^10.2 || ^11",
                 "laminas/laminas-feed": "^2.22"
             },
             "require-dev": {
@@ -4431,15 +4437,12 @@
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-3.x": "3.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-3.2+28-dev",
-                    "datestamp": "1786623314",
+                    "version": "8.x-3.2",
+                    "datestamp": "1763648440",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 },
                 "drush": {
@@ -19465,7 +19468,6 @@
         "drupal/conditional_fields": 15,
         "drupal/csv_importer": 20,
         "drupal/email_registration": 5,
-        "drupal/feeds": 20,
         "drupal/feeds_para_mapper": 5,
         "drupal/feeds_tamper": 20,
         "drupal/field_group": 20,

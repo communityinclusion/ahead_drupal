@@ -25,20 +25,6 @@ interface TargetInterface extends DependentWithRemovalPluginInterface {
   public static function targets(array &$targets, FeedTypeInterface $feed_type, array $definition);
 
   /**
-   * Gets the values on an object.
-   *
-   * @param \Drupal\feeds\FeedInterface $feed
-   *   The feed object.
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The target object.
-   * @param string $target
-   *   The name of the target to get.
-   *
-   * @return array
-   */
-  public function getTargetValues(FeedInterface $feed, EntityInterface $entity, string $target): array;
-
-  /**
    * Sets the values on an object.
    *
    * @param \Drupal\feeds\FeedInterface $feed
@@ -94,4 +80,5 @@ interface TargetInterface extends DependentWithRemovalPluginInterface {
    *   True if the value on the entity is empty. False otherwise.
    */
   public function isEmpty(FeedInterface $feed, EntityInterface $entity, $target);
+
 }

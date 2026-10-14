@@ -62,13 +62,6 @@ abstract class TargetBase extends PluginBase implements TargetInterface, PluginF
   /**
    * {@inheritdoc}
    */
-  public function getTargetValues(FeedInterface $feed, EntityInterface $entity, $target): array {
-    return $entity->get($target)->getValue();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function clearTarget(FeedInterface $feed, EntityInterface $entity, string $target) {
     unset($entity->{$target});
   }

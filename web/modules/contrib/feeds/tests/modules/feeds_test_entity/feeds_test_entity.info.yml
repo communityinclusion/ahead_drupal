@@ -5,3 +5,8 @@ package: Testing
 dependencies:
   - feeds:entity_test
   - feeds:feeds
+
+# Information added by Drupal.org packaging script on 2025-11-20
+version: '8.x-3.2'
+project: 'feeds'
+datestamp: 1763648444

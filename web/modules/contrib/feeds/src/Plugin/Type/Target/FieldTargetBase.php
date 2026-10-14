@@ -88,14 +88,6 @@ abstract class FieldTargetBase extends TargetBase implements ConfigurableTargetI
   /**
    * {@inheritdoc}
    */
-  public function getTargetValues(FeedInterface $feed, EntityInterface $entity, $field_name): array {
-    $entity_target = $this->getEntityTarget($feed, $entity);
-    return parent::getTargetValues($feed, $entity_target, $field_name);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function setTarget(FeedInterface $feed, EntityInterface $entity, $field_name, array $values) {
     if ($values = $this->prepareValues($values)) {
       $entity_target = $this->getEntityTarget($feed, $entity);

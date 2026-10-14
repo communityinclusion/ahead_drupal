@@ -516,9 +516,11 @@ class Importer {
     $findByField = function ($entity, $field) use (&$findByField, $field_manager) {
       $p_c = Paragraph::class;
       $found = NULL;
-      if (get_class($entity) === $p_c) {
-        if ($exist = $entity->hasField($field) && count($entity->get($field)->getValue())) {
-          $found = $entity;
+      if($entity != NULL){
+        if (get_class($entity) === $p_c) {
+          if ($exist = $entity->hasField($field) && count($entity->get($field)->getValue())) {
+            $found = $entity;
+          }
         }
       }
       else if ($exist = $entity->hasField($field) && count($entity->get($field)->getValue())){

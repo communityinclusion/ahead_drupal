@@ -70,7 +70,7 @@
         "drupal/entity_reference_revisions": "^1.8",
         "drupal/entity_usage": "^2.0",
         "drupal/facets": "^2.0.9",
-        "drupal/feeds": "3.x-dev",
+        "drupal/feeds": "^3.2",
         "drupal/feeds_para_mapper": "^1.2@RC",
         "drupal/feeds_tamper": "2.x-dev",
         "drupal/field_display_label": "^2.0",
