@@ -1,3 +1,0 @@
-workflow:
-  label: 'Workflow'
-  description: 'Field to store Workflow state value for a certain Workflow type.'

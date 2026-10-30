@@ -1,7 +1,0 @@
-finished:
-  7:
-    workflow: workflow
-
-not_finished:
-  6:
-    workflow: workflow
