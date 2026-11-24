@@ -20,15 +20,16 @@ class SchedulerMetaInformationTest extends SchedulerBrowserTestBase {
     // Log in.
     $this->drupalLogin($this->schedulerUser);
 
-    // Create a published node without scheduling.
+    // Create a published promoted node without scheduling dates.
     $published_node = $this->drupalCreateNode([
       'type' => $this->type,
       'status' => TRUE,
+      'promote' => TRUE,
     ]);
-    $this->drupalGet('node/' . $published_node->id());
 
     // Since we did not set an unpublish date, there should be no X-Robots-Tag
     // header on the response.
+    $this->drupalGet('node/' . $published_node->id());
     $this->assertNull($this->getSession()->getResponseHeader('X-Robots-Tag'), 'X-Robots-Tag should not be present when no unpublish date is set.');
 
     // Set a scheduler unpublish date on the node.

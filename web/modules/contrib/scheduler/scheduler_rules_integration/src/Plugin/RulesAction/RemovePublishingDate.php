@@ -40,11 +40,11 @@ class RemovePublishingDate extends RulesActionBase {
     else {
       // The action cannot be executed because the content type is not enabled
       // for scheduled publishing.
+      $type_name = method_exists($node, 'getBundleEntity') ? $node->getBundleEntity()->label() : $node->get('type')->entity->label();
       $action_label = $this->summary();
       // @todo Can we get the condition description from the actual condition
       // object instead of hard-coding it here?
       $condition = $this->t('Node type is enabled for scheduled publishing');
-      $type_name = node_get_type_label($node);
       $url = new Url('entity.node_type.edit_form', ['node_type' => $node->getType()]);
       $arguments = [
         '%type' => $type_name,

@@ -210,7 +210,10 @@ class SchedulerManager {
       // scheduled publishing, so do not process these. This check can be done
       // once, here, as the setting will be the same for all translations.
       if (!$node_multilingual->type->entity->getThirdPartySetting('scheduler', 'publish_enable', $this->setting('default_publish_enable'))) {
-        throw new SchedulerNodeTypeNotEnabledException(sprintf("Node %d '%s' will not be published because node type '%s' is not enabled for scheduled publishing", $node_multilingual->id(), $node_multilingual->getTitle(), node_get_type_label($node_multilingual)));
+        // @todo Add test coverage for this exception.
+        $title = $node_multilingual->getTitle();
+        $label = method_exists($node_multilingual, 'getBundleEntity') ? $node_multilingual->getBundleEntity()->label() : $node_multilingual->get('type')->entity->label();
+        throw new SchedulerNodeTypeNotEnabledException(sprintf("Node %d '%s' will not be published because node type '%s' is not enabled for scheduled publishing", $node_multilingual->id(), $title, $label));
       }
 
       $languages = $node_multilingual->getTranslationLanguages();
@@ -397,7 +400,10 @@ class SchedulerManager {
       // The API calls could return nodes of types which are not enabled for
       // scheduled unpublishing. Do not process these.
       if (!$node_multilingual->type->entity->getThirdPartySetting('scheduler', 'unpublish_enable', $this->setting('default_unpublish_enable'))) {
-        throw new SchedulerNodeTypeNotEnabledException(sprintf("Node %d '%s' will not be unpublished because node type '%s' is not enabled for scheduled unpublishing", $node_multilingual->id(), $node_multilingual->getTitle(), node_get_type_label($node_multilingual)));
+        // @todo Add test coverage for this exception.
+        $title = $node_multilingual->getTitle();
+        $label = method_exists($node_multilingual, 'getBundleEntity') ? $node_multilingual->getBundleEntity()->label() : $node_multilingual->get('type')->entity->label();
+        throw new SchedulerNodeTypeNotEnabledException(sprintf("Node %d '%s' will not be unpublished because node type '%s' is not enabled for scheduled unpublishing", $node_multilingual->id(), $title, $label));
       }
 
       $languages = $node_multilingual->getTranslationLanguages();
@@ -666,9 +672,11 @@ class SchedulerManager {
 
     // Load the latest revision for each node.
     foreach ($nids as $nid) {
-      $node = $node_storage->load($nid);
-      $revision_ids = $node_storage->revisionIds($node);
-      $vid = end($revision_ids);
+      $query = $node_storage->getQuery()
+        ->condition('nid', $nid)
+        ->latestRevision()
+        ->accessCheck(FALSE);
+      $vid = array_key_first($query->execute());
       $nodes[] = $node_storage->loadRevision($vid);
     }
 

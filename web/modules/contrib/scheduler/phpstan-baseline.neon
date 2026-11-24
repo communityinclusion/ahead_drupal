@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# This phpstan-baseline-ok.neon file contains the messages for code that will
+# This phpstan-baseline.neon file contains the messages for code that will
 # not be changed. This is a permanent list of ignored messages.
 # ------------------------------------------------------------------------------
 parameters:
@@ -46,3 +46,16 @@ parameters:
       message: "#^Function drush_get_option not found\\.$#"
       count: 1
       path: scheduler.drush.inc
+
+    #---------------------------------------------------------------------------------------------------------------------------
+    # The functions node_access_rebuild() and node_access_needs_rebuild() are replaced by a service in Drupal 11.4 but we need
+    # to use them in the earlier core versions. This warning is not produced in 11.3 so needs reportUnmatched: false
+    # https://www.drupal.org/project/scheduler/issues/3588037
+    #---------------------------------------------------------------------------------------------------------------------------
+    -
+      message: '#^Call to deprecated function node_access(_needs)?_rebuild\(\)#'
+      identifier: function.deprecated
+      paths:
+        - tests/modules/scheduler_access_test/scheduler_access_test.install
+        - tests/src/Functional/SchedulerNodeAccessTest.php
+      reportUnmatched: false

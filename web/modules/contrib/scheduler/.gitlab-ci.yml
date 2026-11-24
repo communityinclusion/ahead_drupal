@@ -20,7 +20,8 @@ variables:
   OPT_IN_TEST_PREVIOUS_MINOR: 1
   OPT_IN_TEST_PREVIOUS_MAJOR: 1
   OPT_IN_TEST_NEXT_MINOR: 1
-  OPT_IN_TEST_NEXT_MAJOR: 1
+  # Scheduler 8.x-1.x will not be made compatible with Drupal 12
+  OPT_IN_TEST_NEXT_MAJOR: 0
   OPT_IN_TEST_DRUPAL9: 1
   OPT_IN_TEST_DRUPAL8: 1
 
@@ -99,15 +100,21 @@ workflow:
   if: '$OPT_IN_TEST_DRUPAL8 != "1"'
   when: never
 
-# Re-usable rule for running the job automatically on Merge Requests and allowing it
-# to manually triggered for all other types of pipeline.
-# Using 'when: manual' needs 'allow failure: true' otherwise the overall pipeline status
-# is shown as 'blocked' and the stages show 'running' without ever appearing to finish.
-.manual-if-not-mr-rule: &manual-if-not-mr-rule
-  - if: $CI_PIPELINE_SOURCE != "merge_request_event"
-    when: manual
+# Re-usable rule for running the job automatically on Merge Requests. Also run
+# if the branch matches two specific criteria, even if not in a Merge Request.
+.run-in-mr-rule: &run-in-mr-rule
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    when: on_success
+  - if: $CI_COMMIT_BRANCH =~ /^mr[0-9]+/i || $CI_COMMIT_BRANCH =~ /^3356800/
+    when: on_success
+
+# Run the job in a Merge Train and when committing to the real repo, otherwise manual. This is used in every
+# composer variant except 'current' and should be the last rule in the set because it ends without a condition.
+.run-on-commit-otherwise-manual-rule: &run-on-commit-otherwise-manual-rule
+  - if: $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" || $CI_PIPELINE_SOURCE == "push"
+    when: on_success
+  - when: manual
     allow_failure: true
-  - when: on_success
 
 .composer-base:
   after_script:
@@ -135,37 +142,29 @@ composer (max PHP version):
   rules:
     - !reference [ .opt-in-max-php-rule ]
     - !reference [ .check-max-php-version-rule ]
-    - when: manual
-      allow_failure: true
+    - *run-on-commit-otherwise-manual-rule
 
 composer (previous minor):
   rules:
     - !reference [ .opt-in-previous-minor-rule ]
-    - when: manual
-      allow_failure: true
+    - *run-on-commit-otherwise-manual-rule
 
 composer (previous major):
   rules:
     - !reference [ .opt-in-previous-major-rule ]
-    - when: manual
-      allow_failure: true
+    - *run-on-commit-otherwise-manual-rule
 
 composer (next minor):
   rules:
     - !reference [ .opt-in-next-minor-rule ]
-    - *manual-if-not-mr-rule
-
-composer (next major):
-  rules:
-    - !reference [ .opt-in-next-major-rule ]
-    - *manual-if-not-mr-rule
+    - *run-in-mr-rule
+    - *run-on-commit-otherwise-manual-rule
 
 composer (drupal 9):
   extends: .composer-base
   rules:
     - *opt-in-drupal9-rule
-    - when: manual
-      allow_failure: true
+    - *run-on-commit-otherwise-manual-rule
   variables:
     PHP_VERSION: 8.1
     DRUPAL_CORE: ^9.5
@@ -175,8 +174,7 @@ composer (drupal 8):
   extends: .composer-base
   rules:
     - *opt-in-drupal8-rule
-    - when: manual
-      allow_failure: true
+    - *run-on-commit-otherwise-manual-rule
   variables:
     PHP_VERSION: 7.4
     DRUPAL_CORE: ^8.9
@@ -233,6 +231,7 @@ phpunit:
         - scheduler_api
         - scheduler_drush
         - scheduler_js
+        - scheduler_kernel
         - scheduler_rules_integration
         - scheduler_workbench
   rules:
@@ -292,16 +291,6 @@ phpunit (previous major):
 phpunit (next minor):
   rules:
     - !reference [ .opt-in-next-minor-rule ]
-    - !reference [ .skip-phpunit-rule ]
-    - *scheduler-testgroup-rule
-  variables:
-    # Use core ignoreFile to show deprecations. This is only used when $_PHPUNIT_CONCURRENT=1 so make sure that is also set.
-    _PHPUNIT_CONCURRENT: 1
-    SYMFONY_DEPRECATIONS_HELPER: "ignoreFile=$CI_PROJECT_DIR/$_WEB_ROOT/core/.deprecation-ignore.txt"
-
-phpunit (next major):
-  rules:
-    - !reference [ .opt-in-next-major-rule ]
     - !reference [ .skip-phpunit-rule ]
     - *scheduler-testgroup-rule
   variables:

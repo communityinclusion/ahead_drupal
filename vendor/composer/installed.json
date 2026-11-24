@@ -6855,23 +6855,24 @@
         },
         {
             "name": "drupal/scheduler",
-            "version": "1.6.0",
-            "version_normalized": "1.6.0.0",
+            "version": "1.7.0",
+            "version_normalized": "1.7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/scheduler.git",
-                "reference": "8.x-1.6"
+                "reference": "8.x-1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/scheduler-8.x-1.6.zip",
-                "reference": "8.x-1.6",
-                "shasum": "873076f50611271de7f936d123f2b09beade2dbe"
+                "url": "https://ftp.drupal.org/files/projects/scheduler-8.x-1.7.zip",
+                "reference": "8.x-1.7",
+                "shasum": "fbdae2658089b2b5721d13060cee0063bb46b5d9"
             },
             "require": {
                 "drupal/core": "^8 || ^9 || ^10 || ^11"
             },
             "require-dev": {
+                "doctrine/annotations": "*",
                 "drupal/devel_generate": "^2.0 || >=4",
                 "drupal/rules": "^3 || ^4",
                 "drupal/workbench_moderation": "*",
@@ -6881,8 +6882,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.6",
-                    "datestamp": "1760955000",
+                    "version": "8.x-1.7",
+                    "datestamp": "1793813334",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -6923,6 +6924,10 @@
             ],
             "description": "Automatically publish and unpublish content at specified dates and times.",
             "homepage": "https://drupal.org/project/scheduler",
+            "keywords": [
+                "Actively maintained",
+                "Administration tools"
+            ],
             "support": {
                 "source": "https://git.drupalcode.org/project/scheduler",
                 "issues": "https://www.drupal.org/project/issues/scheduler"

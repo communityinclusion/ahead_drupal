@@ -27,7 +27,13 @@ class SchedulerNodeAccessTest extends SchedulerBrowserTestBase {
     // scheduler_access_test_install() sets node_access_needs_rebuild(TRUE) and
     // this works when testing the module interactively, but during simpletest
     // the node access table is not rebuilt. Hence do that here explicitly here.
-    node_access_rebuild();
+    // The NodeAccessRebuild service was introduced in core version 11.4.
+    if (\Drupal::hasService('\Drupal\node\NodeAccessRebuild')) {
+      \Drupal::service('\Drupal\node\NodeAccessRebuild')->rebuild();
+    }
+    else {
+      node_access_rebuild();
+    }
 
     // Create data to test publishing then unpublishing via loop.
     // @todo Convert this test to use a @dataProvider function instead of this

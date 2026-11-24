@@ -482,7 +482,7 @@ class SchedulerApiTest extends SchedulerBrowserTestBase {
       'publish_on' => strtotime('-1 day'),
     ]);
     // 'green' nodes will have both fields hidden so is harder to test manually.
-    // Therefore introduce a different colour.
+    // Therefore introduce a different color.
     $node4 = $this->drupalCreateNode([
       'type' => $this->type,
       'status' => TRUE,

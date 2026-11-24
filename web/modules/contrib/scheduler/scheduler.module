@@ -6,13 +6,17 @@
  */
 
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Action\Plugin\Action\UnpublishAction;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\NodeType;
 use Drupal\scheduler\SchedulerEvent;
@@ -430,10 +434,42 @@ function scheduler_node_view(array &$build, EntityInterface $node, EntityViewDis
   // header for search engines. Only do this when the current page is the
   // full-page view of the node.
   // @see https://googleblog.blogspot.be/2007/07/robots-exclusion-protocol-now-with-even.html
-  if (!empty($node->unpublish_on->value) && node_is_page($node)) {
+  if (!empty($node->unpublish_on->value) && $view_mode == 'full') {
     $unavailable_after = date(DATE_RFC850, $node->unpublish_on->value);
     $build['#attached']['http_header'][] = ['X-Robots-Tag', 'unavailable_after: ' . $unavailable_after];
   }
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+function scheduler_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+  $field_name = $field_definition->getName();
+  if ($operation !== 'edit' || !in_array($field_name, ['publish_on', 'unpublish_on'], TRUE) || $field_definition->getTargetEntityTypeId() !== 'node') {
+    return AccessResult::neutral();
+  }
+
+  // Setting the dates requires the scheduling permission.
+  if (!$account->hasPermission('schedule publishing of nodes')) {
+    return AccessResult::forbidden();
+  }
+
+  // $items is NULL when access is checked for the field definition instead of
+  // the field on a specific node. The content type settings require a node, so
+  // in that case only the permission applies.
+  if ($items === NULL) {
+    return AccessResult::neutral();
+  }
+
+  // The date can only be set when publishing or unpublishing is enabled for
+  // the content type.
+  $config = \Drupal::config('scheduler.settings');
+  $type = $items->getEntity()->type->entity;
+  $setting = ($field_name === 'publish_on') ? 'publish_enable' : 'unpublish_enable';
+  if (!$type->getThirdPartySetting('scheduler', $setting, $config->get("default_$setting"))) {
+    return AccessResult::forbidden();
+  }
+  return AccessResult::neutral();
 }
 
 /**
